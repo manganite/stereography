@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stereographische Projektion</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Stereogramme der 32 kristallographischen Punktgruppen und einfacher Polyeder mit gekoppelter 3D-Konstruktion.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap">
+<style>
+/* Layout: Lehrmittel-Werkbank. Links Bedienung, rechts zwei gleich grosse Tafeln
+   (Stereogramm | 3D-Konstruktion), darunter die Kenndaten. Auf dem Telefon untereinander. */
+:root {
+  --bg: #eceff2;
+  --surface: #f8f9fb;
+  --paper: #ffffff;
+  --ink: #15202b;
+  --muted: #586472;
+  --line: #d2d9e0;
+  --accent: #0b63b6;
+  --accent2: #c2410c;
+  --upper: #1d4f91;
+  --mirror: #0b63b6;
+  --net: #9aa6b2;
+  --ray: #d97706;
+  --crystal: #a9cbe8;
+  --crystal2: #cfd9e3;
+  --edge: #1b2a3a;
+  --normal: #0b63b6;
+  --ax2: #2f855a;
+  --ax3: #b7791f;
+  --ax4: #6b46c1;
+  --ax6: #c53030;
+  --font-display: 'Source Serif 4', 'Georgia', 'Times New Roman', serif;
+  --font-ui: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1318; --surface: #151c23; --paper: #1a222b; --ink: #e5ebf1; --muted: #98a6b4;
+    --line: #2a3541; --accent: #4fa3ff; --accent2: #ff8a4c; --upper: #79b0ff; --mirror: #4fa3ff;
+    --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
+    --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1318; --surface: #151c23; --paper: #1a222b; --ink: #e5ebf1; --muted: #98a6b4;
+  --line: #2a3541; --accent: #4fa3ff; --accent2: #ff8a4c; --upper: #79b0ff; --mirror: #4fa3ff;
+  --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
+  --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 32px;
+}
+.ov { text-decoration: overline; text-decoration-thickness: 0.07em; text-underline-offset: 0; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Kopf */
+.top {
+  display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px;
+  padding-block: 20px 16px; border-bottom: 1px solid var(--line); margin-bottom: 18px;
+  max-width: 1480px; margin-inline: auto;
+}
+.brand h1 {
+  font-family: var(--font-display); font-weight: 600; font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem);
+  line-height: 1.1; margin: 0; letter-spacing: -0.01em; text-wrap: balance;
+}
+.brand p { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; }
+.tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; padding: 3px; background: var(--surface); }
+.tabs button {
+  border: 0; background: transparent; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; color: var(--muted);
+}
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+
+/* Raster */
+.layout {
+  max-width: 1480px; margin-inline: auto; display: grid; gap: 16px;
+  grid-template-columns: 300px minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "prim stereo d3" "sec info info";
+  align-items: start;
+}
+.prim { grid-area: prim; }
+.sec { grid-area: sec; }
+.p-stereo { grid-area: stereo; }
+.p-3d { grid-area: d3; }
+.info { grid-area: info; }
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "prim prim" "stereo d3" "info sec"; }
+}
+@media (max-width: 720px) {
+  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "prim" "stereo" "d3" "info" "sec"; }
+}
+
+/* Bedienfelder */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.card h2 {
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted);
+  margin: 0 0 10px; font-weight: 600;
+}
+.stack { display: grid; gap: 12px; }
+.field { display: grid; gap: 5px; }
+.field > label, .lbl { font-size: 0.82rem; color: var(--muted); }
+select {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper);
+}
+.picker { display: grid; gap: 7px; }
+.sysrow { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 6px; align-items: start; }
+.sysrow .sys { font-size: 0.74rem; color: var(--muted); padding-top: 7px; overflow-wrap: anywhere; }
+.sysrow .btns { display: flex; flex-wrap: wrap; gap: 4px; }
+.pgb {
+  min-width: 40px; padding: 4px 7px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper);
+  cursor: pointer; font-family: var(--font-display); font-size: 0.98rem; line-height: 1.25;
+}
+.pgb:hover { border-color: var(--muted); }
+.pgb[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.mono-axis { display: flex; align-items: center; gap: 4px; font-size: 0.74rem; color: var(--muted); width: 100%; margin-top: 2px; }
+.mono-axis span { margin-right: 4px; }
+.mono-axis button { padding: 2px 10px; min-width: 32px; font-style: italic; }
+.check { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 0.92rem; }
+.check input { width: 17px; height: 17px; accent-color: var(--accent); margin: 0; }
+.range { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; }
+.range label { font-size: 0.82rem; color: var(--muted); }
+.range output { font-family: var(--font-mono); font-size: 0.82rem; font-variant-numeric: tabular-nums; text-align: right; }
+.range input { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); }
+.seg { display: inline-flex; gap: 4px; }
+.seg button {
+  min-width: 44px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); cursor: pointer;
+  font-family: var(--font-mono);
+}
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.hintline { font-size: 0.8rem; color: var(--muted); margin: 0; }
+.linkbtn { border: 1px solid var(--line); background: var(--paper); border-radius: 7px; padding: 6px 10px; cursor: pointer; font-size: 0.85rem; justify-self: start; }
+.group-title { font-size: 0.78rem; color: var(--muted); margin: 4px 0 -4px; font-weight: 600; }
+
+/* Tafeln */
+.panel { margin: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; }
+.panel-head {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--surface);
+}
+.panel-head .t { font-weight: 600; }
+.panel-head .t small { font-weight: 400; color: var(--muted); margin-left: 6px; }
+.tools { display: flex; gap: 6px; flex-wrap: wrap; }
+.tools button { border: 1px solid var(--line); background: var(--paper); border-radius: 6px; padding: 4px 9px; font-size: 0.8rem; cursor: pointer; }
+.tools button:hover { border-color: var(--muted); }
+#stereo { display: block; width: 100%; height: auto; aspect-ratio: 1; max-width: 100%; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+#view3d { position: relative; width: 100%; aspect-ratio: 1; max-width: 100%; touch-action: none; }
+#view3d canvas { display: block; }
+.labels3d { position: absolute; inset: 0; pointer-events: none; }
+.lbl3d { font-size: 12px; color: var(--ink); white-space: nowrap; }
+.lbl-axis { font-style: italic; color: var(--muted); font-size: 14px; }
+.lbl-pole { color: var(--muted); font-size: 11px; font-weight: 600; }
+.lbl-hkl { font-family: var(--font-ui); background: color-mix(in srgb, var(--paper) 80%, transparent); padding: 0 3px; border-radius: 3px; }
+.lbl-hkl.sel { color: var(--accent); font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 8px 12px 10px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); }
+.lg { display: inline-flex; align-items: center; gap: 6px; }
+.lg .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.lg.hint { font-style: italic; }
+
+/* Kenndaten */
+.info-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin-bottom: 12px; }
+.hm-big { font-family: var(--font-display); font-size: 2.3rem; line-height: 1; font-weight: 600; }
+.hm-big.form-sym { font-family: var(--font-ui); font-weight: 500; font-size: 1.9rem; }
+.hm-meta { display: grid; gap: 2px; color: var(--muted); font-size: 0.88rem; }
+.facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 16px; margin: 0; }
+.facts div { border-top: 1px solid var(--line); padding-top: 5px; }
+.facts dt { font-size: 0.75rem; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 500; }
+.num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+.info h3 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin: 16px 0 6px; font-weight: 600; }
+.elems { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 4px 16px; }
+.elems li { display: flex; align-items: center; gap: 8px; }
+.sym-icon { flex: none; }
+.note { color: var(--muted); font-size: 0.85rem; margin: 14px 0 0; max-width: 70ch; }
+.selbox { margin-top: 14px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: 8px; }
+.sel-hkl { font-size: 1.4rem; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size: 0.78rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>Stereographische Projektion</h1>
+    <p>Die 32 kristallographischen Punktgruppen und einfache Kristallformen</p>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Modus">
+    <button id="tab-pg" role="tab" aria-selected="true">Punktgruppen</button>
+    <button id="tab-poly" role="tab" aria-selected="false">Polyeder</button>
+  </div>
+</header>
+
+<main class="layout">
+  <div class="prim card">
+    <section id="ctl-pg" class="stack">
+      <h2>Punktgruppe</h2>
+      <div id="pg-picker" class="picker" role="group" aria-label="Punktgruppe wählen"></div>
+    </section>
+
+    <section id="ctl-poly" class="stack" hidden>
+      <h2>Polyeder</h2>
+      <div class="field">
+        <label for="form-select">Form</label>
+        <select id="form-select"></select>
+      </div>
+      <div class="field" id="row-n">
+        <span class="lbl">Zähligkeit</span>
+        <div class="seg" id="seg-n" role="group" aria-label="Zähligkeit">
+          <button data-n="3">3</button><button data-n="4">4</button><button data-n="6">6</button>
+        </div>
+      </div>
+      <div class="field" id="row-variant">
+        <label for="variant-select">Form-Indizes</label>
+        <select id="variant-select"></select>
+      </div>
+      <div class="field">
+        <label for="preset-select">Lage</label>
+        <select id="preset-select"></select>
+      </div>
+      <div class="range" id="row-ba">
+        <label for="poly-ba">b/a</label><output id="poly-ba-out"></output>
+        <input type="range" id="poly-ba" min="0.4" max="2.5" step="0.01">
+      </div>
+      <div class="range" id="row-ca">
+        <label for="poly-ca" id="lbl-ca">c/a</label><output id="poly-ca-out"></output>
+        <input type="range" id="poly-ca" min="0.25" max="3" step="0.01">
+      </div>
+      <div class="range" id="row-height">
+        <label for="poly-height">Höhe / a</label><output id="poly-height-out"></output>
+        <input type="range" id="poly-height" min="0.3" max="4" step="0.05">
+      </div>
+      <div class="range">
+        <label for="poly-size">Grösse</label><output id="poly-size-out"></output>
+        <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01">
+      </div>
+      <button class="linkbtn" id="poly-reset" type="button">Seitenverhältnisse zurücksetzen</button>
+      <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
+      <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
+    </section>
+  </div>
+
+  <figure class="panel p-stereo">
+    <div class="panel-head">
+      <span class="t">Stereogramm<small id="stereo-sub">Blick ∥ c</small></span>
+      <div class="tools"><button id="copy-svg" type="button">SVG kopieren</button><button id="save-svg" type="button">SVG speichern</button></div>
+    </div>
+    <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
+    <div class="legend" id="legend"></div>
+  </figure>
+
+  <figure class="panel p-3d">
+    <div class="panel-head">
+      <span class="t">3D-Konstruktion<small>drehen: ziehen, zoomen: Mausrad</small></span>
+      <div class="tools"><button data-view="oblique" type="button">Schräg</button><button data-view="top" type="button">Von oben</button><button data-view="side" type="button">Seitlich</button></div>
+    </div>
+    <div id="view3d"></div>
+  </figure>
+
+  <section class="info card" id="info" aria-live="polite"></section>
+
+  <div class="sec card stack">
+    <section id="ctl-pg-opts" class="stack">
+      <h2>Symmetrie und allgemeine Lage</h2>
+      <label class="check"><input type="checkbox" id="pg-elements">Symmetriegerüst</label>
+      <label class="check"><input type="checkbox" id="pg-object">Objekt in allgemeiner Lage</label>
+      <label class="check"><input type="checkbox" id="pg-colorful">Farbig (Händigkeit, Spiegelebenen)</label>
+      <div class="range">
+        <label for="pg-theta">Polabstand ρ</label><output id="pg-theta-out"></output>
+        <input type="range" id="pg-theta" min="1" max="179" step="1">
+      </div>
+      <div class="range">
+        <label for="pg-phi">Azimut φ (ab a, im Gegenuhrzeigersinn)</label><output id="pg-phi-out"></output>
+        <input type="range" id="pg-phi" min="0" max="359.5" step="0.5">
+      </div>
+      <p class="hintline">Den markierten Pol im Stereogramm ziehen oder an eine Stelle tippen.</p>
+    </section>
+    <h2>Darstellung</h2>
+    <label class="check"><input type="checkbox" id="v-wulff">Wulffsches Netz</label>
+    <div class="range" id="row-wulffrot">
+      <label for="v-wulffrot">Netz drehen</label><output id="v-wulffrot-out"></output>
+      <input type="range" id="v-wulffrot" min="0" max="180" step="1">
+    </div>
+    <label class="check"><input type="checkbox" id="v-axes">Kristallachsen</label>
+    <p class="group-title">3D-Ansicht</p>
+    <label class="check"><input type="checkbox" id="v-sphere">Projektionskugel</label>
+    <label class="check"><input type="checkbox" id="v-plane">Stereogramm in der Äquatorebene</label>
+    <label class="check"><input type="checkbox" id="v-rays">Projektionsstrahlen (zum Süd- bzw. Nordpol)</label>
+    <label class="check" id="row-normals"><input type="checkbox" id="v-normals">Flächennormalen</label>
+  </div>
+</main>
+
+<footer>Konventionen nach International Tables for Crystallography, Vol. A: a zeigt nach unten, b nach rechts, c zum Betrachter. Pole oberhalb der Projektionsebene als Punkt, unterhalb als Kreis. Hexagonale Achsen mit Miller-Bravais-Indizes (hkil).</footer>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

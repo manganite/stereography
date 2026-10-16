@@ -1,0 +1,16 @@
+{
+  "name": "Stereographische Projektion",
+  "short_name": "Stereogramm",
+  "description": "Stereogramme der 32 kristallographischen Punktgruppen und einfacher Polyeder mit gekoppelter 3D-Konstruktion.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eceff2",
+  "theme_color": "#eceff2",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

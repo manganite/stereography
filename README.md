@@ -35,6 +35,7 @@ Es gibt keinen Build-Schritt. Lokal testen: im Ordner `python3 -m http.server` s
 | `js/view3d.js` | 3D-Ansicht (three.js) |
 | `js/main.js` | Zustand und Bedienung |
 | `js/format.js`, `js/linalg.js` | Hilfsfunktionen (Symbole, Indizes, Vektoren) |
+| `manifest.webmanifest`, `icons/` | Favicon und Homescreen-Icons (iPad/iPhone: Teilen → Zum Home-Bildschirm; Android: Menü → Zum Startbildschirm hinzufügen) |
 | `lib/three.bundle.js` | three.js r186 mit OrbitControls und CSS2DRenderer (MIT-Lizenz, siehe `lib/three-LICENSE.txt`) |
 
 Die Symmetrieelemente werden nicht von Hand eingetragen, sondern aus den Gruppenelementen berechnet (Drehachsen aus Spur und Eigenvektor, Spiegelebenen und Drehinversionsachsen aus −R).

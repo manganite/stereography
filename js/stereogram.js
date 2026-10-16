@@ -9,7 +9,7 @@ import { hklParts } from './format.js';
 export const SIZE = 520;
 export const C = SIZE / 2;
 export const R = 210;
-const SYM = 14; // Grösse der Achsensymbole
+const SYM = 17; // Grösse der Achsensymbole
 
 const f = (x) => (Math.round(x * 100) / 100).toString();
 
@@ -45,33 +45,60 @@ function polyPoints(n, r, startDeg) {
   return pts.join(' ');
 }
 
-const lensPath = (s) => {
-  const h = s * 0.62;
+const lensPath = (s, ratio = 0.62) => {
+  const h = s * ratio;
   return `M ${f(-s)} 0 Q 0 ${f(-h * 2)} ${f(s)} 0 Q 0 ${f(h * 2)} ${f(-s)} 0 Z`;
 };
 
-/** SVG eines Achsensymbols (lokales Koordinatensystem, Referenzrichtung = +x lokal). */
-function axisSymbolSVG(symbol, centre, col) {
+/**
+ * SVG eines Achsensymbols nach ITA A, Kap. 1.4.5, im lokalen Koordinatensystem:
+ * Linse mit langer Achse entlang +x, Polygone mit einer Ecke auf +x.
+ * centre: Punkt für Inversionszentrum (nur bei Achse ⊥ Projektionsebene, 2/m, 4/m, 6/m).
+ * halo: weisser Unterleger, der Linien um das Symbol herum aussetzt (wie in ITA).
+ */
+function axisSymbolSVG(symbol, centre, col, halo = false) {
   const ink = col.axis, paper = col.paper;
-  const filled = `fill="${ink}" stroke="${ink}" stroke-width="0.8"`;
-  const open = `fill="${paper}" stroke="${ink}" stroke-width="1.6"`;
-  const dotC = (r) => `<circle r="${f(r)}" fill="${paper}" stroke="${ink}" stroke-width="1.2"/>`;
+  const filled = halo ? `fill="${paper}" stroke="${paper}" stroke-width="7" stroke-linejoin="round"` : `fill="${ink}" stroke="${ink}" stroke-width="0.8"`;
+  const open = halo ? filled : `fill="${paper}" stroke="${ink}" stroke-width="1.6"`;
+  const dotC = (r) => (halo ? '' : `<circle r="${f(r)}" fill="${paper}" stroke="${ink}" stroke-width="1.2"/>`);
   const s = SYM;
   switch (symbol) {
     case '2': return `<path d="${lensPath(s * 0.95)}" ${filled}/>` + (centre ? dotC(s * 0.27) : '');
     case '3': return `<polygon points="${polyPoints(3, s, 0)}" ${filled}/>`;
-    case '4': return `<polygon points="${polyPoints(4, s * 0.95, 45)}" ${filled}/>` + (centre ? dotC(s * 0.3) : '');
+    case '4': return `<polygon points="${polyPoints(4, s * 1.05, 0)}" ${filled}/>` + (centre ? dotC(s * 0.3) : '');
     case '6': return `<polygon points="${polyPoints(6, s, 0)}" ${filled}/>` + (centre ? dotC(s * 0.32) : '');
     case '-3': return `<polygon points="${polyPoints(3, s * 1.05, 0)}" ${filled}/>` + dotC(s * 0.27);
-    case '-4': return `<polygon points="${polyPoints(4, s * 0.95, 45)}" ${open}/><path d="${lensPath(s * 0.55)}" ${filled}/>`;
-    case '-6': return `<polygon points="${polyPoints(6, s * 1.08, 0)}" ${open}/><polygon points="${polyPoints(3, s * 0.62, 0)}" ${filled}/>`;
+    // offenes Quadrat (auf der Spitze), Linse verbindet zwei gegenüberliegende Ecken
+    case '-4': return `<polygon points="${polyPoints(4, s * 1.1, 0)}" ${open}/>` + (halo ? '' : `<path d="${lensPath(s * 0.88, 0.36)}" ${filled}/>`);
+    // offenes Sechseck mit einbeschriebenem gefülltem Dreieck (Ecken auf Sechseckecken)
+    case '-6': return `<polygon points="${polyPoints(6, s * 1.1, 0)}" ${open}/>` + (halo ? '' : `<polygon points="${polyPoints(3, s * 0.98, 0)}" ${filled}/>`);
     default: return '';
   }
 }
 
-/** Kleines eigenständiges SVG eines Achsensymbols (für Legenden). */
+/**
+ * Drehwinkel (SVG, Grad) eines Achsensymbols im Stereogramm nach ITA A, Kap. 10.1:
+ * Achse ⊥ Projektionsebene: Linse ∥ a (senkrecht), Quadrat auf der Spitze,
+ * Dreieck mit Spitze nach oben, Sechseck mit Ecken oben/unten.
+ * Liegende/geneigte Achsen: Linse tangential, Dreieck mit Spitze radial nach aussen,
+ * 4-zählige Symbole in fester Lage (Spitze oben, Linse von 4̄ senkrecht).
+ */
+function symbolAngle(symbol, q, alongZ) {
+  const radial = alongZ ? 0 : (Math.atan2(q.y - C, q.x - C) * 180) / Math.PI;
+  switch (symbol) {
+    case '2': return alongZ ? 90 : radial + 90;
+    case '4': case '-4': return 90;
+    case '3': case '-3': return alongZ ? -90 : radial;
+    case '6': return 90;
+    case '-6': return -90;
+    default: return 0;
+  }
+}
+
+/** Kleines eigenständiges SVG eines Achsensymbols (für Legenden), Lage wie Achse ⊥ Projektionsebene. */
 export function symbolIcon(symbol, centre, col, size = 26) {
-  return `<svg class="sym-icon" viewBox="-14 -14 28 28" width="${size}" height="${size}" aria-hidden="true"><g transform="rotate(90)">${axisSymbolSVG(symbol, centre, col)}</g></svg>`;
+  const a = symbolAngle(symbol, { x: C, y: C }, true);
+  return `<svg class="sym-icon" viewBox="-14 -14 28 28" width="${size}" height="${size}" aria-hidden="true"><g transform="rotate(${a})">${axisSymbolSVG(symbol, centre, col)}</g></svg>`;
 }
 
 /** Polylinie eines Grosskreises (obere Hälfte) mit Normale n. */
@@ -157,6 +184,20 @@ export function buildSVG(scene, { standalone = false } = {}) {
   out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="${col.paper}"/>`);
   if (scene.wulff?.on) out.push(wulffNet(scene.wulff.rot || 0, col));
 
+  // Dünne Linien (ITA): liegende Symmetrieachsen als Durchmesser, im kubischen System
+  // zusätzlich die Zonen {100} und {110}, soweit sie keine Spiegelebenen sind.
+  let thin = '';
+  for (const ax of scene.axes || []) {
+    if (Math.abs(ax.dir[2]) >= 1e-6) continue;
+    const a = project(ax.dir), b = project(scale(ax.dir, -1));
+    thin += `M ${f(a.x)},${f(a.y)} L ${f(b.x)},${f(b.y)} `;
+  }
+  for (const n of scene.zones || []) {
+    const p = greatCirclePath(n);
+    if (p) thin += p + ' ';
+  }
+  if (thin) out.push(`<path d="${thin}" fill="none" stroke="${col.ink}" stroke-width="1.1"/>`);
+
   // Spiegelebenen
   let mirr = '';
   for (const n of scene.mirrors || []) {
@@ -183,17 +224,19 @@ export function buildSVG(scene, { standalone = false } = {}) {
   }
 
   // Achsensymbole
-  const refZ = scene.refDirZ || [1, 0, 0];
+  const placed = [];
   for (const ax of scene.axes || []) {
-    const ends = Math.abs(ax.dir[2]) < 1e-6 ? [ax.dir, scale(ax.dir, -1)] : [ax.dir];
-    for (const d of ends) {
+    const inPlane = Math.abs(ax.dir[2]) < 1e-6;
+    const alongZ = Math.abs(ax.dir[2]) > 1 - 1e-6;
+    for (const d of inPlane ? [ax.dir, scale(ax.dir, -1)] : [ax.dir]) {
       const q = project(d);
-      let ang;
-      if (Math.abs(d[2]) > 1 - 1e-6) ang = screenAngle(refZ);
-      else ang = Math.atan2(q.y - C, q.x - C) * 180 / Math.PI;
-      out.push(`<g transform="translate(${f(q.x)},${f(q.y)}) rotate(${f(ang)})">${axisSymbolSVG(ax.symbol, ax.centre, col)}</g>`);
+      const ang = symbolAngle(ax.symbol, q, alongZ);
+      placed.push({ ax, q, ang, centre: ax.centre && alongZ });
     }
   }
+  const tr = (P) => `translate(${f(P.q.x)},${f(P.q.y)}) rotate(${f(P.ang)})`;
+  for (const P of placed) out.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, false, col, true)}</g>`);
+  for (const P of placed) out.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, col)}</g>`);
   if (scene.centreAtOrigin) out.push(`<circle cx="${C}" cy="${C}" r="${f(SYM * 0.38)}" fill="${col.paper}" stroke="${col.axis}" stroke-width="1.4"/>`);
 
   // Pole

@@ -152,13 +152,7 @@ function crystalAxesFor(hex) {
     : [{ name: 'a', dir: [1, 0, 0] }, { name: 'b', dir: [0, 1, 0] }, { name: 'c', dir: [0, 0, 1] }];
 }
 
-function refDirZ(info) {
-  const two = info.axes.find((a) => a.symbol === '2' && Math.abs(a.dir[2]) < 1e-6);
-  if (two) return two.dir;
-  const m = info.mirrors.find((n) => Math.abs(n[2]) < 1e-6);
-  if (m) return cross(m, [0, 0, 1]);
-  return [1, 0, 0];
-}
+const CUBIC_ZONES = [[1, 0, 0], [0, 1, 0], [1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]];
 
 function renderPG() {
   const col = palette();
@@ -173,7 +167,7 @@ function renderPG() {
     mirrors: state.pg.showElements ? info.mirrors : [],
     axes: state.pg.showElements ? info.axes : [],
     centreAtOrigin: state.pg.showElements && info.centro && !axisAlongZ,
-    refDirZ: refDirZ(info),
+    zones: state.pg.showElements && info.system === 'kubisch' ? CUBIC_ZONES : [],
     poles: state.pg.showObject ? orb.map((o, i) => ({ p: o.p, det: o.det, idx: i, gen: i === 0 })) : [],
     colorByDet: state.pg.colorful,
     showLower: true,

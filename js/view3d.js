@@ -369,9 +369,12 @@ export class View3D {
     const sg = new THREE.SphereGeometry(0.026, 14, 10);
     if (opts.showNormals) {
       const np = [];
+      // Normale entlang n vom Lotfusspunkt auf der Flächenebene (Abstand d vom Kugelmittelpunkt)
+      // bis zum Flächenpol: steht immer senkrecht auf der Fläche, auch bei verzerrten Polyedern.
       poly.faces.forEach((f) => {
-        const s = f.center;
-        np.push(s[0] * k, s[1] * k, s[2] * k, ...f.normal);
+        const n = f.normal;
+        const d = (n[0] * f.verts[0][0] + n[1] * f.verts[0][1] + n[2] * f.verts[0][2]) * k;
+        np.push(n[0] * d, n[1] * d, n[2] * d, ...n);
       });
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.Float32BufferAttribute(np, 3));

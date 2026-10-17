@@ -14,11 +14,16 @@ import { View3D } from './view3d.js';
 
 const $ = (id) => document.getElementById(id);
 const deg = Math.PI / 180;
+const coarse = window.matchMedia('(pointer: coarse)');
+/** viewBox-Einheiten pro CSS-Pixel des Stereogramms. */
+const svgUnit = () => { const w = $('stereo').getBoundingClientRect().width; return w > 0 ? 520 / w : 1; };
+/** Trefferradius in viewBox-Einheiten: mit Finger mindestens 22 px (44 px Durchmesser). */
+const touchRadius = (minUnits, px) => (coarse.matches ? Math.max(minUnits, px * svgUnit()) : minUnits);
 
 // ------------------------------------------------------------------ Zustand
 const state = {
   mode: 'pg',
-  pg: { id: '4/mmm', monoAxis: 'b', showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false },
+  pg: { id: 'mm2', monoAxis: 'b', showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false },
   poly: {
     system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
     size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: true, zoneMode: false,
@@ -26,6 +31,7 @@ const state = {
   view: { wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
   selected: null,
   zoneSel: [],
+  fig: 'stereo', // Telefon: sichtbare Tafel
 };
 try {
   const saved = JSON.parse(localStorage.getItem('stereo-state') || 'null');
@@ -33,10 +39,12 @@ try {
     Object.assign(state.pg, saved.pg); Object.assign(state.view, saved.view);
     if (saved.v === 3) Object.assign(state.poly, saved.poly);
     state.mode = saved.mode === 'poly' ? 'poly' : 'pg';
-    if (!POINT_GROUPS.some((g) => g.id === state.pg.id)) state.pg.id = '4/mmm';
+    if (!POINT_GROUPS.some((g) => g.id === state.pg.id)) state.pg.id = 'mm2';
   }
 } catch { /* Speicher nicht verfügbar */ }
+let resetting = false;
 const save = () => {
+  if (resetting) return;
   try { localStorage.setItem('stereo-state', JSON.stringify({ v: 3, mode: state.mode, pg: state.pg, poly: state.poly, view: state.view })); } catch { /* ignorieren */ }
 };
 
@@ -267,6 +275,7 @@ function renderPoly() {
       label: state.poly.labels ? hklParts(f.hkl, hex4) : null, selected: state.selected === i || state.zoneSel.includes(i), zone: inZone.has(i),
     })).filter(Boolean),
     showLower: state.poly.showLower,
+    hitR: touchRadius(13, 22),
     axisLabels: state.view.axes ? C.axes : [],
     zone: zone ? { axis: zone.axis, label: dirParts(zone.uvw, hex4) } : null,
   };
@@ -275,12 +284,22 @@ function renderPoly() {
   current = { kind: 'poly', C, scene };
   updateLegendPoly(C, col);
   updateInfoPoly(C, col);
+  $('ctl-poly-open').hidden = !C.auxForms.length;
   $('stereo-sub').textContent = 'Blick ∥ ' + C.preset.name.replace(' ∥ Blickrichtung', '').replace(/ \(.*\)/, '');
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
   const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
   view3d.showPolyhedron(C, col,
     { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zone },
     state.selected, labels3d);
+}
+
+/** Anzahl aktiver Optionen im eingeklappten Bereich „Erweitert“. */
+function advActive() {
+  return [state.poly.zoneMode, state.poly.broken, state.poly.bravais && isHexSystem(state.poly.system)].filter(Boolean).length;
+}
+function updateAdvBadge() {
+  const n = advActive();
+  $('adv-badge').textContent = n ? n + ' aktiv' : '';
 }
 
 let pending = false;
@@ -290,6 +309,7 @@ function render() {
   requestAnimationFrame(() => {
     pending = false;
     if (state.mode === 'pg') renderPG(); else renderPoly();
+    updateAdvBadge();
     save();
   });
 }
@@ -480,7 +500,7 @@ function nearGenerator(e) {
   if (!current || current.kind !== 'pg' || !state.pg.showObject) return false;
   const q = project(generalPole());
   const s = svgPoint(e.touches ? e.touches[0] : e);
-  return Math.hypot(s.x - q.x, s.y - q.y) < 30;
+  return Math.hypot(s.x - q.x, s.y - q.y) < touchRadius(30, 28);
 }
 let dragging = false, moved = false;
 svg.addEventListener('touchstart', (e) => { if (nearGenerator(e)) e.preventDefault(); }, { passive: false });
@@ -510,8 +530,14 @@ svg.addEventListener('click', (e) => {
     if (Math.hypot(s.x - C, s.y - C) <= 212) setPoleFromScreen(s.x, s.y);
     return;
   }
-  const hit = e.target.closest && e.target.closest('.hit');
-  pickFace(hit ? Number(hit.dataset.idx) : null);
+  // Bei grossen (Touch-)Trefferkreisen können sich Kreise überlappen: den nächstgelegenen Pol nehmen.
+  let best = null, bestD = Infinity;
+  for (const el of document.elementsFromPoint(e.clientX, e.clientY)) {
+    if (!el.classList || !el.classList.contains('hit')) continue;
+    const d = Math.hypot(s.x - Number(el.getAttribute('cx')), s.y - Number(el.getAttribute('cy')));
+    if (d < bestD) { bestD = d; best = el; }
+  }
+  pickFace(best ? Number(best.dataset.idx) : null);
 });
 
 /** Fläche antippen: normale Auswahl oder, im Zonenmodus, bis zu zwei Flächen für die Zone. */
@@ -559,11 +585,8 @@ function setMode(mode) {
   state.selected = null;
   $('tab-pg').setAttribute('aria-selected', String(mode === 'pg'));
   $('tab-poly').setAttribute('aria-selected', String(mode === 'poly'));
-  $('ctl-pg').hidden = mode !== 'pg';
-  $('ctl-pg-opts').hidden = mode !== 'pg';
-  $('ctl-poly').hidden = mode !== 'poly';
-  $('ctl-poly-opts').hidden = mode !== 'poly';
-  $('row-normals').hidden = mode !== 'poly';
+  for (const id of ['ctl-pg', 'ctl-pg-opts']) $(id).hidden = mode !== 'pg';
+  for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-open', 'sec-adv', 'row-normals', 'row-size']) $(id).hidden = mode !== 'poly';
   $('stereo-sub').textContent = 'Blick ∥ c';
   render();
 }
@@ -628,6 +651,34 @@ function init() {
   bindCheck('v-normals', state.view, 'normals');
   $('v-wulff').addEventListener('change', () => { $('row-wulffrot').hidden = !state.view.wulff; });
   $('row-wulffrot').hidden = !state.view.wulff;
+
+  // Telefon: Umschalter Stereogramm/3D
+  const setFig = (f) => {
+    state.fig = f === '3d' ? '3d' : 'stereo';
+    document.body.dataset.fig = state.fig;
+    for (const b of document.querySelectorAll('.figswitch button')) b.setAttribute('aria-pressed', String(b.dataset.fig === state.fig));
+  };
+  for (const b of document.querySelectorAll('.figswitch button')) b.addEventListener('click', () => setFig(b.dataset.fig));
+  setFig(state.fig);
+
+  // Auf dem Telefon „Darstellung“ zunächst eingeklappt; „Erweitert“ offen, falls dort etwas aktiv ist
+  if (window.matchMedia('(max-width: 719px)').matches) $('sec-view').open = false;
+  $('sec-adv').open = advActive() > 0;
+
+  $('reset-all').addEventListener('click', () => {
+    resetting = true;
+    try { localStorage.removeItem('stereo-state'); } catch { /* ignorieren */ }
+    location.reload();
+  });
+
+  // Trefferradien hängen von der dargestellten Grösse ab
+  let lastW = 0;
+  new ResizeObserver(() => {
+    const w = Math.round(svg.getBoundingClientRect().width);
+    // Verborgen (Telefon, 3D-Ansicht aktiv): Breite vergessen, damit beim Wiedereinblenden neu gezeichnet wird
+    if (!w) { lastW = 0; return; }
+    if (Math.abs(w - lastW) > 4) { lastW = w; render(); }
+  }).observe(svg);
 
   $('tab-pg').addEventListener('click', () => setMode('pg'));
   $('tab-poly').addEventListener('click', () => setMode('poly'));

@@ -244,7 +244,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   const drawn = [];
   for (const P of poles) {
     if (!P.q.upper && !scene.showLower) continue;
-    const cU = scene.colorByDet ? (P.det > 0 ? col.upper : col.accent2) : col.ink;
+    const cU = P.color || (scene.colorByDet ? (P.det > 0 ? col.upper : col.accent2) : col.ink);
     const op = P.faint ? ' opacity="0.45"' : '';
     if (P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="4.2" fill="${cU}"${op}/>`);
     else out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="6.2" fill="none" stroke="${cU}" stroke-width="1.6"${op}/>`);
@@ -275,7 +275,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
     if (dy < -0.35) by -= (cl.items.length - 1) * lh;
     else if (Math.abs(dy) <= 0.35) by -= ((cl.items.length - 1) * lh) / 2;
     cl.items.forEach((P, k) => {
-      const fill = P.q.upper ? col.ink : col.muted;
+      const fill = P.aux ? col.muted : P.q.upper ? col.ink : col.muted;
       const lab = P.q.upper ? P.label : P.label;
       out.push(textWithBars(lab, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="14.5" fill="${fill}" text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`));
     });

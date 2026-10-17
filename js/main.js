@@ -3,7 +3,10 @@
 import {
   POINT_GROUPS, SYSTEMS, buildPointGroup, orbit, elementSummary, HEX_A, HEX_B,
 } from './pointgroups.js';
-import { FORMS, buildPolyhedron, nfoldVariants, orientationPresets } from './polyhedra.js';
+import {
+  buildCrystal, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
+} from './polyhedra.js';
+import { CATALOG, formName, formEig, entryById } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
 import { hmHTML, hmText, hklParts, hklHTML, indices } from './format.js';
 import { cross, normalize } from './linalg.js';
@@ -16,21 +19,24 @@ const deg = Math.PI / 180;
 const state = {
   mode: 'pg',
   pg: { id: '4/mmm', monoAxis: 'b', showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false },
-  poly: { formId: 'oktaeder', n: 4, variant: 0, ba: 1, ca: 1, height: 1.5, size: 0.75, presetId: '001', labels: true, showLower: true, bravais: false },
+  poly: {
+    system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
+    size: 0.75, labels: true, showLower: true, bravais: false, frame: false,
+  },
   view: { wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
   selected: null,
 };
 try {
   const saved = JSON.parse(localStorage.getItem('stereo-state') || 'null');
-  if (saved && saved.v === 2) {
-    Object.assign(state.pg, saved.pg); Object.assign(state.poly, saved.poly); Object.assign(state.view, saved.view);
+  if (saved && (saved.v === 2 || saved.v === 3)) {
+    Object.assign(state.pg, saved.pg); Object.assign(state.view, saved.view);
+    if (saved.v === 3) Object.assign(state.poly, saved.poly);
     state.mode = saved.mode === 'poly' ? 'poly' : 'pg';
     if (!POINT_GROUPS.some((g) => g.id === state.pg.id)) state.pg.id = '4/mmm';
-    if (!FORMS.some((f) => f.id === state.poly.formId)) state.poly.formId = 'oktaeder';
   }
 } catch { /* Speicher nicht verfügbar */ }
 const save = () => {
-  try { localStorage.setItem('stereo-state', JSON.stringify({ v: 2, mode: state.mode, pg: state.pg, poly: state.poly, view: state.view })); } catch { /* ignorieren */ }
+  try { localStorage.setItem('stereo-state', JSON.stringify({ v: 3, mode: state.mode, pg: state.pg, poly: state.poly, view: state.view })); } catch { /* ignorieren */ }
 };
 
 // ------------------------------------------------------------------ Farben aus CSS-Tokens
@@ -104,33 +110,60 @@ function syncPicker() {
   }
 }
 
+const SYSTEM_NAMES = { triklin: 'Triklin', monoklin: 'Monoklin', orthorhombisch: 'Orthorhombisch', tetragonal: 'Tetragonal', trigonal: 'Trigonal', hexagonal: 'Hexagonal', kubisch: 'Kubisch' };
+const DEFAULT_ENTRY = {
+  triklin: '-1:a2', monoklin: '2/mb:c6', orthorhombisch: 'mmm:g7', tetragonal: '4/mmm:f14',
+  trigonal: '-3m1:c21', hexagonal: '6/mmm:e31', kubisch: 'm-3m:b35',
+};
+const sysOK = (sys) => Object.prototype.hasOwnProperty.call(SYSTEM_NAMES, sys);
+if (!sysOK(state.poly.system)) state.poly.system = 'kubisch';
+const currentEntryId = () => {
+  const id = state.poly.entryBySys[state.poly.system];
+  return id && entryById(id) && SYSTEM_OF[entryById(id).pg] === state.poly.system ? id : DEFAULT_ENTRY[state.poly.system];
+};
+const currentLat = () => {
+  const sys = state.poly.system;
+  if (!state.poly.lats[sys]) state.poly.lats[sys] = { ...LATTICE_DEFAULTS[sys] };
+  return state.poly.lats[sys];
+};
+
+function buildSystemSelect() {
+  $('sys-select').innerHTML = Object.entries(SYSTEM_NAMES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+  $('sys-select').value = state.poly.system;
+}
+
 function buildFormSelect() {
-  const sel = $('form-select');
-  sel.innerHTML = FORMS.map((f) => `<option value="${f.id}">${f.name}</option>`).join('');
-  sel.value = state.poly.formId;
+  const sys = state.poly.system;
+  const hex4 = isHexSystem(sys) && state.poly.bravais;
+  const groups = POINT_GROUPS.filter((g) => g.system === sys && CATALOG.some((e) => e.pg === g.id));
+  $('form-select').innerHTML = groups.map((g) => {
+    const opts = CATALOG.filter((e) => e.pg === g.id)
+      .map((e) => `<option value="${e.id}">${formName(e)} ${formLabelText(e.hkl, hex4)}</option>`).join('');
+    return `<optgroup label="Punktgruppe ${hmText(g.hm)} (${g.sf})">${opts}</optgroup>`;
+  }).join('');
+  $('form-select').value = currentEntryId();
 }
 
 function refreshPolyControls() {
-  const form = FORMS.find((f) => f.id === state.poly.formId);
-  const nfold = form.kind === 'nfold';
-  $('row-n').hidden = !nfold;
-  $('row-variant').hidden = !nfold;
-  $('row-ba').hidden = form.kind !== 'cubic';
-  $('row-height').hidden = !(nfold && form.type === 'prisma');
-  $('row-ca').hidden = nfold && form.type === 'prisma';
-  $('lbl-ca').textContent = form.kind === 'cubic' ? 'c/a' : 'c/a';
-  for (const b of document.querySelectorAll('#seg-n button')) b.setAttribute('aria-pressed', String(Number(b.dataset.n) === state.poly.n));
-  if (nfold) {
-    const hex = state.poly.n !== 4;
-    const vs = nfoldVariants(form.type, state.poly.n);
-    $('variant-select').innerHTML = vs.map((s, i) => `<option value="${i}">${formLabelText(s, hex && state.poly.bravais)}</option>`).join('');
-    if (state.poly.variant >= vs.length) state.poly.variant = 0;
-    $('variant-select').value = String(state.poly.variant);
-  }
-  const presets = orientationPresets(form);
+  const sys = state.poly.system;
+  buildFormSelect();
+  const presets = orientationPresets(sys);
   $('preset-select').innerHTML = presets.map((p) => `<option value="${p.id}">${p.name}</option>`).join('');
   if (!presets.some((p) => p.id === state.poly.presetId)) state.poly.presetId = presets[0].id;
   $('preset-select').value = state.poly.presetId;
+  const free = new Set(state.poly.broken ? ['ba', 'ca', 'al', 'be', 'ga'] : FREE_PARAMS[sys]);
+  for (const k of ['ba', 'ca', 'al', 'be', 'ga']) $('row-lat-' + k).hidden = !free.has(k);
+  $('lat-fixed').hidden = free.size > 0;
+  $('row-bravais').hidden = !isHexSystem(sys);
+  syncLatSliders();
+}
+
+function syncLatSliders() {
+  const lat = state.poly.broken ? currentLat() : constrainLattice(currentLat(), state.poly.system);
+  for (const k of ['ba', 'ca', 'al', 'be', 'ga']) {
+    $('lat-' + k).value = lat[k];
+    $('lat-' + k + '-out').textContent = k.length === 2 && k !== 'ba' && k !== 'ca' ? lat[k].toFixed(0) + '°' : lat[k].toFixed(2);
+  }
 }
 
 function formLabelText(hkl, hex) {
@@ -187,32 +220,47 @@ function renderPG() {
   );
 }
 
+const ORBIT_COLORS = (col) => [col.accent, col.accent2, col.ax2, col.ax4, col.ax3, col.ax6];
+
 function renderPoly() {
   const col = palette();
-  const P = buildPolyhedron({
-    formId: state.poly.formId, n: state.poly.n, variant: state.poly.variant,
-    ratios: { ba: state.poly.ba, ca: state.poly.ca }, height: state.poly.height, presetId: state.poly.presetId,
+  const C = buildCrystal({
+    entryId: currentEntryId(), lat: currentLat(), broken: state.poly.broken,
+    auxDist: state.poly.auxDist, presetId: state.poly.presetId,
   });
-  if (state.selected != null && state.selected >= P.faces.length) state.selected = null;
-  const labels = P.faces.map((f) => (state.poly.labels ? hklParts(f.hkl, P.hex && state.poly.bravais) : null));
+  const hex4 = C.hex && state.poly.bravais;
+  const oc = ORBIT_COLORS(col);
+  const multi = C.isReduced && C.orbitsMain.length > 1;
+  C.faces.forEach((f) => {
+    f.hidden = state.poly.open && f.role === 'aux';
+    f.color2d = f.role === 'aux' ? col.muted : multi ? oc[f.orbit % oc.length] : null;
+    f.color3d = f.role === 'aux' ? col.crystal2 : multi ? oc[f.orbit % oc.length] : col.crystal;
+  });
+  if (state.selected != null && (!C.faces[state.selected] || C.faces[state.selected].hidden)) state.selected = null;
+  const fw = state.poly.frame ? C.framework : null;
   const scene = {
-    col, fontFamily: FONT,
+    col: { ...col, mirror: col.ink }, fontFamily: FONT,
     wulff: { on: state.view.wulff, rot: state.view.wulffRot },
-    primitiveBold: false, mirrors: [], axes: [],
-    poles: P.faces.map((f, i) => ({ p: f.normal, det: 1, idx: i, label: labels[i], selected: state.selected === i })),
+    primitiveBold: !!fw && fw.mirrors.some((n) => Math.abs(n[2]) > 1 - 1e-6),
+    mirrors: fw ? fw.mirrors : [], axes: fw ? fw.axes : [],
+    zones: fw && C.sys === 'kubisch' && !C.isReduced ? C.zones : [],
+    centreAtOrigin: !!fw && fw.centro && !fw.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6),
+    poles: C.faces.map((f, i) => (f.hidden ? null : {
+      p: f.normal, det: 1, idx: i, color: f.color2d, aux: f.role === 'aux',
+      label: state.poly.labels ? hklParts(f.hkl, hex4) : null, selected: state.selected === i,
+    })).filter(Boolean),
     showLower: state.poly.showLower,
-    axisLabels: state.view.axes ? P.axes : [],
+    axisLabels: state.view.axes ? C.axes : [],
   };
   const out = buildSVG(scene);
   svg.innerHTML = out.inner;
-  current = { kind: 'poly', P, scene };
-  updateLegendPoly();
-  updateInfoPoly(P);
-  $('row-bravais').hidden = !P.hex;
-  $('stereo-sub').textContent = 'Blick ∥ ' + P.preset.name.replace(' ∥ Blickrichtung', '').replace(/ \(.*\)/, '');
+  current = { kind: 'poly', C, scene };
+  updateLegendPoly(C, col);
+  updateInfoPoly(C, col);
+  $('stereo-sub').textContent = 'Blick ∥ ' + C.preset.name.replace(' ∥ Blickrichtung', '').replace(/ \(.*\)/, '');
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
-  const labels3d = state.poly.labels ? P.faces.map((f) => hklHTML(f.hkl, P.hex && state.poly.bravais)) : null;
-  view3d.showPolyhedron(P, col,
+  const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
+  view3d.showPolyhedron(C, col,
     { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55 },
     state.selected, labels3d);
 }
@@ -243,13 +291,14 @@ function updateLegendPG(info, col) {
   }
   $('legend').innerHTML = items.join('');
 }
-function updateLegendPoly() {
-  const col = palette();
-  $('legend').innerHTML = [
+function updateLegendPoly(C, col) {
+  const items = [
     `<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="4" fill="${col.ink}"/></svg>Flächenpol oben</span>`,
     `<span class="lg"><svg width="16" height="16" viewBox="-8 -8 16 16"><circle r="6" fill="none" stroke="${col.ink}" stroke-width="1.6"/></svg>Flächenpol unten</span>`,
-    '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben</span>',
-  ].join('');
+  ];
+  if (C.auxForms.length && !state.poly.open) items.push(`<span class="lg"><i class="sw" style="background:${col.muted}"></i>Ergänzungsform</span>`);
+  items.push('<span class="lg hint">Pol oder Fläche antippen zum Hervorheben</span>');
+  $('legend').innerHTML = items.join('');
 }
 
 const yesno = (b) => (b ? 'ja' : 'nein');
@@ -287,36 +336,83 @@ function poleAngles(n) {
   return { rho, phi };
 }
 
-function updateInfoPoly(P) {
-  const form = P.form;
-  const fs = P.faces.filter((f) => f.form === 'main');
-  const extra = P.faces.filter((f) => f.form !== 'main');
-  let sel = '';
-  if (state.selected != null && P.faces[state.selected]) {
-    const f = P.faces[state.selected];
-    const { rho, phi } = poleAngles(f.normal);
-    sel = `<div class="selbox"><div class="sel-hkl">${hklHTML(f.hkl, P.hex && state.poly.bravais)}</div>
-      <dl class="facts"><div><dt>ρ (Abstand vom Zentrum)</dt><dd class="num">${rho.toFixed(1)}°</dd></div>
-      <div><dt>φ (Azimut ab a↓)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
+function latticeText(lat, sys, broken) {
+  const f2 = (x) => x.toFixed(2).replace('.', ',');
+  const ang = (x) => `${x.toFixed(0)}°`;
+  if (broken) return `a : b : c = 1 : ${f2(lat.ba)} : ${f2(lat.ca)}, α = ${ang(lat.al)}, β = ${ang(lat.be)}, γ = ${ang(lat.ga)}`;
+  switch (sys) {
+    case 'kubisch': return 'a = b = c, α = β = γ = 90°';
+    case 'tetragonal': return `a = b, c/a = ${f2(lat.ca)}`;
+    case 'trigonal': case 'hexagonal': return `hexagonale Achsen, c/a = ${f2(lat.ca)}`;
+    case 'orthorhombisch': return `a : b : c = 1 : ${f2(lat.ba)} : ${f2(lat.ca)}`;
+    case 'monoklin': return `a : b : c = 1 : ${f2(lat.ba)} : ${f2(lat.ca)}, β = ${ang(lat.be)}`;
+    default: return `a : b : c = 1 : ${f2(lat.ba)} : ${f2(lat.ca)}, α = ${ang(lat.al)}, β = ${ang(lat.be)}, γ = ${ang(lat.ga)}`;
   }
-  const latText = P.hex
-    ? `hexagonale Achsen, c/a = ${P.lat.c.toFixed(3)}`
-    : form.kind === 'cubic'
-      ? `a : b : c = 1 : ${P.lat.b.toFixed(2)} : ${P.lat.c.toFixed(2)}`
-      : `tetragonal, c/a = ${P.lat.c.toFixed(3)}`;
+}
+
+function updateInfoPoly(C, col) {
+  const e = C.entry;
+  const g = POINT_GROUPS.find((x) => x.id === C.groupId);
+  const hex4 = C.hex && state.poly.bravais;
+  const brace = (h) => hklHTML(h, hex4, ['{', '}']);
+  let sel = '';
+  if (state.selected != null && C.faces[state.selected]) {
+    const f = C.faces[state.selected];
+    const { rho, phi } = poleAngles(f.normal);
+    sel = `<div class="selbox"><div class="sel-hkl">${hklHTML(f.hkl, hex4)}${f.role === 'aux' ? ' <small>Ergänzungsform</small>' : ''}</div>
+      <dl class="facts"><div><dt>ρ (Abstand vom Zentrum)</dt><dd class="num">${rho.toFixed(1)}°</dd></div>
+      <div><dt>φ (Azimut ab x↓)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
+  }
+  const auxList = C.auxReps.map((a) => {
+    const n = auxFormName(C.groupId, a.hkls);
+    return `<li>${brace(a.rep)} ${n ? n.name : 'Form'}, ${a.hkls.length} Fläche${a.hkls.length > 1 ? 'n' : ''}</li>`;
+  }).join('');
+  let aux = '';
+  if (C.auxReps.length) {
+    aux = state.poly.open
+      ? `<h3>Offene Form</h3><p class="note">Die Form schliesst keinen Raum ein. Zur Darstellung wird sie von Ergänzungsformen abgeschnitten, die hier ausgeblendet sind:</p><ul class="auxlist">${auxList}</ul>`
+      : `<h3>Ergänzungsformen</h3><p class="note">Die Form ist offen. Sie wird durch Formen derselben Punktgruppe geschlossen (grau):</p><ul class="auxlist">${auxList}</ul>`;
+  }
+  let broken = '';
+  if (state.poly.broken) {
+    if (C.isReduced) {
+      const oc = ORBIT_COLORS(col);
+      const ax = C.reducedAxis ? ` (${hmHTML(C.reducedAxis.symbol)} ∥ [${C.reducedAxis.uvw.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join('')}])` : '';
+      const parts = C.orbitsMain.map((o, i) => `<li><i class="sw" style="background:${C.orbitsMain.length > 1 ? oc[i % oc.length] : col.crystal}"></i>${brace(o.rep)}, ${o.hkls.length} Fläche${o.hkls.length > 1 ? 'n' : ''}</li>`).join('');
+      broken = `<div class="warnbox"><strong>Symmetrie erniedrigt: ${hmHTML(g.hm)} → ${hmHTML(C.reduced.hm)}</strong>${ax}
+        <p>${C.orbitsMain.length > 1 ? `Die Form ${brace(e.hkl)} zerfällt in ${C.orbitsMain.length} Formen:` : `Die Form ${brace(e.hkl)} bleibt eine Form der Restsymmetrie:`}</p><ul class="auxlist">${parts}</ul></div>`;
+    } else {
+      broken = `<div class="okbox">Die Verzerrung erhält die Punktgruppe ${hmHTML(g.hm)}.</div>`;
+    }
+  }
+  const sysName = SYSTEM_NAMES[C.sys];
   $('info').innerHTML = `
     <div class="info-head">
-      <div class="hm-big form-sym">${hklHTML(P.formSymbol, P.hex && state.poly.bravais, ['{', '}'])}</div>
-      <div class="hm-meta"><span>${form.name}${form.kind === 'nfold' ? ', ' + state.poly.n + '-zählig' : ''}</span><span>${latText}</span></div>
+      <div class="hm-big form-sym">${brace(e.hkl)}</div>
+      <div class="hm-meta"><span class="form-name">${formName(e)}</span><span>Punktgruppe <b>${hmHTML(g.hm)}</b> (${g.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}</span></div>
     </div>
+    ${broken}
     <dl class="facts">
-      <div><dt>Flächen</dt><dd class="num">${P.faces.length}</dd></div>
-      <div><dt>davon Hauptform</dt><dd class="num">${fs.length}</dd></div>
-      ${extra.length ? `<div><dt>${extra[0].form === 'pedion' ? 'Pedion' : 'Pinakoid'}</dt><dd>${extra.map((f) => hklHTML(f.hkl, P.hex && state.poly.bravais)).join(' ')}</dd></div>` : ''}
-      <div><dt>Lage</dt><dd>${P.preset.name}</dd></div>
+      <div><dt>Flächen der Form</dt><dd class="num">${C.mainHKL.length}</dd></div>
+      <div><dt>Indexmuster (ITA)</dt><dd>{${symText(e.sym, hex4)}}</dd></div>
+      <div><dt>Wyckoff-Lage, Flächensymmetrie</dt><dd>${e.wy}, ${hmHTML(e.fs)}</dd></div>
+      <div><dt>Eigensymmetrie der Form${state.poly.broken && C.isReduced ? ' (unverzerrt)' : ''}</dt><dd>${hmHTML(formEig(e))}</dd></div>
+      <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken)}</dd></div>
+      <div><dt>Lage</dt><dd>${C.preset.name}</dd></div>
     </dl>
     ${sel}
-    <p class="note">Grösse und Seitenverhältnisse ändern das Polyeder. Die Lage der Pole hängt nur von den Flächennormalen ab, also von den Seitenverhältnissen, nicht von der Grösse.</p>`;
+    ${aux}
+    <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern das Polyeder, aber nicht das Stereogramm.</p>`;
+}
+
+/** ITA-Indexmuster als HTML (z. B. h0-hl → h0h̄l); bei drei Indizes ohne i. */
+const SYM3 = { hkil: 'hkl', hki0: 'hk0', 'h0-hl': 'h0l', 'hh-2hl': 'hhl', '0001': '001', '10-10': '100', '11-20': '110' };
+function symText(sym, hex4) {
+  const m = sym.match(/^(\S+)(?: \((.*)\))?$/);
+  let t = m[1];
+  if (!hex4 && SYM3[t]) t = SYM3[t];
+  const html = t.replace(/-(2h|\d|[hkil])/g, '<span class="ov">$1</span>');
+  return html + (m[2] ? ` (${m[2].replace('<', '&lt;').replace('>', '&gt;')})` : '');
 }
 
 // ------------------------------------------------------------------ Interaktion Stereogramm
@@ -410,6 +506,7 @@ function setMode(mode) {
   $('ctl-pg').hidden = mode !== 'pg';
   $('ctl-pg-opts').hidden = mode !== 'pg';
   $('ctl-poly').hidden = mode !== 'poly';
+  $('ctl-poly-opts').hidden = mode !== 'poly';
   $('row-normals').hidden = mode !== 'poly';
   $('stereo-sub').textContent = 'Blick ∥ c';
   render();
@@ -417,7 +514,6 @@ function setMode(mode) {
 
 function init() {
   buildGroupPicker();
-  buildFormSelect();
   refreshPolyControls();
 
   bindCheck('pg-elements', state.pg, 'showElements');
@@ -426,28 +522,43 @@ function init() {
   bindRange('pg-theta', state.pg, 'theta', (v) => v.toFixed(0) + '°');
   bindRange('pg-phi', state.pg, 'phi', (v) => v.toFixed(1) + '°');
 
-  $('form-select').addEventListener('change', (e) => {
-    state.poly.formId = e.target.value; state.selected = null;
-    const f = FORMS.find((x) => x.id === state.poly.formId);
-    refreshPolyControls(); syncSliders(); render();
+  buildSystemSelect();
+  $('sys-select').addEventListener('change', (e) => {
+    state.poly.system = e.target.value; state.selected = null;
+    refreshPolyControls(); render();
   });
-  for (const b of document.querySelectorAll('#seg-n button')) {
-    b.addEventListener('click', () => { state.poly.n = Number(b.dataset.n); state.selected = null; refreshPolyControls(); render(); });
-  }
-  $('variant-select').addEventListener('change', (e) => { state.poly.variant = Number(e.target.value); state.selected = null; render(); });
+  $('form-select').addEventListener('change', (e) => {
+    state.poly.entryBySys[state.poly.system] = e.target.value; state.selected = null; render();
+  });
   $('preset-select').addEventListener('change', (e) => { state.poly.presetId = e.target.value; render(); });
-  bindRange('poly-ba', state.poly, 'ba', (v) => v.toFixed(2));
-  bindRange('poly-ca', state.poly, 'ca', (v) => v.toFixed(2));
-  bindRange('poly-height', state.poly, 'height', (v) => v.toFixed(2));
+  for (const k of ['ba', 'ca', 'al', 'be', 'ga']) {
+    $('lat-' + k).addEventListener('input', (ev) => {
+      const lat = currentLat();
+      if (!state.poly.broken) Object.assign(lat, constrainLattice(lat, state.poly.system));
+      lat[k] = Number(ev.target.value);
+      syncLatSliders(); render();
+    });
+  }
+  $('poly-broken').checked = state.poly.broken;
+  $('poly-broken').addEventListener('change', (ev) => {
+    state.poly.broken = ev.target.checked;
+    const sys = state.poly.system;
+    state.poly.lats[sys] = constrainLattice(currentLat(), sys);
+    refreshPolyControls(); render();
+  });
+  $('poly-reset').addEventListener('click', () => {
+    state.poly.lats[state.poly.system] = { ...LATTICE_DEFAULTS[state.poly.system] };
+    state.poly.auxDist = 1; state.poly.size = 0.75;
+    syncLatSliders(); syncSliders(); render();
+  });
+  bindCheck('poly-open', state.poly, 'open');
+  bindRange('poly-aux', state.poly, 'auxDist', (v) => v.toFixed(2));
   bindRange('poly-size', state.poly, 'size', (v) => v.toFixed(2));
   bindCheck('poly-labels', state.poly, 'labels');
   bindCheck('poly-bravais', state.poly, 'bravais');
-  $('poly-bravais').addEventListener('change', () => refreshPolyControls());
+  $('poly-bravais').addEventListener('change', () => buildFormSelect());
   bindCheck('poly-lower', state.poly, 'showLower');
-  $('poly-reset').addEventListener('click', () => {
-    Object.assign(state.poly, { ba: 1, ca: 1, height: 1.5, size: 0.75 });
-    syncSliders(); render();
-  });
+  bindCheck('poly-frame', state.poly, 'frame');
 
   bindCheck('v-wulff', state.view, 'wulff');
   bindRange('v-wulffrot', state.view, 'wulffRot', (v) => v.toFixed(0) + '°');
@@ -478,7 +589,7 @@ function init() {
     const blob = new Blob([svgString()], { type: 'image/svg+xml' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    const name = state.mode === 'pg' ? 'stereogramm-' + state.pg.id.replace(/\//g, '_') : 'stereogramm-' + state.poly.formId;
+    const name = state.mode === 'pg' ? 'stereogramm-' + state.pg.id.replace(/\//g, '_') : 'stereogramm-' + currentEntryId().replace(/[/:]/g, '_');
     a.download = name + '.svg';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);

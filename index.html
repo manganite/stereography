@@ -194,6 +194,17 @@ select {
 .note { color: var(--muted); font-size: 0.85rem; margin: 14px 0 0; max-width: 70ch; }
 .selbox { margin-top: 14px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: 8px; }
 .sel-hkl { font-size: 1.4rem; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+.warnbox { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--accent2); border-radius: 8px; background: color-mix(in srgb, var(--accent2) 8%, var(--surface)); }
+.warnbox strong { color: var(--accent2); }
+.warnbox p { margin: 6px 0 4px; font-size: 0.88rem; }
+.okbox { margin: 0 0 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 0.88rem; color: var(--muted); }
+.auxlist { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.9rem; }
+.auxlist li { display: inline-block; }
+.auxlist .sw, .warnbox .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.form-name { font-weight: 600; color: var(--ink); font-size: 1.02rem; }
+.lbl-hkl.aux { color: var(--muted); }
+#form-select { font-size: 0.92rem; }
+.sel-hkl small { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size: 0.78rem; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -218,45 +229,23 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
     </section>
 
     <section id="ctl-poly" class="stack" hidden>
-      <h2>Polyeder</h2>
+      <h2>Kristallform</h2>
       <div class="field">
-        <label for="form-select">Form</label>
+        <label for="sys-select">Kristallsystem</label>
+        <select id="sys-select"></select>
+      </div>
+      <div class="field">
+        <label for="form-select">Form (nach Punktgruppe)</label>
         <select id="form-select"></select>
-      </div>
-      <div class="field" id="row-n">
-        <span class="lbl">Zähligkeit</span>
-        <div class="seg" id="seg-n" role="group" aria-label="Zähligkeit">
-          <button data-n="3">3</button><button data-n="4">4</button><button data-n="6">6</button>
-        </div>
-      </div>
-      <div class="field" id="row-variant">
-        <label for="variant-select">Form-Indizes</label>
-        <select id="variant-select"></select>
       </div>
       <div class="field">
         <label for="preset-select">Lage</label>
         <select id="preset-select"></select>
       </div>
-      <div class="range" id="row-ba">
-        <label for="poly-ba">b/a</label><output id="poly-ba-out"></output>
-        <input type="range" id="poly-ba" min="0.4" max="2.5" step="0.01">
-      </div>
-      <div class="range" id="row-ca">
-        <label for="poly-ca" id="lbl-ca">c/a</label><output id="poly-ca-out"></output>
-        <input type="range" id="poly-ca" min="0.25" max="3" step="0.01">
-      </div>
-      <div class="range" id="row-height">
-        <label for="poly-height">Höhe / a</label><output id="poly-height-out"></output>
-        <input type="range" id="poly-height" min="0.3" max="4" step="0.05">
-      </div>
-      <div class="range">
-        <label for="poly-size">Grösse</label><output id="poly-size-out"></output>
-        <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01">
-      </div>
-      <button class="linkbtn" id="poly-reset" type="button">Seitenverhältnisse zurücksetzen</button>
       <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
       <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
       <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
+      <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
     </section>
   </div>
 
@@ -294,6 +283,28 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
         <input type="range" id="pg-phi" min="0" max="359.5" step="0.5">
       </div>
       <p class="hintline">Den markierten Pol im Stereogramm ziehen oder an eine Stelle tippen.</p>
+    </section>
+    <section id="ctl-poly-opts" class="stack" hidden>
+      <h2>Gitter und Verzerrung</h2>
+      <p class="hintline" id="lat-fixed">Kubisch: Das Gitter hat keine freien Parameter.</p>
+      <div class="range" id="row-lat-ba"><label for="lat-ba">b/a</label><output id="lat-ba-out"></output>
+        <input type="range" id="lat-ba" min="0.4" max="2.5" step="0.01"></div>
+      <div class="range" id="row-lat-ca"><label for="lat-ca">c/a</label><output id="lat-ca-out"></output>
+        <input type="range" id="lat-ca" min="0.25" max="3" step="0.01"></div>
+      <div class="range" id="row-lat-al"><label for="lat-al">α</label><output id="lat-al-out"></output>
+        <input type="range" id="lat-al" min="60" max="150" step="1"></div>
+      <div class="range" id="row-lat-be"><label for="lat-be">β</label><output id="lat-be-out"></output>
+        <input type="range" id="lat-be" min="60" max="150" step="1"></div>
+      <div class="range" id="row-lat-ga"><label for="lat-ga">γ</label><output id="lat-ga-out"></output>
+        <input type="range" id="lat-ga" min="60" max="150" step="1"></div>
+      <label class="check"><input type="checkbox" id="poly-broken">Symmetrie brechen (freie Verzerrung)</label>
+      <h2>Offene Formen</h2>
+      <label class="check"><input type="checkbox" id="poly-open">Offene Form zeigen (Ergänzungsformen ausblenden)</label>
+      <div class="range"><label for="poly-aux">Abstand der Ergänzungsformen</label><output id="poly-aux-out"></output>
+        <input type="range" id="poly-aux" min="0.3" max="3" step="0.05"></div>
+      <div class="range"><label for="poly-size">Grösse</label><output id="poly-size-out"></output>
+        <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>
+      <button class="linkbtn" id="poly-reset" type="button">Gitter und Abstände zurücksetzen</button>
     </section>
     <h2>Darstellung</h2>
     <label class="check"><input type="checkbox" id="v-wulff">Wulffsches Netz</label>

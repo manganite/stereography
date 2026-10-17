@@ -329,14 +329,15 @@ export class View3D {
     this.requestRender();
   }
 
-  /** Polyeder-Szene. */
+  /** Polyeder-Szene. Flächen mit hidden (offene Form) werden nicht gezeichnet. */
   showPolyhedron(poly, col, opts, selected, labels) {
     this._buildBase(col, opts);
     this._dispose(this.content);
     this.pickables = [];
     const c = (x) => new THREE.Color(x);
     const k = opts.size;
-    poly.faces.forEach((f, i) => {
+    const vis = poly.faces.map((f, i) => ({ f, i })).filter(({ f }) => !f.hidden);
+    vis.forEach(({ f, i }) => {
       const pos = [];
       for (let j = 1; j < f.verts.length - 1; j++) {
         for (const v of [f.verts[0], f.verts[j], f.verts[j + 1]]) pos.push(v[0] * k, v[1] * k, v[2] * k);
@@ -346,7 +347,7 @@ export class View3D {
       g.computeVertexNormals();
       const isSel = selected === i;
       const mat = new THREE.MeshStandardMaterial({
-        color: c(isSel ? col.accent : f.form === 'main' ? col.crystal : col.crystal2),
+        color: c(isSel ? col.accent : f.color3d || col.crystal),
         roughness: 0.45, metalness: 0.0, side: THREE.DoubleSide,
         polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
       });
@@ -355,7 +356,6 @@ export class View3D {
       m.renderOrder = 2;
       this.content.add(m);
       this.pickables.push(m);
-      // Kanten
       const ep = [];
       for (let j = 0; j < f.verts.length; j++) {
         const a = f.verts[j], b = f.verts[(j + 1) % f.verts.length];
@@ -365,13 +365,11 @@ export class View3D {
       eg.setAttribute('position', new THREE.Float32BufferAttribute(ep, 3));
       this.content.add(new THREE.LineSegments(eg, new THREE.LineBasicMaterial({ color: c(col.edge) })));
     });
-    // Flächennormalen und Pole auf der Kugel
     const sg = new THREE.SphereGeometry(0.026, 14, 10);
     if (opts.showNormals) {
+      // Normale entlang n vom Lotfusspunkt auf der Flächenebene bis zum Flächenpol
       const np = [];
-      // Normale entlang n vom Lotfusspunkt auf der Flächenebene (Abstand d vom Kugelmittelpunkt)
-      // bis zum Flächenpol: steht immer senkrecht auf der Fläche, auch bei verzerrten Polyedern.
-      poly.faces.forEach((f) => {
+      vis.forEach(({ f }) => {
         const n = f.normal;
         const d = (n[0] * f.verts[0][0] + n[1] * f.verts[0][1] + n[2] * f.verts[0][2]) * k;
         np.push(n[0] * d, n[1] * d, n[2] * d, ...n);
@@ -380,23 +378,23 @@ export class View3D {
       g.setAttribute('position', new THREE.Float32BufferAttribute(np, 3));
       this.content.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: c(col.normal) })));
     }
-    poly.faces.forEach((f, i) => {
+    vis.forEach(({ f, i }) => {
       const isSel = selected === i;
-      const m = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: c(isSel ? col.accent : col.normal) }));
+      const m = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: c(isSel ? col.accent : f.role === 'aux' ? col.muted : f.color2d || col.normal) }));
       m.position.copy(V(f.normal));
       m.userData.idx = i;
       this.content.add(m);
       this.pickables.push(m);
       if (labels && labels[i]) {
         const el = document.createElement('div');
-        el.className = 'lbl3d lbl-hkl' + (isSel ? ' sel' : '');
+        el.className = 'lbl3d lbl-hkl' + (isSel ? ' sel' : '') + (f.role === 'aux' ? ' aux' : '');
         el.innerHTML = labels[i];
         const lab = new THREE.CSS2DObject(el);
         lab.position.copy(V(f.normal).multiplyScalar(1.13));
         this.content.add(lab);
       }
     });
-    if (opts.showRays) this._rays(poly.faces.map((f) => f.normal), col);
+    if (opts.showRays) this._rays(vis.map(({ f }) => f.normal), col);
     if (opts.showAxes) this._axisArrows(poly.axes, col);
     this.requestRender();
   }

@@ -1,108 +1,115 @@
-// Einfache Kristallpolyeder als Schnitt von Halbräumen G·r ≤ t.
-// G = h a* + k b* + l c* (reziproker Gittervektor) ist die Flächennormale.
+// Kristallformen als Polyeder: Gitter, Bahnen von Flächen unter der Punktgruppe,
+// Schliessen offener Formen durch Ergänzungsformen derselben Punktgruppe,
+// Restsymmetrie bei freier Verzerrung.
+//
+// Konventionen: Gittermatrix A (Spalten a, b, c) im kartesischen System, c ∥ z, b in der yz-Ebene
+// (ITA: Blick entlang c, a nach unten, b nach rechts). Flächennormale G = B·h mit B = A⁻ᵀ.
+// Symmetrieoperation im Gitter: W (ganzzahlig), kartesisch R = A W A⁻¹; Indizes: h' = W⁻ᵀ h.
 
 import {
-  fromColumns, inverse, transpose, mulVec, dot, cross, normalize, scale, add, sub, norm,
-  solve3, vecEq, fromRows,
+  fromColumns, inverse, transpose, mul, mulVec, dot, cross, normalize, scale, add, sub, norm,
+  solve3, vecEq, fromRows, matEq,
 } from './linalg.js';
-import { buildPointGroup } from './pointgroups.js';
+import { buildPointGroup, groupById, analyzeGroup, POINT_GROUPS } from './pointgroups.js';
+import { CATALOG, entryById, FORM_TYPES } from './forms.js';
 
-const S3 = Math.sqrt(3);
+const deg = Math.PI / 180;
 
-/** Gittermatrix (Spalten a, b, c) im kartesischen System nach ITA-Orientierung. */
-export function latticeMatrix(lat) {
-  if (lat.hex) {
-    return fromColumns([lat.a * S3 / 2, -lat.a / 2, 0], [0, lat.a, 0], [0, 0, lat.c]);
-  }
-  return fromColumns([lat.a, 0, 0], [0, lat.b, 0], [0, 0, lat.c]);
+export const SYSTEM_OF = Object.fromEntries(POINT_GROUPS.map((g) => [g.id, g.system]));
+const HEX_SYSTEMS = new Set(['trigonal', 'hexagonal']);
+export const isHexSystem = (sys) => HEX_SYSTEMS.has(sys);
+
+/** Holoedrie je System (für Kandidaten der Restsymmetrie). */
+const HOLOHEDRY = { triklin: '-1', monoklin: '2/mb', orthorhombisch: 'mmm', tetragonal: '4/mmm', trigonal: '6/mmm', hexagonal: '6/mmm', kubisch: 'm-3m' };
+
+/** Voreinstellungen der Gitterparameter je System (a = 1). */
+export const LATTICE_DEFAULTS = {
+  triklin: { ba: 1.15, ca: 0.9, al: 82, be: 104, ga: 96 },
+  monoklin: { ba: 1.2, ca: 0.85, al: 90, be: 105, ga: 90 },
+  orthorhombisch: { ba: 1.25, ca: 0.8, al: 90, be: 90, ga: 90 },
+  tetragonal: { ba: 1, ca: 1.3, al: 90, be: 90, ga: 90 },
+  trigonal: { ba: 1, ca: 1.1, al: 90, be: 90, ga: 120 },
+  hexagonal: { ba: 1, ca: 1.1, al: 90, be: 90, ga: 120 },
+  kubisch: { ba: 1, ca: 1, al: 90, be: 90, ga: 90 },
+};
+
+/** Welche Parameter das System freilässt. */
+export const FREE_PARAMS = {
+  triklin: ['ba', 'ca', 'al', 'be', 'ga'],
+  monoklin: ['ba', 'ca', 'be'],
+  orthorhombisch: ['ba', 'ca'],
+  tetragonal: ['ca'],
+  trigonal: ['ca'],
+  hexagonal: ['ca'],
+  kubisch: [],
+};
+
+/** Parameter auf die Bedingungen des Systems setzen. */
+export function constrainLattice(lat, sys) {
+  const d = LATTICE_DEFAULTS[sys];
+  const out = { ...d };
+  for (const k of FREE_PARAMS[sys]) out[k] = lat[k] ?? d[k];
+  return out;
 }
-/** Reziproke Matrix: G = B·(h,k,l). */
-export const reciprocalMatrix = (A) => transpose(inverse(A));
 
-/**
- * Formen. kind: 'cubic' | 'hex' | 'nfold'.
- * Für 'nfold' werden Zähligkeit n (3, 4, 6) und eine Startfläche gewählt.
- */
-export const FORMS = [
-  { id: 'wuerfel', name: 'Würfel / Quader', kind: 'cubic', group: 'm-3m', seed: [1, 0, 0] },
-  { id: 'oktaeder', name: 'Oktaeder / Dipyramide', kind: 'cubic', group: 'm-3m', seed: [1, 1, 1] },
-  { id: 'tetraeder', name: 'Tetraeder', kind: 'cubic', group: '23', seed: [1, 1, 1] },
-  { id: 'rhombendodekaeder', name: 'Rhombendodekaeder', kind: 'cubic', group: 'm-3m', seed: [1, 1, 0] },
-  { id: 'rhomboeder', name: 'Rhomboeder', kind: 'hex', group: '-3', seed: [1, 0, 1] },
-  { id: 'prisma', name: 'Prisma', kind: 'nfold', type: 'prisma' },
-  { id: 'pyramide', name: 'Pyramide', kind: 'nfold', type: 'pyramide' },
-  { id: 'dipyramide', name: 'Dipyramide', kind: 'nfold', type: 'dipyramide' },
-];
-
-/** Startflächen (Varianten) für n-zählige Formen. */
-export function nfoldVariants(type, n) {
-  const hex = n !== 4;
-  if (type === 'prisma') return hex ? [[1, 0, 0], [1, 1, 0]] : [[1, 0, 0], [1, 1, 0]];
-  return hex ? [[1, 0, 1], [1, 1, 2]] : [[1, 0, 1], [1, 1, 1]];
+/** Gittermatrix aus a = 1, b/a, c/a, α, β, γ. */
+export function latticeFromParams(p) {
+  const a = 1, b = p.ba, c = p.ca;
+  const al = p.al * deg, be = p.be * deg, ga = p.ga * deg;
+  const cv = [0, 0, c];
+  const bv = [0, b * Math.sin(al), b * Math.cos(al)];
+  const az = a * Math.cos(be);
+  const ay = (a * (Math.cos(ga) - Math.cos(al) * Math.cos(be))) / Math.sin(al);
+  const ax = Math.sqrt(Math.max(1e-9, a * a - ay * ay - az * az));
+  return fromColumns([ax, ay, az], bv, cv);
 }
 
-function groupFor(form, n) {
-  if (form.kind !== 'nfold') return form.group;
-  if (form.type === 'dipyramide') return { 3: '-6', 4: '4/m', 6: '6/m' }[n];
-  return String(n);
+/** Idealgitter des Systems, in dem die kartesischen Operationen aus pointgroups.js gelten. */
+function idealLattice(sys) {
+  return latticeFromParams({ ...LATTICE_DEFAULTS[sys], ba: 1, ca: 1, ...(sys === 'monoklin' || sys === 'triklin' ? { al: 90, be: 90, ga: 90 } : {}) });
 }
 
-/** Erzeugt die (hkl)-Menge einer Form durch Anwenden der (idealen) Symmetrie. */
-function generateHKL(seed, groupId, hex) {
-  const A0 = latticeMatrix(hex ? { hex: true, a: 1, c: 1 } : { a: 1, b: 1, c: 1 });
-  const B0 = reciprocalMatrix(A0);
-  const A0T = transpose(A0);
-  const g = buildPointGroup(groupId);
-  const G0 = mulVec(B0, seed);
+const roundM = (M) => M.map((r) => r.map((x) => Math.round(x)));
+
+/** Ganzzahlige Gitterdarstellungen W der Operationen einer Punktgruppe. */
+export function latticeOps(groupId) {
+  const sys = SYSTEM_OF[groupId];
+  const A0 = idealLattice(sys);
+  const A0i = inverse(A0);
+  return buildPointGroup(groupId).ops.map((R) => roundM(mul(mul(A0i, R), A0)));
+}
+
+const hklKey = (h) => h.join(',');
+const transformHKL = (W, h) => mulVec(transpose(inverse(W)), h).map((x) => Math.round(x) + 0);
+
+/** Bahn eines Index-Tripels unter den Gitteroperationen. */
+export function hklOrbit(Ws, h) {
   const out = [];
-  for (const m of g.ops) {
-    const hkl = mulVec(A0T, mulVec(m, G0)).map((x) => Math.round(x * 1e6) / 1e6);
-    if (!out.some((o) => vecEq(o, hkl))) out.push(hkl.map((x) => Math.round(x) + 0));
+  const seen = new Set();
+  for (const W of Ws) {
+    const h2 = transformHKL(W, h);
+    const k = hklKey(h2);
+    if (!seen.has(k)) { seen.add(k); out.push(h2); }
   }
   return out;
 }
 
-/** Orientierungsvorgaben ("Lagen"). z: Blickrichtung [uvw], x: Richtung nach unten (Hinweis). */
-export function orientationPresets(form) {
-  if (form.kind === 'cubic') {
-    return [
-      { id: '001', name: '[001] ∥ Blickrichtung', z: [0, 0, 1], x: [1, 0, 0] },
-      { id: '111', name: '[111] ∥ Blickrichtung', z: [1, 1, 1], x: [1, 1, -2] },
-      { id: '110', name: '[110] ∥ Blickrichtung', z: [1, 1, 0], x: [0, 0, -1] },
-    ];
-  }
-  // hexagonal: x-Hinweis [210] ⊥ b, damit b wie in ITA nach rechts zeigt
-  const hexo = form.kind === 'hex' || form.kind === 'nfold';
-  return [
-    { id: 'c', name: 'c ∥ Blickrichtung', z: [0, 0, 1], x: hexo ? null : [1, 0, 0] },
-    { id: 'a', name: 'a ∥ Blickrichtung (c liegt)', z: [1, 0, 0], x: [0, 0, -1] },
-  ];
-}
+/** Erhält W die Metrik M = AᵀA? */
+const preservesMetric = (W, M) => matEq(mul(mul(transpose(W), M), W), M, 1e-6);
 
-/** Orientierungsmatrix O (Zeilen: Bildschirmachsen x↓, y→, z⊙ im Kristallsystem). */
-export function orientationMatrix(A, preset) {
-  const zc = normalize(mulVec(A, preset.z));
-  // ohne x-Hinweis: x ⊥ b (so zeigt b nach rechts, wie in ITA)
-  let xc = preset.x ? mulVec(A, preset.x) : cross(mulVec(A, [0, 1, 0]), zc);
-  xc = normalize(sub(xc, scale(zc, dot(xc, zc))));
-  const yc = cross(zc, xc);
-  return fromRows(xc, yc, zc);
-}
-
-/** Halbraumschnitt → Ecken und Flächen. planes: [{n (nicht normiert), t, ...}] */
+/** Halbraumschnitt → Ecken und Flächen. planes: [{n, t, ...}] (G·r ≤ t) */
 export function intersectHalfspaces(planes) {
   const P = planes.map((p) => {
     const l = norm(p.n);
     return { ...p, u: scale(p.n, 1 / l), d: p.t / l };
   });
   const verts = [];
-  const tol = 1e-7;
   for (let i = 0; i < P.length; i++)
     for (let j = i + 1; j < P.length; j++)
       for (let k = j + 1; k < P.length; k++) {
         const x = solve3(fromRows(P[i].u, P[j].u, P[k].u), [P[i].d, P[j].d, P[k].d]);
         if (!x) continue;
-        if (P.every((p) => dot(p.u, x) <= p.d + 1e-6) && !verts.some((v) => vecEq(v, x, 1e-6))) verts.push(x);
+        if (P.every((p) => dot(p.u, x) <= p.d + 1e-7) && !verts.some((v) => vecEq(v, x, 1e-6))) verts.push(x);
       }
   const faces = [];
   for (const p of P) {
@@ -115,71 +122,254 @@ export function intersectHalfspaces(planes) {
       const da = sub(a, c), db = sub(b, c);
       return Math.atan2(dot(da, e2), dot(da, e1)) - Math.atan2(dot(db, e2), dot(db, e1));
     });
-    // Fläche
     let area = 0;
     for (let i = 0; i < on.length; i++) area += dot(cross(sub(on[i], c), sub(on[(i + 1) % on.length], c)), p.u) / 2;
-    if (area < tol) continue;
+    if (area < 1e-9) continue;
     faces.push({ ...p, verts: on, center: c, area });
   }
   const volume = faces.reduce((s, f) => s + (f.area * f.d) / 3, 0);
   return { verts, faces, volume };
 }
 
-/**
- * Baut ein Polyeder.
- * params: { formId, n, variant, ratios: {ba, ca}, height, presetId }
- */
-export function buildPolyhedron(params) {
-  const form = FORMS.find((f) => f.id === params.formId);
-  const n = params.n || 4;
-  const hex = form.kind === 'hex' || (form.kind === 'nfold' && n !== 4);
-  const lat = hex
-    ? { hex: true, a: 1, c: params.ratios.ca }
-    : form.kind === 'cubic'
-      ? { a: 1, b: params.ratios.ba, c: params.ratios.ca }
-      : { a: 1, b: 1, c: params.ratios.ca };
-  if (form.kind === 'nfold' && form.type === 'prisma') lat.c = 1;
-  const A = latticeMatrix(lat);
-  const B = reciprocalMatrix(A);
+const BOX = 40;
+const boxPlanes = () => [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].map((n) => ({ n, t: BOX, role: 'box' }));
 
-  let seed = form.seed;
-  if (form.kind === 'nfold') seed = nfoldVariants(form.type, n)[params.variant || 0];
-  const hkls = generateHKL(seed, groupFor(form, n), hex);
-  const planes = hkls.map((hkl) => ({ hkl, n: mulVec(B, hkl), t: 1, form: 'main' }));
-  if (form.kind === 'nfold') {
-    if (form.type === 'prisma') {
-      const H = params.height ?? 1.5; // Höhe in Einheiten von a
-      planes.push({ hkl: [0, 0, 1], n: mulVec(B, [0, 0, 1]), t: H / 2, form: 'pinakoid' });
-      planes.push({ hkl: [0, 0, -1], n: mulVec(B, [0, 0, -1]), t: H / 2, form: 'pinakoid' });
-    } else if (form.type === 'pyramide') {
-      planes.push({ hkl: [0, 0, -1], n: mulVec(B, [0, 0, -1]), t: 0, form: 'pedion' });
-    }
+/** Kandidaten für Ergänzungsformen: einfache Gitterrichtungen. */
+const AUX_CANDIDATES = (() => {
+  const out = [];
+  for (let h = -1; h <= 1; h++) for (let k = -1; k <= 1; k++) for (let l = -1; l <= 1; l++) {
+    if (h || k || l) out.push([h, k, l]);
   }
+  return out.sort((a, b) => a.filter((x) => x).length - b.filter((x) => x).length);
+})();
+
+/**
+ * Ergänzt eine offene Form durch Formen derselben Punktgruppe, bis das Polyeder geschlossen ist.
+ * Gibt die Liste der Ergänzungsformen zurück: [{hkls}]
+ */
+function closeForm(mainHKL, Ws, B, tAux) {
+  const used = new Set(mainHKL.map(hklKey));
+  const aux = [];
+  const planesOf = (list, t, role) => list.map((h) => ({ hkl: h, n: mulVec(B, h), t, role }));
+  for (let iter = 0; iter < 8; iter++) {
+    const planes = [...planesOf(mainHKL, 1, 'main'), ...aux.flatMap((a) => planesOf(a.hkls, tAux, 'aux')), ...boxPlanes()];
+    const poly = intersectHalfspaces(planes);
+    // offene Richtung: Mittel der Richtungen zu den Ecken am Hilfswürfel (bzw. fernste Ecke)
+    const farV = poly.verts.filter((v) => Math.max(...v.map(Math.abs)) > BOX * 0.9);
+    if (!farV.length) break; // geschlossen
+    let u = normalize(farV.reduce((s, v) => add(s, normalize(v)), [0, 0, 0]));
+    if (norm(farV.reduce((s, v) => add(s, normalize(v)), [0, 0, 0])) < 0.3 * farV.length) {
+      u = normalize(farV.reduce((b, v) => (norm(v) > norm(b) ? v : b), farV[0]));
+    }
+    let best = null, bs = 0.2;
+    for (const c of AUX_CANDIDATES) {
+      if (used.has(hklKey(c))) continue;
+      const orb = hklOrbit(Ws, c);
+      if (orb.some((h) => used.has(hklKey(h)))) continue;
+      const nz = c.filter((x) => x).length;
+      const s = Math.max(...orb.map((h) => dot(normalize(mulVec(B, h)), u))) - 0.08 * (nz - 1) - 0.01 * orb.length;
+      if (s > bs + 1e-6) { bs = s; best = orb; }
+    }
+    if (!best) break;
+    best.forEach((h) => used.add(hklKey(h)));
+    aux.push({ hkls: best });
+  }
+  return aux;
+}
+
+/** Erkennt die Restsymmetrie einer Gruppe unter einer (verzerrten) Metrik. */
+function reducedOps(Ws, M) {
+  return Ws.filter((W) => preservesMetric(W, M));
+}
+
+/** Bestimmt den Punktgruppentyp (HM-Symbol) zu kartesischen Operationen. */
+export function identifyGroup(cartOps) {
+  const info = analyzeGroup(cartOps);
+  const sig = (inf) => {
+    const counts = {};
+    for (const a of inf.axes) counts[a.symbol] = (counts[a.symbol] || 0) + 1;
+    return JSON.stringify([inf.order, inf.centro, inf.mirrors.length, Object.keys(counts).sort().map((k) => [k, counts[k]])]);
+  };
+  const s = sig(info);
+  for (const g of POINT_GROUPS) {
+    if (sig(buildPointGroup(g.id)) === s) return { hm: g.hm, id: g.id, info };
+  }
+  return { hm: '?', id: null, info };
+}
+
+/** Orientierungsvorgaben ("Lagen"). z: Blickrichtung [uvw], x: Richtung nach unten (oder null: ⊥ b). */
+export function orientationPresets(sys) {
+  if (sys === 'kubisch') {
+    return [
+      { id: '001', name: '[001] ∥ Blickrichtung', z: [0, 0, 1], x: [1, 0, 0] },
+      { id: '111', name: '[111] ∥ Blickrichtung', z: [1, 1, 1], x: [1, 1, -2] },
+      { id: '110', name: '[110] ∥ Blickrichtung', z: [1, 1, 0], x: [0, 0, -1] },
+    ];
+  }
+  return [
+    { id: 'c', name: 'c ∥ Blickrichtung', z: [0, 0, 1], x: null },
+    { id: 'a', name: 'a ∥ Blickrichtung (c liegt)', z: [1, 0, 0], x: [0, 0, -1] },
+    { id: 'b', name: 'b ∥ Blickrichtung (c liegt)', z: [0, 1, 0], x: [0, 0, -1] },
+  ];
+}
+
+/** Orientierungsmatrix O (Zeilen: Bildschirmachsen x↓, y→, z⊙ im Kristallsystem). */
+export function orientationMatrix(A, preset) {
+  const zc = normalize(mulVec(A, preset.z));
+  let xc = preset.x ? mulVec(A, preset.x) : cross(mulVec(A, [0, 1, 0]), zc);
+  xc = normalize(sub(xc, scale(zc, dot(xc, zc))));
+  const yc = cross(zc, xc);
+  return fromRows(xc, yc, zc);
+}
+
+/** Kanonischer Repräsentant einer Bahn (für die Anzeige): möglichst positive Indizes. */
+function canonicalRep(hkls) {
+  const score = (h) => h.reduce((s, x, i) => s + (x >= 0 ? 4 : 0) * (3 - i), 0) * 100 + h[0] * 9 + h[1] * 3 + h[2];
+  return [...hkls].sort((a, b) => score(b) - score(a))[0];
+}
+
+/**
+ * Baut den Kristall zu einem Katalogeintrag.
+ * params: { entryId, lat, broken, open, auxDist, presetId }
+ */
+export function buildCrystal(params) {
+  const entry = entryById(params.entryId);
+  const groupId = entry.pg;
+  const sys = SYSTEM_OF[groupId];
+  const hex = isHexSystem(sys);
+  const lat = params.broken ? { ...params.lat } : constrainLattice(params.lat, sys);
+  const A = latticeFromParams(lat);
+  const Ai = inverse(A);
+  const B = transpose(Ai);
+  const M = mul(transpose(A), A);
+
+  const Ws = latticeOps(groupId);
+  const mainHKL = hklOrbit(Ws, entry.hkl);
+  const tAux = params.auxDist ?? 1;
+  const auxForms = closeForm(mainHKL, Ws, B, tAux);
+
+  // Restsymmetrie bei freier Verzerrung
+  const Wred = reducedOps(Ws, M);
+  const isReduced = Wred.length < Ws.length;
+  const cart = (W) => mul(mul(A, W), Ai);
+
+  // Zerfall der Hauptform in Bahnen der Restgruppe
+  const orbitsMain = [];
+  const seen = new Set();
+  for (const h of mainHKL) {
+    const k = hklKey(h);
+    if (seen.has(k)) continue;
+    const orb = hklOrbit(Wred, h);
+    orb.forEach((x) => seen.add(hklKey(x)));
+    orbitsMain.push(orb);
+  }
+  const orbitIndex = new Map();
+  orbitsMain.forEach((orb, i) => orb.forEach((h) => orbitIndex.set(hklKey(h), i)));
+
+  const planes = [
+    ...mainHKL.map((h) => ({ hkl: h, n: mulVec(B, h), t: 1, role: 'main', orbit: orbitIndex.get(hklKey(h)) })),
+    ...auxForms.flatMap((a, ai) => a.hkls.map((h) => ({ hkl: h, n: mulVec(B, h), t: tAux, role: 'aux', aux: ai }))),
+  ];
   const poly = intersectHalfspaces(planes);
 
-  const presets = orientationPresets(form);
+  const presets = orientationPresets(sys);
   const preset = presets.find((p) => p.id === params.presetId) || presets[0];
   const O = orientationMatrix(A, preset);
+  const Ot = transpose(O);
 
-  // Zentrieren (Schwerpunkt der Ecken) und auf Volumen normieren
-  const cen = scale(poly.verts.reduce((s, v) => add(s, v), [0, 0, 0]), 1 / poly.verts.length);
-  const sc = 1 / Math.cbrt(poly.volume);
+  const cen = scale(poly.verts.reduce((s, v) => add(s, v), [0, 0, 0]), 1 / Math.max(1, poly.verts.length));
+  const sc = poly.volume > 1e-9 ? 1 / Math.cbrt(poly.volume) : 1;
   const tr = (v) => mulVec(O, scale(sub(v, cen), sc));
   const faces = poly.faces.map((f) => ({
-    hkl: f.hkl,
-    form: f.form,
+    hkl: f.hkl, role: f.role, orbit: f.orbit, aux: f.aux,
     normal: normalize(mulVec(O, f.u)),
     verts: f.verts.map(tr),
     center: tr(f.center),
   }));
+  // Flächen der Hauptform, die durch Ergänzungsformen ganz weggeschnitten wurden (sollte nicht vorkommen)
+  const lostMain = mainHKL.length - faces.filter((f) => f.role === 'main').length;
+
   const axes = [
     { name: hex ? 'a₁' : 'a', dir: normalize(mulVec(O, mulVec(A, [1, 0, 0]))) },
     { name: hex ? 'a₂' : 'b', dir: normalize(mulVec(O, mulVec(A, [0, 1, 0]))) },
     { name: 'c', dir: normalize(mulVec(O, mulVec(A, [0, 0, 1]))) },
   ];
-  if (hex) axes.push({ name: 'a₃', dir: normalize(mulVec(O, mulVec(A, [-1, -1, 0]))) });
+  if (hex && !params.broken) axes.push({ name: 'a₃', dir: normalize(mulVec(O, mulVec(A, [-1, -1, 0]))) });
+
+  // Symmetrieoperationen in Bildschirmkoordinaten (für das Gerüst)
+  const toScreen = (W) => mul(mul(O, cart(W)), Ot);
+  const groupScreen = analyzeGroup(Wred.map(toScreen));
+  const reduced = isReduced ? identifyGroup(Wred.map(cart)) : null;
+
+  // Hauptachse der Restgruppe als Gitterrichtung (zur Anzeige)
+  let reducedAxis = null;
+  if (reduced) {
+    const order = { '6': 6, '-6': 6, '4': 4, '-4': 4, '3': 3, '-3': 3, '2': 2 };
+    const axs = reduced.info.axes;
+    const maxO = Math.max(0, ...axs.map((a) => order[a.symbol]));
+    const top = axs.filter((a) => order[a.symbol] === maxO);
+    if (top.length === 1) {
+      const u = mulVec(Ai, top[0].dir);
+      const m = Math.max(...u.map(Math.abs));
+      reducedAxis = { symbol: top[0].symbol, uvw: u.map((x) => Math.round(x / m)) };
+    }
+  }
+
+  const zones = sys === 'kubisch'
+    ? [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]].map((h) => normalize(mulVec(O, mulVec(B, h))))
+    : [];
+
   return {
-    form, hex, lat, faces, verts: poly.verts.map(tr), axes, preset, presets,
-    formSymbol: seed, faceCount: faces.length,
+    entry, groupId, sys, hex, lat, A, faces, axes, preset, presets, zones,
+    mainHKL, auxForms, lostMain,
+    isReduced, reduced, reducedAxis, orbitsMain: orbitsMain.map((o) => ({ hkls: o, rep: canonicalRep(o) })),
+    framework: groupScreen,
+    auxReps: auxForms.map((a) => ({ hkls: a.hkls, rep: canonicalRep(a.hkls) })),
   };
 }
+
+const PRISM_TYPES = new Set([2, 6, 10, 15, 18, 22, 25, 30]);
+const EIG_ALIAS = { '-6m2': '-62m', '-4m2': '-42m' };
+
+/**
+ * Geometrische Benennung einer Form (auch Grenzformen) nach ITA Tab. 10.1.2.3:
+ * über Flächenzahl, Eigensymmetrie (Stabilisator in der Holoedrie) und offen/geschlossen.
+ * Gibt { type, name } zurück oder null.
+ */
+export function auxFormName(groupId, hkls) {
+  const sys = SYSTEM_OF[groupId];
+  const n = hkls.length;
+  const A0 = idealLattice(sys);
+  const B0 = transpose(inverse(A0));
+  const normals = hkls.map((h) => normalize(mulVec(B0, h)));
+  if (n === 1) return { type: 1, name: FORM_TYPES[1].name };
+  if (n === 2) {
+    if (vecEq(normals[0], scale(normals[1], -1))) return { type: 2, name: FORM_TYPES[2].name };
+    const W = latticeOps(groupId).find((w) => hklKey(transformHKL(w, hkls[0])) === hklKey(hkls[1]));
+    const d = W ? Math.round(W[0][0] * (W[1][1] * W[2][2] - W[1][2] * W[2][1]) - W[0][1] * (W[1][0] * W[2][2] - W[1][2] * W[2][0]) + W[0][2] * (W[1][0] * W[2][1] - W[1][1] * W[2][0])) : 1;
+    return { type: 3, name: d < 0 ? FORM_TYPES[3].alt : FORM_TYPES[3].name };
+  }
+  // offen (Prisma): alle Normalen senkrecht zu einer gemeinsamen Richtung
+  let open = false;
+  for (let i = 0; i < n && !open; i++) for (let j = i + 1; j < n && !open; j++) {
+    const d = cross(normals[i], normals[j]);
+    if (norm(d) < 1e-6) continue;
+    const u = normalize(d);
+    if (normals.every((v) => Math.abs(dot(v, u)) < 1e-6)) open = true;
+  }
+  if (sys === 'triklin' || sys === 'monoklin') return n === 4 && open ? { type: 6, name: FORM_TYPES[6].name } : null;
+  const keys = new Set(hkls.map(hklKey));
+  const Hs = latticeOps(HOLOHEDRY[sys]).filter((W) => hkls.every((h) => keys.has(hklKey(transformHKL(W, h)))));
+  const eigId = identifyGroup(Hs.map((W) => mul(mul(A0, W), inverse(A0)))).hm;
+  const eig = EIG_ALIAS[eigId] || eigId;
+  const cands = Object.entries(FORM_TYPES).filter(([t, f]) => f.eig === eig && FACE_COUNT[t] === n && PRISM_TYPES.has(Number(t)) === open);
+  if (cands.length === 1) return { type: Number(cands[0][0]), name: cands[0][1].name };
+  return null;
+}
+
+/** Flächenzahl der 47 Formen (ITA Tab. 10.1.2.3). */
+const FACE_COUNT = {
+  1: 1, 2: 2, 3: 2, 4: 4, 5: 4, 6: 4, 7: 8, 8: 4, 9: 4, 10: 4, 11: 8, 12: 8, 13: 8, 14: 8, 15: 8, 16: 16,
+  17: 3, 18: 3, 19: 6, 20: 6, 21: 6, 22: 6, 23: 6, 24: 6, 25: 6, 26: 12, 27: 12, 28: 12, 29: 12, 30: 12, 31: 12, 32: 24,
+  33: 4, 34: 6, 35: 8, 36: 12, 37: 12, 38: 12, 39: 12, 40: 12, 41: 24, 42: 24, 43: 24, 44: 24, 45: 24, 46: 24, 47: 48,
+};

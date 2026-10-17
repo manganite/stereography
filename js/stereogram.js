@@ -245,6 +245,23 @@ export function buildSVG(scene, { standalone = false } = {}) {
   if (scene.centreAtOrigin) fw.push(`<circle cx="${C}" cy="${C}" r="${f(SYM * 0.38)}" fill="${col.paper}" stroke="${fc.axis}" stroke-width="1.4"/>`);
   if (fw.length) out.push(`<g${scene.faint ? ' opacity="0.55"' : ''}>${fw.join('')}</g>`);
 
+  // Zone: Zonenkreis (Grosskreis ⊥ Zonenachse) und Pol der Zonenachse
+  if (scene.zone) {
+    const zc = greatCirclePath(scene.zone.axis);
+    if (zc) {
+      // untere Hälfte des Zonenkreises (Projektion vom Nordpol): gespiegelter Bogen, gestrichelt
+      const a = scene.zone.axis;
+      const zl = scene.showLower !== false ? greatCirclePath([a[0], a[1], -a[2]]) : null;
+      if (zl && Math.abs(a[2]) > 1e-6) out.push(`<path d="${zl}" fill="none" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="6 5" stroke-linecap="round"/>`);
+      out.push(`<path d="${zc}" fill="none" stroke="${col.accent}" stroke-width="2.2" stroke-linecap="round"/>`);
+    }
+    else out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${col.accent}" stroke-width="2.6"/>`);
+    const q = project(scene.zone.axis);
+    const s = 6;
+    out.push(`<g stroke="${col.accent}" stroke-width="2.2" stroke-linecap="round"><line x1="${f(q.x - s)}" y1="${f(q.y - s)}" x2="${f(q.x + s)}" y2="${f(q.y + s)}"/><line x1="${f(q.x - s)}" y1="${f(q.y + s)}" x2="${f(q.x + s)}" y2="${f(q.y - s)}"/></g>`);
+    if (scene.zone.label) out.push(textWithBars(scene.zone.label, q.x + 10, q.y + 18, `font-family="${font}" font-size="13.5" font-weight="600" fill="${col.accent}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"`));
+  }
+
   // Pole
   const poles = (scene.poles || []).map((P) => ({ ...P, q: project(P.p) }));
   const drawn = [];
@@ -259,6 +276,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   // Markierungen (Auswahl, Ausgangspunkt)
   for (const P of drawn) {
     if (P.gen) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="11" fill="none" stroke="${col.accent}" stroke-width="2" stroke-dasharray="3 2.5"/>`);
+    if (P.zone && !P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="9" fill="none" stroke="${col.accent}" stroke-width="1.6"/>`);
     if (P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="11.5" fill="none" stroke="${col.accent}" stroke-width="2.6"/>`);
   }
   // Beschriftungen: zusammenfallende Pole (oben/unten) werden gestapelt beschriftet

@@ -4,7 +4,7 @@ import {
   POINT_GROUPS, SYSTEMS, buildPointGroup, orbit, elementSummary, HEX_A, HEX_B,
 } from './pointgroups.js';
 import {
-  buildCrystal, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
+  buildCrystal, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig, entryById } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
@@ -21,10 +21,11 @@ const state = {
   pg: { id: '4/mmm', monoAxis: 'b', showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false },
   poly: {
     system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
-    size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: true,
+    size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: true, zoneMode: false,
   },
   view: { wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
   selected: null,
+  zoneSel: [],
 };
 try {
   const saved = JSON.parse(localStorage.getItem('stereo-state') || 'null');
@@ -220,6 +221,16 @@ function renderPG() {
   );
 }
 
+/** Richtung [uvw] als Teile für SVG-Text. */
+function dirParts(v, hex4) {
+  const w = hex4 ? dirToFour(v) : v;
+  const big = w.some((x) => Math.abs(x) > 9);
+  const out = [{ t: '[', bar: false }];
+  w.forEach((x, i) => { if (big && i) out.push({ t: ' ', bar: false }); out.push({ t: String(Math.abs(x)), bar: x < 0 }); });
+  out.push({ t: ']', bar: false });
+  return out;
+}
+
 const ORBIT_COLORS = (col) => [col.accent, col.accent2, col.ax2, col.ax4, col.ax3, col.ax6];
 
 function renderPoly() {
@@ -237,6 +248,11 @@ function renderPoly() {
     f.color3d = f.role === 'aux' ? col.crystal2 : multi ? oc[f.orbit % oc.length] : col.crystal;
   });
   if (state.selected != null && (!C.faces[state.selected] || C.faces[state.selected].hidden)) state.selected = null;
+  state.zoneSel = state.zoneSel.filter((k) => C.faces[k] && !C.faces[k].hidden);
+  if (!state.poly.zoneMode) state.zoneSel = [];
+  const zone = state.zoneSel.length === 2 ? zoneOf(C, state.zoneSel[0], state.zoneSel[1]) : null;
+  C.zone = zone;
+  const inZone = new Set(zone ? zone.inZone : []);
   const fw = state.poly.frame ? C.framework : null;
   const scene = {
     col: { ...col, mirror: col.ink }, fontFamily: FONT,
@@ -248,10 +264,11 @@ function renderPoly() {
     centreAtOrigin: !!fw && fw.centro && !fw.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6),
     poles: C.faces.map((f, i) => (f.hidden ? null : {
       p: f.normal, det: 1, idx: i, color: f.color2d, aux: f.role === 'aux',
-      label: state.poly.labels ? hklParts(f.hkl, hex4) : null, selected: state.selected === i,
+      label: state.poly.labels ? hklParts(f.hkl, hex4) : null, selected: state.selected === i || state.zoneSel.includes(i), zone: inZone.has(i),
     })).filter(Boolean),
     showLower: state.poly.showLower,
     axisLabels: state.view.axes ? C.axes : [],
+    zone: zone ? { axis: zone.axis, label: dirParts(zone.uvw, hex4) } : null,
   };
   const out = buildSVG(scene);
   svg.innerHTML = out.inner;
@@ -262,7 +279,7 @@ function renderPoly() {
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
   const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
   view3d.showPolyhedron(C, col,
-    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null },
+    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zone },
     state.selected, labels3d);
 }
 
@@ -298,7 +315,12 @@ function updateLegendPoly(C, col) {
     `<span class="lg"><svg width="16" height="16" viewBox="-8 -8 16 16"><circle r="6" fill="none" stroke="${col.ink}" stroke-width="1.6"/></svg>Flächenpol unten</span>`,
   ];
   if (C.auxForms.length && !state.poly.open) items.push(`<span class="lg"><i class="sw" style="background:${col.muted}"></i>Ergänzungsform</span>`);
-  items.push('<span class="lg hint">Pol oder Fläche antippen zum Hervorheben</span>');
+  if (C.zone) {
+    items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="2.2"/></svg>Zonenkreis</span>`);
+    items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="5 4"/></svg>untere Hälfte</span>`);
+    items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><path d="M-5,-5L5,5M-5,5L5,-5" stroke="${col.accent}" stroke-width="2"/></svg>Zonenachse</span>`);
+  }
+  items.push(state.poly.zoneMode ? '<span class="lg hint">Zwei Pole antippen: Zone bestimmen</span>' : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben</span>');
   $('legend').innerHTML = items.join('');
 }
 
@@ -386,6 +408,26 @@ function updateInfoPoly(C, col) {
       broken = `<div class="okbox">Die Verzerrung erhält die Punktgruppe ${hmHTML(g.hm)}.</div>`;
     }
   }
+  let zoneBox = '';
+  if (state.poly.zoneMode) {
+    if (!C.zone) {
+      zoneBox = state.zoneSel.length === 2
+        ? '<div class="zonebox">Die beiden Flächen sind parallel und bestimmen keine Zone. Bitte eine andere Fläche wählen.</div>'
+        : `<div class="zonebox">Zone bestimmen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht antippen.</div>`;
+    } else {
+      const z = C.zone;
+      const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
+      const dir = (v) => '[' + (hex4 ? dirToFour(v) : v).map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join(Math.max(...v.map(Math.abs)) > 9 ? ' ' : '') + ']';
+      const faces = z.inZone.map((k) => hklHTML(C.faces[k].hkl, hex4)).join(' ');
+      const dev = z.normalDev > 0.05
+        ? `Die Richtung ${dir(z.uvw)} fällt hier nicht mit der Normalen der Fläche ${hklHTML(z.uvw, hex4)} zusammen (Abweichung ${z.normalDev.toFixed(1)}°); der Pol der Zone ist die Richtung, nicht die Flächennormale.`
+        : `In diesem Gitter fällt die Richtung ${dir(z.uvw)} mit der Normalen der Fläche ${hklHTML(z.uvw, hex4)} zusammen.`;
+      zoneBox = `<div class="zonebox"><strong>Zone ${dir(z.uvw)}</strong>
+        <p>Zonenachse ${dir(z.uvw)} = ${hklHTML(f1, false)} × ${hklHTML(f2, false)}. Winkel zwischen den Polen: <b class="num">${z.angle.toFixed(1)}°</b>.</p>
+        <p>Flächen in dieser Zone (Weiss'sches Zonengesetz hu + kv + lw = 0), ${z.inZone.length}: ${faces}</p>
+        <p class="note">${dev} Die Kanten zwischen Flächen der Zone verlaufen parallel zur Zonenachse (in 3D hervorgehoben).</p></div>`;
+    }
+  }
   const sysName = SYSTEM_NAMES[C.sys];
   $('info').innerHTML = `
     <div class="info-head">
@@ -393,6 +435,7 @@ function updateInfoPoly(C, col) {
       <div class="hm-meta"><span class="form-name">${formName(e)}</span><span>Punktgruppe <b>${hmHTML(g.hm)}</b> (${g.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}</span></div>
     </div>
     ${broken}
+    ${zoneBox}
     <dl class="facts">
       <div><dt>Flächen der Form</dt><dd class="num">${C.mainHKL.length}</dd></div>
       <div><dt>Indexmuster (ITA)</dt><dd>{${symText(e.sym, hex4)}}</dd></div>
@@ -468,16 +511,27 @@ svg.addEventListener('click', (e) => {
     return;
   }
   const hit = e.target.closest && e.target.closest('.hit');
-  state.selected = hit ? (Number(hit.dataset.idx) === state.selected ? null : Number(hit.dataset.idx)) : null;
-  render();
+  pickFace(hit ? Number(hit.dataset.idx) : null);
 });
+
+/** Fläche antippen: normale Auswahl oder, im Zonenmodus, bis zu zwei Flächen für die Zone. */
+function pickFace(idx) {
+  if (state.poly.zoneMode) {
+    if (idx == null) state.zoneSel = [];
+    else if (state.zoneSel.includes(idx)) state.zoneSel = state.zoneSel.filter((k) => k !== idx);
+    else state.zoneSel = state.zoneSel.length >= 2 ? [idx] : [...state.zoneSel, idx];
+    state.selected = null;
+  } else {
+    state.selected = idx === state.selected ? null : idx;
+  }
+  render();
+}
 
 // ------------------------------------------------------------------ 3D-Ansicht
 const view3d = new View3D($('view3d'), {
   onSelect: (idx) => {
     if (state.mode !== 'poly') return;
-    state.selected = idx === state.selected ? null : idx;
-    render();
+    pickFace(idx);
   },
 });
 for (const b of document.querySelectorAll('[data-view]')) {
@@ -562,6 +616,8 @@ function init() {
   bindCheck('poly-lower', state.poly, 'showLower');
   bindCheck('poly-frame', state.poly, 'frame');
   bindCheck('poly-facesym', state.poly, 'faceSym');
+  bindCheck('poly-zone', state.poly, 'zoneMode');
+  $('poly-zone').addEventListener('change', () => { state.zoneSel = []; state.selected = null; });
 
   bindCheck('v-wulff', state.view, 'wulff');
   bindRange('v-wulffrot', state.view, 'wulffRot', (v) => v.toFixed(0) + '°');

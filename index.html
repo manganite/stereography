@@ -197,6 +197,9 @@ select {
 .warnbox { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--accent2); border-radius: 8px; background: color-mix(in srgb, var(--accent2) 8%, var(--surface)); }
 .warnbox strong { color: var(--accent2); }
 .warnbox p { margin: 6px 0 4px; font-size: 0.88rem; }
+.zonebox { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: 8px; font-size: 0.9rem; }
+.zonebox strong { color: var(--accent); }
+.zonebox p { margin: 6px 0 0; }
 .okbox { margin: 0 0 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 0.88rem; color: var(--muted); }
 .auxlist { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.9rem; }
 .auxlist li { display: inline-block; }
@@ -248,6 +251,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
       <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster)</label>
       <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
+      <label class="check"><input type="checkbox" id="poly-zone">Zonen bestimmen (zwei Pole antippen)</label>
     </section>
   </div>
 

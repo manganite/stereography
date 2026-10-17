@@ -350,7 +350,7 @@ export function buildCrystal(params) {
     : [];
 
   return {
-    entry, groupId, sys, hex, lat, A, faces, axes, preset, presets, zones,
+    entry, groupId, sys, hex, lat, A, O, faces, axes, preset, presets, zones,
     mainHKL, auxForms, lostMain,
     isReduced, reduced, reducedAxis, orbitsMain: orbitsMain.map((o) => ({ hkls: o, rep: canonicalRep(o) })),
     framework: groupScreen, motifs,
@@ -404,3 +404,39 @@ const FACE_COUNT = {
   17: 3, 18: 3, 19: 6, 20: 6, 21: 6, 22: 6, 23: 6, 24: 6, 25: 6, 26: 12, 27: 12, 28: 12, 29: 12, 30: 12, 31: 12, 32: 24,
   33: 4, 34: 6, 35: 8, 36: 12, 37: 12, 38: 12, 39: 12, 40: 12, 41: 24, 42: 24, 43: 24, 44: 24, 45: 24, 46: 24, 47: 48,
 };
+
+const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+/** Ganzzahliges Tripel durch ggT teilen. */
+export const reduceInt = (v) => {
+  const g = v.reduce((a, x) => gcd(a, Math.round(x)), 0) || 1;
+  return v.map((x) => Math.round(x) / g + 0);
+};
+
+/** Richtung [uvw] (drei Achsen) → [UVTW] (Miller-Bravais). */
+export function dirToFour([u, v, w]) {
+  return reduceInt([2 * u - v, 2 * v - u, -(u + v), 3 * w]);
+}
+
+/**
+ * Zone aus zwei Flächen i, j des Kristalls C (Weiss'sches Zonengesetz).
+ * Rückgabe: { uvw, axis (Bildschirm, Einheitsvektor), inZone: [Flächenindizes], angle (Winkel der Pole, Grad),
+ *   normalDev (Winkel zwischen Richtung [uvw] und Normale (uvw), Grad) } oder null, wenn die Flächen parallel sind.
+ */
+export function zoneOf(C, i, j) {
+  const h1 = C.faces[i].hkl, h2 = C.faces[j].hkl;
+  const raw = cross(h1, h2);
+  if (raw.every((x) => Math.abs(x) < 1e-9)) return null;
+  let uvw = reduceInt(raw);
+  let axis = normalize(mulVec(C.O, mulVec(C.A, uvw)));
+  // Darstellung mit der Achse in der oberen Halbkugel
+  if (axis[2] < -1e-9 || (Math.abs(axis[2]) <= 1e-9 && (axis[1] < -1e-9 || (Math.abs(axis[1]) <= 1e-9 && axis[0] < 0)))) {
+    uvw = uvw.map((x) => -x + 0); axis = scale(axis, -1);
+  }
+  const inZone = C.faces.map((f, k) => (dot(f.hkl, uvw) === 0 && !f.hidden ? k : -1)).filter((k) => k >= 0);
+  const n1 = C.faces[i].normal, n2 = C.faces[j].normal;
+  const angle = (Math.acos(Math.max(-1, Math.min(1, dot(n1, n2)))) * 180) / Math.PI;
+  const B = transpose(inverse(C.A));
+  const planeNormal = normalize(mulVec(C.O, mulVec(B, uvw)));
+  const normalDev = (Math.acos(Math.max(-1, Math.min(1, Math.abs(dot(planeNormal, axis))))) * 180) / Math.PI;
+  return { uvw, axis, inZone, angle, normalDev, planeNormal };
+}

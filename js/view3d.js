@@ -404,6 +404,33 @@ export class View3D {
         this.content.add(lab);
       }
     });
+    if (opts.zone) {
+      const z = opts.zone, ax = V(z.axis).normalize(), acc = c(col.accent);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.007, 6, 160), new THREE.MeshBasicMaterial({ color: acc }));
+      ring.lookAt(ax);
+      this.content.add(ring);
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 2.7, 8), new THREE.MeshBasicMaterial({ color: acc }));
+      rod.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), ax);
+      this.content.add(rod);
+      // Kanten zwischen Flächen der Zone: parallel zur Zonenachse
+      const zs = new Set(z.inZone);
+      const seen = new Set();
+      vis.forEach(({ f, i }) => {
+        if (!zs.has(i)) return;
+        for (let j = 0; j < f.verts.length; j++) {
+          const a = V(f.verts[j]).multiplyScalar(k), b = V(f.verts[(j + 1) % f.verts.length]).multiplyScalar(k);
+          const d = b.clone().sub(a);
+          if (d.length() < 1e-6 || d.clone().normalize().cross(ax).length() > 1e-4) continue;
+          const key = [a, b].map((p) => p.toArray().map((x) => x.toFixed(4)).join(',')).sort().join('|');
+          if (seen.has(key)) continue;
+          seen.add(key);
+          const e = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, d.length(), 8), new THREE.MeshBasicMaterial({ color: acc }));
+          e.position.copy(a.clone().add(b).multiplyScalar(0.5));
+          e.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+          this.content.add(e);
+        }
+      });
+    }
     if (opts.showRays) this._rays(vis.map(({ f }) => f.normal), col);
     if (opts.showAxes) this._axisArrows(poly.axes, col);
     this.requestRender();

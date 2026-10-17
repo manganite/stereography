@@ -307,7 +307,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   // Treffer-Flächen für Klick/Tippen
   if (!standalone) {
     for (const P of drawn) {
-      out.push(`<circle class="hit" data-idx="${P.idx}" cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="13" fill="transparent"/>`);
+      out.push(`<circle class="hit" data-idx="${P.idx}" cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(scene.hitR || 13)}" fill="transparent"/>`);
     }
   }
   const inner = out.join('\n');

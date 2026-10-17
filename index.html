@@ -77,38 +77,43 @@ button, select, input { font: inherit; color: inherit; }
 
 /* Kopf */
 .top {
-  display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px;
-  padding-block: 20px 16px; border-bottom: 1px solid var(--line); margin-bottom: 18px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px;
+  padding-block: 12px 10px; border-bottom: 1px solid var(--line); margin-bottom: 14px;
   max-width: 1480px; margin-inline: auto;
 }
+.brand { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
 .brand h1 {
-  font-family: var(--font-display); font-weight: 600; font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem);
+  font-family: var(--font-display); font-weight: 600; font-size: clamp(1.3rem, 1rem + 0.9vw, 1.7rem);
   line-height: 1.1; margin: 0; letter-spacing: -0.01em; text-wrap: balance;
 }
-.brand p { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; }
+.brand p { margin: 0; color: var(--muted); font-size: 0.85rem; }
 .tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; padding: 3px; background: var(--surface); }
 .tabs button {
-  border: 0; background: transparent; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; color: var(--muted);
+  border: 0; background: transparent; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; color: var(--muted);
 }
 .tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
 
-/* Raster */
+/* Raster: links eine angeheftete Seitenleiste mit allen Bedienelementen, rechts die Tafeln,
+   darunter die Kenndaten. So bleiben Bedienung und Bild gleichzeitig sichtbar. */
 .layout {
   max-width: 1480px; margin-inline: auto; display: grid; gap: 16px;
   grid-template-columns: 300px minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-areas: "prim stereo d3" "sec info info";
+  grid-template-areas: "side stereo d3" "side info info";
   align-items: start;
 }
-.prim { grid-area: prim; }
-.sec { grid-area: sec; }
+.figs { display: contents; }
+.side {
+  grid-area: side; display: grid; gap: 12px; min-width: 0;
+  position: sticky; top: 12px; max-height: calc(100dvh - 24px); overflow-y: auto;
+  overscroll-behavior: contain; scrollbar-width: thin; padding-bottom: 2px;
+}
 .p-stereo { grid-area: stereo; }
 .p-3d { grid-area: d3; }
 .info { grid-area: info; }
-@media (max-width: 1100px) {
-  .layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "prim prim" "stereo d3" "info sec"; }
-}
-@media (max-width: 720px) {
-  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "prim" "stereo" "d3" "info" "sec"; }
+.figswitch { display: none; }
+/* iPad hochkant: Seitenleiste neben den untereinander liegenden Tafeln */
+@media (max-width: 999px) {
+  .layout { grid-template-columns: 270px minmax(0, 1fr); grid-template-areas: "side stereo" "side d3" "side info"; }
 }
 
 /* Bedienfelder */
@@ -152,11 +157,46 @@ select {
 .linkbtn { border: 1px solid var(--line); background: var(--paper); border-radius: 7px; padding: 6px 10px; cursor: pointer; font-size: 0.85rem; justify-self: start; }
 .group-title { font-size: 0.78rem; color: var(--muted); margin: 4px 0 -4px; font-weight: 600; }
 
+/* Einklappbare Abschnitte der Seitenleiste */
+.sect:not([hidden]) ~ .sect:not([hidden]) { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 12px; }
+.sect > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600;
+  min-height: 24px;
+}
+.sect > summary::-webkit-details-marker { display: none; }
+.sect > summary::after { content: ''; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform 0.15s; margin-right: 4px; }
+.sect[open] > summary::after { transform: rotate(45deg); }
+.sect[open] > summary { margin-bottom: 10px; }
+.sect > summary .badge { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--accent); }
+.resetbtn { justify-self: start; border: 0; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 0.82rem; padding: 4px 2px; }
+.resetbtn:hover { color: var(--ink); }
+
+/* Umschalter Stereogramm/3D (nur Telefon) */
+.figswitch { border: 1px solid var(--line); border-radius: 8px; padding: 2px; background: var(--paper); }
+.figswitch button { border: 0; background: transparent; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; color: var(--muted); }
+.figswitch button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+/* Touch: grössere Ziele (Richtwert 44 pt; hier mindestens 40 px) */
+@media (pointer: coarse) {
+  .pgb { min-height: 40px; min-width: 44px; }
+  .tools button, .seg button, .linkbtn, .figswitch button, .tabs button { min-height: 40px; }
+  .check { min-height: 40px; }
+  .check input { width: 20px; height: 20px; }
+  select { min-height: 44px; }
+  .sect > summary { min-height: 40px; }
+  .resetbtn { min-height: 40px; }
+  .range input { height: 32px; }
+}
+.panel-foot { padding: 6px 12px 8px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); font-style: italic; }
+.only-coarse { display: none; }
+@media (pointer: coarse) { .only-coarse { display: inline; } .only-fine { display: none; } }
+
 /* Tafeln */
 .panel { margin: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; }
 .panel-head {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
-  padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--surface);
+  padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--surface); min-height: 50px;
 }
 .panel-head .t { font-weight: 600; }
 .panel-head .t small { font-weight: 400; color: var(--muted); margin-left: 6px; }
@@ -210,6 +250,32 @@ select {
 #form-select { font-size: 0.92rem; }
 .sel-hkl small { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size: 0.78rem; }
+/* Telefon: eine Tafel oben angeheftet (Umschalter Stereogramm/3D), Bedienung darunter */
+@media (max-width: 719px) {
+  .brand p { display: none; }
+  .tabs { width: 100%; }
+  .tabs button { flex: 1; }
+  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "figs" "side" "info"; gap: 12px; }
+  .figs {
+    display: block; grid-area: figs; position: sticky; top: 0; z-index: 5;
+    background: var(--bg); padding-top: 6px; margin-inline: -4px; padding-inline: 4px;
+    box-shadow: 0 8px 10px -10px rgb(0 0 0 / 0.35);
+  }
+  .side { position: static; max-height: none; overflow: visible; }
+  body[data-fig="stereo"] .p-3d, body[data-fig="3d"] .p-stereo { display: none; }
+  .figswitch { display: inline-flex; }
+  .panel-head .t, .export { display: none; }
+  .panel-head { padding: 6px; }
+  #stereo, #view3d { width: min(100%, 38svh); margin-inline: auto; }
+  .legend { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; padding: 5px 10px 6px; font-size: 0.75rem; scrollbar-width: none; }
+  .panel-foot { display: none; }
+  .wide-only { display: none; }
+  .panel-head { gap: 6px; }
+  .figswitch button { padding: 5px 8px; }
+  .tools { gap: 4px; flex-wrap: nowrap; }
+  .tools button { padding: 4px 6px; font-size: 0.78rem; }
+}
+@media (min-width: 720px) { .narrow-only { display: none; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -226,105 +292,134 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
 </header>
 
 <main class="layout">
-  <div class="prim card">
-    <section id="ctl-pg" class="stack">
-      <h2>Punktgruppe</h2>
-      <div id="pg-picker" class="picker" role="group" aria-label="Punktgruppe wählen"></div>
-    </section>
+  <aside class="side" aria-label="Bedienung">
+    <div class="prim card">
+      <section id="ctl-pg" class="stack">
+        <h2>Punktgruppe</h2>
+        <div id="pg-picker" class="picker" role="group" aria-label="Punktgruppe wählen"></div>
+      </section>
 
-    <section id="ctl-poly" class="stack" hidden>
-      <h2>Kristallform</h2>
-      <div class="field">
-        <label for="sys-select">Kristallsystem</label>
-        <select id="sys-select"></select>
+      <section id="ctl-poly" class="stack" hidden>
+        <h2>Kristallform</h2>
+        <div class="field">
+          <label for="sys-select">Kristallsystem</label>
+          <select id="sys-select"></select>
+        </div>
+        <div class="field">
+          <label for="form-select">Form (nach Punktgruppe)</label>
+          <select id="form-select"></select>
+        </div>
+        <div class="field">
+          <label for="preset-select">Lage</label>
+          <select id="preset-select"></select>
+        </div>
+        <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
+        <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
+        <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster)</label>
+        <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
+      </section>
+    </div>
+
+    <div class="sec card">
+      <details class="sect" id="ctl-pg-opts" open>
+        <summary>Symmetrie und allgemeine Lage</summary>
+        <div class="stack">
+          <label class="check"><input type="checkbox" id="pg-elements">Symmetriegerüst</label>
+          <label class="check"><input type="checkbox" id="pg-object">Objekt in allgemeiner Lage</label>
+          <label class="check"><input type="checkbox" id="pg-colorful">Farbig (Händigkeit, Spiegelebenen)</label>
+          <div class="range">
+            <label for="pg-theta">Polabstand ρ</label><output id="pg-theta-out"></output>
+            <input type="range" id="pg-theta" min="1" max="179" step="1">
+          </div>
+          <div class="range">
+            <label for="pg-phi">Azimut φ (ab a, im Gegenuhrzeigersinn)</label><output id="pg-phi-out"></output>
+            <input type="range" id="pg-phi" min="0" max="359.5" step="0.5">
+          </div>
+          <p class="hintline">Den markierten Pol im Stereogramm ziehen oder an eine Stelle tippen.</p>
+        </div>
+      </details>
+
+      <details class="sect" id="ctl-poly-lat" open hidden>
+        <summary>Gitter</summary>
+        <div class="stack">
+          <p class="hintline" id="lat-fixed">Kubisch: Das Gitter hat keine freien Parameter.</p>
+          <div class="range" id="row-lat-ba"><label for="lat-ba">b/a</label><output id="lat-ba-out"></output>
+            <input type="range" id="lat-ba" min="0.4" max="2.5" step="0.01"></div>
+          <div class="range" id="row-lat-ca"><label for="lat-ca">c/a</label><output id="lat-ca-out"></output>
+            <input type="range" id="lat-ca" min="0.25" max="3" step="0.01"></div>
+          <div class="range" id="row-lat-al"><label for="lat-al">α</label><output id="lat-al-out"></output>
+            <input type="range" id="lat-al" min="60" max="150" step="1"></div>
+          <div class="range" id="row-lat-be"><label for="lat-be">β</label><output id="lat-be-out"></output>
+            <input type="range" id="lat-be" min="60" max="150" step="1"></div>
+          <div class="range" id="row-lat-ga"><label for="lat-ga">γ</label><output id="lat-ga-out"></output>
+            <input type="range" id="lat-ga" min="60" max="150" step="1"></div>
+          <button class="linkbtn" id="poly-reset" type="button">Gitter und Abstände zurücksetzen</button>
+        </div>
+      </details>
+
+      <details class="sect" id="ctl-poly-open" open hidden>
+        <summary>Offene Form</summary>
+        <div class="stack">
+          <label class="check"><input type="checkbox" id="poly-open">Offene Form zeigen (Ergänzungsformen ausblenden)</label>
+          <div class="range"><label for="poly-aux">Abstand der Ergänzungsformen</label><output id="poly-aux-out"></output>
+            <input type="range" id="poly-aux" min="0.3" max="3" step="0.05"></div>
+        </div>
+      </details>
+
+      <details class="sect" id="sec-view" open>
+        <summary>Darstellung</summary>
+        <div class="stack">
+          <label class="check"><input type="checkbox" id="v-wulff">Wulffsches Netz</label>
+          <div class="range" id="row-wulffrot">
+            <label for="v-wulffrot">Netz drehen</label><output id="v-wulffrot-out"></output>
+            <input type="range" id="v-wulffrot" min="0" max="180" step="1">
+          </div>
+          <label class="check"><input type="checkbox" id="v-axes">Kristallachsen</label>
+          <p class="group-title">3D-Ansicht</p>
+          <label class="check"><input type="checkbox" id="v-sphere">Projektionskugel</label>
+          <label class="check"><input type="checkbox" id="v-plane">Stereogramm in der Äquatorebene</label>
+          <label class="check"><input type="checkbox" id="v-rays">Projektionsstrahlen (zum Süd- bzw. Nordpol)</label>
+          <label class="check" id="row-normals"><input type="checkbox" id="v-normals">Flächennormalen</label>
+          <div class="range" id="row-size"><label for="poly-size">Grösse des Kristalls</label><output id="poly-size-out"></output>
+            <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>
+        </div>
+      </details>
+
+      <details class="sect" id="sec-adv" hidden>
+        <summary>Erweitert <span class="badge" id="adv-badge"></span></summary>
+        <div class="stack">
+          <label class="check"><input type="checkbox" id="poly-zone">Zonen bestimmen (zwei Pole antippen)</label>
+          <label class="check"><input type="checkbox" id="poly-broken">Symmetrie brechen (alle Gitterparameter frei)</label>
+          <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
+        </div>
+      </details>
+    </div>
+    <button class="resetbtn" id="reset-all" type="button">Alle Einstellungen zurücksetzen</button>
+  </aside>
+
+  <div class="figs">
+    <figure class="panel p-stereo">
+      <div class="panel-head">
+        <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="stereo">Stereogramm</button><button type="button" data-fig="3d">3D</button></div>
+        <span class="t">Stereogramm<small id="stereo-sub">Blick ∥ c</small></span>
+        <div class="tools export"><button id="copy-svg" type="button" title="Stereogramm als SVG in die Zwischenablage kopieren">SVG kopieren</button><button id="save-svg" type="button" title="Stereogramm als SVG-Datei speichern">Speichern</button></div>
       </div>
-      <div class="field">
-        <label for="form-select">Form (nach Punktgruppe)</label>
-        <select id="form-select"></select>
+      <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
+      <div class="legend" id="legend"></div>
+    </figure>
+
+    <figure class="panel p-3d">
+      <div class="panel-head">
+        <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="stereo">Stereogramm</button><button type="button" data-fig="3d">3D</button></div>
+        <span class="t">3D-Konstruktion</span>
+        <div class="tools"><button data-view="oblique" type="button">Schräg</button><button data-view="top" type="button"><span class="wide-only">Von o</span><span class="narrow-only">O</span>ben</button><button data-view="side" type="button">Seitlich</button></div>
       </div>
-      <div class="field">
-        <label for="preset-select">Lage</label>
-        <select id="preset-select"></select>
-      </div>
-      <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
-      <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
-      <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
-      <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster)</label>
-      <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
-      <label class="check"><input type="checkbox" id="poly-zone">Zonen bestimmen (zwei Pole antippen)</label>
-    </section>
+      <div id="view3d"></div>
+      <div class="panel-foot"><span class="only-fine">Ziehen: drehen · Mausrad: zoomen</span><span class="only-coarse">Ein Finger: drehen · zwei Finger: zoomen</span></div>
+    </figure>
   </div>
-
-  <figure class="panel p-stereo">
-    <div class="panel-head">
-      <span class="t">Stereogramm<small id="stereo-sub">Blick ∥ c</small></span>
-      <div class="tools"><button id="copy-svg" type="button">SVG kopieren</button><button id="save-svg" type="button">SVG speichern</button></div>
-    </div>
-    <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
-    <div class="legend" id="legend"></div>
-  </figure>
-
-  <figure class="panel p-3d">
-    <div class="panel-head">
-      <span class="t">3D-Konstruktion<small>drehen: ziehen, zoomen: Mausrad</small></span>
-      <div class="tools"><button data-view="oblique" type="button">Schräg</button><button data-view="top" type="button">Von oben</button><button data-view="side" type="button">Seitlich</button></div>
-    </div>
-    <div id="view3d"></div>
-  </figure>
 
   <section class="info card" id="info" aria-live="polite"></section>
-
-  <div class="sec card stack">
-    <section id="ctl-pg-opts" class="stack">
-      <h2>Symmetrie und allgemeine Lage</h2>
-      <label class="check"><input type="checkbox" id="pg-elements">Symmetriegerüst</label>
-      <label class="check"><input type="checkbox" id="pg-object">Objekt in allgemeiner Lage</label>
-      <label class="check"><input type="checkbox" id="pg-colorful">Farbig (Händigkeit, Spiegelebenen)</label>
-      <div class="range">
-        <label for="pg-theta">Polabstand ρ</label><output id="pg-theta-out"></output>
-        <input type="range" id="pg-theta" min="1" max="179" step="1">
-      </div>
-      <div class="range">
-        <label for="pg-phi">Azimut φ (ab a, im Gegenuhrzeigersinn)</label><output id="pg-phi-out"></output>
-        <input type="range" id="pg-phi" min="0" max="359.5" step="0.5">
-      </div>
-      <p class="hintline">Den markierten Pol im Stereogramm ziehen oder an eine Stelle tippen.</p>
-    </section>
-    <section id="ctl-poly-opts" class="stack" hidden>
-      <h2>Gitter und Verzerrung</h2>
-      <p class="hintline" id="lat-fixed">Kubisch: Das Gitter hat keine freien Parameter.</p>
-      <div class="range" id="row-lat-ba"><label for="lat-ba">b/a</label><output id="lat-ba-out"></output>
-        <input type="range" id="lat-ba" min="0.4" max="2.5" step="0.01"></div>
-      <div class="range" id="row-lat-ca"><label for="lat-ca">c/a</label><output id="lat-ca-out"></output>
-        <input type="range" id="lat-ca" min="0.25" max="3" step="0.01"></div>
-      <div class="range" id="row-lat-al"><label for="lat-al">α</label><output id="lat-al-out"></output>
-        <input type="range" id="lat-al" min="60" max="150" step="1"></div>
-      <div class="range" id="row-lat-be"><label for="lat-be">β</label><output id="lat-be-out"></output>
-        <input type="range" id="lat-be" min="60" max="150" step="1"></div>
-      <div class="range" id="row-lat-ga"><label for="lat-ga">γ</label><output id="lat-ga-out"></output>
-        <input type="range" id="lat-ga" min="60" max="150" step="1"></div>
-      <label class="check"><input type="checkbox" id="poly-broken">Symmetrie brechen (freie Verzerrung)</label>
-      <h2>Offene Formen</h2>
-      <label class="check"><input type="checkbox" id="poly-open">Offene Form zeigen (Ergänzungsformen ausblenden)</label>
-      <div class="range"><label for="poly-aux">Abstand der Ergänzungsformen</label><output id="poly-aux-out"></output>
-        <input type="range" id="poly-aux" min="0.3" max="3" step="0.05"></div>
-      <div class="range"><label for="poly-size">Grösse</label><output id="poly-size-out"></output>
-        <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>
-      <button class="linkbtn" id="poly-reset" type="button">Gitter und Abstände zurücksetzen</button>
-    </section>
-    <h2>Darstellung</h2>
-    <label class="check"><input type="checkbox" id="v-wulff">Wulffsches Netz</label>
-    <div class="range" id="row-wulffrot">
-      <label for="v-wulffrot">Netz drehen</label><output id="v-wulffrot-out"></output>
-      <input type="range" id="v-wulffrot" min="0" max="180" step="1">
-    </div>
-    <label class="check"><input type="checkbox" id="v-axes">Kristallachsen</label>
-    <p class="group-title">3D-Ansicht</p>
-    <label class="check"><input type="checkbox" id="v-sphere">Projektionskugel</label>
-    <label class="check"><input type="checkbox" id="v-plane">Stereogramm in der Äquatorebene</label>
-    <label class="check"><input type="checkbox" id="v-rays">Projektionsstrahlen (zum Süd- bzw. Nordpol)</label>
-    <label class="check" id="row-normals"><input type="checkbox" id="v-normals">Flächennormalen</label>
-  </div>
 </main>
 
 <footer>Konventionen nach International Tables for Crystallography, Vol. A: a zeigt nach unten, b nach rechts, c zum Betrachter. Pole oberhalb der Projektionsebene als Punkt, unterhalb als Kreis. Hexagonale Achsen mit drei Indizes (hkl), wahlweise Miller-Bravais (hkil).</footer>

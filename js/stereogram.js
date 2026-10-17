@@ -184,6 +184,9 @@ export function buildSVG(scene, { standalone = false } = {}) {
   out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="${col.paper}"/>`);
   if (scene.wulff?.on) out.push(wulffNet(scene.wulff.rot || 0, col));
 
+  // Symmetriegerüst in eigener Gruppe; scene.faint: gedämpft (unter Flächenpolen im Polyedermodus)
+  const fc = scene.faint ? { ...col, ink: col.muted, mirror: col.muted, axis: col.muted } : col;
+  const fw = [];
   // Dünne Linien (ITA): liegende Symmetrieachsen als Durchmesser, im kubischen System
   // zusätzlich die Zonen {100} und {110}, soweit sie keine Spiegelebenen sind.
   let thin = '';
@@ -196,7 +199,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
     const p = greatCirclePath(n);
     if (p) thin += p + ' ';
   }
-  if (thin) out.push(`<path d="${thin}" fill="none" stroke="${col.ink}" stroke-width="1.1"/>`);
+  if (thin) fw.push(`<path d="${thin}" fill="none" stroke="${fc.ink}" stroke-width="${scene.faint ? 0.9 : 1.1}"/>`);
 
   // Spiegelebenen
   let mirr = '';
@@ -204,9 +207,11 @@ export function buildSVG(scene, { standalone = false } = {}) {
     const p = greatCirclePath(n);
     if (p) mirr += p + ' ';
   }
-  if (mirr) out.push(`<path d="${mirr}" fill="none" stroke="${col.mirror}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>`);
-  out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${scene.primitiveBold ? col.mirror : col.ink}" stroke-width="${scene.primitiveBold ? 2.8 : 1.2}"/>`);
-  out.push(`<g stroke="${col.ink}" stroke-width="1"><line x1="${C - 5}" y1="${C}" x2="${C + 5}" y2="${C}"/><line x1="${C}" y1="${C - 5}" x2="${C}" y2="${C + 5}"/></g>`);
+  if (mirr) fw.push(`<path d="${mirr}" fill="none" stroke="${fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}" stroke-linecap="round" stroke-linejoin="round"/>`);
+  if (scene.primitiveBold) fw.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}"/>`);
+  out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${col.ink}" stroke-width="1.2"/>`);
+  const centreTaken = scene.centreAtOrigin || (scene.axes || []).some((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
+  if (!centreTaken) out.push(`<g stroke="${col.ink}" stroke-width="1"><line x1="${C - 5}" y1="${C}" x2="${C + 5}" y2="${C}"/><line x1="${C}" y1="${C - 5}" x2="${C}" y2="${C + 5}"/></g>`);
 
   // Kristallachsen-Beschriftung
   for (const a of scene.axisLabels || []) {
@@ -234,10 +239,11 @@ export function buildSVG(scene, { standalone = false } = {}) {
       placed.push({ ax, q, ang, centre: ax.centre && alongZ });
     }
   }
-  const tr = (P) => `translate(${f(P.q.x)},${f(P.q.y)}) rotate(${f(P.ang)})`;
-  for (const P of placed) out.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, false, col, true)}</g>`);
-  for (const P of placed) out.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, col)}</g>`);
-  if (scene.centreAtOrigin) out.push(`<circle cx="${C}" cy="${C}" r="${f(SYM * 0.38)}" fill="${col.paper}" stroke="${col.axis}" stroke-width="1.4"/>`);
+  const tr = (P) => `translate(${f(P.q.x)},${f(P.q.y)}) rotate(${f(P.ang)})${scene.faint ? ' scale(0.8)' : ''}`;
+  for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, false, fc, true)}</g>`);
+  for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, fc)}</g>`);
+  if (scene.centreAtOrigin) fw.push(`<circle cx="${C}" cy="${C}" r="${f(SYM * 0.38)}" fill="${col.paper}" stroke="${fc.axis}" stroke-width="1.4"/>`);
+  if (fw.length) out.push(`<g${scene.faint ? ' opacity="0.55"' : ''}>${fw.join('')}</g>`);
 
   // Pole
   const poles = (scene.poles || []).map((P) => ({ ...P, q: project(P.p) }));

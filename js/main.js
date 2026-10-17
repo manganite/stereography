@@ -244,6 +244,7 @@ function renderPoly() {
     primitiveBold: !!fw && fw.mirrors.some((n) => Math.abs(n[2]) > 1 - 1e-6),
     mirrors: fw ? fw.mirrors : [], axes: fw ? fw.axes : [],
     zones: fw && C.sys === 'kubisch' && !C.isReduced ? C.zones : [],
+    faint: true,
     centreAtOrigin: !!fw && fw.centro && !fw.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6),
     poles: C.faces.map((f, i) => (f.hidden ? null : {
       p: f.normal, det: 1, idx: i, color: f.color2d, aux: f.role === 'aux',

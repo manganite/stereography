@@ -1,7 +1,7 @@
 {
   "name": "Stereographische Projektion",
   "short_name": "Stereogramm",
-  "description": "Stereogramme der 32 kristallographischen Punktgruppen und einfacher Polyeder mit gekoppelter 3D-Konstruktion.",
+  "description": "Stereogramme der 32 kristallographischen Punktgruppen und ihrer Kristallformen mit gekoppelter 3D-Konstruktion.",
   "lang": "de",
   "start_url": "./",
   "scope": "./",

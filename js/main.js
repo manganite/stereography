@@ -447,7 +447,7 @@ function updateInfoPoly(C, col) {
     ${sel}
     ${aux}
     ${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}
-    <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern das Polyeder, aber nicht das Stereogramm.</p>`;
+    <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern die Gestalt des Kristalls, aber nicht das Stereogramm.</p>`;
 }
 
 /** ITA-Indexmuster als HTML (z. B. h0-hl → h0h̄l); bei drei Indizes ohne i. */

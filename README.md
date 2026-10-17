@@ -6,7 +6,7 @@ Interaktive Lern-App für die Kristallographie-Vorlesung. Sie zeigt
 
 - die Stereogramme der **32 kristallographischen Punktgruppen** (Symmetriegerüst nach International Tables for Crystallography, Vol. A), inklusive der in ITA separat geführten Aufstellungen (monoklin Achse b/c, 321/312, 3m1/31m, 3̄m1/3̄1m, 4̄2m/4̄m2, 6̄m2/6̄2m),
 - ein **Objekt in allgemeiner Lage**, auf das alle Symmetrieoperationen der Gruppe angewendet werden (Pol im Stereogramm ziehbar),
-- Stereogramme einfacher **Polyeder** (Würfel/Quader, Oktaeder, Tetraeder, Rhombendodekaeder, Rhomboeder sowie 3-, 4- und 6-zählige Prismen, Pyramiden und Dipyramiden) mit einstellbarer Grösse, Seitenverhältnissen und Lage, mit einblendbaren Indizes (hkl) bzw. (hkil),
+- Stereogramme einfacher **Polyeder** (Würfel/Quader, Oktaeder, Tetraeder, Rhombendodekaeder, Rhomboeder sowie 3-, 4- und 6-zählige Prismen, Pyramiden und Dipyramiden) mit einstellbarer Grösse, Seitenverhältnissen und Lage, mit einblendbaren Indizes (hkl), bei hexagonalen Achsen wahlweise (hkil),
 - eine gekoppelte **3D-Konstruktion**: Projektionskugel, Flächennormalen, Projektionsstrahlen zum Süd- bzw. Nordpol und das Stereogramm in der Äquatorebene.
 
 ## Konventionen
@@ -16,7 +16,7 @@ Interaktive Lern-App für die Kristallographie-Vorlesung. Sie zeigt
 - Spiegelebenen als kräftige Linien; Spiegelebene senkrecht zur Blickrichtung als kräftiger Grundkreis.
 - Symbole und ihre Lage nach ITA A (2006), Kap. 1.4.5 und Tab. 10.1.2.2: Linsen tangential (Achse ⊥ Projektionsebene: ∥ a), Quadrat auf der Spitze, Dreieck mit Spitze nach oben bzw. bei geneigten Achsen radial nach aussen, 4̄ als offenes Quadrat mit Linse zwischen zwei Ecken, 6̄ als offenes Sechseck mit einbeschriebenem Dreieck. Der Punkt für das Inversionszentrum (2/m, 4/m, 6/m) erscheint nur an der Achse senkrecht zur Projektionsebene.
 - Dünne Linien für Symmetrieachsen in der Projektionsebene sowie, im kubischen System, für die Zonen {100} und {110}, soweit sie keine Spiegelebenen sind.
-- Hexagonale und trigonale Formen mit hexagonalen Achsen und Miller-Bravais-Indizes (hkil).
+- Hexagonale und trigonale Formen mit hexagonalen Achsen. Standard sind drei Indizes (hkl); Miller-Bravais-Indizes (hkil) mit i = −(h+k) lassen sich zuschalten.
 
 ## Veröffentlichen mit GitHub Pages
 

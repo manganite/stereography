@@ -255,6 +255,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       </div>
       <button class="linkbtn" id="poly-reset" type="button">Seitenverhältnisse zurücksetzen</button>
       <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
+      <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
       <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
     </section>
   </div>
@@ -309,7 +310,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
   </div>
 </main>
 
-<footer>Konventionen nach International Tables for Crystallography, Vol. A: a zeigt nach unten, b nach rechts, c zum Betrachter. Pole oberhalb der Projektionsebene als Punkt, unterhalb als Kreis. Hexagonale Achsen mit Miller-Bravais-Indizes (hkil).</footer>
+<footer>Konventionen nach International Tables for Crystallography, Vol. A: a zeigt nach unten, b nach rechts, c zum Betrachter. Pole oberhalb der Projektionsebene als Punkt, unterhalb als Kreis. Hexagonale Achsen mit drei Indizes (hkl), wahlweise Miller-Bravais (hkil).</footer>
 
 <script type="module" src="js/main.js"></script>
 </body>

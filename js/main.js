@@ -16,7 +16,7 @@ const deg = Math.PI / 180;
 const state = {
   mode: 'pg',
   pg: { id: '4/mmm', monoAxis: 'b', showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false },
-  poly: { formId: 'oktaeder', n: 4, variant: 0, ba: 1, ca: 1, height: 1.5, size: 0.75, presetId: '001', labels: true, showLower: true },
+  poly: { formId: 'oktaeder', n: 4, variant: 0, ba: 1, ca: 1, height: 1.5, size: 0.75, presetId: '001', labels: true, showLower: true, bravais: false },
   view: { wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
   selected: null,
 };
@@ -123,7 +123,7 @@ function refreshPolyControls() {
   if (nfold) {
     const hex = state.poly.n !== 4;
     const vs = nfoldVariants(form.type, state.poly.n);
-    $('variant-select').innerHTML = vs.map((s, i) => `<option value="${i}">${formLabelText(s, hex)}</option>`).join('');
+    $('variant-select').innerHTML = vs.map((s, i) => `<option value="${i}">${formLabelText(s, hex && state.poly.bravais)}</option>`).join('');
     if (state.poly.variant >= vs.length) state.poly.variant = 0;
     $('variant-select').value = String(state.poly.variant);
   }
@@ -194,7 +194,7 @@ function renderPoly() {
     ratios: { ba: state.poly.ba, ca: state.poly.ca }, height: state.poly.height, presetId: state.poly.presetId,
   });
   if (state.selected != null && state.selected >= P.faces.length) state.selected = null;
-  const labels = P.faces.map((f) => (state.poly.labels ? hklParts(f.hkl, P.hex) : null));
+  const labels = P.faces.map((f) => (state.poly.labels ? hklParts(f.hkl, P.hex && state.poly.bravais) : null));
   const scene = {
     col, fontFamily: FONT,
     wulff: { on: state.view.wulff, rot: state.view.wulffRot },
@@ -208,9 +208,10 @@ function renderPoly() {
   current = { kind: 'poly', P, scene };
   updateLegendPoly();
   updateInfoPoly(P);
+  $('row-bravais').hidden = !P.hex;
   $('stereo-sub').textContent = 'Blick ∥ ' + P.preset.name.replace(' ∥ Blickrichtung', '').replace(/ \(.*\)/, '');
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
-  const labels3d = state.poly.labels ? P.faces.map((f) => hklHTML(f.hkl, P.hex)) : null;
+  const labels3d = state.poly.labels ? P.faces.map((f) => hklHTML(f.hkl, P.hex && state.poly.bravais)) : null;
   view3d.showPolyhedron(P, col,
     { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55 },
     state.selected, labels3d);
@@ -294,7 +295,7 @@ function updateInfoPoly(P) {
   if (state.selected != null && P.faces[state.selected]) {
     const f = P.faces[state.selected];
     const { rho, phi } = poleAngles(f.normal);
-    sel = `<div class="selbox"><div class="sel-hkl">${hklHTML(f.hkl, P.hex)}</div>
+    sel = `<div class="selbox"><div class="sel-hkl">${hklHTML(f.hkl, P.hex && state.poly.bravais)}</div>
       <dl class="facts"><div><dt>ρ (Abstand vom Zentrum)</dt><dd class="num">${rho.toFixed(1)}°</dd></div>
       <div><dt>φ (Azimut ab a↓)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
   }
@@ -305,13 +306,13 @@ function updateInfoPoly(P) {
       : `tetragonal, c/a = ${P.lat.c.toFixed(3)}`;
   $('info').innerHTML = `
     <div class="info-head">
-      <div class="hm-big form-sym">${hklHTML(P.formSymbol, P.hex, ['{', '}'])}</div>
+      <div class="hm-big form-sym">${hklHTML(P.formSymbol, P.hex && state.poly.bravais, ['{', '}'])}</div>
       <div class="hm-meta"><span>${form.name}${form.kind === 'nfold' ? ', ' + state.poly.n + '-zählig' : ''}</span><span>${latText}</span></div>
     </div>
     <dl class="facts">
       <div><dt>Flächen</dt><dd class="num">${P.faces.length}</dd></div>
       <div><dt>davon Hauptform</dt><dd class="num">${fs.length}</dd></div>
-      ${extra.length ? `<div><dt>${extra[0].form === 'pedion' ? 'Pedion' : 'Pinakoid'}</dt><dd>${extra.map((f) => hklHTML(f.hkl, P.hex)).join(' ')}</dd></div>` : ''}
+      ${extra.length ? `<div><dt>${extra[0].form === 'pedion' ? 'Pedion' : 'Pinakoid'}</dt><dd>${extra.map((f) => hklHTML(f.hkl, P.hex && state.poly.bravais)).join(' ')}</dd></div>` : ''}
       <div><dt>Lage</dt><dd>${P.preset.name}</dd></div>
     </dl>
     ${sel}
@@ -440,6 +441,8 @@ function init() {
   bindRange('poly-height', state.poly, 'height', (v) => v.toFixed(2));
   bindRange('poly-size', state.poly, 'size', (v) => v.toFixed(2));
   bindCheck('poly-labels', state.poly, 'labels');
+  bindCheck('poly-bravais', state.poly, 'bravais');
+  $('poly-bravais').addEventListener('change', () => refreshPolyControls());
   bindCheck('poly-lower', state.poly, 'showLower');
   $('poly-reset').addEventListener('click', () => {
     Object.assign(state.poly, { ba: 1, ca: 1, height: 1.5, size: 0.75 });

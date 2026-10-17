@@ -365,6 +365,16 @@ export class View3D {
       eg.setAttribute('position', new THREE.Float32BufferAttribute(ep, 3));
       this.content.add(new THREE.LineSegments(eg, new THREE.LineBasicMaterial({ color: c(col.edge) })));
     });
+    // Flächenmuster (Flächensymmetrie): kleine asymmetrische Dreiecke, mit der Punktgruppe vervielfältigt
+    if (opts.motifs && opts.motifs.length) {
+      const mp = [];
+      for (const m of opts.motifs) for (const v of m.pts) mp.push(v[0] * k, v[1] * k, v[2] * k);
+      const mg = new THREE.BufferGeometry();
+      mg.setAttribute('position', new THREE.Float32BufferAttribute(mp, 3));
+      const mm = new THREE.Mesh(mg, new THREE.MeshBasicMaterial({ color: c(col.edge), side: THREE.DoubleSide }));
+      mm.renderOrder = 3;
+      this.content.add(mm);
+    }
     const sg = new THREE.SphereGeometry(0.026, 14, 10);
     if (opts.showNormals) {
       // Normale entlang n vom Lotfusspunkt auf der Flächenebene bis zum Flächenpol

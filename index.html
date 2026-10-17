@@ -201,6 +201,7 @@ select {
 .auxlist { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.9rem; }
 .auxlist li { display: inline-block; }
 .auxlist .sw, .warnbox .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.muted { color: var(--muted); font-weight: 400; }
 .form-name { font-weight: 600; color: var(--ink); font-size: 1.02rem; }
 .lbl-hkl.aux { color: var(--muted); }
 #form-select { font-size: 0.92rem; }
@@ -245,6 +246,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
       <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
       <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
+      <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster)</label>
       <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
     </section>
   </div>

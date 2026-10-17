@@ -222,6 +222,34 @@ export function orientationMatrix(A, preset) {
   return fromRows(xc, yc, zc);
 }
 
+/**
+ * Flächenmuster zur Anzeige der Flächensymmetrie: ein kleines asymmetrisches Dreieck in allgemeiner
+ * Lage auf einer Fläche der Hauptform, vervielfältigt mit allen Operationen der Punktgruppe.
+ * Auf jeder Fläche entstehen so |Flächensymmetrie| Muster in deren Anordnung.
+ * Rückgabe: [{pts:[3 Punkte], det}] in Bildschirmkoordinaten (vor Grössenskalierung).
+ */
+export function faceMotifs(faces, ops) {
+  const f0 = faces.find((f) => f.role === 'main');
+  if (!f0) return [];
+  const c = f0.center, n = f0.normal;
+  // Inkreisradius-Abschätzung: kleinster Abstand vom Flächenmittelpunkt zu den Kanten
+  let r = Infinity;
+  for (let i = 0; i < f0.verts.length; i++) {
+    const a = f0.verts[i], b = f0.verts[(i + 1) % f0.verts.length];
+    const e = sub(b, a), t = Math.max(0, Math.min(1, dot(sub(c, a), e) / dot(e, e)));
+    r = Math.min(r, norm(sub(c, add(a, scale(e, t)))));
+  }
+  const e1 = normalize(sub(f0.verts[0], c));
+  const e2 = cross(n, e1);
+  const dir = (ang) => add(scale(e1, Math.cos(ang)), scale(e2, Math.sin(ang)));
+  // allgemeine Lage: Winkel, die mit keiner kristallographischen Richtung zusammenfallen
+  const p = add(c, scale(dir(0.31), 0.42 * r));
+  const lift = scale(n, 0.004);
+  const tri = [p, add(p, scale(dir(1.23), 0.38 * r)), add(p, scale(dir(2.61), 0.2 * r))].map((v) => add(v, lift));
+  const det3 = (m) => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+  return ops.map((R) => ({ pts: tri.map((v) => mulVec(R, v)), det: Math.sign(det3(R)) }));
+}
+
 /** Kanonischer Repräsentant einer Bahn (für die Anzeige): möglichst positive Indizes. */
 function canonicalRep(hkls) {
   const score = (h) => h.reduce((s, x, i) => s + (x >= 0 ? 4 : 0) * (3 - i), 0) * 100 + h[0] * 9 + h[1] * 3 + h[2];
@@ -298,7 +326,9 @@ export function buildCrystal(params) {
 
   // Symmetrieoperationen in Bildschirmkoordinaten (für das Gerüst)
   const toScreen = (W) => mul(mul(O, cart(W)), Ot);
-  const groupScreen = analyzeGroup(Wred.map(toScreen));
+  const opsScreen = Wred.map(toScreen);
+  const groupScreen = analyzeGroup(opsScreen);
+  const motifs = faceMotifs(faces, opsScreen);
   const reduced = isReduced ? identifyGroup(Wred.map(cart)) : null;
 
   // Hauptachse der Restgruppe als Gitterrichtung (zur Anzeige)
@@ -323,7 +353,8 @@ export function buildCrystal(params) {
     entry, groupId, sys, hex, lat, A, faces, axes, preset, presets, zones,
     mainHKL, auxForms, lostMain,
     isReduced, reduced, reducedAxis, orbitsMain: orbitsMain.map((o) => ({ hkls: o, rep: canonicalRep(o) })),
-    framework: groupScreen,
+    framework: groupScreen, motifs,
+    motifsPerFace: Wred.length / Math.max(1, orbitsMain[0].length),
     auxReps: auxForms.map((a) => ({ hkls: a.hkls, rep: canonicalRep(a.hkls) })),
   };
 }

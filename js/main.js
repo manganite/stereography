@@ -675,7 +675,9 @@ function init() {
   let lastW = 0;
   new ResizeObserver(() => {
     const w = Math.round(svg.getBoundingClientRect().width);
-    if (w && Math.abs(w - lastW) > 4) { lastW = w; render(); }
+    // Verborgen (Telefon, 3D-Ansicht aktiv): Breite vergessen, damit beim Wiedereinblenden neu gezeichnet wird
+    if (!w) { lastW = 0; return; }
+    if (Math.abs(w - lastW) > 4) { lastW = w; render(); }
   }).observe(svg);
 
   $('tab-pg').addEventListener('click', () => setMode('pg'));

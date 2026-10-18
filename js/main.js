@@ -1321,6 +1321,59 @@ function init() {
   for (const b of document.querySelectorAll('.figswitch button')) b.addEventListener('click', () => setFig(b.dataset.fig));
   setFig(state.fig);
 
+  // Erste Schritte: beim ersten Besuch ohne Link sichtbar, wegklickbar, über „?“ wieder zu öffnen
+  const INTRO_KEY = 'stereo-intro';
+  const showIntro = (on) => { $('intro').hidden = !on; $('help-open').setAttribute('aria-expanded', String(on)); };
+  let introClosed = false;
+  try { introClosed = localStorage.getItem(INTRO_KEY) === 'zu'; } catch { /* Speicher nicht verfügbar */ }
+  showIntro(!introClosed && !hashActive);
+  $('intro-close').addEventListener('click', () => {
+    showIntro(false);
+    try { localStorage.setItem(INTRO_KEY, 'zu'); } catch { /* ignorieren */ }
+  });
+  $('help-open').addEventListener('click', () => {
+    const on = $('intro').hidden;
+    showIntro(on);
+    if (on) { $('intro').closest('.side').scrollTop = 0; $('intro').scrollIntoView({ block: 'nearest' }); }
+  });
+  const isPhone = () => window.matchMedia('(max-width: 719px)').matches;
+  const afterRender = (fn) => requestAnimationFrame(() => requestAnimationFrame(fn));
+  const galenaShown = () => state.mode === 'poly' && state.poly.example === 'galenit';
+  const loadGalena = () => {
+    setExample('galenit');
+    state.poly.tool = null; state.zoneSel = [];
+    state.poly.labels = true; $('poly-labels').checked = true;
+    for (const [id, key] of [['v-sphere', 'sphere'], ['v-plane', 'plane'], ['v-rays', 'rays'], ['v-normals', 'normals']]) {
+      state.view[key] = true; $(id).checked = true;
+    }
+    setMode('poly');
+  };
+  const selectFace = (hkl) => {
+    const C = current && current.kind === 'poly' ? current.C : null;
+    const i = C ? C.faces.findIndex((f) => f.role === 'main' && f.hkl.join() === hkl.join()) : -1;
+    if (i >= 0) { state.selected = i; render(); }
+  };
+  const STEPS = {
+    1: () => { loadGalena(); view3d.setView('oblique'); if (isPhone()) setFig('3d'); },
+    2: () => { if (!galenaShown()) loadGalena(); afterRender(() => selectFace([0, 0, 1])); if (isPhone()) setFig('stereo'); },
+    3: () => {
+      if (!galenaShown()) loadGalena();
+      afterRender(() => selectFace([0, 0, 1]));
+      view3d.setView('side'); if (isPhone()) setFig('3d');
+    },
+    4: () => {
+      if (!galenaShown()) loadGalena();
+      state.poly.frame = true; $('poly-frame').checked = true;
+      render(); if (isPhone()) setFig('stereo');
+    },
+  };
+  $('intro').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-step]');
+    if (!b) return;
+    STEPS[b.dataset.step]();
+    b.closest('li').classList.add('done');
+  });
+
   // Auf dem Telefon „Darstellung“ zunächst eingeklappt
   if (window.matchMedia('(max-width: 719px)').matches) $('sec-view').open = false;
 
@@ -1334,7 +1387,7 @@ function init() {
 
   $('reset-all').addEventListener('click', () => {
     resetting = true;
-    try { localStorage.removeItem('stereo-state'); } catch { /* ignorieren */ }
+    try { localStorage.removeItem('stereo-state'); localStorage.removeItem('stereo-intro'); } catch { /* ignorieren */ }
     location.replace(location.pathname + location.search);
   });
 

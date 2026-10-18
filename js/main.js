@@ -357,8 +357,13 @@ function updateLegendPG(info, col) {
   if (state.pg.showElements) {
     if (info.mirrors.length) items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.mirror}" stroke-width="3.2" stroke-linecap="round"/></svg>Spiegelebene</span>`);
     const icol = { ...col, axis: col.ink, paper: col.paper };
-    for (const a of elementSummary(info).axes) {
-      items.push(`<span class="lg">${symbolIcon(a.symbol, a.centre, icol, 18)}${axisLegendText(a.symbol, a.centre)}</span>`);
+    // Wie im Stereogramm: Punkt für das Inversionszentrum nur im Symbol der Achse ∥ c
+    const ORDER = ['6', '-6', '4', '-4', '3', '-3', '2'];
+    const drawn = new Set(info.axes.map((a) => a.symbol + '|' + (a.centre && Math.abs(a.dir[2]) > 1 - 1e-6 ? 'c' : '')));
+    for (const s of ORDER) {
+      for (const c of [true, false]) {
+        if (drawn.has(s + '|' + (c ? 'c' : ''))) items.push(`<span class="lg">${symbolIcon(s, c, icol, 18)}${axisLegendText(s, c)}</span>`);
+      }
     }
     if (current && current.scene && current.scene.centreAtOrigin) {
       items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="3.6" fill="${col.paper}" stroke="${col.ink}" stroke-width="1.3"/></svg>Inversionszentrum</span>`);

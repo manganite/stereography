@@ -6,12 +6,9 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
-### Korrigiert
+## [1.0.1] - 2026-10-18
 
-- **Formnamen in 4̄3m:** {112} heisst jetzt Tristetraeder (Dreiecksflächen), {221} Deltoiddodekaeder (Deltoide); die Namen waren vertauscht. Die Kennungen in Links (`f=-43m:c38` = {112}, `c39` = {221}) bleiben wie in v1.0.0. Ein Test prüft die Flächenform der kubischen Formen.
-- **Quellenangabe der Beispielkristalle:** Der Satz „Die Formen und das Gitter sind belegt“ entfällt; rekonstruierte Formen und frei gewählte Gitter stehen bei der jeweiligen Quelle. Magnesium: Seitenangabe Hoffmann S. 125–127.
-- **Turmalin:** Begründung der Hemimorphie vervollständigt (keine Operation von 3m führt c in −c über).
-- **Zone mit vier Indizes:** Zonenachse zuerst dreiindiziert berechnet, vierindiziert angegeben; Zonengleichung hu + kv + it + lw = 0.
+Korrekturen nach dem Abgleich der Erklärtexte mit Borchardt-Ott & Sowa, Hoffmann und ITA; Zeile „Piezoelektrisch“ in der Infobox der Punktgruppen.
 
 ### Hinzugefügt
 
@@ -23,6 +20,13 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 - **Poldistanz ρ nach Borchardt-Ott & Sowa (Abschn. 5.6):** Pole der unteren Halbkugel zählen vom Südpol mit negativem Vorzeichen (bisher ρ > 90°), in Anzeige und Adresse; alte Links mit `rho=` über 90° gelten weiter.
 - **Begriffe nach Borchardt-Ott & Sowa:** Poldistanz ρ, Normalenwinkel n und Flächenwinkel f, Zonengleichung, erzeugende Symmetrie; kubische Formnamen (Tetraedrisches Pentagondodekaeder, Tristetraeder, Trisoktaeder, Diploid, Gyroid), abweichende ITA-Namen in Klammern.
 - Quarz: Hinweis zu linken und rechten Formen präzisiert; Habitus: Fall mit zwei Verhältnissen unter 2/3 erklärt.
+
+### Korrigiert
+
+- **Formnamen in 4̄3m:** {112} heisst jetzt Tristetraeder (Dreiecksflächen), {221} Deltoiddodekaeder (Deltoide); die Namen waren vertauscht. Die Kennungen in Links (`f=-43m:c38` = {112}, `c39` = {221}) bleiben wie in v1.0.0. Ein Test prüft die Flächenform der kubischen Formen.
+- **Quellenangabe der Beispielkristalle:** Der Satz „Die Formen und das Gitter sind belegt“ entfällt; rekonstruierte Formen und frei gewählte Gitter stehen bei der jeweiligen Quelle. Magnesium: Seitenangabe Hoffmann S. 125–127.
+- **Turmalin:** Begründung der Hemimorphie vervollständigt (keine Operation von 3m führt c in −c über).
+- **Zone mit vier Indizes:** Zonenachse zuerst dreiindiziert berechnet, vierindiziert angegeben; Zonengleichung hu + kv + it + lw = 0.
 
 ## [1.0.0] - 2026-10-18
 
@@ -43,5 +47,6 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/manganite/stereography/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/manganite/stereography/releases/tag/v1.0.0

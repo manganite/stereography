@@ -209,26 +209,30 @@ export function buildSVG(scene, { standalone = false } = {}) {
   const fw = [];
   // Dünne Linien (ITA): liegende Symmetrieachsen als Durchmesser, im kubischen System
   // zusätzlich die Zonen {100} und {110}, soweit sie keine Spiegelebenen sind.
-  let thin = '';
+  // Farben je Element (Blickrichtung) optional: axis.color, mirror {n, color}; sonst Tinte
+  const byColor = new Map();
+  const addPath = (color, d) => byColor.set(color, (byColor.get(color) || '') + d + ' ');
   for (const ax of scene.axes || []) {
     if (Math.abs(ax.dir[2]) >= 1e-6) continue;
     const a = project(ax.dir), b = project(scale(ax.dir, -1));
-    thin += `M ${f(a.x)},${f(a.y)} L ${f(b.x)},${f(b.y)} `;
+    addPath((!scene.faint && ax.color) || fc.ink, `M ${f(a.x)},${f(a.y)} L ${f(b.x)},${f(b.y)}`);
   }
   for (const n of scene.zones || []) {
     const p = greatCirclePath(n);
-    if (p) thin += p + ' ';
+    if (p) addPath(fc.ink, p);
   }
-  if (thin) fw.push(`<path d="${thin}" fill="none" stroke="${fc.ink}" stroke-width="${scene.faint ? 0.9 : 1.1}"/>`);
+  for (const [color, d] of byColor) fw.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="${scene.faint ? 0.9 : 1.1}"/>`);
 
-  // Spiegelebenen
-  let mirr = '';
-  for (const n of scene.mirrors || []) {
+  // Spiegelebenen (nach Farbe gruppiert)
+  const mirrBy = new Map();
+  for (const m of scene.mirrors || []) {
+    const n = Array.isArray(m) ? m : m.n;
+    const color = (!Array.isArray(m) && !scene.faint && m.color) || fc.mirror;
     const p = greatCirclePath(n);
-    if (p) mirr += p + ' ';
+    if (p) mirrBy.set(color, (mirrBy.get(color) || '') + p + ' ');
   }
-  if (mirr) fw.push(`<path d="${mirr}" fill="none" stroke="${fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}" stroke-linecap="round" stroke-linejoin="round"/>`);
-  if (scene.primitiveBold) fw.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}"/>`);
+  for (const [color, d] of mirrBy) fw.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="${scene.faint ? 2 : 2.8}" stroke-linecap="round" stroke-linejoin="round"/>`);
+  if (scene.primitiveBold) fw.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${(!scene.faint && scene.primitiveColor) || fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}"/>`);
   out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${col.ink}" stroke-width="1.2"/>`);
   const centreTaken = scene.centreAtOrigin || (scene.axes || []).some((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
   if (!centreTaken) out.push(`<g stroke="${col.ink}" stroke-width="1"><line x1="${C - 5}" y1="${C}" x2="${C + 5}" y2="${C}"/><line x1="${C}" y1="${C - 5}" x2="${C}" y2="${C + 5}"/></g>`);
@@ -261,7 +265,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   }
   const tr = (P) => `translate(${f(P.q.x)},${f(P.q.y)}) rotate(${f(P.ang)})${scene.faint ? ' scale(0.8)' : ''}`;
   for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, false, fc, true)}</g>`);
-  for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, fc)}</g>`);
+  for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, !scene.faint && P.ax.color ? { ...fc, axis: P.ax.color } : fc)}</g>`);
   if (scene.centreAtOrigin) fw.push(`<circle cx="${C}" cy="${C}" r="${f(SYM * 0.38)}" fill="${col.paper}" stroke="${fc.axis}" stroke-width="1.4"/>`);
   if (fw.length) out.push(`<g${scene.faint ? ' opacity="0.55"' : ''}>${fw.join('')}</g>`);
 

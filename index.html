@@ -41,6 +41,10 @@
   --ax3: #b7791f;
   --ax4: #6b46c1;
   --ax6: #c53030;
+  /* Blickrichtungen (Positionen im Hermann-Mauguin-Symbol) */
+  --dir1: #6b46c1;
+  --dir2: #2f855a;
+  --dir3: #a16207;
   --font-display: 'Source Serif 4', 'Georgia', 'Times New Roman', serif;
   --font-ui: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
@@ -51,6 +55,7 @@
     --line: #2a3541; --accent: #4fa3ff; --accent2: #ff8a4c; --upper: #79b0ff; --mirror: #4fa3ff;
     --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
     --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
+    --dir1: #a78bfa; --dir2: #48bb78; --dir3: #e0b341;
     color-scheme: dark;
   }
 }
@@ -59,6 +64,7 @@
   --line: #2a3541; --accent: #4fa3ff; --accent2: #ff8a4c; --upper: #79b0ff; --mirror: #4fa3ff;
   --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
   --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
+  --dir1: #a78bfa; --dir2: #48bb78; --dir3: #e0b341;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -151,6 +157,27 @@ select {
 .stereo-tools button:hover { border-color: var(--muted); }
 .stereo-tools button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
 .lg .sym-icon { flex: none; }
+/* Blickrichtungen: Infobox und Schalter in der 3D-Ansicht */
+.dirlist { display: grid; gap: 8px 18px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.dirrow { border-left: 4px solid var(--dc, var(--line)); padding: 4px 0 4px 10px; }
+.dirrow.none { opacity: 0.65; }
+.dirhead { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-bottom: 4px; }
+.dirlab { font-weight: 600; color: var(--dc, var(--ink)); }
+.dirhm { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; color: var(--dc, var(--ink)); }
+.dirn { color: var(--muted); font-size: 0.82rem; }
+.dirrow ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.dirrow li { display: flex; align-items: center; gap: 8px; font-size: 0.92rem; }
+.hmpos { color: var(--dc, inherit); }
+.dir-tools { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; pointer-events: none; }
+.dir-tools > * { pointer-events: auto; }
+.dir-tools .cap { font-size: 0.72rem; color: var(--muted); background: color-mix(in srgb, var(--paper) 85%, transparent); padding: 2px 4px; border-radius: 4px; pointer-events: none; }
+.dir-tools button {
+  display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--dc, var(--line)); background: var(--paper); color: var(--ink);
+  border-radius: 999px; padding: 3px 10px 3px 7px; font-size: 0.8rem; cursor: pointer; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}
+.dir-tools button .sw { width: 10px; height: 10px; border-radius: 50%; background: var(--dc, var(--muted)); }
+.dir-tools button[aria-pressed="false"] { opacity: 0.55; text-decoration: line-through; border-style: dashed; }
+.dir-tools button[aria-pressed="false"] .sw { background: transparent; border: 1.5px solid var(--dc, var(--muted)); }
 .check.sub { padding-left: 26px; font-size: 0.88rem; }
 .check { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 0.92rem; }
 .check input { width: 17px; height: 17px; accent-color: var(--accent); margin: 0; }
@@ -190,7 +217,7 @@ select {
 /* Touch: grössere Ziele (Richtwert 44 pt; hier mindestens 40 px) */
 @media (pointer: coarse) {
   .pgb { min-height: 40px; min-width: 44px; }
-  .tools button, .seg button, .linkbtn, .figswitch button, .tabs button, .stereo-tools button { min-height: 40px; }
+  .tools button, .seg button, .linkbtn, .figswitch button, .tabs button, .stereo-tools button, .dir-tools button { min-height: 40px; }
   .check { min-height: 40px; }
   .check input { width: 20px; height: 20px; }
   select { min-height: 44px; }
@@ -284,6 +311,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
   .legend { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; padding: 5px 10px 6px; font-size: 0.75rem; scrollbar-width: none; }
   .panel-foot { display: none; }
   .legend .lg.hint { display: none; }
+  .dir-tools .cap { display: none; }
   .wide-only { display: none; }
   .panel-head { gap: 6px; }
   .figswitch button { padding: 5px 8px; }
@@ -342,7 +370,8 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
         <div class="stack">
           <label class="check"><input type="checkbox" id="pg-elements">Symmetriegerüst</label>
           <label class="check"><input type="checkbox" id="pg-object">Objekt in allgemeiner Lage</label>
-          <label class="check"><input type="checkbox" id="pg-colorful">Farbig (Händigkeit, Spiegelebenen)</label>
+          <label class="check"><input type="checkbox" id="pg-dircolors">Symmetrieelemente nach Blickrichtung färben</label>
+          <label class="check"><input type="checkbox" id="pg-colorful">Pole nach Händigkeit färben</label>
           <div class="range">
             <label for="pg-theta">Polabstand ρ</label><output id="pg-theta-out"></output>
             <input type="range" id="pg-theta" min="1" max="179" step="1">
@@ -428,6 +457,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       </div>
       <div class="stereo-wrap">
         <div id="view3d"></div>
+        <div class="dir-tools" id="v3d-dirs" role="group" aria-label="Blickrichtungen in 3D ein- und ausblenden" hidden></div>
         <div class="stereo-tools" id="v3d-tools" role="toolbar" aria-label="Werkzeuge" hidden>
           <button class="tool-toggle" data-tool="zone" id="zone-btn-3d" type="button" aria-pressed="false" title="Zone bestimmen: zwei Flächen oder Pole hier oder zwei Pole im Stereogramm antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
           <button class="tool-toggle" data-tool="angle" id="angle-btn-3d" type="button" aria-pressed="false" title="Winkel messen: zwei Pole oder Flächen antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><path d="M-6 5 L6 5 M-6 5 L4 -6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M0 5 A 6 6 0 0 0 -2.2 0.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Winkel</button>

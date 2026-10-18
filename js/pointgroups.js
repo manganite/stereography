@@ -202,6 +202,51 @@ export function orbit(ops, p0) {
   return ops.map((m, i) => ({ p: mulVec(m, p0), det: det(m), op: i }));
 }
 
+/**
+ * Blickrichtungen (Symmetrierichtungen) nach ITA A, Tab. 2.1.3.1: Die Positionen im vollen
+ * Hermann-Mauguin-Symbol stehen für Klassen äquivalenter Richtungen. Innerhalb einer Klasse sind
+ * die Symmetrieelemente durch die Gruppe selbst ineinander überführbar (die charakteristische
+ * Achse des Kristallsystems vertauscht die Richtungen), in verschiedenen Klassen nicht.
+ * Rückgabe: [{ pos, label (HTML), dirs, hm, axes:[...], mirrors:[normale] }]; Triklin: [].
+ * Jede Achse erhält zusätzlich axis.cls = pos, info.mirrorCls[i] = pos des i-ten Spiegels.
+ */
+const OV = (d) => `<span class="ov">${d}</span>`;
+function directionPositions(system) {
+  const h = (u, v) => normalize(add(scale(HEX_A, u), scale(HEX_B, v)));
+  const n = normalize;
+  switch (system) {
+    case 'monoklin': case 'orthorhombisch':
+      return [{ label: '[100]', dirs: [X] }, { label: '[010]', dirs: [Y] }, { label: '[001]', dirs: [Z] }];
+    case 'tetragonal':
+      return [{ label: '[001]', dirs: [Z] }, { label: '⟨100⟩', dirs: [X, Y] }, { label: '⟨110⟩', dirs: [n([1, 1, 0]), n([1, -1, 0])] }];
+    case 'trigonal': case 'hexagonal':
+      return [{ label: '[001]', dirs: [Z] }, { label: '⟨100⟩', dirs: [h(1, 0), h(0, 1), h(-1, -1)] },
+        { label: `⟨1${OV(1)}0⟩`, dirs: [h(1, -1), h(1, 2), h(-2, -1)] }];
+    case 'kubisch':
+      return [{ label: '⟨100⟩', dirs: [X, Y, Z] },
+        { label: '⟨111⟩', dirs: [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1]].map(n) },
+        { label: '⟨110⟩', dirs: [[1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]].map(n) }];
+    default: return [];
+  }
+}
+export function symmetryDirections(info) {
+  const pos = directionPositions(info.system);
+  const parts = info.full.split(' ');
+  const classes = pos.map((p, i) => ({ pos: i, label: p.label, dirs: p.dirs, hm: parts[i] || null, axes: [], mirrors: [] }));
+  const find = (v) => classes.findIndex((c) => c.dirs.some((d) => Math.abs(Math.abs(d[0] * v[0] + d[1] * v[1] + d[2] * v[2]) - 1) < 1e-6));
+  for (const a of info.axes) {
+    const k = find(a.dir);
+    a.cls = k;
+    if (k >= 0) classes[k].axes.push(a);
+  }
+  info.mirrorCls = info.mirrors.map((m) => {
+    const k = find(m);
+    if (k >= 0) classes[k].mirrors.push(m);
+    return k;
+  });
+  return classes;
+}
+
 /** Zusammenfassung der Symmetrieelemente für die Anzeige. */
 export function elementSummary(info) {
   const order = ['6', '-6', '4', '-4', '3', '-3', '2'];

@@ -45,6 +45,7 @@
   --dir1: #6b46c1;
   --dir2: #2f855a;
   --dir3: #a16207;
+  --fc0: #2b6cb0; --fc1: #c05621; --fc2: #2f855a; --fc3: #b83280; --fc4: #6b46c1; --fc5: #b7791f; --fc6: #2c7a7b; --fc7: #718096;
   --font-display: 'Source Serif 4', 'Georgia', 'Times New Roman', serif;
   --font-ui: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
@@ -56,6 +57,7 @@
     --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
     --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
     --dir1: #a78bfa; --dir2: #48bb78; --dir3: #e0b341;
+    --fc0: #63b3ed; --fc1: #f6ad55; --fc2: #68d391; --fc3: #f687b3; --fc4: #b794f4; --fc5: #ecc94b; --fc6: #4fd1c5; --fc7: #a0aec0;
     color-scheme: dark;
   }
 }
@@ -65,6 +67,7 @@
   --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
   --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
   --dir1: #a78bfa; --dir2: #48bb78; --dir3: #e0b341;
+  --fc0: #63b3ed; --fc1: #f6ad55; --fc2: #68d391; --fc3: #f687b3; --fc4: #b794f4; --fc5: #ecc94b; --fc6: #4fd1c5; --fc7: #a0aec0;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -264,6 +267,12 @@ select {
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 8px 12px 10px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); }
 .lg { display: inline-flex; align-items: center; gap: 6px; }
 .lg .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.formtab { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin: 2px 0 10px; }
+.formtab th { text-align: left; font-weight: 500; color: var(--muted); font-size: 0.8rem; padding: 3px 8px 3px 0; border-bottom: 1px solid var(--line); }
+.formtab td { padding: 4px 8px 4px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.formtab td.num { font-variant-numeric: tabular-nums; }
+.formtab .sw, .exd .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: baseline; }
+.formtab tr.gone td { color: var(--muted); }
 .lg.hint { font-style: italic; }
 
 /* Kenndaten */
@@ -356,6 +365,10 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       <section id="ctl-poly" class="stack" hidden>
         <h2>Kristallform</h2>
         <div class="field">
+          <label for="ex-select">Beispielkristall</label>
+          <select id="ex-select"></select>
+        </div>
+        <div class="field">
           <label for="sys-select">Kristallsystem</label>
           <select id="sys-select"></select>
         </div>
@@ -401,7 +414,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
         <div class="stack">
           <p class="hintline" id="lat-fixed">Kubisch: Das Gitter hat keine freien Parameter.</p>
           <div class="range" id="row-lat-ba"><label for="lat-ba">b/a</label><output id="lat-ba-out"></output>
-            <input type="range" id="lat-ba" min="0.4" max="2.5" step="0.01"></div>
+            <input type="range" id="lat-ba" min="0.4" max="3" step="0.01"></div>
           <div class="range" id="row-lat-ca"><label for="lat-ca">c/a</label><output id="lat-ca-out"></output>
             <input type="range" id="lat-ca" min="0.25" max="3" step="0.01"></div>
           <div class="range" id="row-lat-al"><label for="lat-al">α</label><output id="lat-al-out"></output>
@@ -410,10 +423,11 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
             <input type="range" id="lat-be" min="60" max="150" step="1"></div>
           <div class="range" id="row-lat-ga"><label for="lat-ga">γ</label><output id="lat-ga-out"></output>
             <input type="range" id="lat-ga" min="60" max="150" step="1"></div>
-          <label class="check"><input type="checkbox" id="poly-broken">Symmetrie brechen (alle Gitterparameter frei)</label>
+          <label class="check" id="row-broken"><input type="checkbox" id="poly-broken">Symmetrie brechen (alle Gitterparameter frei)</label>
           <p class="group-title">Gestalt</p>
           <div class="range"><label for="poly-size">Grösse des Kristalls</label><output id="poly-size-out"></output>
             <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>
+          <div class="stack" id="ctl-ex-dists" hidden></div>
           <div class="stack" id="ctl-poly-open" hidden>
             <label class="check"><input type="checkbox" id="poly-open">Offene Form zeigen (Ergänzungsformen ausblenden)</label>
             <div class="range"><label for="poly-aux">Abstand der Ergänzungsformen</label><output id="poly-aux-out"></output>

@@ -6,11 +6,12 @@ import {
 import {
   buildCrystal, habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
 } from './polyhedra.js';
-import { CATALOG, formName, formEig, entryById } from './forms.js';
+import { CATALOG, formName, formEig, entryById, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
 import { hmHTML, hmText, hklParts, hklHTML, indices } from './format.js';
 import { cross, normalize, mulVec } from './linalg.js';
 import { View3D } from './view3d.js';
+import { EXAMPLES, exampleById } from './examples.js';
 
 const $ = (id) => document.getElementById(id);
 const deg = Math.PI / 180;
@@ -27,6 +28,7 @@ const state = {
   poly: {
     system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
     size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: false, tool: null,
+    example: null, exScale: {}, // Beispielkristall und Faktoren der Formabstände
   },
   view: { dirColors: true, wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
   selected: null,
@@ -69,9 +71,14 @@ function stateToHash() {
     q.set('m', 'form');
     const sys = state.poly.system;
     q.set('sys', sys);
-    q.set('f', currentEntryId());
+    const ex = currentExample();
+    if (ex) {
+      q.set('bsp', ex.id);
+      const fs = exFactors(ex);
+      if (fs.some((x) => Math.abs(x - 1) > 1e-6)) q.set('ab', fs.map((x) => String(Math.round(x * 100) / 100)).join(','));
+    } else q.set('f', currentEntryId());
     if (state.poly.presetId !== orientationPresets(sys)[0].id) q.set('lage', state.poly.presetId);
-    const lat = currentLat(), l0 = LATTICE_DEFAULTS[sys];
+    const lat = currentLat(), l0 = { ...LATTICE_DEFAULTS[sys], ...(ex ? ex.lat : {}) };
     for (const k of LAT_KEYS) if (Math.abs(lat[k] - l0[k]) > 1e-6) q.set(k, String(Math.round(lat[k] * 100) / 100));
     bools(URL_FORM, state.poly, d.poly);
     if (Math.abs(state.poly.auxDist - d.poly.auxDist) > 1e-6) q.set('abstand', String(state.poly.auxDist));
@@ -99,8 +106,13 @@ function applyHash(hash) {
     const sys = q.get('sys');
     if (sys && Object.prototype.hasOwnProperty.call(LATTICE_DEFAULTS, sys)) state.poly.system = sys;
     if (q.has('f')) state.poly.entryBySys[state.poly.system] = q.get('f');
+    const ex = exampleById(q.get('bsp'));
+    if (ex && ex.sys === state.poly.system) {
+      state.poly.example = ex.id;
+      if (q.has('ab')) state.poly.exScale[ex.id] = q.get('ab').split(',').map((x) => num(x, 0.5, 2) ?? 1);
+    }
     if (q.has('lage')) state.poly.presetId = q.get('lage');
-    const lat = { ...LATTICE_DEFAULTS[state.poly.system] };
+    const lat = { ...LATTICE_DEFAULTS[state.poly.system], ...(ex && ex.sys === state.poly.system ? ex.lat : {}) };
     for (const k of LAT_KEYS) {
       if (!q.has(k)) continue;
       const v = k === 'ba' || k === 'ca' ? num(q.get(k), 0.25, 3) : num(q.get(k), 60, 150);
@@ -144,6 +156,8 @@ try {
     state.mode = saved.mode === 'poly' ? 'poly' : 'pg';
     if (!POINT_GROUPS.some((g) => g.id === state.pg.id)) state.pg.id = 'mm2';
     if (!Array.isArray(state.pg.hideDirs)) state.pg.hideDirs = [];
+    if (!exampleById(state.poly.example)) state.poly.example = null;
+    if (!state.poly.exScale || typeof state.poly.exScale !== 'object') state.poly.exScale = {};
   }
 } catch { /* Speicher nicht verfügbar */ }
 if (location.hash.length > 1) applyHash(location.hash); // Link hat Vorrang
@@ -173,8 +187,19 @@ function palette() {
     ray: g('ray'), crystal: g('crystal'), crystal2: g('crystal2'), edge: g('edge'),
     normal: g('normal'), sphere: g('muted'), mirror3d: g('mirror'),
     ax2: g('ax2'), ax3: g('ax3'), ax4: g('ax4'), ax6: g('ax6'),
+    form: [0, 1, 2, 3, 4, 5, 6, 7].map((i) => g('fc' + i)),
   };
 }
+/** Farbe der i-ten Form eines Beispielkristalls (Pol) bzw. ihrer Flächen in 3D (aufgehellt). */
+const formColor = (col, i) => col.form[i % col.form.length];
+function mixHex(a, b, t) {
+  const p = (h) => { const x = h.replace('#', ''); const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x; return [0, 2, 4].map((k) => parseInt(f.slice(k, k + 2), 16)); };
+  try {
+    const A = p(a), Bc = p(b);
+    return '#' + A.map((v, k) => Math.round(v + (Bc[k] - v) * t).toString(16).padStart(2, '0')).join('');
+  } catch { return a; }
+}
+const formFill = (col, i) => mixHex(formColor(col, i), col.paper, 0.38);
 const FONT = "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif";
 
 // ------------------------------------------------------------------ Bedienelemente aufbauen
@@ -292,6 +317,36 @@ const currentEntryId = () => {
   const same = CATALOG.find((x) => SYSTEM_OF[x.pg] === sys && x.type === e.type && formListed(x));
   return same ? same.id : DEFAULT_ENTRY[sys];
 };
+/** Beispielkristall (nur gültig, solange sein Kristallsystem gewählt ist). */
+const currentExample = () => {
+  const ex = exampleById(state.poly.example);
+  return ex && ex.sys === state.poly.system ? ex : null;
+};
+const exFactors = (ex) => {
+  const f = state.poly.exScale[ex.id];
+  return ex.forms.map((_, i) => (Array.isArray(f) && Number.isFinite(f[i]) ? f[i] : 1));
+};
+/** Formen des Beispiels mit den eingestellten Abständen (die erste Form ist die Bezugsform). */
+const exForms = (ex) => {
+  const fs = exFactors(ex);
+  return ex.forms.map((f, i) => (f.t != null ? { hkl: f.hkl, t: f.t * fs[i] } : { hkl: f.hkl, r: f.r * fs[i] }));
+};
+function setExample(id) {
+  const ex = exampleById(id);
+  state.poly.example = ex ? ex.id : null;
+  state.selected = null; state.zoneSel = [];
+  if (ex) {
+    state.poly.system = ex.sys;
+    state.poly.lats[ex.sys] = { ...LATTICE_DEFAULTS[ex.sys], ...(ex.lat || {}) };
+    delete state.poly.exScale[ex.id];
+    state.poly.broken = false; state.poly.open = false;
+    state.poly.presetId = orientationPresets(ex.sys)[0].id;
+    $('poly-broken').checked = false; $('poly-open').checked = false;
+  }
+  $('sys-select').value = state.poly.system;
+  refreshPolyControls();
+}
+
 const currentLat = () => {
   const sys = state.poly.system;
   if (!state.poly.lats[sys]) state.poly.lats[sys] = { ...LATTICE_DEFAULTS[sys] };
@@ -312,12 +367,54 @@ function buildFormSelect() {
       .map((e) => `<option value="${e.id}">${formName(e)} ${formLabelText(e.hkl, hex4)}</option>`).join('');
     return `<optgroup label="Punktgruppe ${hmText(g.hm)} (${g.sf})">${opts}</optgroup>`;
   }).join('');
-  $('form-select').value = currentEntryId();
+  const ex = currentExample();
+  if (ex) $('form-select').insertAdjacentHTML('afterbegin', `<option value="">Kombination: ${ex.name}</option>`);
+  $('form-select').value = ex ? '' : currentEntryId();
+}
+
+function buildExampleSelect() {
+  // Reihenfolge wie in examples.js (Galenit als Standardbeispiel zuerst), gruppiert nach System
+  const order = [...new Set(EXAMPLES.map((x) => x.sys))];
+  const bySys = order.map((sys) => [sys, EXAMPLES.filter((x) => x.sys === sys)]);
+  $('ex-select').innerHTML = '<option value="">– keiner (einzelne Form) –</option>' + bySys.map(([sys, l]) =>
+    `<optgroup label="${SYSTEM_NAMES[sys]}">${l.map((x) => `<option value="${x.id}">${x.name}${x.formula ? ' (' + x.formula + ')' : ''}, ${hmText(groupOf(x.pg).hm)}</option>`).join('')}</optgroup>`).join('');
+  const ex = currentExample();
+  $('ex-select').value = ex ? ex.id : '';
+}
+
+/** Schieberegler für die Abstände der Formen eines Beispielkristalls. */
+function buildExDists() {
+  const box = $('ctl-ex-dists');
+  const ex = currentExample();
+  box.hidden = !ex;
+  if (!ex) { box.innerHTML = ''; return; }
+  const col = palette();
+  const fs = exFactors(ex);
+  const hex4 = isHexSystem(ex.sys) && state.poly.bravais;
+  box.innerHTML = '<p class="group-title">Abstände der Formen</p>' + ex.forms.slice(1).map((f, j) => {
+    const i = j + 1;
+    return `<div class="range exd"><label for="exd-${i}"><i class="sw" style="background:${formColor(col, i)}"></i>${hklHTML(f.hkl, hex4, ['{', '}'])}</label><output id="exd-${i}-out">${fs[i].toFixed(2)}</output>
+      <input type="range" id="exd-${i}" min="0.5" max="2" step="0.01" value="${fs[i]}"></div>`;
+  }).join('') + `<p class="hintline">Faktor auf den Zentralabstand der Form; ${hklHTML(ex.forms[0].hkl, hex4, ['{', '}'])} bleibt fest.</p>`;
+  box.querySelectorAll('input[type=range]').forEach((el) => {
+    el.addEventListener('input', () => {
+      const i = Number(el.id.split('-')[1]);
+      const arr = exFactors(ex);
+      arr[i] = Number(el.value);
+      state.poly.exScale[ex.id] = arr;
+      $('exd-' + i + '-out').textContent = arr[i].toFixed(2);
+      render();
+    });
+  });
 }
 
 function refreshPolyControls() {
   const sys = state.poly.system;
+  buildExampleSelect();
   buildFormSelect();
+  buildExDists();
+  $('row-broken').hidden = !!currentExample();
+  syncFormHint();
   const presets = orientationPresets(sys);
   $('preset-select').innerHTML = presets.map((p) => `<option value="${p.id}">${p.name}</option>`).join('');
   if (!presets.some((p) => p.id === state.poly.presetId)) state.poly.presetId = presets[0].id;
@@ -433,17 +530,28 @@ const ORBIT_COLORS = (col) => [col.accent, col.accent2, col.ax2, col.ax4, col.ax
 
 function renderPoly() {
   const col = palette();
-  const C = buildCrystal({
-    entryId: currentEntryId(), lat: currentLat(), broken: state.poly.broken,
-    auxDist: state.poly.auxDist, presetId: state.poly.presetId,
-  });
+  const ex = currentExample();
+  const C = buildCrystal(ex
+    ? { groupId: ex.pg, forms: exForms(ex), lat: currentLat(), broken: false, auxDist: state.poly.auxDist, presetId: state.poly.presetId }
+    : { entryId: currentEntryId(), lat: currentLat(), broken: state.poly.broken, auxDist: state.poly.auxDist, presetId: state.poly.presetId });
+  C.example = ex;
+  // Auswahl über die Indizes weiterführen: Flächen können wegfallen oder neu nummeriert werden
+  // (Abstände, Gitter), ein Index allein würde dann eine andere Fläche treffen.
+  if (current && current.kind === 'poly') {
+    const key = (f) => (f ? f.role + ':' + f.hkl.join(',') : null);
+    const map = new Map(C.faces.map((f, i) => [key(f), i]));
+    const remap = (k) => { const i = map.get(key(current.C.faces[k])); return i === undefined ? null : i; };
+    if (state.selected != null) state.selected = remap(state.selected);
+    const zs = state.zoneSel.map(remap);
+    state.zoneSel = zs.some((k) => k == null) ? [] : zs;
+  }
   const hex4 = C.hex && state.poly.bravais;
   const oc = ORBIT_COLORS(col);
   const multi = C.isReduced && C.orbitsMain.length > 1;
   C.faces.forEach((f) => {
     f.hidden = state.poly.open && f.role === 'aux';
-    f.color2d = f.role === 'aux' ? col.muted : multi ? oc[f.orbit % oc.length] : null;
-    f.color3d = f.role === 'aux' ? col.crystal2 : multi ? oc[f.orbit % oc.length] : col.crystal;
+    f.color2d = f.role === 'aux' ? col.muted : ex ? formColor(col, f.form) : multi ? oc[f.orbit % oc.length] : null;
+    f.color3d = f.role === 'aux' ? col.crystal2 : ex ? formFill(col, f.form) : multi ? oc[f.orbit % oc.length] : col.crystal;
   });
   if (state.selected != null && (!C.faces[state.selected] || C.faces[state.selected].hidden)) state.selected = null;
   state.zoneSel = state.zoneSel.filter((k) => C.faces[k] && !C.faces[k].hidden);
@@ -510,6 +618,7 @@ function angleOf(a, b) {
 }
 
 let syncToolBtns = () => {};
+let syncFormHint = () => {};
 let pending = false;
 function render() {
   if (pending) return;
@@ -574,6 +683,13 @@ function updateLegendPoly(C, col, fwClasses) {
     `<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="4" fill="${col.ink}"/></svg>Flächenpol oben</span>`,
     `<span class="lg"><svg width="16" height="16" viewBox="-8 -8 16 16"><circle r="6" fill="none" stroke="${col.ink}" stroke-width="1.6"/></svg>Flächenpol unten</span>`,
   ];
+  if (C.example) {
+    const hex4 = C.hex && state.poly.bravais;
+    C.forms.forEach((F, i) => {
+      const n = auxFormName(C.groupId, F.hkls);
+      items.push(`<span class="lg"><i class="sw" style="background:${formColor(col, i)}"></i><span>${n ? n.name : 'Form'} ${hklHTML(F.rep, hex4, ['{', '}'])}</span></span>`);
+    });
+  }
   if (C.auxForms.length && !state.poly.open) items.push(`<span class="lg"><i class="sw" style="background:${col.muted}"></i>Ergänzungsform</span>`);
   for (const c of fwClasses || []) {
     if (c.axes.length || c.mirrors.length) items.push(`<span class="lg"><i class="sw" style="background:${col.dir[c.pos]}"></i><span>Gerüst ${c.label}</span></span>`);
@@ -594,6 +710,7 @@ function updateLegendPoly(C, col, fwClasses) {
 }
 
 const yesno = (b) => (b ? 'ja' : 'nein');
+const FORM_TYPES_EIG = Object.fromEntries(Object.entries(FORM_TYPES).map(([k, v]) => [k, v.eig]));
 
 /** Name eines Achsensymbols, Mehrzahl mit n > 1. */
 function axisName(symbol, n) {
@@ -784,16 +901,49 @@ function updateInfoPoly(C, col) {
         <p class="note">${dev} Die Kanten zwischen Flächen der Zone verlaufen parallel zur Zonenachse (in 3D hervorgehoben).</p></div>`;
     }
   }
-  // Tracht und Habitus (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2)
-  const trachtHTML = [`${formName(e)} ${brace(e.hkl)}`, ...C.auxReps.map((a) => {
-    const n = auxFormName(C.groupId, a.hkls);
-    return `${n ? n.name : 'Form'} ${brace(a.rep)}`;
-  })].join(' + ') + (state.poly.open && C.auxReps.length ? ' <span class="muted">(Ergänzungsformen ausgeblendet)</span>' : '');
   const hab = habitOf(C.faces);
   const HABIT_NAMES = { isometrisch: 'isometrisch', planar: 'planar oder taflig', prismatisch: 'prismatisch oder nadelig' };
   const r2 = (x) => x.toFixed(2).replace('.', ',');
   const habitHTML = hab ? `${HABIT_NAMES[hab.type]} <span class="muted">(L₁ : L₂ : L₃ = 1 : ${r2(hab.L[1] / hab.L[0])} : ${r2(hab.L[2] / hab.L[0])})</span>` : '–';
   const sysName = SYSTEM_NAMES[C.sys];
+  const habitNote = '<p class="note">Tracht: die Menge der am Kristall auftretenden Formen. Habitus: das relative Grössenverhältnis der Flächen, mit den drei Grundtypen isometrisch, planar oder taflig, prismatisch oder nadelig (nach Borchardt-Ott). Gleiche Tracht kann verschiedenen Habitus haben (z. B. über c/a oder die Abstände der Formen), verschiedene Tracht gleichen Habitus (Würfel, Oktaeder, Rhombendodekaeder: isometrisch). Die Einteilung hier: L₁ ≥ L₂ ≥ L₃ sind die Hauptausdehnungen des dargestellten Kristalls; isometrisch, wenn L₂/L₁ und L₃/L₂ beide mindestens 2/3 sind, sonst prismatisch (eine Richtung lang) oder planar (eine Richtung kurz).</p>';
+  if (C.example) {
+    const ex = C.example;
+    const rows = C.forms.map((F, i) => {
+      const n = auxFormName(C.groupId, F.hkls);
+      const eig = n && FORM_TYPES_EIG[n.type];
+      return `<tr class="${F.present ? '' : 'gone'}"><td><i class="sw" style="background:${formColor(col, i)}"></i>${n ? n.name : 'Form'}</td><td>${brace(F.rep)}</td>
+        <td class="num">${F.present < F.hkls.length ? `${F.present} von ${F.hkls.length}` : F.hkls.length}</td><td>${eig ? hmHTML(eig) : '–'}</td></tr>`;
+    }).join('');
+    const gone = C.forms.some((F) => F.present < F.hkls.length);
+    $('info').innerHTML = `
+    <div class="info-head">
+      <div class="hm-big form-sym ex-name">${ex.name}</div>
+      <div class="hm-meta">${ex.formula ? `<span class="form-name">${ex.formula}</span>` : ''}<span>Punktgruppe <b>${hmHTML(groupOf(C.groupId).hm)}</b> (${groupOf(C.groupId).sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}</span></div>
+    </div>
+    ${zoneBox}
+    <h3>Tracht: ${C.forms.length} Formen</h3>
+    <table class="formtab"><thead><tr><th>Form</th><th>Symbol</th><th>Flächen</th><th>Eigensymmetrie</th></tr></thead><tbody>${rows}</tbody></table>
+    ${gone ? '<p class="note">Grau: Form ist bei diesen Abständen ganz oder teilweise weggeschnitten.</p>' : ''}
+    <dl class="facts">
+      <div><dt>Habitus</dt><dd>${habitHTML}</dd></div>
+      <div><dt>Flächen insgesamt</dt><dd class="num">${C.faces.filter((f) => !f.hidden).length}</dd></div>
+      <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, false)}</dd></div>
+      <div><dt>Lage</dt><dd>${C.preset.name}</dd></div>
+    </dl>
+    ${ex.note ? `<p class="note">${ex.note.replace(/\{hkl:(-?\d+),(-?\d+),(-?\d+)\}/g, (_, h, k, l) => brace([+h, +k, +l]))}</p>` : ''}
+    ${sel}
+    ${aux}
+    <p class="note">Quelle: ${ex.src}. Die Formen und das Gitter sind belegt; die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt und lassen sich unter „Gitter und Gestalt“ ändern.</p>
+    ${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}
+    ${habitNote}`;
+    return;
+  }
+  // Tracht und Habitus (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2)
+  const trachtHTML = [`${formName(e)} ${brace(e.hkl)}`, ...C.auxReps.map((a) => {
+    const n = auxFormName(C.groupId, a.hkls);
+    return `${n ? n.name : 'Form'} ${brace(a.rep)}`;
+  })].join(' + ') + (state.poly.open && C.auxReps.length ? ' <span class="muted">(Ergänzungsformen ausgeblendet)</span>' : '');
   // allgemeine Form mit höherer Eigensymmetrie: auf die geometrisch gleiche Form hinweisen
   let twinNote = '';
   const normE = (s) => EIG_SAME[s] || s;
@@ -828,7 +978,7 @@ function updateInfoPoly(C, col) {
     ${aux}
     ${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}
     <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern die Gestalt des Kristalls, aber nicht das Stereogramm.</p>
-    <p class="note">Tracht: die Menge der am Kristall auftretenden Formen. Habitus: das relative Grössenverhältnis der Flächen, mit den drei Grundtypen isometrisch, planar oder taflig, prismatisch oder nadelig (nach Borchardt-Ott). Gleiche Tracht kann verschiedenen Habitus haben (z. B. über c/a oder den Abstand der Ergänzungsformen), verschiedene Tracht gleichen Habitus (Würfel, Oktaeder, Rhombendodekaeder: isometrisch). Die Einteilung hier: L₁ ≥ L₂ ≥ L₃ sind die Hauptausdehnungen des dargestellten Kristalls; isometrisch, wenn L₂/L₁ und L₃/L₂ beide mindestens 2/3 sind, sonst prismatisch (eine Richtung lang) oder planar (eine Richtung kurz).</p>`;
+    ${habitNote}`;
 }
 
 /** ITA-Indexmuster als HTML (z. B. h0-hl → h0h̄l); bei drei Indizes ohne i. */
@@ -1026,12 +1176,16 @@ function init() {
 
   buildSystemSelect();
   $('sys-select').addEventListener('change', (e) => {
-    state.poly.system = e.target.value; state.selected = null; state.zoneSel = [];
+    state.poly.system = e.target.value; state.poly.example = null; state.selected = null; state.zoneSel = [];
     refreshPolyControls(); render();
   });
   $('form-select').addEventListener('change', (e) => {
-    state.poly.entryBySys[state.poly.system] = e.target.value; state.selected = null; state.zoneSel = []; render();
+    if (!e.target.value) return;
+    state.poly.entryBySys[state.poly.system] = e.target.value; state.selected = null; state.zoneSel = [];
+    if (state.poly.example) { state.poly.example = null; refreshPolyControls(); }
+    render();
   });
+  $('ex-select').addEventListener('change', (e) => { setExample(e.target.value); render(); });
   $('preset-select').addEventListener('change', (e) => { state.poly.presetId = e.target.value; render(); });
   for (const k of ['ba', 'ca', 'al', 'be', 'ga']) {
     $('lat-' + k).addEventListener('input', (ev) => {
@@ -1049,20 +1203,22 @@ function init() {
     refreshPolyControls(); render();
   });
   $('poly-reset').addEventListener('click', () => {
-    state.poly.lats[state.poly.system] = { ...LATTICE_DEFAULTS[state.poly.system] };
+    const ex = currentExample();
+    state.poly.lats[state.poly.system] = { ...LATTICE_DEFAULTS[state.poly.system], ...(ex ? ex.lat : {}) };
+    if (ex) delete state.poly.exScale[ex.id];
     state.poly.auxDist = 1; state.poly.size = 0.75;
-    syncLatSliders(); syncSliders(); render();
+    syncLatSliders(); syncSliders(); buildExDists(); render();
   });
   bindCheck('poly-open', state.poly, 'open');
   bindRange('poly-aux', state.poly, 'auxDist', (v) => v.toFixed(2));
   bindRange('poly-size', state.poly, 'size', (v) => v.toFixed(2));
   bindCheck('poly-labels', state.poly, 'labels');
   bindCheck('poly-bravais', state.poly, 'bravais');
-  $('poly-bravais').addEventListener('change', () => buildFormSelect());
+  $('poly-bravais').addEventListener('change', () => { buildFormSelect(); buildExDists(); });
   bindCheck('poly-lower', state.poly, 'showLower');
   bindCheck('poly-frame', state.poly, 'frame');
   bindCheck('poly-facesym', state.poly, 'faceSym');
-  const syncFormHint = () => { $('form-hint').hidden = state.poly.faceSym; };
+  syncFormHint = () => { $('form-hint').hidden = state.poly.faceSym || !!currentExample(); };
   $('poly-facesym').addEventListener('change', () => { buildFormSelect(); syncFormHint(); });
   syncFormHint();
   // Werkzeuge „Zone“ und „Winkel“: je ein Button am Stereogramm und in der 3D-Ansicht,

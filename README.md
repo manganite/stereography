@@ -17,6 +17,7 @@ Interaktive Lern-App für die Kristallographie-Vorlesung: Stereogramme der 32 kr
 - **Objekt in allgemeiner Lage:** Alle Symmetrieoperationen der Gruppe werden darauf angewendet (Pol im Stereogramm ziehbar; Antippen des Ausgangspols wechselt die Halbkugel). Punktgruppen mit zwei Aufstellungen erscheinen im Auswahlfeld als ein Button, die Aufstellung wird darunter gewählt.
 - **Kristallformen aller 32 Punktgruppen:** Auswahl nach Kristallsystem und Form, je Punktgruppe die allgemeine Form und die speziellen Grundformen nach ITA Tab. 10.1.2.2 (115 Formen, Namen nach Borchardt-Ott & Sowa mit abweichenden ITA-Namen in Klammern, Eigensymmetrie nach Tab. 10.1.2.3), mit einblendbaren Indizes (hkl), bei hexagonalen Achsen wahlweise (hkil). Offene Formen werden durch Ergänzungsformen derselben Punktgruppe geschlossen (grau) oder wahlweise offen gezeigt. Optional liegt das Symmetriegerüst der Punktgruppe gedämpft unter den Polen. Ohne Flächensymmetrie (Standard) enthält die Auswahl je Punktgruppe die allgemeine Form und die Formen, deren Eigensymmetrie die Punktgruppe ist (67 Formen; z. B. Würfel nur unter m3̄m). Mit „Flächensymmetrie zeigen“ erscheinen alle 115 Formen, und die Flächen tragen ein Muster in allgemeiner Lage, das mit allen Operationen der Punktgruppe vervielfältigt ist; seine Anordnung zeigt die Flächensymmetrie (z. B. Würfel in 23: 2.., in m3̄m: 4m.m).
 - **Zonen (Werkzeug „Zone“ am Stereogramm):** Zwei Pole antippen zeigt Zonenkreis (untere Hälfte gestrichelt), Zonenachse [uvw] = (h₁k₁l₁) × (h₂k₂l₂) mit ihrem Pol, alle Flächen der Zone nach der Zonengleichung hu + kv + lw = 0, den Winkel zwischen den Polen und in 3D die zur Zonenachse parallelen Kanten. Weicht die Richtung [uvw] von der Normalen (uvw) ab (in nicht kubischen Gittern möglich), wird die Abweichung angegeben. Die Infobox listet alle Zonen des Kristalls mit mindestens drei Flächen (Borchardt-Ott & Sowa), gruppiert nach symmetrisch gleichwertigen Zonenachsen ⟨uvw⟩; Zonen lassen sich gruppenweise oder einzeln wählen, auch mehrere zugleich, jede in eigener Farbe (Zonenkreis, Flächen, Pole). Zwei angetippte Pole fügen ihre Zone der Auswahl hinzu.
+- **Skript zur Vorlesung** (`skript.html`): erklärt die stereographische Projektion mit Abbildungen aus dem Code der App; jede Abbildung öffnet mit einem Klick genau diese Ansicht in der App. Bisher Kapitel 1 (Prinzip der Projektion), weitere Kapitel zu Kristallformen, Symmetriegerüsten, Zonen, Tracht und Habitus, Blickrichtungen und hexagonalen Achsen folgen.
 - **Winkel (Werkzeug „Winkel“):** Zwei Pole oder Flächen antippen zeigt den Grosskreisbogen zwischen den Polen (im Stereogramm, auf der unteren Halbkugel gestrichelt, und auf der Umkugel in 3D), den Normalenwinkel n zwischen den Flächennormalen und den Flächenwinkel f = 180° − n (Begriffe nach Borchardt-Ott & Sowa).
 - **Winkel im Punktgruppenmodus:** Mit dem Werkzeug „Winkel“ zwei Pole der allgemeinen Lage antippen; die Infobox nennt den Winkel und die Symmetrieoperation, die die beiden Pole ineinander überführt.
 - **Tracht und Habitus** (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2): Die Infobox nennt die auftretenden Formen und den Habitus-Grundtyp (isometrisch, planar oder taflig, prismatisch oder nadelig), bestimmt aus den Hauptausdehnungen L₁ ≥ L₂ ≥ L₃ des dargestellten Kristalls (zweite Momente des Körpers) mit der Grenze 2/3.
@@ -79,14 +80,17 @@ Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Mod
 
 | Datei | Inhalt |
 |---|---|
-| `index.html` | Oberfläche und Gestaltung |
+| `index.html` | Oberfläche und Gestaltung der App |
+| `skript.html`, `js/skript.js` | Skript zur Vorlesung; Abbildungen über `js/scene.js` aus Link-Adressen der App |
+| `css/base.css` | Farben (hell/dunkel), Schriften und Kopfzeile, gemeinsam für App und Skript |
 | `js/pointgroups.js` | Generatoren der Punktgruppen, Gruppenerzeugung, automatische Bestimmung der Symmetrieelemente |
 | `js/forms.js` | Formenkatalog nach ITA Tab. 10.1.2.2/10.1.2.3 |
 | `js/examples.js` | Beispielkristalle (Formen, Gitter, Abstände, Quellen) |
 | `js/polyhedra.js` | Gitter aller Systeme, Flächenbahnen, Ergänzungsformen, Restsymmetrie, Halbraumschnitt, Lagen |
 | `js/stereogram.js` | SVG-Stereogramm mit ITA-Symbolen und Wulffschem Netz |
 | `js/view3d.js` | 3D-Ansicht (three.js) |
-| `js/main.js` | Zustand und Bedienung |
+| `js/scene.js` | Zustand, Link-Adresse und Szenen des Stereogramms (gemeinsam für App und Skript) |
+| `js/main.js` | Bedienung der App |
 | `js/help.js` | Tooltip-Texte, Tooltips und ⓘ-Erklärungen |
 | `js/version.js` | Versionsnummer der App |
 | `sw.js` | Service Worker für den Offline-Betrieb |

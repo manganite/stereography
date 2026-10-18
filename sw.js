@@ -6,6 +6,8 @@ const CACHE = `stereogramm-${VERSION}`;
 const FILES = [
   './',
   'index.html',
+  'skript.html',
+  'css/base.css',
   'manifest.webmanifest',
   'icons/apple-touch-icon.png',
   'icons/favicon.ico',
@@ -19,6 +21,8 @@ const FILES = [
   'js/forms.js',
   'js/linalg.js',
   'js/main.js',
+  'js/scene.js',
+  'js/skript.js',
   'js/pointgroups.js',
   'js/polyhedra.js',
   'js/stereogram.js',
@@ -40,6 +44,9 @@ const FILES = [
   'lib/fonts/source-serif-4-latin-600-normal.woff2',
 ];
 
+/** Eigenständige Seiten; jeder andere Seitenaufruf (z. B. ./ oder ?sw) führt zur App. */
+const PAGES = ['index.html', 'skript.html'];
+
 self.addEventListener('install', (event) => {
   // cache: 'reload' umgeht den HTTP-Cache des Browsers, damit keine Dateien der Vorversion übernommen werden
   const reqs = FILES.map((f) => new Request(f, { cache: 'reload' }));
@@ -57,8 +64,9 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
-  // Seitenaufrufe (auch mit Suchparametern) liefern index.html; alles andere aus dem Cache, sonst Netz
-  const key = req.mode === 'navigate' ? 'index.html' : req;
+  // Seitenaufrufe (auch mit Suchparametern) liefern ihre Seite, sonst index.html; alles andere aus dem Cache, sonst Netz
+  const page = PAGES.find((p) => new URL(req.url).pathname.endsWith('/' + p));
+  const key = req.mode === 'navigate' ? page || 'index.html' : req;
   event.respondWith(
     caches.open(CACHE)
       .then((c) => c.match(key, { ignoreSearch: true }))

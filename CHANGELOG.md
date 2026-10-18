@@ -6,8 +6,14 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Skript zur Vorlesung** als eigene Seite (`skript.html`, Link „Skript“ in der Kopfzeile der App): Text in der Reihenfolge der Vorlesung, Begriffe nach Borchardt-Ott & Sowa, Abbildungen mit dem Code der App erzeugt und jeweils mit „In der App öffnen“. Erstes Kapitel „Die stereographische Projektion“ (Umkugel und Flächenpole, Normalen- und Flächenwinkel, Projektion mit interaktiver Schnittskizze, φ und ρ, Kreis- und Winkeltreue, Wulffsches Netz); weitere Kapitel folgen. Offline verfügbar wie die App.
+
 ### Geändert
 
+- Auf Laptops ohne Untertitel in der Kopfzeile, damit sie auf eine Zeile passt.
+- Intern: Szenenberechnung und Link-Adresse in `js/scene.js`, gemeinsame Farben und Kopfzeile in `css/base.css` (von App und Skript genutzt; die App zeigt unverändert dasselbe).
 - Begriffe wie in der Vorlesung: Die Lage heisst „[001] ∥ Projektionsrichtung“ (statt „Blickrichtung“, das für die Symmetrierichtungen des Hermann-Mauguin-Symbols reserviert bleibt), die Kugel der 3D-Ansicht „Umkugel“, und die dritte hexagonale Blickrichtung wird als ⟨210⟩ bezeichnet (Borchardt-Ott; dieselbe Richtungsfamilie wie ⟨11̄0⟩ in ITA).
 
 ## [1.2.0] - 2026-10-18

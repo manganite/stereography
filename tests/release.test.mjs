@@ -22,9 +22,15 @@ test('Service Worker: Offline-Liste deckt alle Dateien der App ab', () => {
     const p = join(dir, f);
     return statSync(join(ROOT, p)).isDirectory() ? walk(p) : [p];
   });
-  const app = ['index.html', 'manifest.webmanifest', ...['js', 'lib', 'icons'].flatMap(walk)]
+  const app = ['index.html', 'skript.html', 'manifest.webmanifest', ...['js', 'css', 'lib', 'icons'].flatMap(walk)]
     .map((p) => relative('.', p).split('\\').join('/'))
     .filter((p) => !p.endsWith('.txt'));
   for (const p of app) assert.ok(listed.includes(p), `fehlt in sw.js: ${p}`);
   for (const p of listed) if (p !== './') assert.ok(existsSync(join(ROOT, p)), `existiert nicht: ${p}`);
+});
+
+test('Service Worker: jede Seite wird bei Seitenaufrufen aus ihrem eigenen Cache-Eintrag geliefert', () => {
+  const pages = JSON.parse(sw.match(/const PAGES = (\[[^\]]*\]);/)[1].replace(/'/g, '"'));
+  const html = readdirSync(ROOT).filter((f) => f.endsWith('.html'));
+  for (const p of html) assert.ok(pages.includes(p), `fehlt in PAGES (sw.js): ${p}`);
 });

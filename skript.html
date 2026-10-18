@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skript: Stereographische Projektion</title>
+<meta name="description" content="Skript zur Vorlesung Kristallographie: stereographische Projektion, Kristallformen, Symmetriegerüste, Zonen, Tracht und Habitus, Blickrichtungen, hexagonale Achsen.">
+<link rel="icon" href="icons/favicon.ico" sizes="any">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#eceff2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1318" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="lib/fonts/fonts.css">
+<link rel="stylesheet" href="css/base.css">
+<style>
+/* Skript: links das Inhaltsverzeichnis (angeheftet wie die Seitenleiste der App), rechts der Text in
+   Lesebreite. Abbildungen kommen aus dem Code der App und sehen aus wie dort. */
+body { font-size: 16px; line-height: 1.6; }
+.headtools { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.page {
+  max-width: 1180px; margin-inline: auto; display: grid; gap: 28px;
+  grid-template-columns: 240px minmax(0, 1fr); align-items: start;
+}
+.toc { position: sticky; top: 12px; max-height: calc(100dvh - 24px); overflow-y: auto; scrollbar-width: thin; }
+.toc .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.toc summary {
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600;
+  list-style: none; cursor: default;
+}
+.toc summary::-webkit-details-marker { display: none; }
+.toc ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 2px; font-size: 0.9rem; line-height: 1.35; }
+.toc ol ol { margin: 2px 0 6px 1.6em; font-size: 0.84rem; }
+.toc a { display: block; padding: 4px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; }
+.toc a:hover { background: var(--paper); }
+.toc a[aria-current="true"] { background: var(--paper); color: var(--accent); font-weight: 600; box-shadow: inset 2px 0 0 var(--accent); }
+.toc .nr { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 0.35em; }
+.toc .todo { display: block; padding: 4px 8px; color: var(--muted); }
+.toc .todo small { display: block; font-size: 0.75rem; }
+.toc-foot { margin: 12px 0 0; font-size: 0.78rem; color: var(--muted); }
+
+article { min-width: 0; max-width: 780px; }
+article > header { margin-bottom: 28px; }
+article h1, article h2, article h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; text-wrap: balance; }
+article h2 { font-size: 1.7rem; margin: 0 0 14px; }
+article h2 .nr { color: var(--muted); margin-right: 0.3em; }
+article h3 { font-size: 1.22rem; margin: 34px 0 8px; }
+article p, article li { max-width: 70ch; }
+article p { margin: 0 0 12px; }
+article ul { padding-left: 1.3em; margin: 0 0 12px; }
+article li { margin-bottom: 4px; }
+.lead { font-size: 1.05rem; color: var(--muted); }
+.box { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--surface); border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
+.box > h4 { margin: 0 0 6px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
+.box > :last-child { margin-bottom: 0; }
+.box.ziele { border-left-color: var(--ax2); }
+.box.merke { border-left-color: var(--accent); }
+.box.merke p { font-weight: 500; }
+.box.zusammen { border-left-color: var(--ax4); }
+.term { font-weight: 600; }
+.sym { font-family: var(--font-ui); white-space: nowrap; }
+.quellen { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+.quellen h4 { margin: 0 0 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; font-weight: 600; }
+.quellen ul { padding-left: 1.2em; margin: 0; }
+.quellen li { max-width: none; }
+
+/* Abbildungen */
+figure { margin: 20px 0; }
+.fig-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 20px 0; }
+.fig-row figure { margin: 0; }
+.fig-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.fig-art { background: var(--paper); border-radius: 8px; }
+.fig-art svg { display: block; width: 100%; height: auto; }
+figure[data-kind="stereo"] .fig-art, figure[data-kind="3d"] .fig-art { aspect-ratio: 1; }
+figure[data-kind="3d"] .fig-art { position: relative; touch-action: none; overflow: hidden; }
+figure[data-kind="3d"] canvas { display: block; }
+.labels3d { position: absolute; inset: 0; pointer-events: none; }
+.lbl3d { font-size: 12px; color: var(--ink); white-space: nowrap; }
+.lbl-axis { font-style: italic; color: var(--muted); font-size: 14px; }
+.lbl-pole { color: var(--muted); font-size: 11px; font-weight: 600; }
+.lbl-hkl { font-family: var(--font-ui); background: color-mix(in srgb, var(--paper) 80%, transparent); padding: 0 3px; border-radius: 3px; }
+figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+figcaption b { color: var(--ink); font-weight: 600; }
+.to-app { white-space: nowrap; color: var(--accent); font-weight: 500; }
+.to-app::after { content: ' →'; }
+.fig-err { padding: 16px; color: var(--muted); font-size: 0.9rem; }
+
+/* Projektionsskizze */
+figure.proj svg { max-width: 650px; margin-inline: auto; }
+.proj .sphere, .proj .base { fill: none; stroke: var(--ink); stroke-width: 1.6; }
+.proj .plane { stroke: var(--accent); stroke-width: 2; }
+.proj .axis { stroke: var(--net); stroke-width: 1; stroke-dasharray: 3 4; }
+.proj .face { stroke: var(--edge); stroke-width: 4; stroke-linecap: round; }
+.proj .normal { stroke: var(--normal); stroke-width: 1.8; }
+.proj .ray { stroke: var(--ray); stroke-width: 1.6; stroke-dasharray: 6 4; }
+.proj .arc { fill: none; stroke: var(--muted); stroke-width: 1.2; }
+.proj .pole { fill: var(--normal); }
+.proj .pole-ns { fill: var(--ink); }
+.proj .pt { fill: var(--upper); }
+.proj .pt-open { fill: var(--paper); stroke: var(--upper); stroke-width: 2; }
+.proj .tick { stroke: var(--muted); stroke-width: 1; }
+.proj text { fill: var(--ink); font-family: var(--font-ui); }
+.proj .cap { font-size: 14px; font-weight: 600; }
+.proj .lbl { font-size: 14px; font-weight: 600; }
+.proj .rho { font-size: 14px; font-style: italic; fill: var(--muted); }
+.proj .small { font-size: 12px; fill: var(--muted); }
+.slider { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; align-items: center; margin-top: 10px; font-size: 0.9rem; }
+.slider input { width: 100%; accent-color: var(--accent); }
+.slider output { grid-column: 1 / -1; color: var(--muted); font-size: 0.86rem; min-height: 2.6em; }
+
+footer { max-width: 1180px; margin: 32px auto 0; color: var(--muted); font-size: 0.78rem; }
+footer a { color: inherit; }
+
+/* iPad hochkant und Telefon: Inhaltsverzeichnis oben, einklappbar */
+@media (max-width: 899px) {
+  .page { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .toc { position: static; max-height: none; }
+  .toc summary { cursor: pointer; }
+  .toc summary::after { content: ' ▾'; }
+  .toc details[open] summary::after { content: ' ▴'; }
+}
+@media (max-width: 719px) {
+  .brand p { display: none; }
+  .brand { flex: 1; }
+  .fig-row { grid-template-columns: minmax(0, 1fr); }
+  article h2 { font-size: 1.45rem; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>Stereographische Projektion</h1>
+    <p>Skript zur Vorlesung Kristallographie</p>
+  </div>
+  <div class="headtools">
+    <a class="linkcopy" href="index.html">Zur App</a>
+  </div>
+</header>
+
+<div class="page">
+  <nav class="toc" aria-label="Inhalt">
+    <div class="card">
+      <details open>
+        <summary>Inhalt</summary>
+        <ol>
+          <li><a href="#projektion"><span class="nr">1</span>Die stereographische Projektion</a>
+            <ol>
+              <li><a href="#umkugel">Umkugel und Flächenpole</a></li>
+              <li><a href="#projizieren">Vom Pol zum Stereogramm</a></li>
+              <li><a href="#koordinaten">Die Winkel φ und ρ</a></li>
+              <li><a href="#kreise">Kreise, Winkel und das Wulffsche Netz</a></li>
+            </ol>
+          </li>
+          <li><span class="todo"><span class="nr">2</span>Kristallformen im Stereogramm<small>in Vorbereitung</small></span></li>
+          <li><span class="todo"><span class="nr">3</span>Symmetriegerüste im Stereogramm<small>in Vorbereitung</small></span></li>
+          <li><span class="todo"><span class="nr">4</span>Zonen<small>in Vorbereitung</small></span></li>
+          <li><span class="todo"><span class="nr">5</span>Tracht und Habitus<small>in Vorbereitung</small></span></li>
+          <li><span class="todo"><span class="nr">6</span>Blickrichtungen<small>in Vorbereitung</small></span></li>
+          <li><span class="todo"><span class="nr">7</span>Hexagonale Achsen und vierstellige Indizes<small>in Vorbereitung</small></span></li>
+        </ol>
+        <p class="toc-foot">Begriffe nach Borchardt-Ott &amp; Sowa, <i>Kristallographie</i> (2018), wie in der Vorlesung.</p>
+      </details>
+    </div>
+  </nav>
+
+  <main>
+  <article>
+    <section id="projektion">
+      <h2><span class="nr">1</span>Die stereographische Projektion</h2>
+      <p class="lead">Kristalle sind dreidimensionale Körper. Die stereographische Projektion stellt die Orientierung aller ihrer Flächen eindeutig und übersichtlich in einer Ebene dar.</p>
+
+      <div class="box ziele">
+        <h4>Lernziele</h4>
+        <ul>
+          <li>den Flächenpol einer Kristallfläche konstruieren und in die Projektionsebene projizieren</li>
+          <li>Pole der oberen und der unteren Halbkugel unterscheiden</li>
+          <li>die Lage eines Pols mit den Winkeln φ und ρ angeben</li>
+          <li>begründen, warum Winkel im Stereogramm nur auf Grosskreisen abgelesen werden dürfen</li>
+        </ul>
+      </div>
+
+      <p>Eine perspektivische Zeichnung eines Kristalls ist oft unübersichtlich: Flächen verdecken sich, und manche Körper sehen aus einer Richtung fast gleich aus. Um die Flächen eines Kristalls und ihre Winkel zu beschreiben, kommt es aber nicht auf Grösse und Lage der Flächen an, sondern nur auf ihre <span class="term">Orientierung</span>. Wächst ein Kristall verzerrt, verschieben sich seine Flächen parallel; die Winkel zwischen ihnen bleiben gleich. Daher gilt das Gesetz der Winkelkonstanz: An verschiedenen Kristallen derselben Art sind die Winkel zwischen entsprechenden Flächen gleich (bei gleichem Druck und gleicher Temperatur). Deshalb genügt es, jede Fläche durch die Richtung ihrer Normalen darzustellen.</p>
+
+      <section id="umkugel">
+        <h3>Umkugel und Flächenpole</h3>
+        <p>Man denkt sich den Kristall im Mittelpunkt einer Kugel, der <span class="term">Umkugel</span>. Vom Mittelpunkt aus zieht man zu jeder Fläche die <span class="term">Flächennormale</span>, also die Gerade senkrecht zur Fläche. Wo sie die Kugeloberfläche durchstösst, liegt der <span class="term">Flächenpol</span> der Fläche.</p>
+        <p>Der Flächenpol hängt nur davon ab, wie die Fläche orientiert ist. Ob die Fläche gross oder klein ist und wie weit sie vom Mittelpunkt entfernt liegt, spielt keine Rolle. Parallele Gegenflächen, etwa (100) und (1̄00), haben Pole an gegenüberliegenden Stellen der Kugel.</p>
+        <p>Der Bogen zwischen zwei Flächenpolen auf der Kugel ist der Winkel zwischen den Flächennormalen, der <span class="term">Normalenwinkel</span> <i>n</i>. Er ist nicht der Winkel, den die beiden Flächen an ihrer gemeinsamen Kante bilden, der <span class="term">Flächenwinkel</span> <i>f</i>. Beide ergänzen sich zu 180°: <i>n</i> = 180° − <i>f</i>. Am Würfel stehen benachbarte Flächen senkrecht aufeinander, beide Winkel sind 90°. Am Oktaeder bilden benachbarte Flächen an ihrer Kante den Flächenwinkel 109,47°; ihre Pole liegen 70,53° auseinander.</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Jede Kristallfläche wird durch ihren Flächenpol vertreten: den Durchstosspunkt ihrer Normalen durch die Umkugel. Der Winkel zwischen zwei Polen ist der Normalenwinkel <i>n</i> = 180° − <i>f</i>.</p>
+        </div>
+      </section>
+
+      <section id="projizieren">
+        <h3>Vom Pol zum Stereogramm</h3>
+        <p>Die Pole liegen noch auf einer Kugel. Um sie in die Ebene zu bringen, betrachtet man die Umkugel wie einen Globus: mit Nordpol N oben, Südpol S unten und der <span class="term">Äquatorebene</span> als Projektionsebene. Jeden Pol der Nordhalbkugel verbindet man mit dem Südpol; wo diese Verbindungslinie die Äquatorebene schneidet, liegt sein Bildpunkt. Die Pole der Südhalbkugel verbindet man entsprechend mit dem Nordpol.</p>
+        <p>So landen alle Bildpunkte innerhalb des Äquatorkreises oder auf ihm, dem <span class="term">Grundkreis</span> des Stereogramms. Damit man die beiden Halbkugeln unterscheiden kann, zeichnet man Pole der oberen Halbkugel als Punkt ● und Pole der unteren Halbkugel als Kreis ○. Pole auf dem Äquator liegen auf dem Grundkreis und werden als Punkt gezeichnet. (Borchardt-Ott verwendet für Pole der oberen Halbkugel manchmal auch ein Kreuz.)</p>
+
+        <figure class="proj fig-card" id="fig-proj">
+          <div class="fig-art"><svg viewBox="0 0 650 335" role="img" aria-label="Schnitt durch die Umkugel mit Flächennormale, Projektionsstrahl und Bildpunkt sowie das zugehörige Stereogramm"></svg></div>
+          <div class="slider">
+            <label for="proj-rho">Poldistanz ρ</label>
+            <input type="range" id="proj-rho" min="-90" max="90" step="1" value="40">
+            <output for="proj-rho" aria-live="polite"></output>
+          </div>
+          <figcaption><b>Abb. 1.1</b> Links ein Schnitt durch die Umkugel: Die Normale der Fläche (dunkel) trifft die Kugel im Flächenpol P; der Strahl zum Südpol (bei Polen der unteren Halbkugel zum Nordpol) schneidet die Äquatorebene im Bildpunkt P′. Rechts derselbe Bildpunkt im Stereogramm. Mit dem Regler wandert der Pol über die Kugel.</figcaption>
+        </figure>
+
+        <p>Am Regler lässt sich ablesen: Ein Pol am Nordpol landet im Mittelpunkt des Stereogramms, ein Pol auf dem Äquator auf dem Grundkreis. Dazwischen rücken die Bildpunkte nicht gleichmässig nach aussen. Ein Schritt von 10° Poldistanz ist am Rand fast doppelt so lang wie in der Mitte. Abstände im Stereogramm sind deshalb kein direktes Mass für Winkel.</p>
+        <p>Abb. 1.2 zeigt die Konstruktion für einen ganzen Kristall, den Galenit (PbS) mit Würfel, Oktaeder und Rhombendodekaeder. Jede Fläche hat ihre Normale und ihren Pol; die Projektionsstrahlen führen zum Süd- bzw. Nordpol. Abb. 1.3 ist das fertige Stereogramm. Die Flächen (111) oben und (111̄) unten liegen genau übereinander, deshalb erscheint ihr Bild als Punkt im Kreis.</p>
+
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="side" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit" data-alt="3D-Konstruktion des Galenits">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 1.2</b> Galenit im Mittelpunkt der Umkugel, seitlich gesehen. Ziehen dreht die Ansicht.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit" data-alt="Stereogramm des Galenits">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 1.3</b> Stereogramm des Galenits: ● obere, ○ untere Halbkugel. Farben wie in Abb. 1.2: Würfel {100}, Oktaeder {111}, Rhombendodekaeder {110}.</figcaption>
+          </figure>
+        </div>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Pole der oberen Halbkugel werden zum Südpol hin projiziert und als Punkt ● gezeichnet, Pole der unteren Halbkugel zum Nordpol hin und als Kreis ○.</p>
+        </div>
+      </section>
+
+      <section id="koordinaten">
+        <h3>Die Winkel φ und ρ</h3>
+        <p>Die Lage eines Pols lässt sich mit zwei Winkeln angeben, ähnlich wie geographische Länge und Breite auf dem Globus:</p>
+        <ul>
+          <li>Die <span class="term">Poldistanz</span> ρ ist der Winkel zwischen dem Pol und dem Nordpol, für Pole der oberen Halbkugel also 0° bis 90°. Für Pole der unteren Halbkugel misst man vom Südpol aus und setzt ein Minuszeichen: −90° bis 0°.</li>
+          <li>Der <span class="term">Azimut</span> φ ist der Drehwinkel um die Projektionsrichtung, von 0° bis 360°. Er wird vom rechten Rand des Grundkreises aus im Uhrzeigersinn gezählt. Bei rechtwinkligen Achsen liegt (010) also bei φ = 0° und die zum Betrachter weisende Fläche (100) unten bei φ = 90°.</li>
+        </ul>
+        <p>Am Galenit liegt der Pol von (111) bei φ = 45° und ρ = 54,74°, der Pol der Gegenfläche (1̄1̄1̄) bei φ = 225° und ρ = −54,74°. Würfel- und Rhombendodekaederflächen, die senkrecht auf der Projektionsebene stehen, haben ρ = 90°.</p>
+        <p>Gemessen werden solche Winkel mit dem Reflexionsgoniometer. Es misst, wie oben beschrieben, Normalenwinkel. Das zweikreisige Reflexionsgoniometer dreht den Kristall um zwei zueinander senkrechte Achsen, bis eine Fläche das Licht reflektiert, und zeigt bei justiertem Kristall auf seinen beiden Kreisen direkt φ und ρ an. Die Werte lassen sich unmittelbar ins Stereogramm eintragen.</p>
+        <p>In der App erscheinen φ und ρ als Tooltip über jedem Pol und in der Infobox, sobald man eine Fläche oder einen Pol antippt.</p>
+      </section>
+
+      <section id="kreise">
+        <h3>Kreise, Winkel und das Wulffsche Netz</h3>
+        <p>Die stereographische Projektion hat zwei Eigenschaften, die sie für die Kristallographie so nützlich machen:</p>
+        <ul>
+          <li><span class="term">Kreistreue:</span> Jeder Kreis auf der Kugel wird wieder als Kreis oder Kreisbogen abgebildet. Grosskreise, also Kreise, deren Mittelpunkt der Kugelmittelpunkt ist, werden zu Kreisbögen, die den Grundkreis in zwei gegenüberliegenden Punkten treffen. Grosskreise durch Nord- und Südpol werden zu Geraden durch den Mittelpunkt. Auch ein Kleinkreis wird ein Kreis, sein Mittelpunkt im Stereogramm ist aber im Allgemeinen nicht das Bild seines Mittelpunkts auf der Kugel (eine Ausnahme sind Kleinkreise um den Nordpol). Streng gilt die Kreistreue für jede Halbkugel für sich: Die untere Hälfte eines geneigten Grosskreises wird zum Nordpol hin projiziert und erscheint als zweiter Bogen durch dieselben Randpunkte, zur anderen Seite gekrümmt. Bei Zonenkreisen und Winkelbögen zeichnet die App diese untere Hälfte gestrichelt.</li>
+          <li><span class="term">Winkeltreue:</span> Die Winkel, unter denen sich zwei Kreise auf der Kugel schneiden, bleiben in der Projektion erhalten. So schneiden sich Längen- und Breitenkreise im Wulffschen Netz (Abb. 1.4) wie auf dem Globus rechtwinklig.</li>
+        </ul>
+        <p>Die Normalen zweier Flächen spannen die Ebene eines Grosskreises auf. Nur dessen Bogen zwischen den beiden Polen ist der Normalenwinkel, ein Bogen auf einem Kleinkreis durch dieselben Pole ist es nicht. Deshalb dürfen Winkel nur auf Grosskreisen abgetragen oder abgelesen werden. Weil die Projektion zudem nicht längentreu ist (Regler in Abb. 1.1), braucht man dafür eine Winkelskala, das Wulffsche Netz, und kein Lineal. Dass Grosskreise wichtig sind, hat noch einen zweiten Grund: Die Pole vieler Flächen eines Kristalls liegen auf wenigen Grosskreisen. Solche Flächen bilden eine Zone (Kapitel 4).</p>
+        <p>Zum Zeichnen von Hand benutzt man das <span class="term">Wulffsche Netz</span> (Abb. 1.4). Es ist die stereographische Projektion des Gradnetzes eines Globus, dessen Achse in der Projektionsebene liegt: Die Längenkreise sind Grosskreise, die Breitenkreise (ausser dem Äquator des Globus) Kleinkreise. Man zeichnet auf Transparentpapier, das über dem Netz um den Mittelpunkt drehbar ist, und dreht zwei Pole auf denselben Längenkreis, um ihren Winkel abzulesen.</p>
+        <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=1&amp;obj=0&amp;wulff=1" data-alt="Wulffsches Netz" style="max-width: 380px; margin-inline: auto;">
+          <div class="fig-art"></div>
+          <figcaption><b>Abb. 1.4</b> Wulffsches Netz mit Linien im Abstand von 2°, kräftig alle 10°. Die App blendet es unter „Darstellung“ ein und kann es drehen.</figcaption>
+        </figure>
+      </section>
+
+      <div class="box zusammen">
+        <h4>Zusammenfassung</h4>
+        <ul>
+          <li>Jede Fläche wird durch ihren Flächenpol auf der Umkugel vertreten. Er hängt nur von der Orientierung der Fläche ab.</li>
+          <li>Pole der oberen Halbkugel werden zum Südpol hin auf die Äquatorebene projiziert (●), Pole der unteren Halbkugel zum Nordpol hin (○).</li>
+          <li>Die Lage eines Pols beschreiben der Azimut φ und die Poldistanz ρ.</li>
+          <li>Die Projektion ist kreistreu und winkeltreu, aber nicht längentreu. Der Winkel zwischen zwei Polen ist der Bogen auf dem Grosskreis durch beide Pole; von Hand misst man ihn mit dem Wulffschen Netz.</li>
+        </ul>
+      </div>
+
+      <div class="quellen">
+        <h4>Quellen</h4>
+        <ul>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 5.3 (Gesetz der Winkelkonstanz, S. 38–39), 5.4 (Stereographische Projektion, S. 40–43, Abb. 5.9–5.12), 5.5 (Reflexionsgoniometer, S. 43–45, Abb. 5.15), 5.6 (Wulffsches Netz, Winkelkoordinaten, Kreis- und Winkeltreue, S. 45–47, Abb. 5.16–5.19).</li>
+          <li>Winkelkoordinaten des Galenits: Borchardt-Ott &amp; Sowa (2018), Aufgabe 5.13, Tab. 5.2 (S. 63–64).</li>
+        </ul>
+      </div>
+    </section>
+  </article>
+  </main>
+</div>
+
+<footer>
+  Skript zur App „Stereographische Projektion“, Version <span data-version></span>. Abbildungen mit dem Code der App erzeugt; „In der App öffnen“ führt jeweils genau in diese Ansicht.
+  <a href="index.html">Zur App</a> · <a href="https://github.com/manganite/stereography">Quellcode</a>
+</footer>
+
+<script type="module" src="js/skript.js"></script>
+</body>
+</html>

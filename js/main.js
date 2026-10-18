@@ -4,7 +4,7 @@ import {
   POINT_GROUPS, SYSTEMS, buildPointGroup, orbit, elementSummary, symmetryDirections, HEX_A, HEX_B,
 } from './pointgroups.js';
 import {
-  buildCrystal, habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
+  buildCrystal, habitOf, zoneOf, zoneByUvw, zoneKey, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig, entryById, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
@@ -31,6 +31,7 @@ const state = {
     system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
     size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: false, tool: null,
     example: null, exScale: {}, // Beispielkristall und Faktoren der Formabstände
+    zones: [], // gewählte Zonen (Werkzeug „Zone“) als 'u,v,w'
   },
   view: { dirColors: true, wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
   selected: null,
@@ -102,10 +103,11 @@ function stateToHash() {
     if (Math.abs(state.poly.auxDist - d.poly.auxDist) > 1e-6) q.set('abstand', String(state.poly.auxDist));
     if (Math.abs(state.poly.size - d.poly.size) > 1e-6) q.set('gr', String(state.poly.size));
     if (state.poly.tool) q.set('w', TOOL_NAMES[state.poly.tool]);
+    if (state.poly.tool === 'zone' && state.poly.zones.length) q.set('zonen', state.poly.zones.join(';'));
   }
   bools(URL_VIEW, state.view, d.view);
   if (state.view.wulff && state.view.wulffRot) q.set('netz', String(state.view.wulffRot));
-  return '#' + q.toString().replace(/%2F/g, '/').replace(/%2C/g, ',').replace(/%3A/g, ':');
+  return '#' + q.toString().replace(/%2F/g, '/').replace(/%2C/g, ',').replace(/%3A/g, ':').replace(/%3B/g, ';');
 }
 
 /** Wendet einen Hash auf den Startzustand an. Gibt false zurück, wenn kein brauchbarer Hash vorliegt. */
@@ -141,6 +143,7 @@ function applyHash(hash) {
     if (q.has('abstand')) state.poly.auxDist = num(q.get('abstand'), 0.3, 3) ?? state.poly.auxDist;
     if (q.has('gr')) state.poly.size = num(q.get('gr'), 0.3, 1.2) ?? state.poly.size;
     state.poly.tool = TOOL_IDS[q.get('w')] || null;
+    if (q.has('zonen')) state.poly.zones = q.get('zonen').split(';').filter((k) => /^-?\d+,-?\d+,-?\d+$/.test(k) && k !== '0,0,0');
   } else {
     state.mode = 'pg';
     if (POINT_GROUPS.some((g) => g.id === q.get('g'))) state.pg.id = q.get('g');
@@ -180,6 +183,7 @@ try {
     if (!Array.isArray(state.pg.hideDirs)) state.pg.hideDirs = [];
     if (!exampleById(state.poly.example)) state.poly.example = null;
     if (!state.poly.exScale || typeof state.poly.exScale !== 'object') state.poly.exScale = {};
+    if (!Array.isArray(state.poly.zones)) state.poly.zones = [];
   }
 } catch { /* Speicher nicht verfügbar */ }
 if (location.hash.length > 1) applyHash(location.hash); // Link hat Vorrang
@@ -222,6 +226,17 @@ function mixHex(a, b, t) {
   } catch { return a; }
 }
 const formFill = (col, i) => mixHex(formColor(col, i), col.paper, 0.38);
+/** Farbe der i-ten gewählten Zone: zuerst die Formfarben, danach weitere Farbtöne, keine Wiederholung. */
+function zoneColor(col, i) {
+  if (i < col.form.length) return col.form[i];
+  const dark = (() => { const x = col.paper.replace('#', ''); return x.length >= 6 && parseInt(x.slice(0, 2), 16) + parseInt(x.slice(2, 4), 16) + parseInt(x.slice(4, 6), 16) < 384; })();
+  // zuerst Farbtöne, die die Formfarben nicht belegen (Grün, Violett, Gold, Himmelblau …), danach goldener Winkel
+  const GAPS = [125, 265, 45, 195, 290, 95, 345, 235];
+  const j = i - col.form.length;
+  const h = j < GAPS.length ? GAPS[j] : (GAPS[0] + j * 137.508) % 360, sat = 0.6, l = dark ? 0.66 : 0.4;
+  const f = (n) => { const k = (n + h / 30) % 12; const c = l - sat * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(c * 255).toString(16).padStart(2, '0'); };
+  return '#' + f(0) + f(8) + f(4);
+}
 const FONT = "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif";
 
 // ------------------------------------------------------------------ Bedienelemente aufbauen
@@ -377,7 +392,7 @@ const exForms = (ex) => {
 function setExample(id) {
   const ex = exampleById(id);
   state.poly.example = ex ? ex.id : null;
-  state.selected = null; state.zoneSel = [];
+  state.selected = null; state.zoneSel = []; state.poly.zones = [];
   if (ex) {
     state.poly.system = ex.sys;
     state.poly.lats[ex.sys] = { ...LATTICE_DEFAULTS[ex.sys], ...(ex.lat || {}) };
@@ -545,6 +560,23 @@ function renderPG() {
 }
 
 /** Schalter in der 3D-Ansicht: Symmetrieelemente einzelner Blickrichtungen ein-/ausblenden. */
+/**
+ * Infobox neu schreiben; hatte ein Bedienelement der Zonenliste den Fokus, erhält ihn danach dasselbe Element
+ * (bzw. nach „Alle Zonen abwählen“ die erste Zonengruppe oder der Button „Zone“), damit die Tastatur ihren Platz behält.
+ */
+function setInfo(html) {
+  const box = $('info');
+  const a = box.contains(document.activeElement) ? document.activeElement : null;
+  const sel = !a ? null
+    : a.dataset.zone ? `[data-zone="${a.dataset.zone}"]`
+      : a.dataset.zclass != null ? `[data-zclass="${a.dataset.zclass}"]`
+        : a.hasAttribute('data-zclear') ? '[data-zclear]' : null;
+  box.innerHTML = html;
+  if (!sel) return;
+  const t = box.querySelector(sel) || box.querySelector('[data-zclass]') || (state.mode === 'poly' ? $('zone-btn') : null);
+  t?.focus({ preventScroll: true });
+}
+
 function updateDirChips(classes, col) {
   const box = $('v3d-dirs');
   const used = classes.filter((c) => c.axes.length || c.mirrors.length);
@@ -603,9 +635,16 @@ function renderPoly() {
   const two = state.zoneSel.length === 2;
   const zone = state.poly.tool === 'zone' && two ? zoneOf(C, state.zoneSel[0], state.zoneSel[1]) : null;
   C.zone = zone;
+  // Zonenliste: alle Zonen des Kristalls (nur mit Werkzeug „Zone“) und die gewählten, je in eigener Farbe
+  C.zoneClasses = state.poly.tool === 'zone' ? zonesOf(C) : [];
+  // gespeicherte Schlüssel lageunabhängig machen und Doppelte entfernen (ältere Zustände, Links)
+  state.poly.zones = [...new Set(state.poly.zones.map((k) => zoneKey(k.split(',').map(Number))))];
+  C.selZones = state.poly.tool === 'zone'
+    ? state.poly.zones.map((k, i) => ({ ...zoneByUvw(C, k.split(',').map(Number)), color: zoneColor(col, i) }))
+    : [];
+  const zoneColorsOf = (i) => C.selZones.filter((z) => z.inZone.includes(i)).map((z) => z.color);
   const angle = state.poly.tool === 'angle' && two ? angleOf(C.faces[state.zoneSel[0]].normal, C.faces[state.zoneSel[1]].normal) : null;
   C.angle = angle;
-  const inZone = new Set(zone ? zone.inZone : []);
   const fw = state.poly.frame ? C.framework : null;
   // Symmetriegerüst nach Blickrichtung färben (nicht bei erniedrigter Symmetrie: andere Gruppe, andere Aufstellung)
   let fwClasses = null, fwMirrorCls = [];
@@ -628,13 +667,13 @@ function renderPoly() {
     centreAtOrigin: !!fw && fw.centro && !fw.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6),
     poles: C.faces.map((f, i) => (f.hidden ? null : {
       p: f.normal, det: 1, idx: i, color: f.color2d, aux: f.role === 'aux',
-      label: state.poly.labels ? hklParts(f.hkl, hex4) : null, selected: state.selected === i || state.zoneSel.includes(i), zone: inZone.has(i),
+      label: state.poly.labels ? hklParts(f.hkl, hex4) : null, selected: state.selected === i || state.zoneSel.includes(i), zoneColors: zoneColorsOf(i),
     })).filter(Boolean),
     showLower: state.poly.showLower,
     hitR: touchRadius(13, 22),
     labelSize: Math.max(14.5, 11 * svgUnit()), // mindestens ca. 11 px auf dem Bildschirm
     axisLabels: state.view.axes ? C.axes : [],
-    zone: zone ? { axis: zone.axis, label: dirParts(zone.uvw, hex4) } : null,
+    zoneList: C.selZones.map((z) => ({ axis: z.axis, label: dirParts(z.uvw, hex4), color: z.color })),
     arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null,
   };
   const out = buildSVG(scene);
@@ -651,7 +690,7 @@ function renderPoly() {
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
   const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
   view3d.showPolyhedron(C, col,
-    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zone, arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null, picked: state.poly.tool ? state.zoneSel : [] },
+    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zones: C.selZones, arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null, picked: state.poly.tool ? state.zoneSel : [] },
     state.selected, labels3d);
 }
 
@@ -738,7 +777,7 @@ function updateLegendPoly(C, col, fwClasses) {
   for (const c of fwClasses || []) {
     if (c.axes.length || c.mirrors.length) items.push(`<span class="lg"><i class="sw" style="background:${col.dir[c.pos]}"></i><span>Gerüst ${c.label}</span></span>`);
   }
-  if (C.zone) {
+  if (C.selZones.length || C.zone) {
     items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="2.2"/></svg>Zonenkreis</span>`);
     items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="5 4"/></svg>untere Hälfte</span>`);
     items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><path d="M-5,-5L5,5M-5,5L5,-5" stroke="${col.accent}" stroke-width="2"/></svg>Zonenachse</span>`);
@@ -836,7 +875,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
   if (!classes.length && !info.centro) free.push('<li><span>nur die Identität 1</span></li>');
   if (free.length) rows.push(`<div class="dirrow"><div class="dirhead"><span class="dirlab">ohne Richtung</span></div><ul>${free.join('')}</ul></div>`);
   const lower = orb.filter((o) => o.p[2] < -1e-9).length;
-  $('info').innerHTML = `
+  setInfo(`
     <div class="info-head">
       <div class="hm-big">${hmHTML(info.hm)}</div>
       <div class="hm-meta"><span>${info.system[0].toUpperCase() + info.system.slice(1)}${info.setting ? ' · Aufstellung ' + (info.setting.startsWith('Achse') ? info.setting : hmHTML(info.setting)) : ''}</span>
@@ -855,7 +894,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
     ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
-    ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>` : ''}`;
+    ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>` : ''}`);
 }
 
 function poleAngles(n) {
@@ -928,7 +967,7 @@ function updateInfoPoly(C, col) {
     if (!C.zone) {
       zoneBox = state.zoneSel.length === 2
         ? '<div class="zonebox">Die beiden Flächen sind parallel und bestimmen keine Zone. Bitte eine andere Fläche wählen.</div>'
-        : `<div class="zonebox">Zone bestimmen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht antippen.</div>`;
+        : `<div class="zonebox">Zone bestimmen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht antippen, oder unten Zonen wählen.</div>`;
     } else {
       const z = C.zone;
       const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
@@ -943,11 +982,13 @@ function updateInfoPoly(C, col) {
         : hasFace
           ? `Der Pol der Zonenachse ${dir(z.uvw)} fällt mit dem Pol der Fläche ${pl} zusammen, weil die Richtung ${dir(z.uvw)} in diesem Gitter senkrecht auf den Netzebenen ${pl} steht.`
           : `Der Pol der Zonenachse ${dir(z.uvw)} liegt dort, wo der Pol einer Fläche ${pl} läge; der dargestellte Kristall hat keine solche Fläche. Das gilt, weil die Richtung ${dir(z.uvw)} in diesem Gitter senkrecht auf den Netzebenen ${pl} steht, was nicht in jedem Gitter der Fall ist.`;
-      zoneBox = `<div class="zonebox"><strong>Zone ${dir(z.uvw)}</strong>
+      const zc = C.selZones.find((y) => y.key === z.key);
+      zoneBox = `<div class="zonebox"${zc ? ` style="border-color:${zc.color}"` : ''}><strong${zc ? ` style="color:${zc.color}"` : ''}>Zone ${dir(z.uvw)}</strong>
         <p>Zonenachse ${dir3(z.uvw)} = ${hklHTML(f1, false)} × ${hklHTML(f2, false)}${hex4 ? ` (drei Indizes), mit vier Indizes ${dir(z.uvw)}` : ''}. Winkel zwischen den Polen: <b class="num">${z.angle.toFixed(1)}°</b>.</p>
         <p>Flächen in dieser Zone (Zonengleichung ${hex4 ? 'hu + kv + it + lw = 0' : 'hu + kv + lw = 0'}), ${z.inZone.length}: ${faces}</p>
         <p class="note">${dev} Die Kanten zwischen Flächen der Zone verlaufen parallel zur Zonenachse (in 3D hervorgehoben).</p></div>`;
     }
+    zoneBox += zoneListHTML(C, hex4);
   }
   const hab = habitOf(C.faces);
   const HABIT_NAMES = { isometrisch: 'isometrisch', planar: 'planar oder taflig', prismatisch: 'prismatisch oder nadelig' };
@@ -964,7 +1005,7 @@ function updateInfoPoly(C, col) {
         <td class="num">${F.present < F.hkls.length ? `${F.present} von ${F.hkls.length}` : F.hkls.length}</td><td>${eig ? hmHTML(eig) : '–'}</td></tr>`;
     }).join('');
     const gone = C.forms.some((F) => F.present < F.hkls.length);
-    $('info').innerHTML = `
+    setInfo(`
     <div class="info-head">
       <div class="hm-big form-sym ex-name">${ex.name}</div>
       <div class="hm-meta">${ex.formula ? `<span class="form-name">${ex.formula}</span>` : ''}<span>Punktgruppe <b>${hmHTML(groupOf(C.groupId).hm)}</b> (${groupOf(C.groupId).sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}</span></div>
@@ -983,7 +1024,7 @@ function updateInfoPoly(C, col) {
     ${sel}
     ${aux}
     <p class="note">Quelle: ${ex.src}. Die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt, nicht gemessen; sie lassen sich unter „Gitter und Gestalt“ ändern.</p>
-    ${explain(`${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}${habitNote}`)}`;
+    ${explain(`${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}${habitNote}`)}`);
     return;
   }
   // Tracht und Habitus (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2)
@@ -1003,7 +1044,7 @@ function updateInfoPoly(C, col) {
       twinNote = `<p class="note">Die Punktgruppe ${hmHTML(g.hm)} ist hier nur erzeugende Symmetrie; die Eigensymmetrie der Form (${hmHTML(formEig(e))}) ist höher (Begriffe nach Borchardt-Ott). Geometrisch gleicht die Form der Form „${formName(tw[0])}“ in ${hmHTML(tg.hm)}; der Unterschied liegt nur in der Flächensymmetrie (1 statt ${fsList}), sichtbar mit „Flächensymmetrie zeigen“ oder an der Lage der Pole zum Symmetriegerüst.</p>`;
     }
   }
-  $('info').innerHTML = `
+  setInfo(`
     <div class="info-head">
       <div class="hm-big form-sym">${brace(e.hkl)}</div>
       <div class="hm-meta"><span class="form-name">${formName(e)}</span><span>Punktgruppe <b>${hmHTML(g.hm)}</b> (${g.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}</span></div>
@@ -1025,7 +1066,34 @@ function updateInfoPoly(C, col) {
     ${aux}
     ${explain(`${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}
     <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern die Gestalt des Kristalls, aber nicht das Stereogramm.</p>
-    ${habitNote}`)}`;
+    ${habitNote}`)}`);
+}
+
+/** Richtung [uvw] (bei hexagonalen Achsen wahlweise [uvtw]) als HTML. */
+function dirHTML(v, four, br = ['[', ']']) {
+  const w = four ? dirToFour(v) : v;
+  return br[0] + w.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join(Math.max(...w.map(Math.abs)) > 9 ? ' ' : '') + br[1];
+}
+
+/** Zonenliste in der Infobox: Gruppen gleichwertiger Zonen, einzeln oder als Gruppe wählbar, und die gewählten Zonen. */
+function zoneListHTML(C, hex4) {
+  const sel = new Set(state.poly.zones);
+  const colorOf = new Map(C.selZones.map((z) => [z.key, z.color]));
+  const groups = C.zoneClasses.map((cl, ci) => {
+    const n = cl.zones.filter((z) => sel.has(z.key)).length;
+    const pressed = n === 0 ? 'false' : n === cl.zones.length ? 'true' : 'mixed';
+    const members = cl.zones.map((z) => {
+      const c = colorOf.get(z.key);
+      return `<button type="button" class="zbtn" data-zone="${z.key}" aria-pressed="${sel.has(z.key)}"${c ? ` style="--zc:${c}"` : ''}>${dirHTML(z.uvw, hex4)}</button>`;
+    }).join('');
+    const count = cl.zones.length === 1 ? '1 Zone' : `${cl.zones.length} Zonen`;
+    return `<div class="zclass"><button type="button" class="zgroup" data-zclass="${ci}" aria-pressed="${pressed}">${dirHTML(cl.rep, hex4, ['⟨', '⟩'])} <span>${count}, je ${cl.faces} Flächen</span></button><div class="zmembers">${members}</div></div>`;
+  }).join('');
+  const chosen = C.selZones.map((z) => `<li><i class="sw" style="background:${z.color}"></i><b style="color:${z.color}">${dirHTML(z.uvw, hex4)}</b>, ${z.inZone.length} Flächen: ${z.inZone.map((k) => hklHTML(C.faces[k].hkl, hex4)).join(' ')}</li>`).join('');
+  return `<div class="zlist"><h3>Zonen dieses Kristalls</h3>
+    ${groups ? `<p class="hintline">Zonen mit mindestens drei Flächen, gruppiert nach symmetrisch gleichwertigen Zonenachsen. Gruppe antippen: alle ihre Zonen; Richtung antippen: nur diese Zone.</p>${groups}`
+    : '<p class="hintline">Keine Zone mit mindestens drei Flächen: An jeder Kante dieses Kristalls liegen nur zwei Flächen.</p>'}
+    ${chosen ? `<h3>Gewählte Zonen</h3><ul class="zsel">${chosen}</ul><button type="button" class="linkbtn" data-zclear>Alle Zonen abwählen</button>` : ''}</div>`;
 }
 
 /** ITA-Indexmuster als HTML (z. B. h0-hl → h0h̄l); bei drei Indizes ohne i. */
@@ -1140,6 +1208,13 @@ const curTool = () => (state.mode === 'pg' ? state.pg.tool : state.poly.tool);
 const getPicks = () => (state.mode === 'pg' ? state.pgSel : state.zoneSel);
 const setPicks = (v) => { if (state.mode === 'pg') state.pgSel = v; else state.zoneSel = v; };
 
+/** Werkzeug „Zone“: Sind zwei Flächen gewählt, wird ihre Zone in die Zonenliste aufgenommen. */
+function notePickedZone() {
+  if (state.mode !== 'poly' || state.poly.tool !== 'zone' || state.zoneSel.length !== 2 || !current || current.kind !== 'poly') return;
+  const z = zoneOf(current.C, state.zoneSel[0], state.zoneSel[1]);
+  if (z && !state.poly.zones.includes(z.key)) state.poly.zones = [...state.poly.zones, z.key];
+}
+
 /** Antippen einer Stelle mit einem oder mehreren zusammenfallenden Polen:
  *  nichts gewählt → erster (oberer) Pol; sonst der nächste; nach dem letzten → keiner.
  *  Mit Werkzeug (Zone/Winkel) kommt bei zwei Polen zusätzlich „beide“ dazu. */
@@ -1156,6 +1231,7 @@ function pickStack(stack) {
     const next = options[(k + 1) % options.length];
     setPicks([...rest, ...next].slice(-2));
     state.selected = null;
+    notePickedZone();
   } else {
     const k = stack.indexOf(state.selected);
     state.selected = k + 1 < stack.length ? stack[k + 1] : null;
@@ -1171,6 +1247,7 @@ function pickFace(idx) {
     else if (picks.includes(idx)) setPicks(picks.filter((k) => k !== idx));
     else setPicks(picks.length >= 2 ? [idx] : [...picks, idx]);
     state.selected = null;
+    notePickedZone();
   } else {
     state.selected = idx === state.selected ? null : idx;
   }
@@ -1242,12 +1319,12 @@ function init() {
 
   buildSystemSelect();
   $('sys-select').addEventListener('change', (e) => {
-    state.poly.system = e.target.value; state.poly.example = null; state.selected = null; state.zoneSel = [];
+    state.poly.system = e.target.value; state.poly.example = null; state.selected = null; state.zoneSel = []; state.poly.zones = [];
     refreshPolyControls(); render();
   });
   $('form-select').addEventListener('change', (e) => {
     if (!e.target.value) return;
-    state.poly.entryBySys[state.poly.system] = e.target.value; state.selected = null; state.zoneSel = [];
+    state.poly.entryBySys[state.poly.system] = e.target.value; state.selected = null; state.zoneSel = []; state.poly.zones = [];
     if (state.poly.example) { state.poly.example = null; refreshPolyControls(); }
     render();
   });
@@ -1324,6 +1401,22 @@ function init() {
   for (const b of document.querySelectorAll('.figswitch button')) b.addEventListener('click', () => setFig(b.dataset.fig));
   setFig(state.fig);
 
+  // Zonenliste: einzelne Zone, ganze Gruppe oder alle abwählen
+  $('info').addEventListener('click', (e) => {
+    if (state.mode !== 'poly' || !current || current.kind !== 'poly') return;
+    const zb = e.target.closest('[data-zone]'), zg = e.target.closest('[data-zclass]'), zx = e.target.closest('[data-zclear]');
+    if (!zb && !zg && !zx) return;
+    let zs = [...state.poly.zones];
+    if (zb) zs = zs.includes(zb.dataset.zone) ? zs.filter((k) => k !== zb.dataset.zone) : [...zs, zb.dataset.zone];
+    else if (zg) {
+      const keys = (current.C.zoneClasses[Number(zg.dataset.zclass)] || { zones: [] }).zones.map((z) => z.key);
+      zs = keys.every((k) => zs.includes(k)) ? zs.filter((k) => !keys.includes(k)) : [...zs, ...keys.filter((k) => !zs.includes(k))];
+    } else zs = [];
+    state.poly.zones = zs;
+    state.zoneSel = []; // die Auswahl über zwei Pole beginnt neu
+    render();
+  });
+
   // Erläuterungen: offen/zu für alle Infoboxen merken (toggle bubbelt nicht, daher Capture)
   $('info').addEventListener('toggle', (e) => {
     if (!e.target.classList || !e.target.classList.contains('explain')) return;
@@ -1365,7 +1458,7 @@ function init() {
   const galenaShown = () => state.mode === 'poly' && state.poly.example === 'galenit';
   const loadGalena = () => {
     setExample('galenit');
-    state.poly.tool = null; state.zoneSel = [];
+    state.poly.tool = null; state.zoneSel = []; state.poly.zones = [];
     state.poly.labels = true; $('poly-labels').checked = true;
     for (const [id, key] of [['v-sphere', 'sphere'], ['v-plane', 'plane'], ['v-rays', 'rays'], ['v-normals', 'normals']]) {
       state.view[key] = true; $(id).checked = true;

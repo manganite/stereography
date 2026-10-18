@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Zonen direkt wählen:** Mit dem Werkzeug „Zone“ listet die Infobox alle Zonen des dargestellten Kristalls mit mindestens drei Flächen, gruppiert nach symmetrisch gleichwertigen Zonenachsen ⟨uvw⟩ (z. B. Galenit: ⟨100⟩, ⟨110⟩, ⟨111⟩, ⟨211⟩). Antippen einer Gruppe wählt alle ihre Zonen, Antippen einer Richtung nur diese; mehrere Zonen sind zugleich wählbar. Jede gewählte Zone erscheint in eigener Farbe mit Zonenkreis, Zonenachse, Flächen und Polen im Stereogramm und in 3D. Zwei angetippte Pole fügen ihre Zone der Auswahl hinzu. Die Auswahl steht im Link (`zonen=`).
+
 ## [1.1.0] - 2026-10-18
 
 Hilfen für den Einstieg: Tooltips, ⓘ-Erklärungen auf Touch-Geräten, Karte „Erste Schritte“ und weniger gleichzeitig sichtbare Optionen.

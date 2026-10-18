@@ -47,8 +47,8 @@ export const TIPS = {
   'v-normals': 'Flächennormalen. Ihr Durchstosspunkt durch die Kugel ist der Flächenpol.',
   'reset-all': 'Alle Einstellungen und den gespeicherten Zustand löschen und die App neu starten.',
   // Stereogramm und 3D
-  'zone-btn': 'Zone: zwei Flächen oder Pole antippen. Zonenkreis, Zonenachse [uvw] und alle Flächen, die die Zonengleichung hu + kv + lw = 0 erfüllen.',
-  'zone-btn-3d': 'Zone: zwei Flächen oder Pole antippen. Zonenkreis, Zonenachse [uvw] und alle Flächen, die die Zonengleichung hu + kv + lw = 0 erfüllen.',
+  'zone-btn': 'Zone: zwei Flächen oder Pole antippen. Zonenkreis, Zonenachse [uvw] und alle Flächen, die die Zonengleichung hu + kv + lw = 0 erfüllen. Die Infobox listet alle Zonen des Kristalls zum Auswählen, auch mehrere zugleich.',
+  'zone-btn-3d': 'Zone: zwei Flächen oder Pole antippen. Zonenkreis, Zonenachse [uvw] und alle Flächen, die die Zonengleichung hu + kv + lw = 0 erfüllen. Die Infobox listet alle Zonen des Kristalls zum Auswählen, auch mehrere zugleich.',
   'angle-btn': 'Winkel: zwei Pole oder Flächen antippen. Normalenwinkel als Grosskreisbogen; bei Punktgruppen auch die Operation, die den einen Pol in den anderen überführt.',
   'angle-btn-3d': 'Winkel: zwei Pole oder Flächen antippen. Normalenwinkel als Grosskreisbogen und Flächenwinkel.',
   'copy-svg': 'Stereogramm als SVG in die Zwischenablage kopieren.',

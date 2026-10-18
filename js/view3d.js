@@ -363,13 +363,17 @@ export class View3D {
     // alles andere zurückgenommen, sobald etwas hervorgehoben ist.
     const hi = new Set(selected != null ? [selected] : []);
     for (const k of opts.picked || []) hi.add(k);
-    const inZone = new Set(opts.zone ? opts.zone.inZone : []);
+    // Zonen (eine oder mehrere): Fläche getönt in der Farbe der ersten Zone, zu der sie gehört
+    const zones = opts.zones || (opts.zone ? [{ ...opts.zone, color: col.accent }] : []);
+    const zoneCol = new Map();
+    zones.forEach((z) => z.inZone.forEach((i) => { if (!zoneCol.has(i)) zoneCol.set(i, z.color || col.accent); }));
+    const inZone = { has: (i) => zoneCol.has(i), get size() { return zoneCol.size; } };
     const focus = hi.size > 0 || inZone.size > 0;
     const accent = c(col.accent), paper = c(col.paper);
     const faceColor = (f, i) => {
       const base = c(f.color3d || col.crystal);
       if (hi.has(i)) return accent.clone();
-      if (inZone.has(i)) return base.lerp(accent, 0.5);
+      if (inZone.has(i)) return base.lerp(c(zoneCol.get(i)), 0.5);
       return focus ? base.lerp(paper, 0.45) : base;
     };
     vis.forEach(({ f, i }) => {
@@ -424,7 +428,7 @@ export class View3D {
     }
     vis.forEach(({ f, i }) => {
       const isSel = hi.has(i), isZ = inZone.has(i);
-      const pc = isSel || isZ ? col.accent : focus ? col.muted : f.role === 'aux' ? col.muted : f.color2d || col.normal;
+      const pc = isSel ? col.accent : isZ ? zoneCol.get(i) : focus ? col.muted : f.role === 'aux' ? col.muted : f.color2d || col.normal;
       const m = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: c(pc) }));
       m.scale.setScalar(isSel ? 1.9 : isZ ? 1.4 : focus ? 0.85 : 1);
       m.position.copy(V(f.normal));
@@ -435,13 +439,14 @@ export class View3D {
         const el = document.createElement('div');
         el.className = 'lbl3d lbl-hkl' + (isSel ? ' sel' : isZ ? ' zone' : focus ? ' dim' : '') + (f.role === 'aux' ? ' aux' : '');
         el.innerHTML = labels[i];
+        if (isZ && !isSel) el.style.color = zoneCol.get(i);
         const lab = new THREE.CSS2DObject(el);
         lab.position.copy(V(f.normal).multiplyScalar(1.13));
         this.content.add(lab);
       }
     });
-    if (opts.zone) {
-      const z = opts.zone, ax = V(z.axis).normalize(), acc = c(col.accent);
+    for (const z of zones) {
+      const ax = V(z.axis).normalize(), acc = c(z.color || col.accent);
       const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.012, 8, 160), new THREE.MeshBasicMaterial({ color: acc }));
       ring.lookAt(ax);
       this.content.add(ring);

@@ -69,3 +69,29 @@ test('Kennungen aus v1.0.0 zeigen dieselbe Form (4̄3m)', () => {
   assert.deepEqual(byId('-43m:c39').hkl, [2, 2, 1]);
   assert.equal(FORM_TYPES[byId('-43m:c39').type].name.split(' ')[0], 'Deltoiddodekaeder');
 });
+
+test('Zonen des Kristalls: mindestens drei Flächen, nach Symmetrie gruppiert', async () => {
+  const { zonesOf } = await import('../js/polyhedra.js');
+  const { EXAMPLES } = await import('../js/examples.js');
+  const summary = (C) => zonesOf(C).map((c) => `${c.rep.join('')}:${c.zones.length}x${c.faces}`);
+  const ex = EXAMPLES.find((e) => e.id === 'galenit');
+  const galenit = buildCrystal({ groupId: ex.pg, forms: ex.forms, lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: '001' });
+  // Borchardt-Ott & Sowa S. 36: (100) liegt in den Zonen [010], [001], [011], [01-1]
+  assert.deepEqual(summary(galenit), ['100:3x8', '110:6x8', '111:4x6', '211:12x4']);
+  const cube = buildCrystal({ entryId: 'm-3m:a34', lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: null });
+  assert.deepEqual(summary(cube), ['100:3x4']);
+  const tetra = buildCrystal({ entryId: '-43m:a33', lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: null });
+  assert.deepEqual(summary(tetra), [], 'am Tetraeder liegen an jeder Kante nur zwei Flächen');
+  // jede Zone enthält nur Flächen mit hu + kv + lw = 0
+  for (const c of zonesOf(galenit)) for (const z of c.zones) for (const k of z.inZone) {
+    const h = galenit.faces[k].hkl;
+    assert.equal(h[0] * z.uvw[0] + h[1] * z.uvw[1] + h[2] * z.uvw[2], 0);
+  }
+  // Schlüssel der Zonen hängen nicht von der Lage ab (Auswahl bleibt beim Wechsel der Blickrichtung gültig)
+  const { zoneByUvw, zoneKey } = await import('../js/polyhedra.js');
+  const cube110 = buildCrystal({ entryId: 'm-3m:a34', lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: '110' });
+  assert.equal(zoneByUvw(cube, [0, 0, 1]).key, '0,0,1');
+  assert.equal(zoneByUvw(cube110, [0, 0, 1]).key, '0,0,1');
+  assert.equal(zoneKey([0, 0, -2]), '0,0,1');
+  assert.deepEqual(zonesOf(cube110)[0].zones.map((z) => z.key).sort(), zonesOf(cube)[0].zones.map((z) => z.key).sort());
+});

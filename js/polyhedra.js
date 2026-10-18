@@ -377,7 +377,7 @@ export function buildCrystal(params) {
     entry, groupId, sys, hex, lat, A, O, faces, axes, preset, presets, zones,
     mainHKL, auxForms, lostMain,
     isReduced, reduced, reducedAxis, orbitsMain: orbitsMain.map((o) => ({ hkls: o, rep: canonicalRep(o) })),
-    framework: groupScreen, motifs,
+    framework: groupScreen, motifs, latOps: Wred,
     motifsPerFace: Wred.length / Math.max(1, orbitsMain[0].length),
     auxReps: auxForms.map((a) => ({ hkls: a.hkls, rep: canonicalRep(a.hkls) })),
     forms: formList.map((F, fi) => ({ hkls: F.hkls, rep: F.rep, present: faces.filter((f) => f.role === 'main' && f.form === fi).length })),
@@ -451,6 +451,17 @@ export function zoneOf(C, i, j) {
   const h1 = C.faces[i].hkl, h2 = C.faces[j].hkl;
   const raw = cross(h1, h2);
   if (raw.every((x) => Math.abs(x) < 1e-9)) return null;
+  const z = zoneByUvw(C, raw);
+  const n1 = C.faces[i].normal, n2 = C.faces[j].normal;
+  z.angle = (Math.acos(Math.max(-1, Math.min(1, dot(n1, n2)))) * 180) / Math.PI;
+  return z;
+}
+
+/**
+ * Zone zur Richtung [uvw] (ganzzahlig, beliebiges Vorzeichen): Achse in der oberen Halbkugel,
+ * sichtbare Flächen der Zone, Abweichung zwischen Richtung [uvw] und Normale (uvw).
+ */
+export function zoneByUvw(C, raw) {
   let uvw = reduceInt(raw);
   let axis = normalize(mulVec(C.O, mulVec(C.A, uvw)));
   // Darstellung mit der Achse in der oberen Halbkugel
@@ -458,12 +469,61 @@ export function zoneOf(C, i, j) {
     uvw = uvw.map((x) => -x + 0); axis = scale(axis, -1);
   }
   const inZone = C.faces.map((f, k) => (dot(f.hkl, uvw) === 0 && !f.hidden ? k : -1)).filter((k) => k >= 0);
-  const n1 = C.faces[i].normal, n2 = C.faces[j].normal;
-  const angle = (Math.acos(Math.max(-1, Math.min(1, dot(n1, n2)))) * 180) / Math.PI;
   const B = transpose(inverse(C.A));
   const planeNormal = normalize(mulVec(C.O, mulVec(B, uvw)));
   const normalDev = (Math.acos(Math.max(-1, Math.min(1, Math.abs(dot(planeNormal, axis))))) * 180) / Math.PI;
-  return { uvw, axis, inZone, angle, normalDev, planeNormal };
+  return { uvw, key: zoneKey(uvw), axis, inZone, normalDev, planeNormal };
+}
+
+/** Schlüssel einer Zone unabhängig von der Lage: teilerfremd, erste von null verschiedene Komponente positiv. */
+export function zoneKey(raw) {
+  const u = reduceInt(raw);
+  const s = u.find((x) => x !== 0) < 0 ? -1 : 1;
+  return u.map((x) => s * x + 0).join(',');
+}
+
+/** Mindestzahl der Flächen einer Zone (Borchardt-Ott & Sowa, Abschn. 5.2: drei oder mehr Flächen mit parallelen Kanten). */
+export const ZONE_MIN_FACES = 3;
+
+/**
+ * Alle Zonen des dargestellten Kristalls mit mindestens ZONE_MIN_FACES sichtbaren Flächen, gruppiert nach
+ * symmetrisch gleichwertigen Zonenachsen (Operationen der wirksamen Punktgruppe, Richtung und Gegenrichtung gleich).
+ * Rückgabe: [{ rep: [u,v,w], zones: [zone…], faces: Flächen je Zone }], nach Flächenzahl und Indexgrösse sortiert.
+ */
+export function zonesOf(C) {
+  const vis = C.faces.map((f, i) => ({ f, i })).filter(({ f }) => !f.hidden);
+  const byKey = new Map();
+  for (let a = 0; a < vis.length; a++) {
+    for (let b = a + 1; b < vis.length; b++) {
+      const raw = cross(vis[a].f.hkl, vis[b].f.hkl);
+      if (raw.every((x) => x === 0)) continue;
+      const u = reduceInt(raw);
+      const k1 = u.join(','), k2 = u.map((x) => -x + 0).join(',');
+      if (byKey.has(k1) || byKey.has(k2)) continue;
+      const z = zoneByUvw(C, u);
+      byKey.set(z.key, z);
+    }
+  }
+  const zones = [...byKey.values()].filter((z) => z.inZone.length >= ZONE_MIN_FACES);
+  // Klassen: Bahn der Richtung unter den Gitteroperationen (Richtungen transformieren mit W)
+  const keyOf = (u) => { const v = reduceInt(u); const w = v.map((x) => -x + 0); return [v.join(','), w.join(',')]; };
+  const classOf = new Map();
+  const classes = [];
+  for (const z of zones) {
+    if (classOf.has(z.key)) continue;
+    const orbit = new Set();
+    for (const W of C.latOps) for (const k of keyOf(mulVec(W, z.uvw).map((x) => Math.round(x)))) orbit.add(k);
+    const members = zones.filter((y) => orbit.has(y.key));
+    members.forEach((y) => classOf.set(y.key, classes.length));
+    // Repräsentant: möglichst wenige negative Indizes, dann die grössten Indizes vorn (⟨100⟩, ⟨110⟩, ⟨211⟩)
+    const neg = (u) => u.filter((x) => x < 0).length;
+    const desc = (p, q) => (q[0] - p[0]) || (q[1] - p[1]) || (q[2] - p[2]);
+    const rep = members.map((y) => y.uvw).sort((p, q) => neg(p) - neg(q) || desc(p, q))[0];
+    classes.push({ rep, zones: members, faces: z.inZone.length });
+  }
+  const size = (u) => u.reduce((s, x) => s + Math.abs(x), 0);
+  classes.sort((p, q) => q.faces - p.faces || size(p.rep) - size(q.rep));
+  return classes;
 }
 
 /**

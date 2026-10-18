@@ -794,6 +794,18 @@ function updateInfoPoly(C, col) {
   const r2 = (x) => x.toFixed(2).replace('.', ',');
   const habitHTML = hab ? `${HABIT_NAMES[hab.type]} <span class="muted">(L₁ : L₂ : L₃ = 1 : ${r2(hab.L[1] / hab.L[0])} : ${r2(hab.L[2] / hab.L[0])})</span>` : '–';
   const sysName = SYSTEM_NAMES[C.sys];
+  // allgemeine Form mit höherer Eigensymmetrie: auf die geometrisch gleiche Form hinweisen
+  let twinNote = '';
+  const normE = (s) => EIG_SAME[s] || s;
+  if (!groupOrder.has(g.id)) groupOrder.set(g.id, buildPointGroup(g.id).order);
+  if (e.mult === groupOrder.get(g.id) && normE(formEig(e)) !== normE(g.hm)) {
+    const tw = CATALOG.filter((x) => x.type === e.type && normE(groupOf(x.pg).hm) === normE(formEig(e)));
+    if (tw.length) {
+      const tg = groupOf(tw[0].pg);
+      const fsList = [...new Set(tw.map((x) => x.fs))].map(hmHTML).join(' bzw. ');
+      twinNote = `<p class="note">Die Eigensymmetrie der Form ist höher als die Punktgruppe: Geometrisch gleicht sie der Form „${formName(tw[0])}“ in ${hmHTML(tg.hm)}; der Unterschied liegt nur in der Flächensymmetrie (1 statt ${fsList}), sichtbar mit „Flächensymmetrie zeigen“ oder an der Lage der Pole zum Symmetriegerüst.</p>`;
+    }
+  }
   $('info').innerHTML = `
     <div class="info-head">
       <div class="hm-big form-sym">${brace(e.hkl)}</div>
@@ -811,6 +823,7 @@ function updateInfoPoly(C, col) {
       <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken)}</dd></div>
       <div><dt>Lage</dt><dd>${C.preset.name}</dd></div>
     </dl>
+    ${twinNote}
     ${sel}
     ${aux}
     ${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}

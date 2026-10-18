@@ -440,3 +440,74 @@ export function zoneOf(C, i, j) {
   const normalDev = (Math.acos(Math.max(-1, Math.min(1, Math.abs(dot(planeNormal, axis))))) * 180) / Math.PI;
   return { uvw, axis, inZone, angle, normalDev, planeNormal };
 }
+
+/**
+ * Habitus nach Borchardt-Ott & Sowa (Kristallographie, Abschn. 5.2): drei Grundtypen
+ * isometrisch, planar oder taflig, prismatisch oder nadelig.
+ * Bestimmt aus dem Trägheitstensor (zweite Momente) des Kristallkörpers: Hauptausdehnungen
+ * L = √(12 λ) (bei einem Quader genau die Kantenlängen), L₁ ≥ L₂ ≥ L₃. Kubische Formen haben
+ * einen isotropen Tensor und sind damit stets isometrisch. Grenze 2/3 (wie bei Zingg).
+ * faces: [{verts:[[x,y,z],…]}] eines geschlossenen konvexen Polyeders.
+ */
+export const HABIT_LIMIT = 2 / 3;
+export function habitOf(faces) {
+  // Zerlegung in Tetraeder (Bezugspunkt: Mittel der Ecken), Volumen, Schwerpunkt, zweite Momente
+  const all = faces.flatMap((f) => f.verts);
+  if (all.length < 4) return null;
+  const o = all.reduce((s, v) => [s[0] + v[0], s[1] + v[1], s[2] + v[2]], [0, 0, 0]).map((x) => x / all.length);
+  let V = 0;
+  const S = [0, 0, 0];
+  const M = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (const f of faces) {
+    const p = f.verts.map((v) => [v[0] - o[0], v[1] - o[1], v[2] - o[2]]);
+    for (let j = 1; j < p.length - 1; j++) {
+      const a = p[0], b = p[j], c = p[j + 1];
+      const vol = Math.abs(a[0] * (b[1] * c[2] - b[2] * c[1]) - a[1] * (b[0] * c[2] - b[2] * c[0]) + a[2] * (b[0] * c[1] - b[1] * c[0])) / 6;
+      if (vol < 1e-12) continue;
+      V += vol;
+      const sum = [a[0] + b[0] + c[0], a[1] + b[1] + c[1], a[2] + b[2] + c[2]];
+      for (let i = 0; i < 3; i++) {
+        S[i] += (vol / 4) * sum[i];
+        for (let k = 0; k < 3; k++) M[i][k] += (vol / 20) * (a[i] * a[k] + b[i] * b[k] + c[i] * c[k] + sum[i] * sum[k]);
+      }
+    }
+  }
+  if (V < 1e-12) return null;
+  const cen = S.map((x) => x / V);
+  const C = M.map((r, i) => r.map((x, k) => x / V - cen[i] * cen[k]));
+  const L = jacobiEigen(C).map((l) => Math.sqrt(12 * Math.max(0, l))).sort((x, y) => y - x);
+  const e = L[1] / L[0], p = L[2] / L[1];
+  let type;
+  if (e >= HABIT_LIMIT && p >= HABIT_LIMIT) type = 'isometrisch';
+  else if (e < HABIT_LIMIT && p >= HABIT_LIMIT) type = 'prismatisch';
+  else if (e >= HABIT_LIMIT && p < HABIT_LIMIT) type = 'planar';
+  else type = e < p ? 'prismatisch' : 'planar';
+  return { type, L, e, p };
+}
+
+/** Eigenwerte einer symmetrischen 3×3-Matrix (Jacobi-Verfahren). */
+function jacobiEigen(A) {
+  const a = A.map((r) => r.slice());
+  for (let sweep = 0; sweep < 50; sweep++) {
+    let off = 0;
+    for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) off += a[i][j] * a[i][j];
+    if (off < 1e-20) break;
+    for (let pI = 0; pI < 2; pI++) {
+      for (let q = pI + 1; q < 3; q++) {
+        if (Math.abs(a[pI][q]) < 1e-15) continue;
+        const th = (a[q][q] - a[pI][pI]) / (2 * a[pI][q]);
+        const t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1));
+        const c = 1 / Math.sqrt(t * t + 1), s = t * c;
+        for (let k = 0; k < 3; k++) {
+          const akp = a[k][pI], akq = a[k][q];
+          a[k][pI] = c * akp - s * akq; a[k][q] = s * akp + c * akq;
+        }
+        for (let k = 0; k < 3; k++) {
+          const apk = a[pI][k], aqk = a[q][k];
+          a[pI][k] = c * apk - s * aqk; a[q][k] = s * apk + c * aqk;
+        }
+      }
+    }
+  }
+  return [a[0][0], a[1][1], a[2][2]];
+}

@@ -4,7 +4,7 @@ import {
   POINT_GROUPS, SYSTEMS, buildPointGroup, orbit, elementSummary, symmetryDirections, HEX_A, HEX_B,
 } from './pointgroups.js';
 import {
-  buildCrystal, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
+  buildCrystal, habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig, entryById } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
@@ -763,6 +763,15 @@ function updateInfoPoly(C, col) {
         <p class="note">${dev} Die Kanten zwischen Flächen der Zone verlaufen parallel zur Zonenachse (in 3D hervorgehoben).</p></div>`;
     }
   }
+  // Tracht und Habitus (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2)
+  const trachtHTML = [`${formName(e)} ${brace(e.hkl)}`, ...C.auxReps.map((a) => {
+    const n = auxFormName(C.groupId, a.hkls);
+    return `${n ? n.name : 'Form'} ${brace(a.rep)}`;
+  })].join(' + ') + (state.poly.open && C.auxReps.length ? ' <span class="muted">(Ergänzungsformen ausgeblendet)</span>' : '');
+  const hab = habitOf(C.faces);
+  const HABIT_NAMES = { isometrisch: 'isometrisch', planar: 'planar oder taflig', prismatisch: 'prismatisch oder nadelig' };
+  const r2 = (x) => x.toFixed(2).replace('.', ',');
+  const habitHTML = hab ? `${HABIT_NAMES[hab.type]} <span class="muted">(L₁ : L₂ : L₃ = 1 : ${r2(hab.L[1] / hab.L[0])} : ${r2(hab.L[2] / hab.L[0])})</span>` : '–';
   const sysName = SYSTEM_NAMES[C.sys];
   $('info').innerHTML = `
     <div class="info-head">
@@ -772,6 +781,8 @@ function updateInfoPoly(C, col) {
     ${broken}
     ${zoneBox}
     <dl class="facts">
+      <div class="wide"><dt>Tracht (auftretende Formen)</dt><dd>${trachtHTML}</dd></div>
+      <div><dt>Habitus</dt><dd>${habitHTML}</dd></div>
       <div><dt>Flächen der Form</dt><dd class="num">${C.mainHKL.length}</dd></div>
       <div><dt>Indexmuster (ITA)</dt><dd>{${symText(e.sym, hex4)}}</dd></div>
       <div><dt>Wyckoff-Lage, Flächensymmetrie</dt><dd>${e.wy}, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
@@ -782,7 +793,8 @@ function updateInfoPoly(C, col) {
     ${sel}
     ${aux}
     ${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}
-    <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern die Gestalt des Kristalls, aber nicht das Stereogramm.</p>`;
+    <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern die Gestalt des Kristalls, aber nicht das Stereogramm.</p>
+    <p class="note">Tracht: die Menge der am Kristall auftretenden Formen. Habitus: das relative Grössenverhältnis der Flächen, mit den drei Grundtypen isometrisch, planar oder taflig, prismatisch oder nadelig (nach Borchardt-Ott). Gleiche Tracht kann verschiedenen Habitus haben (z. B. über c/a oder den Abstand der Ergänzungsformen), verschiedene Tracht gleichen Habitus (Würfel, Oktaeder, Rhombendodekaeder: isometrisch). Die Einteilung hier: L₁ ≥ L₂ ≥ L₃ sind die Hauptausdehnungen des dargestellten Kristalls; isometrisch, wenn L₂/L₁ und L₃/L₂ beide mindestens 2/3 sind, sonst prismatisch (eine Richtung lang) oder planar (eine Richtung kurz).</p>`;
 }
 
 /** ITA-Indexmuster als HTML (z. B. h0-hl → h0h̄l); bei drei Indizes ohne i. */

@@ -12,6 +12,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
+- Habitus: isometrisch nur noch, wenn auch L₃/L₁ ≥ 2/3 (bisher genügten L₂/L₁ ≥ 2/3 und L₃/L₂ ≥ 2/3, womit L₃/L₁ bis 0,44 sinken konnte). Dadurch gelten z. B. die orthorhombischen Formen mit Standardgitter (1,24 : 1 : 0,80) und die triklinen Formen nicht mehr als isometrisch.
 - Auf Laptops ohne Untertitel in der Kopfzeile, damit sie auf eine Zeile passt.
 - Intern: Szenenberechnung und Link-Adresse in `js/scene.js`, gemeinsame Farben und Kopfzeile in `css/base.css` (von App und Skript genutzt; die App zeigt unverändert dasselbe).
 - Begriffe wie in der Vorlesung: Die Lage heisst „[001] ∥ Projektionsrichtung“ (statt „Blickrichtung“, das für die Symmetrierichtungen des Hermann-Mauguin-Symbols reserviert bleibt), die Kugel der 3D-Ansicht „Umkugel“, und die dritte hexagonale Blickrichtung wird als ⟨210⟩ bezeichnet (Borchardt-Ott; dieselbe Richtungsfamilie wie ⟨11̄0⟩ in ITA).

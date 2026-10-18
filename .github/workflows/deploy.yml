@@ -24,15 +24,21 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Validate semver tag
-        if: github.event_name == 'push'
-        run: |
-          if [[ ! "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Tag '${GITHUB_REF_NAME}' ist kein Semver-Tag (vX.Y.Z)."
-            exit 1
-          fi
       - name: Checkout
         uses: actions/checkout@v4
+      # Auch bei manuellem Start nur von einem Release-Tag, der zu js/version.js passt
+      # (sonst trüge unveröffentlichter Stand dieselbe Offline-Cache-Version).
+      - name: Validate tag against js/version.js
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" != "tag" || ! "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Veröffentlichung nur von einem Tag vX.Y.Z (hier: ${GITHUB_REF_TYPE} ${GITHUB_REF_NAME})."
+            exit 1
+          fi
+          APP=$(sed -n "s/^export const VERSION = '\(.*\)';/\1/p" js/version.js)
+          if [ "v${APP}" != "${GITHUB_REF_NAME}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} passt nicht zu js/version.js (${APP})."
+            exit 1
+          fi
       - name: Set up Node
         uses: actions/setup-node@v4
         with:

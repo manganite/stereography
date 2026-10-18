@@ -101,6 +101,26 @@ export function symbolIcon(symbol, centre, col, size = 26) {
   return `<svg class="sym-icon" viewBox="-14 -14 28 28" width="${size}" height="${size}" aria-hidden="true"><g transform="rotate(${a})">${axisSymbolSVG(symbol, centre, col)}</g></svg>`;
 }
 
+/** Punkte auf dem kürzeren Grosskreisbogen von a nach b (Einheitsvektoren); bei a ≈ −b ein beliebiger Halbkreis. */
+export function arcPoints(a, b, n = 90) {
+  a = normalize(a); b = normalize(b);
+  const d = Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]));
+  const om = Math.acos(d);
+  let u;
+  if (om > Math.PI - 1e-6) {
+    u = cross(a, Math.abs(a[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0]);
+  } else {
+    u = [b[0] - d * a[0], b[1] - d * a[1], b[2] - d * a[2]];
+  }
+  u = normalize(u);
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = (om * i) / n;
+    pts.push([a[0] * Math.cos(t) + u[0] * Math.sin(t), a[1] * Math.cos(t) + u[1] * Math.sin(t), a[2] * Math.cos(t) + u[2] * Math.sin(t)]);
+  }
+  return pts;
+}
+
 /** Polylinie eines Grosskreises (obere Hälfte) mit Normale n. */
 function greatCirclePath(n) {
   n = normalize(n);
@@ -260,6 +280,28 @@ export function buildSVG(scene, { standalone = false } = {}) {
     const s = 6;
     out.push(`<g stroke="${col.accent}" stroke-width="2.2" stroke-linecap="round"><line x1="${f(q.x - s)}" y1="${f(q.y - s)}" x2="${f(q.x + s)}" y2="${f(q.y + s)}"/><line x1="${f(q.x - s)}" y1="${f(q.y + s)}" x2="${f(q.x + s)}" y2="${f(q.y - s)}"/></g>`);
     if (scene.zone.label) out.push(textWithBars(scene.zone.label, q.x + 10, q.y + 18, `font-family="${font}" font-size="13.5" font-weight="600" fill="${col.accent}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"`));
+  }
+
+  // Winkel: Grosskreisbogen zwischen zwei Polen; Abschnitte auf der unteren Halbkugel gestrichelt
+  if (scene.arc) {
+    const pts = arcPoints(scene.arc.a, scene.arc.b, 120);
+    let run = [], up = null;
+    const flush = () => {
+      if (run.length > 1) out.push(`<path d="M ${run.map((q) => `${f(q.x)},${f(q.y)}`).join(' L ')}" fill="none" stroke="${col.accent}" stroke-width="${up ? 3.2 : 2}" stroke-linecap="round"${up ? '' : ' stroke-dasharray="6 5"'}/>`);
+    };
+    for (const p of pts) {
+      const q = project(p);
+      if (up !== null && q.upper !== up) { flush(); run = [run[run.length - 1]]; }
+      up = q.upper; run.push(q);
+    }
+    flush();
+    // Beschriftung am Bogenmittelpunkt, nach aussen versetzt
+    const m = project(pts[Math.floor(pts.length / 2)]);
+    let dx = m.x - C, dy = m.y - C;
+    const l = Math.hypot(dx, dy);
+    if (l < 1) { dx = 0; dy = -1; } else { dx /= l; dy /= l; }
+    const fs = (scene.labelSize || 14.5) * 1.05;
+    out.push(`<text x="${f(m.x + dx * 14)}" y="${f(m.y + dy * 14 + fs * 0.35)}" font-family="${font}" font-size="${f(fs)}" font-weight="600" fill="${col.accent}" text-anchor="${dx > 0.35 ? 'start' : dx < -0.35 ? 'end' : 'middle'}" paint-order="stroke" stroke="${col.paper}" stroke-width="4" stroke-linejoin="round">${scene.arc.label}</text>`);
   }
 
   // Pole

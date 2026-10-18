@@ -225,6 +225,7 @@ select {
 .lbl-hkl.sel { color: var(--paper); background: var(--accent); font-weight: 600; }
 .lbl-hkl.zone { color: var(--accent); font-weight: 600; }
 .lbl-hkl.dim { opacity: 0.5; }
+.lbl-angle { font-weight: 600; color: var(--paper); background: var(--accent); padding: 1px 5px; border-radius: 4px; font-variant-numeric: tabular-nums; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 8px 12px 10px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); }
 .lg { display: inline-flex; align-items: center; gap: 6px; }
 .lg .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
@@ -412,7 +413,8 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       <div class="stereo-wrap">
         <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
         <div class="stereo-tools" id="stereo-tools" role="toolbar" aria-label="Werkzeuge" hidden>
-          <button class="zone-toggle" id="zone-btn" type="button" aria-pressed="false" title="Zone bestimmen: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
+          <button class="tool-toggle" data-tool="zone" id="zone-btn" type="button" aria-pressed="false" title="Zone bestimmen: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
+          <button class="tool-toggle" data-tool="angle" id="angle-btn" type="button" aria-pressed="false" title="Winkel messen: zwei Pole oder Flächen antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><path d="M-6 5 L6 5 M-6 5 L4 -6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M0 5 A 6 6 0 0 0 -2.2 0.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Winkel</button>
         </div>
       </div>
       <div class="legend" id="legend"></div>
@@ -427,7 +429,8 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       <div class="stereo-wrap">
         <div id="view3d"></div>
         <div class="stereo-tools" id="v3d-tools" role="toolbar" aria-label="Werkzeuge" hidden>
-          <button class="zone-toggle" id="zone-btn-3d" type="button" aria-pressed="false" title="Zone bestimmen: zwei Flächen oder Pole hier oder zwei Pole im Stereogramm antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
+          <button class="tool-toggle" data-tool="zone" id="zone-btn-3d" type="button" aria-pressed="false" title="Zone bestimmen: zwei Flächen oder Pole hier oder zwei Pole im Stereogramm antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
+          <button class="tool-toggle" data-tool="angle" id="angle-btn-3d" type="button" aria-pressed="false" title="Winkel messen: zwei Pole oder Flächen antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><path d="M-6 5 L6 5 M-6 5 L4 -6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M0 5 A 6 6 0 0 0 -2.2 0.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Winkel</button>
         </div>
       </div>
       <div class="panel-foot"><span id="v3d-hint"></span><span class="only-fine">Ziehen: drehen · Mausrad: zoomen</span><span class="only-coarse">Ein Finger: drehen · zwei Finger: zoomen</span></div>

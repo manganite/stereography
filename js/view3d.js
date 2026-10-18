@@ -3,7 +3,7 @@
 // Weltkoordinaten = kartesisches Kristallsystem (x ∥ a, y ∥ b, z ∥ c).
 
 import * as THREE from '../lib/three.bundle.js';
-import { SIZE, R } from './stereogram.js';
+import { SIZE, R, arcPoints } from './stereogram.js';
 
 const V = (p) => new THREE.Vector3(p[0], p[1], p[2]);
 
@@ -444,6 +444,20 @@ export class View3D {
           this.content.add(e);
         }
       });
+    }
+    if (opts.arc) {
+      // Winkel: Grosskreisbogen zwischen den beiden Polen auf der Lagekugel
+      const pts = arcPoints(opts.arc.a, opts.arc.b, 96).map((p) => V(p).multiplyScalar(1.004));
+      const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, 0.014, 8, false), new THREE.MeshBasicMaterial({ color: c(col.accent) }));
+      this.content.add(tube);
+      if (opts.arc.label) {
+        const el = document.createElement('div');
+        el.className = 'lbl3d lbl-angle';
+        el.textContent = opts.arc.label;
+        const lab = new THREE.CSS2DObject(el);
+        lab.position.copy(pts[Math.floor(pts.length / 2)].clone().multiplyScalar(1.12));
+        this.content.add(lab);
+      }
     }
     if (opts.showRays) this._rays(vis.map(({ f }) => f.normal), col);
     if (opts.showAxes) this._axisArrows(poly.axes, col);

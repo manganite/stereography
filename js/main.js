@@ -26,7 +26,7 @@ const state = {
   pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false },
   poly: {
     system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
-    size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: true, zoneMode: false,
+    size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: true, tool: null,
   },
   view: { wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
   selected: null,
@@ -38,6 +38,9 @@ try {
   if (saved && (saved.v === 2 || saved.v === 3)) {
     Object.assign(state.pg, saved.pg); Object.assign(state.view, saved.view);
     if (saved.v === 3) Object.assign(state.poly, saved.poly);
+    if (state.poly.zoneMode) state.poly.tool = 'zone'; // älterer Zustand
+    delete state.poly.zoneMode;
+    if (!['zone', 'angle'].includes(state.poly.tool)) state.poly.tool = null;
     state.mode = saved.mode === 'poly' ? 'poly' : 'pg';
     if (!POINT_GROUPS.some((g) => g.id === state.pg.id)) state.pg.id = 'mm2';
   }
@@ -281,9 +284,12 @@ function renderPoly() {
   });
   if (state.selected != null && (!C.faces[state.selected] || C.faces[state.selected].hidden)) state.selected = null;
   state.zoneSel = state.zoneSel.filter((k) => C.faces[k] && !C.faces[k].hidden);
-  if (!state.poly.zoneMode) state.zoneSel = [];
-  const zone = state.zoneSel.length === 2 ? zoneOf(C, state.zoneSel[0], state.zoneSel[1]) : null;
+  if (!state.poly.tool) state.zoneSel = [];
+  const two = state.zoneSel.length === 2;
+  const zone = state.poly.tool === 'zone' && two ? zoneOf(C, state.zoneSel[0], state.zoneSel[1]) : null;
   C.zone = zone;
+  const angle = state.poly.tool === 'angle' && two ? angleOf(C.faces[state.zoneSel[0]].normal, C.faces[state.zoneSel[1]].normal) : null;
+  C.angle = angle;
   const inZone = new Set(zone ? zone.inZone : []);
   const fw = state.poly.frame ? C.framework : null;
   const scene = {
@@ -303,6 +309,7 @@ function renderPoly() {
     labelSize: Math.max(14.5, 11 * svgUnit()), // mindestens ca. 11 px auf dem Bildschirm
     axisLabels: state.view.axes ? C.axes : [],
     zone: zone ? { axis: zone.axis, label: dirParts(zone.uvw, hex4) } : null,
+    arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null,
   };
   const out = buildSVG(scene);
   svg.innerHTML = out.inner;
@@ -310,15 +317,22 @@ function renderPoly() {
   updateLegendPoly(C, col);
   updateInfoPoly(C, col);
   $('ctl-poly-open').hidden = !C.auxForms.length;
-  $('v3d-hint').textContent = state.poly.zoneMode
-    ? ['Zone: zwei Flächen oder Pole antippen', 'Zone: zweite Fläche oder zweiten Pol antippen', 'Zone bestimmt; nächstes Antippen beginnt eine neue'][Math.min(state.zoneSel.length, 2)]
+  const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
+  $('v3d-hint').textContent = state.poly.tool
+    ? [`${tn}: zwei Flächen oder Pole antippen`, `${tn}: zweite Fläche oder zweiten Pol antippen`, `${state.poly.tool === 'zone' ? 'Zone bestimmt' : 'Winkel gemessen'}; nächstes Antippen beginnt neu`][Math.min(state.zoneSel.length, 2)]
     : 'Fläche oder Pol antippen zum Hervorheben';
   $('stereo-sub').textContent = 'Blick ∥ ' + C.preset.name.replace(' ∥ Blickrichtung', '').replace(/ \(.*\)/, '');
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
   const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
   view3d.showPolyhedron(C, col,
-    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zone, picked: state.poly.zoneMode ? state.zoneSel : [] },
+    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zone, arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null, picked: state.poly.tool ? state.zoneSel : [] },
     state.selected, labels3d);
+}
+
+/** Winkel zwischen zwei Flächennormalen (= Winkel zwischen den Polen). */
+function angleOf(a, b) {
+  const d = Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]));
+  return { a, b, deg: Math.acos(d) / deg };
 }
 
 let pending = false;
@@ -383,7 +397,13 @@ function updateLegendPoly(C, col) {
     items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="5 4"/></svg>untere Hälfte</span>`);
     items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><path d="M-5,-5L5,5M-5,5L5,-5" stroke="${col.accent}" stroke-width="2"/></svg>Zonenachse</span>`);
   }
-  items.push(state.poly.zoneMode ? '<span class="lg hint">Zone: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen („Zone“ erneut drücken: beenden)</span>' : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter · Werkzeug „Zone“: Zonen bestimmen</span>');
+  if (C.angle) {
+    items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="3"/></svg>Bogen (Grosskreis) zwischen den Polen</span>`);
+  }
+  const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
+  items.push(state.poly.tool
+    ? `<span class="lg hint">${tn}: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen („${tn}“ erneut drücken: beenden)</span>`
+    : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter · Werkzeuge „Zone“ und „Winkel“</span>');
   $('legend').innerHTML = items.join('');
 }
 
@@ -472,7 +492,18 @@ function updateInfoPoly(C, col) {
     }
   }
   let zoneBox = '';
-  if (state.poly.zoneMode) {
+  if (state.poly.tool === 'angle') {
+    if (!C.angle) {
+      zoneBox = `<div class="zonebox">Winkel messen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht antippen.</div>`;
+    } else {
+      const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
+      const w = C.angle.deg;
+      zoneBox = `<div class="zonebox"><strong>Winkel ${hklHTML(f1, hex4)} ∠ ${hklHTML(f2, hex4)} = <span class="num">${w.toFixed(1)}°</span></strong>
+        <p>Das ist der Winkel zwischen den beiden Flächennormalen, also der Bogen zwischen den Polen auf der Lagekugel (im Stereogramm als Grosskreisbogen eingezeichnet).</p>
+        <p>Der Winkel zwischen den Flächen selbst, innen am Kristall gemessen (bei gemeinsamer Kante: der Kantenwinkel), ist der Ergänzungswinkel: 180° − ${w.toFixed(1)}° = <b class="num">${(180 - w).toFixed(1)}°</b>.</p>
+        <p class="note">Mit dem Wulffschen Netz: Netz so drehen, dass beide Pole auf demselben Grosskreis (Meridian) liegen, dann die Teilstriche zwischen ihnen zählen.</p></div>`;
+    }
+  } else if (state.poly.tool === 'zone') {
     if (!C.zone) {
       zoneBox = state.zoneSel.length === 2
         ? '<div class="zonebox">Die beiden Flächen sind parallel und bestimmen keine Zone. Bitte eine andere Fläche wählen.</div>'
@@ -606,7 +637,7 @@ svg.addEventListener('click', (e) => {
  *  nichts gewählt → erster (oberer) Pol; sonst der nächste; nach dem letzten → keiner. */
 function pickStack(stack) {
   if (stack.length === 1) { pickFace(stack[0]); return; }
-  if (state.poly.zoneMode) {
+  if (state.poly.tool) {
     const sel = state.zoneSel.filter((k) => stack.includes(k));
     const rest = state.zoneSel.filter((k) => !stack.includes(k));
     const k = sel.length ? stack.indexOf(sel[sel.length - 1]) : -1;
@@ -620,9 +651,9 @@ function pickStack(stack) {
   render();
 }
 
-/** Fläche antippen: normale Auswahl oder, im Zonenmodus, bis zu zwei Flächen für die Zone. */
+/** Fläche antippen: normale Auswahl oder, mit Werkzeug Zone/Winkel, bis zu zwei Flächen. */
 function pickFace(idx) {
-  if (state.poly.zoneMode) {
+  if (state.poly.tool) {
     if (idx == null) state.zoneSel = [];
     else if (state.zoneSel.includes(idx)) state.zoneSel = state.zoneSel.filter((k) => k !== idx);
     else state.zoneSel = state.zoneSel.length >= 2 ? [idx] : [...state.zoneSel, idx];
@@ -684,11 +715,11 @@ function init() {
 
   buildSystemSelect();
   $('sys-select').addEventListener('change', (e) => {
-    state.poly.system = e.target.value; state.selected = null;
+    state.poly.system = e.target.value; state.selected = null; state.zoneSel = [];
     refreshPolyControls(); render();
   });
   $('form-select').addEventListener('change', (e) => {
-    state.poly.entryBySys[state.poly.system] = e.target.value; state.selected = null; render();
+    state.poly.entryBySys[state.poly.system] = e.target.value; state.selected = null; state.zoneSel = []; render();
   });
   $('preset-select').addEventListener('change', (e) => { state.poly.presetId = e.target.value; render(); });
   for (const k of ['ba', 'ca', 'al', 'be', 'ga']) {
@@ -720,18 +751,19 @@ function init() {
   bindCheck('poly-lower', state.poly, 'showLower');
   bindCheck('poly-frame', state.poly, 'frame');
   bindCheck('poly-facesym', state.poly, 'faceSym');
-  // Werkzeug „Zone“: je ein Button am Stereogramm und in der 3D-Ansicht, gemeinsamer Zustand
-  const syncZoneBtn = () => {
-    for (const b of document.querySelectorAll('.zone-toggle')) b.setAttribute('aria-pressed', String(!!state.poly.zoneMode));
+  // Werkzeuge „Zone“ und „Winkel“: je ein Button am Stereogramm und in der 3D-Ansicht,
+  // gemeinsamer Zustand; höchstens ein Werkzeug aktiv
+  const syncToolBtns = () => {
+    for (const b of document.querySelectorAll('.tool-toggle')) b.setAttribute('aria-pressed', String(state.poly.tool === b.dataset.tool));
   };
-  for (const b of document.querySelectorAll('.zone-toggle')) {
+  for (const b of document.querySelectorAll('.tool-toggle')) {
     b.addEventListener('click', () => {
-      state.poly.zoneMode = !state.poly.zoneMode;
+      state.poly.tool = state.poly.tool === b.dataset.tool ? null : b.dataset.tool;
       state.zoneSel = []; state.selected = null;
-      syncZoneBtn(); render();
+      syncToolBtns(); render();
     });
   }
-  syncZoneBtn();
+  syncToolBtns();
 
   bindCheck('v-wulff', state.view, 'wulff');
   bindRange('v-wulffrot', state.view, 'wulffRot', (v) => v.toFixed(0) + '°');

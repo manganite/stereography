@@ -26,7 +26,7 @@ const state = {
   pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false, hideDirs: [], tool: null },
   poly: {
     system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
-    size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: true, tool: null,
+    size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: false, tool: null,
   },
   view: { dirColors: true, wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
   selected: null,
@@ -267,9 +267,30 @@ const DEFAULT_ENTRY = {
 };
 const sysOK = (sys) => Object.prototype.hasOwnProperty.call(SYSTEM_NAMES, sys);
 if (!sysOK(state.poly.system)) state.poly.system = 'kubisch';
+/**
+ * Ohne „Flächensymmetrie zeigen“ enthält die Auswahl je Punktgruppe nur die allgemeine Form und die
+ * Formen, deren Eigensymmetrie die Punktgruppe selbst ist (z. B. Würfel nur in m3̄m, Tetraeder nur
+ * in 4̄3m). Geometrisch gleiche Formen anderer Punktgruppen unterscheiden sich erst durch die
+ * Flächensymmetrie; sie erscheinen, sobald diese gezeigt wird. (Absprache mit dem Autor.)
+ */
+const EIG_SAME = { '-62m': '-6m2', '-4m2': '-42m' };
+const groupOrder = new Map();
+function formListed(e) {
+  if (state.poly.faceSym) return true;
+  const g = groupOf(e.pg);
+  if (!groupOrder.has(g.id)) groupOrder.set(g.id, buildPointGroup(g.id).order);
+  const norm = (s) => EIG_SAME[s] || s;
+  return e.mult === groupOrder.get(g.id) || norm(formEig(e)) === norm(g.hm);
+}
 const currentEntryId = () => {
-  const id = state.poly.entryBySys[state.poly.system];
-  return id && entryById(id) && SYSTEM_OF[entryById(id).pg] === state.poly.system ? id : DEFAULT_ENTRY[state.poly.system];
+  const sys = state.poly.system;
+  const id = state.poly.entryBySys[sys];
+  const e = id && entryById(id);
+  if (!e || SYSTEM_OF[e.pg] !== sys) return DEFAULT_ENTRY[sys];
+  if (formListed(e)) return id;
+  // ausgeblendete Form: dieselbe Form (gleicher Typ) dort zeigen, wo sie ihre Eigensymmetrie hat
+  const same = CATALOG.find((x) => SYSTEM_OF[x.pg] === sys && x.type === e.type && formListed(x));
+  return same ? same.id : DEFAULT_ENTRY[sys];
 };
 const currentLat = () => {
   const sys = state.poly.system;
@@ -285,9 +306,9 @@ function buildSystemSelect() {
 function buildFormSelect() {
   const sys = state.poly.system;
   const hex4 = isHexSystem(sys) && state.poly.bravais;
-  const groups = POINT_GROUPS.filter((g) => g.system === sys && CATALOG.some((e) => e.pg === g.id));
+  const groups = POINT_GROUPS.filter((g) => g.system === sys && CATALOG.some((e) => e.pg === g.id && formListed(e)));
   $('form-select').innerHTML = groups.map((g) => {
-    const opts = CATALOG.filter((e) => e.pg === g.id)
+    const opts = CATALOG.filter((e) => e.pg === g.id && formListed(e))
       .map((e) => `<option value="${e.id}">${formName(e)} ${formLabelText(e.hkl, hex4)}</option>`).join('');
     return `<optgroup label="Punktgruppe ${hmText(g.hm)} (${g.sf})">${opts}</optgroup>`;
   }).join('');
@@ -1028,6 +1049,9 @@ function init() {
   bindCheck('poly-lower', state.poly, 'showLower');
   bindCheck('poly-frame', state.poly, 'frame');
   bindCheck('poly-facesym', state.poly, 'faceSym');
+  const syncFormHint = () => { $('form-hint').hidden = state.poly.faceSym; };
+  $('poly-facesym').addEventListener('change', () => { buildFormSelect(); syncFormHint(); });
+  syncFormHint();
   // Werkzeuge „Zone“ und „Winkel“: je ein Button am Stereogramm und in der 3D-Ansicht,
   // gemeinsamer Zustand; höchstens ein Werkzeug aktiv
   syncToolBtns = () => {

@@ -6,6 +6,17 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Tooltips:** Am Laptop erklären Tooltips (Maus oder Tastaturfokus) jedes Bedienelement, die Punktgruppen-Buttons (Symbol, Schoenflies, System, Ordnung) und die Aufstellungen. Über einem Flächenpol zeigt ein Tooltip (hkl), ρ und φ, bei zusammenfallenden Polen beide.
+- **ⓘ auf Touch-Geräten:** Auf iPad und Telefon klappt ein ⓘ an den Abschnittsüberschriften die Erklärungen des Abschnitts auf.
+- **Erste Schritte:** Beim ersten Besuch ohne Link eine Karte mit vier Schritten (Galenit, Fläche und Pol, Projektion, Symmetriegerüst), wegklickbar und über „?“ wieder zu öffnen.
+
+### Geändert
+
+- „Gitter und Gestalt“ und „Darstellung“ starten zugeklappt; offen/zu wird je Abschnitt gemerkt. Vier Indizes (hkil) und „Flächensymmetrie zeigen“ liegen unter „Weitere Optionen“.
+- Die längeren Erläuterungen der Infobox sind einklappbar; der Zustand wird gemerkt.
+
 ## [1.0.1] - 2026-10-18
 
 Korrekturen nach dem Abgleich der Erklärtexte mit Borchardt-Ott & Sowa, Hoffmann und ITA; Zeile „Piezoelektrisch“ in der Infobox der Punktgruppen.

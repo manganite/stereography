@@ -309,6 +309,9 @@ function renderPoly() {
   updateLegendPoly(C, col);
   updateInfoPoly(C, col);
   $('ctl-poly-open').hidden = !C.auxForms.length;
+  $('v3d-hint').textContent = state.poly.zoneMode
+    ? ['Zone: zwei Flächen oder Pole antippen', 'Zone: zweite Fläche oder zweiten Pol antippen', 'Zone bestimmt; nächstes Antippen beginnt eine neue'][Math.min(state.zoneSel.length, 2)]
+    : 'Fläche oder Pol antippen zum Hervorheben';
   $('stereo-sub').textContent = 'Blick ∥ ' + C.preset.name.replace(' ∥ Blickrichtung', '').replace(/ \(.*\)/, '');
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
   const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
@@ -379,7 +382,7 @@ function updateLegendPoly(C, col) {
     items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="5 4"/></svg>untere Hälfte</span>`);
     items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><path d="M-5,-5L5,5M-5,5L5,-5" stroke="${col.accent}" stroke-width="2"/></svg>Zonenachse</span>`);
   }
-  items.push(state.poly.zoneMode ? '<span class="lg hint">Zwei Pole antippen: Zone bestimmen (Werkzeug „Zone“ beendet)</span>' : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter · Werkzeug „Zone“: Zonen bestimmen</span>');
+  items.push(state.poly.zoneMode ? '<span class="lg hint">Zone: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen („Zone“ erneut drücken: beenden)</span>' : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter · Werkzeug „Zone“: Zonen bestimmen</span>');
   $('legend').innerHTML = items.join('');
 }
 
@@ -662,7 +665,8 @@ function setMode(mode) {
   $('tab-pg').setAttribute('aria-selected', String(mode === 'pg'));
   $('tab-poly').setAttribute('aria-selected', String(mode === 'poly'));
   for (const id of ['ctl-pg', 'ctl-pg-opts']) $(id).hidden = mode !== 'pg';
-  for (const id of ['ctl-poly', 'ctl-poly-lat', 'row-normals', 'stereo-tools']) $(id).hidden = mode !== 'poly';
+  for (const id of ['ctl-poly', 'ctl-poly-lat', 'row-normals', 'stereo-tools', 'v3d-tools']) $(id).hidden = mode !== 'poly';
+  if (mode !== 'poly') $('v3d-hint').textContent = '';
   $('stereo-sub').textContent = 'Blick ∥ c';
   render();
 }
@@ -715,13 +719,17 @@ function init() {
   bindCheck('poly-lower', state.poly, 'showLower');
   bindCheck('poly-frame', state.poly, 'frame');
   bindCheck('poly-facesym', state.poly, 'faceSym');
-  // Werkzeug „Zone“ am Stereogramm
-  const syncZoneBtn = () => $('zone-btn').setAttribute('aria-pressed', String(!!state.poly.zoneMode));
-  $('zone-btn').addEventListener('click', () => {
-    state.poly.zoneMode = !state.poly.zoneMode;
-    state.zoneSel = []; state.selected = null;
-    syncZoneBtn(); render();
-  });
+  // Werkzeug „Zone“: je ein Button am Stereogramm und in der 3D-Ansicht, gemeinsamer Zustand
+  const syncZoneBtn = () => {
+    for (const b of document.querySelectorAll('.zone-toggle')) b.setAttribute('aria-pressed', String(!!state.poly.zoneMode));
+  };
+  for (const b of document.querySelectorAll('.zone-toggle')) {
+    b.addEventListener('click', () => {
+      state.poly.zoneMode = !state.poly.zoneMode;
+      state.zoneSel = []; state.selected = null;
+      syncZoneBtn(); render();
+    });
+  }
   syncZoneBtn();
 
   bindCheck('v-wulff', state.view, 'wulff');

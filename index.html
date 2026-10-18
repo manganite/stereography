@@ -200,6 +200,7 @@ select {
   .resetbtn { min-height: 40px; }
   .range input { height: 32px; }
 }
+#v3d-hint:not(:empty)::after { content: " · "; }
 .panel-foot { padding: 6px 12px 8px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); font-style: italic; }
 .only-coarse { display: none; }
 @media (pointer: coarse) { .only-coarse { display: inline; } .only-fine { display: none; } }
@@ -412,7 +413,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       <div class="stereo-wrap">
         <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
         <div class="stereo-tools" id="stereo-tools" role="toolbar" aria-label="Werkzeuge" hidden>
-          <button id="zone-btn" type="button" aria-pressed="false" title="Zwei Pole antippen: Zonenkreis, Zonenachse und Flächen der Zone"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
+          <button class="zone-toggle" id="zone-btn" type="button" aria-pressed="false" title="Zone bestimmen: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
         </div>
       </div>
       <div class="legend" id="legend"></div>
@@ -424,8 +425,13 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
         <span class="t">3D-Konstruktion</span>
         <div class="tools"><button data-view="oblique" type="button">Schräg</button><button data-view="top" type="button"><span class="wide-only">Von o</span><span class="narrow-only">O</span>ben</button><button data-view="side" type="button">Seitlich</button></div>
       </div>
-      <div id="view3d"></div>
-      <div class="panel-foot"><span class="only-fine">Ziehen: drehen · Mausrad: zoomen</span><span class="only-coarse">Ein Finger: drehen · zwei Finger: zoomen</span></div>
+      <div class="stereo-wrap">
+        <div id="view3d"></div>
+        <div class="stereo-tools" id="v3d-tools" role="toolbar" aria-label="Werkzeuge" hidden>
+          <button class="zone-toggle" id="zone-btn-3d" type="button" aria-pressed="false" title="Zone bestimmen: zwei Flächen oder Pole hier oder zwei Pole im Stereogramm antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
+        </div>
+      </div>
+      <div class="panel-foot"><span id="v3d-hint"></span><span class="only-fine">Ziehen: drehen · Mausrad: zoomen</span><span class="only-coarse">Ein Finger: drehen · zwei Finger: zoomen</span></div>
     </figure>
   </div>
 

@@ -25,7 +25,7 @@ const touchRadius = (minUnits, px) => (coarse.matches ? Math.max(minUnits, px * 
 // ------------------------------------------------------------------ Zustand
 const state = {
   mode: 'pg',
-  pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false, hideDirs: [], tool: null },
+  pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, theta: 59, phi: 75.5, colorful: false, hideDirs: [], tool: null },
   poly: {
     system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
     size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: false, tool: null,
@@ -38,6 +38,16 @@ const state = {
   fig: 'stereo', // Telefon: sichtbare Tafel
 };
 const DEFAULTS = JSON.parse(JSON.stringify(state));
+
+// Azimut φ wie bei Borchardt-Ott & Sowa (Tab. 5.1): ab dem rechten Rand (→, bei orthogonalen Achsen b bzw. (010))
+// im Uhrzeigersinn, so dass (100) bei 90° liegt. Kartesisch: x ∥ a (↓), y ∥ b (→).
+/** Azimut φ (Grad, 0 … 360) eines Vektors. */
+function azimuth(v) {
+  const p = Math.atan2(v[0], v[1]) / deg;
+  return p < 0 ? p + 360 : p;
+}
+/** Umrechnung aus der Zählung bis v1.0.0 (ab ↓, Gegenuhrzeigersinn). */
+const phiFromOld = (p) => ((((90 - p) % 360) + 360) % 360);
 
 // ------------------------------------------------------------------ Zustand in der URL
 // Lesbarer Hash, z. B. #m=pg&g=4/mmm&rho=59 oder #m=form&sys=kubisch&f=m-3m:b35&w=winkel.
@@ -64,7 +74,7 @@ function stateToHash() {
     // volle Genauigkeit (auf 10⁻⁴° gekürzt), damit ein Link die Pole nicht verschiebt
     const exact = (x) => String(Number(x.toFixed(4)));
     if (Math.abs(state.pg.theta - d.pg.theta) > 1e-6) q.set('rho', exact(state.pg.theta));
-    if (Math.abs(state.pg.phi - d.pg.phi) > 1e-6) q.set('phi', exact(state.pg.phi));
+    if (Math.abs(state.pg.phi - d.pg.phi) > 1e-6) q.set('az', exact(state.pg.phi));
     bools(URL_PG, state.pg, d.pg);
     if (state.pg.hideDirs.length) q.set('aus', state.pg.hideDirs.map((k) => k + 1).join(','));
     if (state.pg.tool) q.set('w', TOOL_NAMES[state.pg.tool]);
@@ -128,7 +138,9 @@ function applyHash(hash) {
     state.mode = 'pg';
     if (POINT_GROUPS.some((g) => g.id === q.get('g'))) state.pg.id = q.get('g');
     if (q.has('rho')) state.pg.theta = num(q.get('rho'), 0, 180) ?? state.pg.theta;
-    if (q.has('phi')) { const p = num(q.get('phi'), -1e6, 1e6); if (p != null) state.pg.phi = ((p % 360) + 360) % 360; }
+    // az: Azimut nach Borchardt-Ott (ab →, im Uhrzeigersinn); phi: alte Zählung bis v1.0.0 (ab ↓, Gegenuhrzeigersinn)
+    if (q.has('az')) { const p = num(q.get('az'), -1e6, 1e6); if (p != null) state.pg.phi = ((p % 360) + 360) % 360; }
+    else if (q.has('phi')) { const p = num(q.get('phi'), -1e6, 1e6); if (p != null) state.pg.phi = phiFromOld(p); }
     bools(URL_PG, state.pg);
     if (q.has('aus')) state.pg.hideDirs = q.get('aus').split(',').map((s) => Number(s) - 1).filter((k) => k >= 0 && k <= 2);
     state.pg.tool = q.get('w') === 'winkel' ? 'angle' : null;
@@ -145,9 +157,10 @@ let hashActive = location.hash.length > 1;
 let baseHash = null; // Zustand beim ersten Speichern; erst eine Abweichung davon schreibt den Hash
 try {
   const saved = JSON.parse(localStorage.getItem('stereo-state') || 'null');
-  if (saved && (saved.v === 2 || saved.v === 3)) {
+  if (saved && saved.v >= 2 && saved.v <= 4) {
     Object.assign(state.pg, saved.pg); Object.assign(state.view, saved.view);
-    if (saved.v === 3) Object.assign(state.poly, saved.poly);
+    if (saved.v >= 3) Object.assign(state.poly, saved.poly);
+    if (saved.v < 4 && Number.isFinite(state.pg.phi)) state.pg.phi = phiFromOld(state.pg.phi); // alte Zählung von φ
     if (saved.pg && typeof saved.pg.dirColors === 'boolean' && !('dirColors' in (saved.view || {}))) state.view.dirColors = saved.pg.dirColors;
     delete state.pg.dirColors;
     if (state.poly.zoneMode) state.poly.tool = 'zone'; // älterer Zustand
@@ -165,7 +178,7 @@ if (location.hash.length > 1) applyHash(location.hash); // Link hat Vorrang
 let resetting = false;
 const save = () => {
   if (resetting) return;
-  try { localStorage.setItem('stereo-state', JSON.stringify({ v: 3, mode: state.mode, pg: state.pg, poly: state.poly, view: state.view })); } catch { /* ignorieren */ }
+  try { localStorage.setItem('stereo-state', JSON.stringify({ v: 4, mode: state.mode, pg: state.pg, poly: state.poly, view: state.view })); } catch { /* ignorieren */ }
   try {
     const h = stateToHash();
     if (baseHash === null) baseHash = h;
@@ -444,8 +457,9 @@ const svg = $('stereo');
 let current = null; // zuletzt gerenderte Daten
 
 function generalPole() {
+  // φ ab b (→, y) im Uhrzeigersinn, d. h. zur a-Achse (↓, x) hin
   const t = state.pg.theta * deg, p = state.pg.phi * deg;
-  return [Math.sin(t) * Math.cos(p), Math.sin(t) * Math.sin(p), Math.cos(t)];
+  return [Math.sin(t) * Math.sin(p), Math.sin(t) * Math.cos(p), Math.cos(t)];
 }
 
 function crystalAxesFor(hex) {
@@ -758,7 +772,7 @@ function pgAngleBox(info, orb, col, classes, pgAngle) {
   const side = (k) => (orb[k].p[2] >= -1e-9 ? 'oben' : 'unten');
   return `<div class="zonebox"><strong>Winkel zwischen den Polen = <span class="num">${pgAngle.deg.toFixed(1)}°</span></strong>
     <p>Gewählt: zwei der ${info.order} symmetrieäquivalenten Pole (${side(i)}, ${side(j)}). Sie gehen durch ${describeOp(M, classes, col, info.axes)} ineinander über.</p>
-    <p class="note">Mit dem Polabstand ρ und dem Azimut φ des Ausgangspols ändert sich der Winkel; die verknüpfende Operation bleibt dieselbe.</p></div>`;
+    <p class="note">Mit der Poldistanz ρ und dem Azimut φ des Ausgangspols ändert sich der Winkel; die verknüpfende Operation bleibt dieselbe.</p></div>`;
 }
 
 function updateInfoPG(info, orb, col, classes, pgAngle) {
@@ -812,9 +826,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
 
 function poleAngles(n) {
   const rho = Math.acos(Math.max(-1, Math.min(1, n[2]))) / deg;
-  let phi = Math.atan2(n[1], n[0]) / deg;
-  if (phi < 0) phi += 360;
-  return { rho, phi };
+  return { rho, phi: azimuth(n) };
 }
 
 function latticeText(lat, sys, broken) {
@@ -841,8 +853,8 @@ function updateInfoPoly(C, col) {
     const f = C.faces[state.selected];
     const { rho, phi } = poleAngles(f.normal);
     sel = `<div class="selbox"><div class="sel-hkl">${hklHTML(f.hkl, hex4)}${f.role === 'aux' ? ' <small>Ergänzungsform</small>' : ''}</div>
-      <dl class="facts"><div><dt>ρ (Abstand vom Zentrum)</dt><dd class="num">${rho.toFixed(1)}°</dd></div>
-      <div><dt>φ (Azimut ab ↓, Gegenuhrzeigersinn)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
+      <dl class="facts"><div><dt>ρ (Poldistanz)</dt><dd class="num">${rho.toFixed(1)}°</dd></div>
+      <div><dt>φ (Azimut ab →, im Uhrzeigersinn)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
   }
   const auxList = C.auxReps.map((a) => {
     const n = auxFormName(C.groupId, a.hkls);
@@ -874,8 +886,8 @@ function updateInfoPoly(C, col) {
       const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
       const w = C.angle.deg;
       zoneBox = `<div class="zonebox"><strong>Winkel ${hklHTML(f1, hex4)} ∠ ${hklHTML(f2, hex4)} = <span class="num">${w.toFixed(1)}°</span></strong>
-        <p>Das ist der Winkel zwischen den beiden Flächennormalen, also der Bogen zwischen den Polen auf der Lagekugel (im Stereogramm als Grosskreisbogen eingezeichnet).</p>
-        <p>Der Winkel zwischen den Flächen selbst, innen am Kristall gemessen (bei gemeinsamer Kante: der Kantenwinkel), ist der Ergänzungswinkel: 180° − ${w.toFixed(1)}° = <b class="num">${(180 - w).toFixed(1)}°</b>.</p>
+        <p>Das ist der Normalenwinkel n, der Winkel zwischen den beiden Flächennormalen, also der Bogen zwischen den Polen auf der Lagekugel (im Stereogramm als Grosskreisbogen eingezeichnet). Das Reflexionsgoniometer misst diesen Winkel.</p>
+        <p>Der Flächenwinkel f zwischen den Flächen selbst, innen am Kristall gemessen, ergänzt ihn zu 180°: f = 180° − n = <b class="num">${(180 - w).toFixed(1)}°</b>.</p>
         <p class="note">Mit dem Wulffschen Netz: Netz so drehen, dass beide Pole auf demselben Grosskreis (Meridian) liegen, dann die Teilstriche zwischen ihnen zählen.</p></div>`;
     }
   } else if (state.poly.tool === 'zone') {
@@ -886,7 +898,8 @@ function updateInfoPoly(C, col) {
     } else {
       const z = C.zone;
       const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
-      const dir = (v) => '[' + (hex4 ? dirToFour(v) : v).map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join(Math.max(...v.map(Math.abs)) > 9 ? ' ' : '') + ']';
+      const dirN = (v, four) => { const w = four ? dirToFour(v) : v; return '[' + w.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join(Math.max(...w.map(Math.abs)) > 9 ? ' ' : '') + ']'; };
+      const dir = (v) => dirN(v, hex4), dir3 = (v) => dirN(v, false);
       const faces = z.inZone.map((k) => hklHTML(C.faces[k].hkl, hex4)).join(' ');
       const same = (a, b) => a.every((x, i) => x === b[i]); // Vorzeichen beachten: die Gegenfläche hat den Gegenpol
       const hasFace = C.faces.some((fc) => !fc.hidden && same(fc.hkl, z.uvw));
@@ -897,8 +910,8 @@ function updateInfoPoly(C, col) {
           ? `Der Pol der Zonenachse ${dir(z.uvw)} fällt mit dem Pol der Fläche ${pl} zusammen, weil die Richtung ${dir(z.uvw)} in diesem Gitter senkrecht auf den Netzebenen ${pl} steht.`
           : `Der Pol der Zonenachse ${dir(z.uvw)} liegt dort, wo der Pol einer Fläche ${pl} läge; der dargestellte Kristall hat keine solche Fläche. Das gilt, weil die Richtung ${dir(z.uvw)} in diesem Gitter senkrecht auf den Netzebenen ${pl} steht, was nicht in jedem Gitter der Fall ist.`;
       zoneBox = `<div class="zonebox"><strong>Zone ${dir(z.uvw)}</strong>
-        <p>Zonenachse ${dir(z.uvw)} = ${hklHTML(f1, false)} × ${hklHTML(f2, false)}. Winkel zwischen den Polen: <b class="num">${z.angle.toFixed(1)}°</b>.</p>
-        <p>Flächen in dieser Zone (Weiss'sches Zonengesetz hu + kv + lw = 0), ${z.inZone.length}: ${faces}</p>
+        <p>Zonenachse ${dir3(z.uvw)} = ${hklHTML(f1, false)} × ${hklHTML(f2, false)}${hex4 ? ` (drei Indizes), mit vier Indizes ${dir(z.uvw)}` : ''}. Winkel zwischen den Polen: <b class="num">${z.angle.toFixed(1)}°</b>.</p>
+        <p>Flächen in dieser Zone (Zonengleichung ${hex4 ? 'hu + kv + it + lw = 0' : 'hu + kv + lw = 0'}), ${z.inZone.length}: ${faces}</p>
         <p class="note">${dev} Die Kanten zwischen Flächen der Zone verlaufen parallel zur Zonenachse (in 3D hervorgehoben).</p></div>`;
     }
   }
@@ -907,7 +920,7 @@ function updateInfoPoly(C, col) {
   const r2 = (x) => x.toFixed(2).replace('.', ',');
   const habitHTML = hab ? `${HABIT_NAMES[hab.type]} <span class="muted">(L₁ : L₂ : L₃ = 1 : ${r2(hab.L[1] / hab.L[0])} : ${r2(hab.L[2] / hab.L[0])})</span>` : '–';
   const sysName = SYSTEM_NAMES[C.sys];
-  const habitNote = '<p class="note">Tracht: die Menge der am Kristall auftretenden Formen. Habitus: das relative Grössenverhältnis der Flächen, mit den drei Grundtypen isometrisch, planar oder taflig, prismatisch oder nadelig (nach Borchardt-Ott). Gleiche Tracht kann verschiedenen Habitus haben (z. B. über c/a oder die Abstände der Formen), verschiedene Tracht gleichen Habitus (Würfel, Oktaeder, Rhombendodekaeder: isometrisch). Die Einteilung hier: L₁ ≥ L₂ ≥ L₃ sind die Hauptausdehnungen des dargestellten Kristalls; isometrisch, wenn L₂/L₁ und L₃/L₂ beide mindestens 2/3 sind, sonst prismatisch (eine Richtung lang) oder planar (eine Richtung kurz).</p>';
+  const habitNote = '<p class="note">Tracht: die Menge der am Kristall auftretenden Formen. Habitus: das relative Grössenverhältnis der Flächen, mit den drei Grundtypen isometrisch, planar oder taflig, prismatisch oder nadelig (nach Borchardt-Ott). Gleiche Tracht kann verschiedenen Habitus haben (z. B. über c/a oder die Abstände der Formen), verschiedene Tracht gleichen Habitus (Würfel, Oktaeder, Rhombendodekaeder: isometrisch). Die Einteilung hier: L₁ ≥ L₂ ≥ L₃ sind die Hauptausdehnungen des dargestellten Kristalls; isometrisch, wenn L₂/L₁ und L₃/L₂ beide mindestens 2/3 sind, sonst prismatisch (eine Richtung lang, L₂/L₁ &lt; 2/3) oder planar (eine Richtung kurz, L₃/L₂ &lt; 2/3); liegen beide Verhältnisse unter 2/3, entscheidet das kleinere.</p>';
   if (C.example) {
     const ex = C.example;
     const rows = C.forms.map((F, i) => {
@@ -935,7 +948,7 @@ function updateInfoPoly(C, col) {
     ${ex.note ? `<p class="note">${ex.note.replace(/\{hkl:(-?\d+),(-?\d+),(-?\d+)\}/g, (_, h, k, l) => brace([+h, +k, +l]))}</p>` : ''}
     ${sel}
     ${aux}
-    <p class="note">Quelle: ${ex.src}. Die Formen und das Gitter sind belegt; die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt und lassen sich unter „Gitter und Gestalt“ ändern.</p>
+    <p class="note">Quelle: ${ex.src}. Die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt, nicht gemessen; sie lassen sich unter „Gitter und Gestalt“ ändern.</p>
     ${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}
     ${habitNote}`;
     return;
@@ -954,7 +967,7 @@ function updateInfoPoly(C, col) {
     if (tw.length) {
       const tg = groupOf(tw[0].pg);
       const fsList = [...new Set(tw.map((x) => x.fs))].map(hmHTML).join(' bzw. ');
-      twinNote = `<p class="note">Die Eigensymmetrie der Form ist höher als die Punktgruppe: Geometrisch gleicht sie der Form „${formName(tw[0])}“ in ${hmHTML(tg.hm)}; der Unterschied liegt nur in der Flächensymmetrie (1 statt ${fsList}), sichtbar mit „Flächensymmetrie zeigen“ oder an der Lage der Pole zum Symmetriegerüst.</p>`;
+      twinNote = `<p class="note">Die Punktgruppe ${hmHTML(g.hm)} ist hier nur erzeugende Symmetrie; die Eigensymmetrie der Form (${hmHTML(formEig(e))}) ist höher (Begriffe nach Borchardt-Ott). Geometrisch gleicht die Form der Form „${formName(tw[0])}“ in ${hmHTML(tg.hm)}; der Unterschied liegt nur in der Flächensymmetrie (1 statt ${fsList}), sichtbar mit „Flächensymmetrie zeigen“ oder an der Lage der Pole zum Symmetriegerüst.</p>`;
     }
   }
   $('info').innerHTML = `
@@ -1002,9 +1015,7 @@ function setPoleFromScreen(x, y) {
   const lower = state.pg.theta > 90;
   const p = unproject(x, y, lower);
   state.pg.theta = Math.acos(Math.max(-1, Math.min(1, p[2]))) / deg;
-  let phi = Math.atan2(p[1], p[0]) / deg;
-  if (phi < 0) phi += 360;
-  state.pg.phi = phi;
+  state.pg.phi = azimuth(p);
   syncSliders();
   render();
 }

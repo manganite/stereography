@@ -443,7 +443,7 @@ export function dirToFour([u, v, w]) {
 }
 
 /**
- * Zone aus zwei Flächen i, j des Kristalls C (Weiss'sches Zonengesetz).
+ * Zone aus zwei Flächen i, j des Kristalls C (Zonengleichung hu + kv + lw = 0).
  * Rückgabe: { uvw, axis (Bildschirm, Einheitsvektor), inZone: [Flächenindizes], angle (Winkel der Pole, Grad),
  *   normalDev (Winkel zwischen Richtung [uvw] und Normale (uvw), Grad) } oder null, wenn die Flächen parallel sind.
  */

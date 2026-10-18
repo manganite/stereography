@@ -28,3 +28,9 @@ test('Service Worker: Offline-Liste deckt alle Dateien der App ab', () => {
   for (const p of app) assert.ok(listed.includes(p), `fehlt in sw.js: ${p}`);
   for (const p of listed) if (p !== './') assert.ok(existsSync(join(ROOT, p)), `existiert nicht: ${p}`);
 });
+
+test('Service Worker: jede Seite wird bei Seitenaufrufen aus ihrem eigenen Cache-Eintrag geliefert', () => {
+  const pages = JSON.parse(sw.match(/const PAGES = (\[[^\]]*\]);/)[1].replace(/'/g, '"'));
+  const html = readdirSync(ROOT).filter((f) => f.endsWith('.html'));
+  for (const p of html) assert.ok(pages.includes(p), `fehlt in PAGES (sw.js): ${p}`);
+});

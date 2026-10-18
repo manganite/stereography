@@ -237,6 +237,23 @@ select {
   .resetbtn { min-height: 40px; }
   .range input { height: 32px; }
 }
+/* Weitere Optionen und Erläuterungen: einklappbar */
+.subsect > summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--muted); min-height: 24px;
+}
+.subsect > summary::-webkit-details-marker, .explain > summary::-webkit-details-marker { display: none; }
+.subsect > summary::before, .explain > summary::before {
+  content: ''; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg); transition: transform 0.15s; margin-right: 2px;
+}
+.subsect[open] > summary::before, .explain[open] > summary::before { transform: rotate(45deg); }
+.subsect[open] > summary { margin-bottom: 8px; }
+.subsect > .stack { padding-left: 14px; }
+.explain { margin-top: 14px; }
+.explain > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.85rem; min-height: 24px; }
+.explain > summary:hover, .subsect > summary:hover { color: var(--ink); }
+.explain > .note:first-of-type { margin-top: 6px; }
+@media (pointer: coarse) { .subsect > summary, .explain > summary { min-height: 40px; } }
 /* Erste Schritte */
 .headtools { display: flex; align-items: center; gap: 8px; }
 .helpbtn {
@@ -450,10 +467,15 @@ footer a { color: inherit; }
           <select id="preset-select"></select>
         </div>
         <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
-        <label class="check sub" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
         <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
-        <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster, alle Formen)</label>
         <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
+        <details class="subsect" id="sec-more">
+          <summary>Weitere Optionen</summary>
+          <div class="stack">
+            <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
+            <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster, alle Formen)</label>
+          </div>
+        </details>
       </section>
     </div>
 
@@ -477,7 +499,7 @@ footer a { color: inherit; }
         </div>
       </details>
 
-      <details class="sect" id="ctl-poly-lat" open hidden>
+      <details class="sect" id="ctl-poly-lat" hidden>
         <summary>Gitter und Gestalt</summary>
         <div class="stack">
           <p class="hintline" id="lat-fixed">Kubisch: Das Gitter hat keine freien Parameter.</p>
@@ -505,7 +527,7 @@ footer a { color: inherit; }
         </div>
       </details>
 
-      <details class="sect" id="sec-view" open>
+      <details class="sect" id="sec-view">
         <summary>Darstellung</summary>
         <div class="stack">
           <label class="check"><input type="checkbox" id="v-dircolors">Symmetrieelemente nach Blickrichtung färben</label>

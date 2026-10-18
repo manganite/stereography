@@ -754,6 +754,10 @@ function updateLegendPoly(C, col, fwClasses) {
 }
 
 const yesno = (b) => (b ? 'ja' : 'nein');
+// Längere Erläuterungen der Infobox einklappbar; der Zustand bleibt beim Neuzeichnen und Neuladen erhalten
+let explainOpen = false;
+try { explainOpen = localStorage.getItem('stereo-explain') === 'offen'; } catch { /* Speicher nicht verfügbar */ }
+const explain = (html) => (html ? `<details class="explain"${explainOpen ? ' open' : ''}><summary>Erläuterungen</summary>${html}</details>` : '');
 const FORM_TYPES_EIG = Object.fromEntries(Object.entries(FORM_TYPES).map(([k, v]) => [k, v.eig]));
 
 /** Name eines Achsensymbols, Mehrzahl mit n > 1. */
@@ -850,7 +854,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
     </dl>
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
-    ${classes.length ? '<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>' : ''}
+    ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
     ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>` : ''}`;
 }
 
@@ -979,8 +983,7 @@ function updateInfoPoly(C, col) {
     ${sel}
     ${aux}
     <p class="note">Quelle: ${ex.src}. Die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt, nicht gemessen; sie lassen sich unter „Gitter und Gestalt“ ändern.</p>
-    ${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}
-    ${habitNote}`;
+    ${explain(`${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}${habitNote}`)}`;
     return;
   }
   // Tracht und Habitus (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2)
@@ -1020,9 +1023,9 @@ function updateInfoPoly(C, col) {
     ${twinNote}
     ${sel}
     ${aux}
-    ${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}
+    ${explain(`${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}
     <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern die Gestalt des Kristalls, aber nicht das Stereogramm.</p>
-    ${habitNote}`;
+    ${habitNote}`)}`;
 }
 
 /** ITA-Indexmuster als HTML (z. B. h0-hl → h0h̄l); bei drei Indizes ohne i. */
@@ -1321,6 +1324,26 @@ function init() {
   for (const b of document.querySelectorAll('.figswitch button')) b.addEventListener('click', () => setFig(b.dataset.fig));
   setFig(state.fig);
 
+  // Erläuterungen: offen/zu für alle Infoboxen merken (toggle bubbelt nicht, daher Capture)
+  $('info').addEventListener('toggle', (e) => {
+    if (!e.target.classList || !e.target.classList.contains('explain')) return;
+    explainOpen = e.target.open;
+    try { localStorage.setItem('stereo-explain', explainOpen ? 'offen' : 'zu'); } catch { /* ignorieren */ }
+  }, true);
+  // Abschnitte der Seitenleiste: zugeklappt starten, offen/zu je Abschnitt merken
+  const SECT_KEY = 'stereo-sections';
+  let sects = {};
+  try { sects = JSON.parse(localStorage.getItem(SECT_KEY) || '{}') || {}; } catch { sects = {}; }
+  for (const d of document.querySelectorAll('details.sect, details.subsect')) {
+    if (typeof sects[d.id] === 'boolean') d.open = sects[d.id];
+    d.addEventListener('toggle', () => {
+      sects[d.id] = d.open;
+      try { localStorage.setItem(SECT_KEY, JSON.stringify(sects)); } catch { /* ignorieren */ }
+    });
+  }
+  // „Weitere Optionen“ öffnen, wenn dort etwas eingeschaltet ist (z. B. über einen Link)
+  if (state.poly.faceSym || state.poly.bravais) $('sec-more').open = true;
+
   // Erste Schritte: beim ersten Besuch ohne Link sichtbar, wegklickbar, über „?“ wieder zu öffnen
   const INTRO_KEY = 'stereo-intro';
   const showIntro = (on) => { $('intro').hidden = !on; $('help-open').setAttribute('aria-expanded', String(on)); };
@@ -1374,8 +1397,6 @@ function init() {
     b.closest('li').classList.add('done');
   });
 
-  // Auf dem Telefon „Darstellung“ zunächst eingeklappt
-  if (window.matchMedia('(max-width: 719px)').matches) $('sec-view').open = false;
 
   $('copy-link').addEventListener('click', async () => {
     const btn = $('copy-link');
@@ -1387,7 +1408,7 @@ function init() {
 
   $('reset-all').addEventListener('click', () => {
     resetting = true;
-    try { localStorage.removeItem('stereo-state'); localStorage.removeItem('stereo-intro'); } catch { /* ignorieren */ }
+    try { for (const k of ['stereo-state', 'stereo-intro', 'stereo-sections', 'stereo-explain']) localStorage.removeItem(k); } catch { /* ignorieren */ }
     location.replace(location.pathname + location.search);
   });
 

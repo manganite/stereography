@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-18
+
+Zonen direkt wählen: alle Zonen des Kristalls in der Infobox, auch mehrere zugleich, jede in eigener Farbe.
+
 ### Hinzugefügt
 
 - **Zonen direkt wählen:** Mit dem Werkzeug „Zone“ listet die Infobox alle Zonen des dargestellten Kristalls mit mindestens drei Flächen, gruppiert nach symmetrisch gleichwertigen Zonenachsen ⟨uvw⟩ (z. B. Galenit: ⟨100⟩, ⟨110⟩, ⟨111⟩, ⟨211⟩). Antippen einer Gruppe wählt alle ihre Zonen, Antippen einer Richtung nur diese; mehrere Zonen sind zugleich wählbar. Jede gewählte Zone erscheint in eigener Farbe mit Zonenkreis, Zonenachse, Flächen und Polen im Stereogramm und in 3D. Zwei angetippte Pole fügen ihre Zone der Auswahl hinzu. Die Auswahl steht im Link (`zonen=`).
@@ -66,7 +70,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/manganite/stereography/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/manganite/stereography/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/manganite/stereography/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/manganite/stereography/releases/tag/v1.0.0

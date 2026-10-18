@@ -15,6 +15,7 @@ const FILES = [
   'icons/icon-maskable-512.png',
   'js/examples.js',
   'js/format.js',
+  'js/help.js',
   'js/forms.js',
   'js/linalg.js',
   'js/main.js',

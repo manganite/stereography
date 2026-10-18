@@ -237,6 +237,37 @@ select {
   .resetbtn { min-height: 40px; }
   .range input { height: 32px; }
 }
+/* Hilfen: Tooltip (Laptop), ⓘ-Erklärungen (Touch) */
+.tip {
+  position: fixed; z-index: 50; max-width: 320px; padding: 7px 10px; border-radius: 7px; pointer-events: none;
+  background: var(--ink); color: var(--paper); font-size: 0.8rem; line-height: 1.4; box-shadow: 0 4px 14px rgb(0 0 0 / 0.22);
+}
+.tip[hidden] { display: none; }
+.tip .ov { text-decoration: overline; }
+.infobtn { display: none; }
+@media (hover: none) {
+  .infobtn {
+    display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; margin: -10px -8px -10px 2px;
+    padding: 0; border: 0; background: transparent; cursor: pointer; color: var(--accent);
+  }
+  .infobtn span {
+    display: grid; place-items: center; width: 22px; height: 22px; border: 1.5px solid currentColor; border-radius: 50%;
+    font: italic 600 0.82rem/1 var(--font-display); text-transform: none; letter-spacing: 0;
+  }
+  .infobtn[aria-expanded="true"] span { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+}
+.card h2 { display: flex; align-items: center; justify-content: space-between; }
+.sumlabel { display: inline-flex; align-items: center; }
+.helpbox {
+  margin: 4px 0 10px; padding: 10px 12px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent) 6%, var(--paper)); font-size: 0.84rem; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink);
+}
+.helpbox p { margin: 0 0 8px; }
+.helpbox p:last-child { margin: 0; }
+.helpbox dl { margin: 0; display: grid; gap: 2px; }
+.helpbox dt { font-weight: 600; margin-top: 6px; }
+.helpbox dt:first-child { margin-top: 0; }
+.helpbox dd { margin: 0; color: var(--muted); }
 #v3d-hint:not(:empty)::after { content: " · "; }
 .panel-foot { padding: 6px 12px 8px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); font-style: italic; }
 .only-coarse { display: none; }
@@ -481,7 +512,7 @@ footer a { color: inherit; }
       <div class="panel-head">
         <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="stereo">Stereogramm</button><button type="button" data-fig="3d">3D</button></div>
         <span class="t">3D-Konstruktion</span>
-        <div class="tools"><button data-view="oblique" type="button">Schräg</button><button data-view="top" type="button"><span class="wide-only">Von o</span><span class="narrow-only">O</span>ben</button><button data-view="side" type="button">Seitlich</button></div>
+        <div class="tools"><button data-view="oblique" id="view-oblique" type="button">Schräg</button><button data-view="top" id="view-top" type="button"><span class="wide-only">Von o</span><span class="narrow-only">O</span>ben</button><button data-view="side" id="view-side" type="button">Seitlich</button></div>
       </div>
       <div class="stereo-wrap">
         <div id="view3d"></div>

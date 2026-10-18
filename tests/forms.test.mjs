@@ -61,3 +61,11 @@ test('Flächenform der kubischen Formen passt zum Namen (Drei- bzw. Vierecke)', 
   }
   assert.ok(checked >= 15);
 });
+
+test('Kennungen aus v1.0.0 zeigen dieselbe Form (4̄3m)', () => {
+  const byId = (id) => CATALOG.find((e) => e.id === id);
+  assert.deepEqual(byId('-43m:c38').hkl, [1, 1, 2]);
+  assert.equal(FORM_TYPES[byId('-43m:c38').type].name.split(' ')[0], 'Tristetraeder');
+  assert.deepEqual(byId('-43m:c39').hkl, [2, 2, 1]);
+  assert.equal(FORM_TYPES[byId('-43m:c39').type].name.split(' ')[0], 'Deltoiddodekaeder');
+});

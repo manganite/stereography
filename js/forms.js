@@ -61,6 +61,10 @@ export const FORM_TYPES = {
 // [Wyckoff, Flächensymmetrie, Formtyp, Indexmuster, Repräsentant, Multiplizität, Namensvariante]
 const T = (pg, rows) => rows.map(([wy, fs, type, sym, hkl, mult, alt]) => ({ pg, wy, fs, type, sym, hkl, mult, alt }));
 
+// Kennungen aus v1.0.0 beibehalten, damit Links (f=…) und gespeicherte Auswahl dieselbe Form zeigen:
+// In 4̄3m waren die Formtypen von {112} und {221} vertauscht, die Kennung enthält den Typ.
+const LEGACY_IDS = { '-43m:1,1,2': '-43m:c38', '-43m:2,2,1': '-43m:c39' };
+
 /** Formen je Punktgruppe (Aufstellungen: monoklin Achse b, 321, 3m1, 3̄m1, 4̄2m, 6̄m2). */
 export const CATALOG = [
   // triklin
@@ -108,7 +112,7 @@ export const CATALOG = [
     ['b', '2.mm', 34, '100', [1, 0, 0], 6], ['a', '.3m', 33, '111', [1, 1, 1], 4]]),
   ...T('m-3m', [['f', '1', 47, 'hkl', [3, 2, 1], 48], ['e', '..m', 43, 'hhl (h<l)', [1, 1, 2], 24], ['e', '..m', 42, 'hhl (h>l)', [2, 2, 1], 24],
     ['d', 'm..', 46, '0kl', [0, 2, 1], 24], ['c', 'm.m2', 40, '011', [0, 1, 1], 12], ['b', '.3m', 35, '111', [1, 1, 1], 8], ['a', '4m.m', 34, '100', [1, 0, 0], 6]]),
-].map((e, i) => ({ ...e, id: `${e.pg}:${e.wy}${e.type}`, idx: i }));
+].map((e, i) => ({ ...e, id: LEGACY_IDS[`${e.pg}:${e.hkl.join(',')}`] || `${e.pg}:${e.wy}${e.type}`, idx: i }));
 
 export const formName = (e) => (e.alt && FORM_TYPES[e.type].alt ? FORM_TYPES[e.type].alt : FORM_TYPES[e.type].name);
 export const formEig = (e) => FORM_TYPES[e.type].eig;

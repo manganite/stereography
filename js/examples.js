@@ -5,6 +5,7 @@
 // Die Abstände bestimmen den Habitus und sind nach den Abbildungen gewählt, nicht gemessen;
 // Formen und Gitter sind belegt, sofern nicht anders vermerkt.
 // lat: Gitterparameter (a = 1) wie in polyhedra.js; fehlende Werte vom System.
+// In note: {hkl:h,k,l} wird als Formsymbol gesetzt (drei oder vier Indizes nach Einstellung).
 
 export const EXAMPLES = [
   {
@@ -57,7 +58,7 @@ export const EXAMPLES = [
       { hkl: [0, 0, 1], r: 1.2 },   // Pedion oben
     ],
     src: 'nach Hoffmann, Abb. 3.27 und 3.28, S. 113–114 (Formen aus der Abbildung rekonstruiert)',
-    note: 'Die Pedien {001} und {00<span class="ov">1</span>} sind verschiedene Formen: Die 2-zählige Achse ist polar, oben und unten sind nicht symmetrieäquivalent.',
+    note: 'Die Pedien {001} und {hkl:0,0,-1} sind verschiedene Formen: Die 2-zählige Achse ist polar, oben und unten sind nicht symmetrieäquivalent.',
   },
   {
     id: 'topas', name: 'Topas', formula: 'Al₂SiO₄(F,OH)₂', sys: 'orthorhombisch', pg: 'mmm',
@@ -116,7 +117,7 @@ export const EXAMPLES = [
       { hkl: [6, -1, 1], r: 1.12 },  // x, linkes trigonales Trapezoeder {6-1-51}
     ],
     src: 'Formen und Händigkeit nach Wikipedia „Quarz“ (Morphologie); Raumgruppe P3₁21; Gitter a = 4,91 Å, c = 5,40 Å',
-    note: 'Beim Linksquarz liegen die Flächen der trigonalen Dipyramide und des Trapezoeders links von den Flächen des Hauptrhomboeders {10-11} (Blick auf eine Prismenfläche, c nach oben). Dipyramide und Trapezoeder gibt es in 32 je als linke und rechte Form; ein unverzwillingter Kristall zeigt nur eine Sorte. Vergleiche „Rechtsquarz“.',
+    note: 'Beim Linksquarz liegen die Flächen der trigonalen Dipyramide und des Trapezoeders links von den Flächen des Hauptrhomboeders {hkl:1,0,1} (Blick auf eine Prismenfläche, c nach oben). Dipyramide und Trapezoeder gibt es in 32 je als linke und rechte Form; ein unverzwillingter Kristall zeigt nur eine Sorte. Vergleiche „Rechtsquarz“.',
   },
   {
     id: 'rechtsquarz', name: 'Rechtsquarz', formula: 'SiO₂', sys: 'trigonal', pg: '321',
@@ -129,7 +130,7 @@ export const EXAMPLES = [
       { hkl: [5, 1, 1], r: 1.12 },   // x, rechtes trigonales Trapezoeder {51-61}
     ],
     src: 'Formen und Händigkeit nach Wikipedia „Quarz“ (Morphologie); Raumgruppe P3₂21; Gitter a = 4,91 Å, c = 5,40 Å',
-    note: 'Beim Rechtsquarz liegen die Flächen der trigonalen Dipyramide und des Trapezoeders rechts von den Flächen des Hauptrhomboeders {10-11} (Blick auf eine Prismenfläche, c nach oben); das Stereogramm ist das Spiegelbild des Linksquarzes. Vergleiche „Linksquarz“.',
+    note: 'Beim Rechtsquarz liegen die Flächen der trigonalen Dipyramide und des Trapezoeders rechts von den Flächen des Hauptrhomboeders {hkl:1,0,1} (Blick auf eine Prismenfläche, c nach oben); das Stereogramm ist das Spiegelbild des Linksquarzes. Vergleiche „Linksquarz“.',
   },
   {
     id: 'turmalin', name: 'Turmalin', sys: 'trigonal', pg: '3m1',

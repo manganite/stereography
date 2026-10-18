@@ -931,7 +931,7 @@ function updateInfoPoly(C, col) {
       <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, false)}</dd></div>
       <div><dt>Lage</dt><dd>${C.preset.name}</dd></div>
     </dl>
-    ${ex.note ? `<p class="note">${ex.note}</p>` : ''}
+    ${ex.note ? `<p class="note">${ex.note.replace(/\{hkl:(-?\d+),(-?\d+),(-?\d+)\}/g, (_, h, k, l) => brace([+h, +k, +l]))}</p>` : ''}
     ${sel}
     ${aux}
     <p class="note">Quelle: ${ex.src}. Die Formen und das Gitter sind belegt; die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt und lassen sich unter „Gitter und Gestalt“ ändern.</p>

@@ -82,7 +82,7 @@ const LABELS = {
   'zone-btn': 'Zone', 'angle-btn': 'Winkel', 'angle-btn-3d': 'Winkel', 'view-side': '3D seitlich', 'ctl-ex-dists': 'Abstände der Formen',
 };
 
-let tipEl = null, tipFor = null, showTimer = 0;
+let tipEl = null, tipFor = null, tipDesc = null, showTimer = 0;
 const hoverMQ = window.matchMedia('(hover: hover) and (pointer: fine)');
 
 /** Element, an dem der Tooltip einer ID erscheint (bei Eingaben die ganze Zeile). */
@@ -109,12 +109,13 @@ function place(x, y, below) {
   tipEl.style.top = `${top}px`;
 }
 
-/** Tooltip an einem Element zeigen. */
-function showFor(el) {
+/** Tooltip an einem Element zeigen; die Beschreibung erhält das bediente Element (bei Fokus das Eingabefeld). */
+function showFor(el, desc = el) {
   tipFor = el;
+  tipDesc = desc;
   tipEl.innerHTML = el.dataset.tip;
   tipEl.hidden = false;
-  el.setAttribute('aria-describedby', 'tip');
+  desc.setAttribute('aria-describedby', 'tip');
   const b = el.getBoundingClientRect();
   place(b.left + b.width / 2, b.top, b);
 }
@@ -133,8 +134,8 @@ export function hideTip() {
   clearTimeout(showTimer);
   if (!tipEl) return;
   tipEl.hidden = true;
-  if (tipFor) tipFor.removeAttribute('aria-describedby');
-  tipFor = null;
+  if (tipDesc) tipDesc.removeAttribute('aria-describedby');
+  tipFor = null; tipDesc = null;
 }
 
 function buildHelpBox(sec) {
@@ -174,7 +175,7 @@ export function initHelp() {
   });
   document.addEventListener('focusin', (e) => {
     const el = e.target.closest('[data-tip]');
-    if (el && e.target.matches(':focus-visible') && hoverMQ.matches) showFor(el);
+    if (el && e.target.matches(':focus-visible') && hoverMQ.matches) showFor(el, e.target);
   });
   document.addEventListener('focusout', hideTip);
   document.addEventListener('pointerdown', hideTip, true);
@@ -191,12 +192,21 @@ export function initHelp() {
     btn.setAttribute('aria-expanded', 'false');
     btn.setAttribute('aria-label', 'Erklärungen zu diesem Abschnitt');
     btn.innerHTML = '<span aria-hidden="true">i</span>';
-    let box = null;
+    let box = null, openedByHelp = false;
+    const details = h.closest('details');
+    // Ein Abschnitt, den die Erklärung aufklappt, wird beim Schliessen wieder zugeklappt und nicht gemerkt
+    // (data-quiet: der toggle-Listener in main.js speichert diese Änderung nicht).
+    const setOpenQuietly = (open) => { if (details.open !== open) { details.dataset.quiet = '1'; details.open = open; } };
     btn.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation(); // in <summary>: nicht auf- oder zuklappen
-      if (box) { box.remove(); box = null; btn.setAttribute('aria-expanded', 'false'); return; }
-      const details = h.closest('details');
-      if (details) details.open = true;
+      e.preventDefault(); e.stopPropagation(); // Klick auf ⓘ in <summary>: nicht als Auf-/Zuklappen werten
+      if (box) {
+        box.remove(); box = null; btn.setAttribute('aria-expanded', 'false');
+        if (details && openedByHelp) setOpenQuietly(false);
+        openedByHelp = false;
+        return;
+      }
+      // Die Erklärungen beziehen sich auf die Bedienelemente; der Abschnitt wird daher vorübergehend aufgeklappt
+      if (details && !details.open) { openedByHelp = true; setOpenQuietly(true); }
       box = buildHelpBox(sec);
       h.after(box);
       btn.setAttribute('aria-expanded', 'true');

@@ -1337,6 +1337,7 @@ function init() {
   for (const d of document.querySelectorAll('details.sect, details.subsect')) {
     if (typeof sects[d.id] === 'boolean') d.open = sects[d.id];
     d.addEventListener('toggle', () => {
+      if (d.dataset.quiet) { delete d.dataset.quiet; return; } // von der ⓘ-Erklärung vorübergehend geöffnet
       sects[d.id] = d.open;
       try { localStorage.setItem(SECT_KEY, JSON.stringify(sects)); } catch { /* ignorieren */ }
     });

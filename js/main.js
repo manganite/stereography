@@ -535,6 +535,16 @@ function renderPoly() {
     ? { groupId: ex.pg, forms: exForms(ex), lat: currentLat(), broken: false, auxDist: state.poly.auxDist, presetId: state.poly.presetId }
     : { entryId: currentEntryId(), lat: currentLat(), broken: state.poly.broken, auxDist: state.poly.auxDist, presetId: state.poly.presetId });
   C.example = ex;
+  // Auswahl über die Indizes weiterführen: Flächen können wegfallen oder neu nummeriert werden
+  // (Abstände, Gitter), ein Index allein würde dann eine andere Fläche treffen.
+  if (current && current.kind === 'poly') {
+    const key = (f) => (f ? f.role + ':' + f.hkl.join(',') : null);
+    const map = new Map(C.faces.map((f, i) => [key(f), i]));
+    const remap = (k) => { const i = map.get(key(current.C.faces[k])); return i === undefined ? null : i; };
+    if (state.selected != null) state.selected = remap(state.selected);
+    const zs = state.zoneSel.map(remap);
+    state.zoneSel = zs.some((k) => k == null) ? [] : zs;
+  }
   const hex4 = C.hex && state.poly.bravais;
   const oc = ORBIT_COLORS(col);
   const multi = C.isReduced && C.orbitsMain.length > 1;
@@ -1204,7 +1214,7 @@ function init() {
   bindRange('poly-size', state.poly, 'size', (v) => v.toFixed(2));
   bindCheck('poly-labels', state.poly, 'labels');
   bindCheck('poly-bravais', state.poly, 'bravais');
-  $('poly-bravais').addEventListener('change', () => buildFormSelect());
+  $('poly-bravais').addEventListener('change', () => { buildFormSelect(); buildExDists(); });
   bindCheck('poly-lower', state.poly, 'showLower');
   bindCheck('poly-frame', state.poly, 'frame');
   bindCheck('poly-facesym', state.poly, 'faceSym');

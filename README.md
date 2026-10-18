@@ -65,7 +65,7 @@ Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Mod
 ## Konventionen
 
 - Blick entlang c (bzw. entlang der gewählten Richtung), a zeigt nach unten, b nach rechts (ITA).
-- Winkelkoordinaten wie bei Borchardt-Ott & Sowa (Abschn. 5.5–5.7, Tab. 5.1): Azimut φ ab dem rechten Rand (→, bei orthogonalen Achsen b) im Uhrzeigersinn, so dass (100) bei 90° liegt; Poldistanz ρ ab dem Zentrum. Pole der unteren Halbkugel haben in der App ρ > 90°; Borchardt-Ott zählt sie vom Südpol aus (−ρ). Links aus v1.0.0 mit `phi=` (alte Zählung ab ↓ im Gegenuhrzeigersinn) werden umgerechnet.
+- Winkelkoordinaten wie bei Borchardt-Ott & Sowa (Abschn. 5.5–5.7, Tab. 5.1): Azimut φ ab dem rechten Rand (→, bei orthogonalen Achsen b) im Uhrzeigersinn, so dass (100) bei 90° liegt; Poldistanz ρ auf der oberen Halbkugel vom Nordpol (Zentrum), auf der unteren vom Südpol mit negativem Vorzeichen (−90° … 0°). Links aus v1.0.0 mit `phi=` (alte Zählung ab ↓ im Gegenuhrzeigersinn) werden umgerechnet; `rho=` über 90° (alte Zählung vom Nordpol) gilt weiter.
 - Pole oberhalb der Projektionsebene: Punkt; unterhalb: Kreis; beide an derselben Stelle: Kreis mit Punkt.
 - Spiegelebenen als kräftige Linien; Spiegelebene senkrecht zur Blickrichtung als kräftiger Grundkreis.
 - Symbole und ihre Lage nach ITA A (2006), Kap. 1.4.5 und Tab. 10.1.2.2: Linsen tangential (Achse ⊥ Projektionsebene: ∥ a), Quadrat auf der Spitze, Dreieck mit Spitze nach oben bzw. bei geneigten Achsen radial nach aussen, 4̄ als offenes Quadrat mit Linse zwischen zwei Ecken, 6̄ als offenes Sechseck mit einbeschriebenem Dreieck. Der Punkt für das Inversionszentrum (2/m, 4/m, 6/m) erscheint nur an der Achse senkrecht zur Projektionsebene.

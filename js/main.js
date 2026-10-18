@@ -48,6 +48,12 @@ function azimuth(v) {
 }
 /** Umrechnung aus der Zählung bis v1.0.0 (ab ↓, Gegenuhrzeigersinn). */
 const phiFromOld = (p) => ((((90 - p) % 360) + 360) % 360);
+// Poldistanz ρ wie bei Borchardt-Ott (Abschn. 5.6): obere Halbkugel vom Nordpol (0 … 90°), untere vom Südpol
+// mit negativem Vorzeichen (−90 … 0°). Intern bleibt theta der Winkel zum Nordpol (0 … 180°).
+const rhoOf = (theta) => (theta > 90 + 1e-9 ? theta - 180 : theta);
+const thetaOf = (rho) => (rho < 0 ? 180 + rho : rho);
+/** ρ als Text mit echtem Minuszeichen. */
+const rhoText = (theta, digits) => (theta > 90 + 1e-9 ? '−' : '') + Math.abs(rhoOf(theta)).toFixed(digits) + '°';
 
 // ------------------------------------------------------------------ Zustand in der URL
 // Lesbarer Hash, z. B. #m=pg&g=4/mmm&rho=59 oder #m=form&sys=kubisch&f=m-3m:b35&w=winkel.
@@ -73,7 +79,7 @@ function stateToHash() {
     q.set('g', state.pg.id);
     // volle Genauigkeit (auf 10⁻⁴° gekürzt), damit ein Link die Pole nicht verschiebt
     const exact = (x) => String(Number(x.toFixed(4)));
-    if (Math.abs(state.pg.theta - d.pg.theta) > 1e-6) q.set('rho', exact(state.pg.theta));
+    if (Math.abs(state.pg.theta - d.pg.theta) > 1e-6) q.set('rho', exact(rhoOf(state.pg.theta)));
     if (Math.abs(state.pg.phi - d.pg.phi) > 1e-6) q.set('az', exact(state.pg.phi));
     bools(URL_PG, state.pg, d.pg);
     if (state.pg.hideDirs.length) q.set('aus', state.pg.hideDirs.map((k) => k + 1).join(','));
@@ -137,7 +143,8 @@ function applyHash(hash) {
   } else {
     state.mode = 'pg';
     if (POINT_GROUPS.some((g) => g.id === q.get('g'))) state.pg.id = q.get('g');
-    if (q.has('rho')) state.pg.theta = num(q.get('rho'), 0, 180) ?? state.pg.theta;
+    // rho nach Borchardt-Ott (untere Halbkugel negativ); Werte über 90° aus Links bis v1.0.0 gelten weiter
+    if (q.has('rho')) { const r = num(q.get('rho'), -90, 180); if (r != null) state.pg.theta = thetaOf(r); }
     // az: Azimut nach Borchardt-Ott (ab →, im Uhrzeigersinn); phi: alte Zählung bis v1.0.0 (ab ↓, Gegenuhrzeigersinn)
     if (q.has('az')) { const p = num(q.get('az'), -1e6, 1e6); if (p != null) state.pg.phi = ((p % 360) + 360) % 360; }
     else if (q.has('phi')) { const p = num(q.get('phi'), -1e6, 1e6); if (p != null) state.pg.phi = phiFromOld(p); }
@@ -821,7 +828,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
     ${classes.length ? '<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>' : ''}
-    ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → 180° − ρ).</p>` : ''}`;
+    ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>` : ''}`;
 }
 
 function poleAngles(n) {
@@ -853,8 +860,8 @@ function updateInfoPoly(C, col) {
     const f = C.faces[state.selected];
     const { rho, phi } = poleAngles(f.normal);
     sel = `<div class="selbox"><div class="sel-hkl">${hklHTML(f.hkl, hex4)}${f.role === 'aux' ? ' <small>Ergänzungsform</small>' : ''}</div>
-      <dl class="facts"><div><dt>ρ (Poldistanz)</dt><dd class="num">${rho.toFixed(1)}°</dd></div>
-      <div><dt>φ (Azimut ab →, im Uhrzeigersinn)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
+      <dl class="facts"><div><dt>ρ (Poldistanz)</dt><dd class="num">${rhoText(rho, 1)}</dd></div>
+      <div><dt>φ (Azimut ab →, im Uhrzeigersinn)</dt><dd class="num">${Math.hypot(f.normal[0], f.normal[1]) < 1e-6 ? '– (Pol im Zentrum)' : phi.toFixed(1) + '°'}</dd></div></dl></div>`;
   }
   const auxList = C.auxReps.map((a) => {
     const n = auxFormName(C.groupId, a.hkls);
@@ -1025,7 +1032,7 @@ function nearGenerator(e) {
   const s = svgPoint(e.touches ? e.touches[0] : e);
   return Math.hypot(s.x - q.x, s.y - q.y) < touchRadius(30, 28);
 }
-/** Ausgangspol auf die andere Halbkugel spiegeln (ρ → 180° − ρ, φ bleibt): Punkt ↔ Kreis. */
+/** Ausgangspol auf die andere Halbkugel spiegeln (ρ → −ρ, φ bleibt): Punkt ↔ Kreis. */
 function toggleHemisphere() {
   state.pg.theta = 180 - state.pg.theta;
   syncSliders();
@@ -1183,7 +1190,7 @@ function init() {
     state.pg.hideDirs = [...hide];
     render();
   });
-  bindRange('pg-theta', state.pg, 'theta', (v) => v.toFixed(0) + '°');
+  bindRange('pg-theta', state.pg, 'theta', (v) => rhoText(v, 0));
   bindRange('pg-phi', state.pg, 'phi', (v) => v.toFixed(1) + '°');
 
   buildSystemSelect();

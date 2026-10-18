@@ -16,6 +16,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Geändert
 
 - **Azimut φ nach Borchardt-Ott & Sowa (Tab. 5.1):** ab dem rechten Rand (→, bei orthogonalen Achsen b) im Uhrzeigersinn, (100) bei 90°; bisher ab ↓ im Gegenuhrzeigersinn. Die Adresse verwendet `az=`; alte Links mit `phi=` und gespeicherte Einstellungen werden umgerechnet, der Pol bleibt an derselben Stelle.
+- **Poldistanz ρ nach Borchardt-Ott & Sowa (Abschn. 5.6):** Pole der unteren Halbkugel zählen vom Südpol mit negativem Vorzeichen (bisher ρ > 90°), in Anzeige und Adresse; alte Links mit `rho=` über 90° gelten weiter.
 - **Begriffe nach Borchardt-Ott & Sowa:** Poldistanz ρ, Normalenwinkel n und Flächenwinkel f, Zonengleichung, erzeugende Symmetrie; kubische Formnamen (Tetraedrisches Pentagondodekaeder, Tristetraeder, Trisoktaeder, Diploid, Gyroid), abweichende ITA-Namen in Klammern.
 - Quarz: Hinweis zu linken und rechten Formen präzisiert; Habitus: Fall mit zwei Verhältnissen unter 2/3 erklärt.
 

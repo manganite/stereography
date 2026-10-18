@@ -296,15 +296,16 @@ export function buildSVG(scene, { standalone = false } = {}) {
     let dx = cl.x - C, dy = cl.y - C;
     const l = Math.hypot(dx, dy);
     if (l < 1) { dx = 0.6; dy = 0.8; } else { dx /= l; dy /= l; }
-    const off = 16;
-    const lh = 16;
+    const fs = scene.labelSize || 14.5;
+    const off = fs * 1.1;
+    const lh = fs * 1.1;
     const anchor = dx > 0.35 ? 'start' : dx < -0.35 ? 'end' : 'middle';
-    let by = cl.y + dy * off + 4.5;
+    let by = cl.y + dy * off + fs * 0.31;
     if (dy < -0.35) by -= (cl.items.length - 1) * lh;
     else if (Math.abs(dy) <= 0.35) by -= ((cl.items.length - 1) * lh) / 2;
     cl.items.forEach((P, k) => {
       const fill = P.selected ? col.accent : P.aux ? col.muted : P.q.upper ? col.ink : col.muted;
-      out.push(textWithBars(P.label, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="14.5" fill="${fill}"${P.selected ? ' font-weight="700"' : ''} text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`));
+      out.push(textWithBars(P.label, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="${f(fs)}" fill="${fill}"${P.selected ? ' font-weight="600"' : ''} text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`));
     });
   }
   // Treffer-Flächen für Klick/Tippen

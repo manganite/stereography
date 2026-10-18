@@ -16,9 +16,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Stereogramm">
 <meta name="application-name" content="Stereogramm">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap">
+<link rel="stylesheet" href="lib/fonts/fonts.css">
 <style>
 /* Layout: Lehrmittel-Werkbank. Links Bedienung, rechts zwei gleich grosse Tafeln
    (Stereogramm | 3D-Konstruktion), darunter die Kenndaten. Auf dem Telefon untereinander. */
@@ -349,9 +347,10 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
             <input type="range" id="pg-theta" min="1" max="179" step="1">
           </div>
           <div class="range">
-            <label for="pg-phi">Azimut φ (ab a, im Gegenuhrzeigersinn)</label><output id="pg-phi-out"></output>
+            <label for="pg-phi">Azimut φ (ab ↓, Gegenuhrzeigersinn)</label><output id="pg-phi-out"></output>
             <input type="range" id="pg-phi" min="0" max="359.5" step="0.5">
           </div>
+          <p class="hintline">φ zählt vom unteren Rand des Stereogramms (↓, bei orthogonalen Achsen die a-Achse) im Gegenuhrzeigersinn.</p>
           <p class="hintline">Im Stereogramm: Ausgangspol ziehen oder an eine Stelle tippen; Ausgangspol antippen wechselt die Halbkugel.</p>
         </div>
       </details>

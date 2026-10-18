@@ -300,6 +300,7 @@ function renderPoly() {
     })).filter(Boolean),
     showLower: state.poly.showLower,
     hitR: touchRadius(13, 22),
+    labelSize: Math.max(14.5, 11 * svgUnit()), // mindestens ca. 11 px auf dem Bildschirm
     axisLabels: state.view.axes ? C.axes : [],
     zone: zone ? { axis: zone.axis, label: dirParts(zone.uvw, hex4) } : null,
   };
@@ -446,7 +447,7 @@ function updateInfoPoly(C, col) {
     const { rho, phi } = poleAngles(f.normal);
     sel = `<div class="selbox"><div class="sel-hkl">${hklHTML(f.hkl, hex4)}${f.role === 'aux' ? ' <small>Ergänzungsform</small>' : ''}</div>
       <dl class="facts"><div><dt>ρ (Abstand vom Zentrum)</dt><dd class="num">${rho.toFixed(1)}°</dd></div>
-      <div><dt>φ (Azimut ab x↓)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
+      <div><dt>φ (Azimut ab ↓, Gegenuhrzeigersinn)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
   }
   const auxList = C.auxReps.map((a) => {
     const n = auxFormName(C.groupId, a.hkls);

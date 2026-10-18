@@ -337,6 +337,19 @@ export class View3D {
     const c = (x) => new THREE.Color(x);
     const k = opts.size;
     const vis = poly.faces.map((f, i) => ({ f, i })).filter(({ f }) => !f.hidden);
+    // Hervorhebung: gewählte Fläche bzw. die beiden Zonen-Flächen kräftig, übrige Zonenflächen getönt,
+    // alles andere zurückgenommen, sobald etwas hervorgehoben ist.
+    const hi = new Set(selected != null ? [selected] : []);
+    for (const k of opts.picked || []) hi.add(k);
+    const inZone = new Set(opts.zone ? opts.zone.inZone : []);
+    const focus = hi.size > 0 || inZone.size > 0;
+    const accent = c(col.accent), paper = c(col.paper);
+    const faceColor = (f, i) => {
+      const base = c(f.color3d || col.crystal);
+      if (hi.has(i)) return accent.clone();
+      if (inZone.has(i)) return base.lerp(accent, 0.5);
+      return focus ? base.lerp(paper, 0.45) : base;
+    };
     vis.forEach(({ f, i }) => {
       const pos = [];
       for (let j = 1; j < f.verts.length - 1; j++) {
@@ -345,9 +358,8 @@ export class View3D {
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
       g.computeVertexNormals();
-      const isSel = selected === i;
       const mat = new THREE.MeshStandardMaterial({
-        color: c(isSel ? col.accent : f.color3d || col.crystal),
+        color: faceColor(f, i), emissive: hi.has(i) ? accent : c('#000000'), emissiveIntensity: hi.has(i) ? 0.3 : 0,
         roughness: 0.45, metalness: 0.0, side: THREE.DoubleSide,
         polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
       });
@@ -389,15 +401,17 @@ export class View3D {
       this.content.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: c(col.normal) })));
     }
     vis.forEach(({ f, i }) => {
-      const isSel = selected === i;
-      const m = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: c(isSel ? col.accent : f.role === 'aux' ? col.muted : f.color2d || col.normal) }));
+      const isSel = hi.has(i), isZ = inZone.has(i);
+      const pc = isSel || isZ ? col.accent : focus ? col.muted : f.role === 'aux' ? col.muted : f.color2d || col.normal;
+      const m = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: c(pc) }));
+      m.scale.setScalar(isSel ? 1.9 : isZ ? 1.4 : focus ? 0.85 : 1);
       m.position.copy(V(f.normal));
       m.userData.idx = i;
       this.content.add(m);
       this.pickables.push(m);
       if (labels && labels[i]) {
         const el = document.createElement('div');
-        el.className = 'lbl3d lbl-hkl' + (isSel ? ' sel' : '') + (f.role === 'aux' ? ' aux' : '');
+        el.className = 'lbl3d lbl-hkl' + (isSel ? ' sel' : isZ ? ' zone' : focus ? ' dim' : '') + (f.role === 'aux' ? ' aux' : '');
         el.innerHTML = labels[i];
         const lab = new THREE.CSS2DObject(el);
         lab.position.copy(V(f.normal).multiplyScalar(1.13));
@@ -406,10 +420,10 @@ export class View3D {
     });
     if (opts.zone) {
       const z = opts.zone, ax = V(z.axis).normalize(), acc = c(col.accent);
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.007, 6, 160), new THREE.MeshBasicMaterial({ color: acc }));
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.012, 8, 160), new THREE.MeshBasicMaterial({ color: acc }));
       ring.lookAt(ax);
       this.content.add(ring);
-      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 2.7, 8), new THREE.MeshBasicMaterial({ color: acc }));
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 2.7, 8), new THREE.MeshBasicMaterial({ color: acc }));
       rod.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), ax);
       this.content.add(rod);
       // Kanten zwischen Flächen der Zone: parallel zur Zonenachse
@@ -424,7 +438,7 @@ export class View3D {
           const key = [a, b].map((p) => p.toArray().map((x) => x.toFixed(4)).join(',')).sort().join('|');
           if (seen.has(key)) continue;
           seen.add(key);
-          const e = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, d.length(), 8), new THREE.MeshBasicMaterial({ color: acc }));
+          const e = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, d.length(), 8), new THREE.MeshBasicMaterial({ color: acc }));
           e.position.copy(a.clone().add(b).multiplyScalar(0.5));
           e.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
           this.content.add(e);

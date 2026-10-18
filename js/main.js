@@ -313,7 +313,7 @@ function renderPoly() {
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
   const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
   view3d.showPolyhedron(C, col,
-    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zone },
+    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zone, picked: state.poly.zoneMode ? state.zoneSel : [] },
     state.selected, labels3d);
 }
 
@@ -379,7 +379,7 @@ function updateLegendPoly(C, col) {
     items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="5 4"/></svg>untere Hälfte</span>`);
     items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><path d="M-5,-5L5,5M-5,5L5,-5" stroke="${col.accent}" stroke-width="2"/></svg>Zonenachse</span>`);
   }
-  items.push(state.poly.zoneMode ? '<span class="lg hint">Zwei Pole antippen: Zone bestimmen (Werkzeug „Zone“ beendet)</span>' : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben · Werkzeug „Zone“: Zonen bestimmen</span>');
+  items.push(state.poly.zoneMode ? '<span class="lg hint">Zwei Pole antippen: Zone bestimmen (Werkzeug „Zone“ beendet)</span>' : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter · Werkzeug „Zone“: Zonen bestimmen</span>');
   $('legend').innerHTML = items.join('');
 }
 
@@ -583,14 +583,38 @@ svg.addEventListener('click', (e) => {
     return;
   }
   // Bei grossen (Touch-)Trefferkreisen können sich Kreise überlappen: den nächstgelegenen Pol nehmen.
-  let best = null, bestD = Infinity;
+  // Fallen Pole zusammen (oben und unten an derselben Stelle), schaltet wiederholtes Antippen weiter.
+  const hits = [];
   for (const el of document.elementsFromPoint(e.clientX, e.clientY)) {
     if (!el.classList || !el.classList.contains('hit')) continue;
-    const d = Math.hypot(s.x - Number(el.getAttribute('cx')), s.y - Number(el.getAttribute('cy')));
-    if (d < bestD) { bestD = d; best = el; }
+    const x = Number(el.getAttribute('cx')), y = Number(el.getAttribute('cy'));
+    hits.push({ idx: Number(el.dataset.idx), upper: el.dataset.upper === '1', x, y, d: Math.hypot(s.x - x, s.y - y) });
   }
-  pickFace(best ? Number(best.dataset.idx) : null);
+  if (!hits.length) { pickFace(null); return; }
+  hits.sort((a, b) => a.d - b.d);
+  const near = hits[0];
+  const stack = hits.filter((h) => Math.hypot(h.x - near.x, h.y - near.y) < 2)
+    .sort((a, b) => (b.upper - a.upper) || (a.idx - b.idx)).map((h) => h.idx);
+  pickStack(stack);
 });
+
+/** Antippen einer Stelle mit einem oder mehreren zusammenfallenden Polen:
+ *  nichts gewählt → erster (oberer) Pol; sonst der nächste; nach dem letzten → keiner. */
+function pickStack(stack) {
+  if (stack.length === 1) { pickFace(stack[0]); return; }
+  if (state.poly.zoneMode) {
+    const sel = state.zoneSel.filter((k) => stack.includes(k));
+    const rest = state.zoneSel.filter((k) => !stack.includes(k));
+    const k = sel.length ? stack.indexOf(sel[sel.length - 1]) : -1;
+    const next = k + 1 < stack.length ? [stack[k + 1]] : [];
+    state.zoneSel = [...rest, ...next].slice(-2);
+    state.selected = null;
+  } else {
+    const k = stack.indexOf(state.selected);
+    state.selected = k + 1 < stack.length ? stack[k + 1] : null;
+  }
+  render();
+}
 
 /** Fläche antippen: normale Auswahl oder, im Zonenmodus, bis zu zwei Flächen für die Zone. */
 function pickFace(idx) {

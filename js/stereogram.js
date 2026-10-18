@@ -265,9 +265,13 @@ export function buildSVG(scene, { standalone = false } = {}) {
   // Pole
   const poles = (scene.poles || []).map((P) => ({ ...P, q: project(P.p) }));
   const drawn = [];
+  // Hof hinter ausgewählten Polen (deutlicher Kontrast zur übrigen Projektion)
+  for (const P of poles) {
+    if (P.selected && (P.q.upper || scene.showLower)) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="15" fill="${col.accent}" opacity="0.18"/>`);
+  }
   for (const P of poles) {
     if (!P.q.upper && !scene.showLower) continue;
-    const cU = P.color || (scene.colorByDet ? (P.det > 0 ? col.upper : col.accent2) : col.ink);
+    const cU = P.selected ? col.accent : P.color || (scene.colorByDet ? (P.det > 0 ? col.upper : col.accent2) : col.ink);
     const op = P.faint ? ' opacity="0.45"' : '';
     if (P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="4.2" fill="${cU}"${op}/>`);
     else out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="6.2" fill="none" stroke="${cU}" stroke-width="1.6"${op}/>`);
@@ -276,8 +280,8 @@ export function buildSVG(scene, { standalone = false } = {}) {
   // Markierungen (Auswahl, Ausgangspunkt)
   for (const P of drawn) {
     if (P.gen) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="11" fill="none" stroke="${col.accent}" stroke-width="2" stroke-dasharray="3 2.5"/>`);
-    if (P.zone && !P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="9" fill="none" stroke="${col.accent}" stroke-width="1.6"/>`);
-    if (P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="11.5" fill="none" stroke="${col.accent}" stroke-width="2.6"/>`);
+    if (P.zone && !P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="9.5" fill="none" stroke="${col.accent}" stroke-width="2"/>`);
+    if (P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="12.5" fill="none" stroke="${col.accent}" stroke-width="3"/>`);
   }
   // Beschriftungen: zusammenfallende Pole (oben/unten) werden gestapelt beschriftet
   const clusters = [];
@@ -299,15 +303,14 @@ export function buildSVG(scene, { standalone = false } = {}) {
     if (dy < -0.35) by -= (cl.items.length - 1) * lh;
     else if (Math.abs(dy) <= 0.35) by -= ((cl.items.length - 1) * lh) / 2;
     cl.items.forEach((P, k) => {
-      const fill = P.aux ? col.muted : P.q.upper ? col.ink : col.muted;
-      const lab = P.q.upper ? P.label : P.label;
-      out.push(textWithBars(lab, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="14.5" fill="${fill}" text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`));
+      const fill = P.selected ? col.accent : P.aux ? col.muted : P.q.upper ? col.ink : col.muted;
+      out.push(textWithBars(P.label, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="14.5" fill="${fill}"${P.selected ? ' font-weight="700"' : ''} text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`));
     });
   }
   // Treffer-Flächen für Klick/Tippen
   if (!standalone) {
     for (const P of drawn) {
-      out.push(`<circle class="hit" data-idx="${P.idx}" cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(scene.hitR || 13)}" fill="transparent"/>`);
+      out.push(`<circle class="hit" data-idx="${P.idx}" data-upper="${P.q.upper ? 1 : 0}" cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(scene.hitR || 13)}" fill="transparent"/>`);
     }
   }
   const inner = out.join('\n');

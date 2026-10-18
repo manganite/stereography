@@ -140,7 +140,7 @@ export function canonicalDir(d) {
 
 /**
  * Analysiert eine Liste von Operationen und bestimmt die Symmetrieelemente.
- * Rückgabe: { ops, order, centro, chiral, polar, axes:[{dir, symbol, centre}], mirrors:[normal] }
+ * Rückgabe: { ops, order, centro, chiral, polar, piezo, axes:[{dir, symbol, centre}], mirrors:[normal] }
  * symbol ∈ '2','3','4','6','-3','-4','-6'
  */
 export function analyzeGroup(ops) {
@@ -150,6 +150,12 @@ export function analyzeGroup(ops) {
   const P = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
   for (const m of ops) for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) P[i][j] += m[i][j] / ops.length;
   const polar = P.some((r) => r.some((x) => Math.abs(x) > 1e-6));
+  // piezoelektrisch, falls der Piezotensor d_ijk (symmetrisch in j, k) eine invariante Komponente hat.
+  // Anzahl der Invarianten = Mittel des Charakters χ(R)·(χ(R)² + χ(R²))/2 über die Gruppe.
+  // Ergibt die 20 Gruppen ohne Inversionszentrum ausser 432 (Borchardt-Ott & Sowa, Abschn. 9.6.2).
+  let nPiezo = 0;
+  for (const m of ops) { const t = trace(m), t2 = trace(mul(m, m)); nPiezo += (t * (t * t + t2)) / 2; }
+  const piezo = Math.round(nPiezo / ops.length) > 0;
 
   const axisMap = [];
   const findAxis = (d) => {
@@ -187,7 +193,7 @@ export function analyzeGroup(ops) {
       axes.push({ dir: e.dir, symbol, centre, mirrorPerp: e.mirror });
     }
   }
-  return { ops, order: ops.length, centro, chiral, polar, axes, mirrors };
+  return { ops, order: ops.length, centro, chiral, polar, piezo, axes, mirrors };
 }
 
 /** Vollständige Daten zu einer Punktgruppe. */

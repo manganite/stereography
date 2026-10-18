@@ -823,7 +823,8 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
       <div><dt>Laue-Klasse</dt><dd>${hmHTML(info.laue)}</dd></div>
       <div><dt>Zentrosymmetrisch</dt><dd>${yesno(info.centro)}</dd></div>
       <div><dt>Enantiomorph</dt><dd>${yesno(info.chiral)}</dd></div>
-      <div><dt>Polar</dt><dd>${yesno(info.polar)}</dd></div>
+      <div title="Eine Richtung bleibt unter allen Operationen erhalten; spontane Polarisation (Pyroelektrizität) möglich. 10 Punktgruppen."><dt>Polar</dt><dd>${yesno(info.polar)}</dd></div>
+      <div title="Piezoelektrischer Effekt symmetrieerlaubt: alle 21 Punktgruppen ohne Inversionszentrum ausser 432."><dt>Piezoelektrisch</dt><dd>${yesno(info.piezo)}</dd></div>
     </dl>
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>

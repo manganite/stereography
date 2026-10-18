@@ -42,3 +42,23 @@ test('Symmetrieelemente passen zu den Positionen des vollen Symbols', () => {
     }
   }
 });
+
+test('Polar und piezoelektrisch: 10 bzw. 20 der 32 Punktgruppen', () => {
+  // je Kurzsymbol eine Aufstellung (32 Punktgruppen)
+  const seen = new Map();
+  const ALT = new Set(['-4m2', '-62m']); // zweite Aufstellung mit eigenem Kurzsymbol
+  for (const g of POINT_GROUPS) if (!ALT.has(g.id) && !seen.has(g.hm)) seen.set(g.hm, buildPointGroup(g.id));
+  const groups = [...seen.values()];
+  assert.equal(groups.length, 32);
+  const POLAR = ['1', '2', '3', '4', '6', 'm', 'mm2', '3m', '4mm', '6mm'];
+  assert.deepEqual(groups.filter((i) => i.polar).map((i) => i.hm).sort(), POLAR.sort());
+  const piezo = groups.filter((i) => i.piezo).map((i) => i.hm);
+  assert.equal(piezo.length, 20);
+  assert.deepEqual(groups.filter((i) => !i.centro && !i.piezo).map((i) => i.hm), ['432']);
+  assert.ok(groups.every((i) => !(i.centro && i.piezo)), 'zentrosymmetrisch ⇒ nicht piezoelektrisch');
+  // jede polare Gruppe ist piezoelektrisch; Quarz (32) ist piezoelektrisch, aber nicht polar
+  assert.ok(groups.every((i) => !i.polar || i.piezo));
+  const q = seen.get('32');
+  assert.equal(q.piezo, true);
+  assert.equal(q.polar, false);
+});

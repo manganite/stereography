@@ -6,6 +6,7 @@ export const TIPS = {
   // Kopfzeile
   'tab-pg': 'Symmetriegerüste der 32 Punktgruppen und wie ihre Operationen einen Pol vervielfältigen.',
   'tab-poly': 'Kristallformen und Beispielkristalle: Flächen, ihre Pole im Stereogramm und der Kristall in 3D.',
+  'skript-link': 'Skript zur Vorlesung: stereographische Projektion, Flächenpole, φ und ρ, Wulffsches Netz; weitere Kapitel folgen.',
   'copy-link': 'Link auf genau diese Ansicht in die Zwischenablage kopieren, z. B. für Folien.',
   'help-open': 'Erste Schritte: kurze Einführung in die App.',
   // Punktgruppen

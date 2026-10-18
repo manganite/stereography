@@ -6,6 +6,8 @@ const CACHE = `stereogramm-${VERSION}`;
 const FILES = [
   './',
   'index.html',
+  'skript.html',
+  'css/base.css',
   'manifest.webmanifest',
   'icons/apple-touch-icon.png',
   'icons/favicon.ico',
@@ -19,6 +21,8 @@ const FILES = [
   'js/forms.js',
   'js/linalg.js',
   'js/main.js',
+  'js/scene.js',
+  'js/skript.js',
   'js/pointgroups.js',
   'js/polyhedra.js',
   'js/stereogram.js',

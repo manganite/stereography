@@ -1,19 +1,23 @@
 // Steuerung der App: Zustand, Bedienelemente, Verknüpfung von Stereogramm und 3D-Ansicht.
 
 import {
-  POINT_GROUPS, SYSTEMS, buildPointGroup, orbit, elementSummary, symmetryDirections, HEX_A, HEX_B,
+  POINT_GROUPS, SYSTEMS, buildPointGroup,
 } from './pointgroups.js';
 import {
-  buildCrystal, habitOf, zoneOf, zoneByUvw, zoneKey, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
+  habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, isHexSystem, auxFormName,
 } from './polyhedra.js';
-import { CATALOG, formName, formEig, entryById, FORM_TYPES } from './forms.js';
+import { CATALOG, formName, formEig, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
-import { hmHTML, hmText, hklParts, hklHTML, indices } from './format.js';
-import { cross, normalize, mulVec } from './linalg.js';
+import { hmHTML, hmText, hklHTML, indices } from './format.js';
+import { normalize } from './linalg.js';
 import { View3D } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, setTip, showTipAt, hideTip } from './help.js';
+import * as S from './scene.js';
+import {
+  createState, hashOf, applyHashTo, phiFromOld, rhoText, palette, formColor, groupOf, groupOrder, EIG_SAME, crystalAxesFor, ORBIT_COLORS, pgScene, polyCrystal, polyScene, normalizeZones,
+} from './scene.js';
 
 const $ = (id) => document.getElementById(id);
 const deg = Math.PI / 180;
@@ -24,21 +28,7 @@ const svgUnit = () => { const w = $('stereo').getBoundingClientRect().width; ret
 const touchRadius = (minUnits, px) => (coarse.matches ? Math.max(minUnits, px * svgUnit()) : minUnits);
 
 // ------------------------------------------------------------------ Zustand
-const state = {
-  mode: 'pg',
-  pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, theta: 59, phi: 75.5, colorful: false, hideDirs: [], tool: null },
-  poly: {
-    system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
-    size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: false, tool: null,
-    example: null, exScale: {}, // Beispielkristall und Faktoren der Formabstände
-    zones: [], // gewählte Zonen (Werkzeug „Zone“) als 'u,v,w'
-  },
-  view: { dirColors: true, wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
-  selected: null,
-  zoneSel: [],
-  pgSel: [], // Punktgruppenmodus: gewählte Pole (Werkzeug Winkel)
-  fig: 'stereo', // Telefon: sichtbare Tafel
-};
+const state = createState();
 const DEFAULTS = JSON.parse(JSON.stringify(state));
 
 // Azimut φ wie bei Borchardt-Ott & Sowa (Tab. 5.1): ab dem rechten Rand (→, bei orthogonalen Achsen b bzw. (010))
@@ -48,118 +38,15 @@ function azimuth(v) {
   const p = Math.atan2(v[0], v[1]) / deg;
   return p < 0 ? p + 360 : p;
 }
-/** Umrechnung aus der Zählung bis v1.0.0 (ab ↓, Gegenuhrzeigersinn). */
-const phiFromOld = (p) => ((((90 - p) % 360) + 360) % 360);
-// Poldistanz ρ wie bei Borchardt-Ott (Abschn. 5.6): obere Halbkugel vom Nordpol (0 … 90°), untere vom Südpol
-// mit negativem Vorzeichen (−90 … 0°). Intern bleibt theta der Winkel zum Nordpol (0 … 180°).
-const rhoOf = (theta) => (theta > 90 + 1e-9 ? theta - 180 : theta);
-const thetaOf = (rho) => (rho < 0 ? 180 + rho : rho);
-/** ρ als Text mit echtem Minuszeichen. */
-const rhoText = (theta, digits) => (theta > 90 + 1e-9 ? '−' : '') + Math.abs(rhoOf(theta)).toFixed(digits) + '°';
 
 // ------------------------------------------------------------------ Zustand in der URL
 // Lesbarer Hash, z. B. #m=pg&g=4/mmm&rho=59 oder #m=form&sys=kubisch&f=m-3m:b35&w=winkel.
 // Nur Abweichungen vom Startzustand werden geschrieben; ein Link stellt genau diese Ansicht her.
-const B = (v) => (v ? '1' : '0');
-const isOn = (s) => s === '1' || s === 'ja' || s === 'true';
-const num = (s, lo, hi) => { const x = Number(s); return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : null; };
-const URL_VIEW = [
-  ['farbe', 'dirColors'], ['wulff', 'wulff'], ['achsen', 'axes'], ['kugel', 'sphere'], ['ebene', 'plane'], ['strahlen', 'rays'], ['normalen', 'normals'],
-];
-const URL_PG = [['el', 'showElements'], ['obj', 'showObject'], ['hand', 'colorful']];
-const URL_FORM = [['br', 'broken'], ['offen', 'open'], ['idx', 'labels'], ['unten', 'showLower'], ['hkil', 'bravais'], ['geruest', 'frame'], ['muster', 'faceSym']];
-const LAT_KEYS = ['ba', 'ca', 'al', 'be', 'ga'];
-const TOOL_NAMES = { zone: 'zone', angle: 'winkel' };
-const TOOL_IDS = { zone: 'zone', winkel: 'angle' };
 
-function stateToHash() {
-  const q = new URLSearchParams();
-  const d = DEFAULTS;
-  const bools = (list, obj, def) => { for (const [k, key] of list) if (!!obj[key] !== !!def[key]) q.set(k, B(obj[key])); };
-  if (state.mode === 'pg') {
-    q.set('m', 'pg');
-    q.set('g', state.pg.id);
-    // volle Genauigkeit (auf 10⁻⁴° gekürzt), damit ein Link die Pole nicht verschiebt
-    const exact = (x) => String(Number(x.toFixed(4)));
-    if (Math.abs(state.pg.theta - d.pg.theta) > 1e-6) q.set('rho', exact(rhoOf(state.pg.theta)));
-    if (Math.abs(state.pg.phi - d.pg.phi) > 1e-6) q.set('az', exact(state.pg.phi));
-    bools(URL_PG, state.pg, d.pg);
-    if (state.pg.hideDirs.length) q.set('aus', state.pg.hideDirs.map((k) => k + 1).join(','));
-    if (state.pg.tool) q.set('w', TOOL_NAMES[state.pg.tool]);
-  } else {
-    q.set('m', 'form');
-    const sys = state.poly.system;
-    q.set('sys', sys);
-    const ex = currentExample();
-    if (ex) {
-      q.set('bsp', ex.id);
-      const fs = exFactors(ex);
-      if (fs.some((x) => Math.abs(x - 1) > 1e-6)) q.set('ab', fs.map((x) => String(Math.round(x * 100) / 100)).join(','));
-    } else q.set('f', currentEntryId());
-    if (state.poly.presetId !== orientationPresets(sys)[0].id) q.set('lage', state.poly.presetId);
-    const lat = currentLat(), l0 = { ...LATTICE_DEFAULTS[sys], ...(ex ? ex.lat : {}) };
-    for (const k of LAT_KEYS) if (Math.abs(lat[k] - l0[k]) > 1e-6) q.set(k, String(Math.round(lat[k] * 100) / 100));
-    bools(URL_FORM, state.poly, d.poly);
-    if (Math.abs(state.poly.auxDist - d.poly.auxDist) > 1e-6) q.set('abstand', String(state.poly.auxDist));
-    if (Math.abs(state.poly.size - d.poly.size) > 1e-6) q.set('gr', String(state.poly.size));
-    if (state.poly.tool) q.set('w', TOOL_NAMES[state.poly.tool]);
-    if (state.poly.tool === 'zone' && state.poly.zones.length) q.set('zonen', state.poly.zones.join(';'));
-  }
-  bools(URL_VIEW, state.view, d.view);
-  if (state.view.wulff && state.view.wulffRot) q.set('netz', String(state.view.wulffRot));
-  return '#' + q.toString().replace(/%2F/g, '/').replace(/%2C/g, ',').replace(/%3A/g, ':').replace(/%3B/g, ';');
-}
+const stateToHash = () => hashOf(state, DEFAULTS);
 
 /** Wendet einen Hash auf den Startzustand an. Gibt false zurück, wenn kein brauchbarer Hash vorliegt. */
-function applyHash(hash) {
-  const q = new URLSearchParams(hash.replace(/^#/, ''));
-  if (!q.has('m')) return false;
-  // Darstellung und der Bereich des verlinkten Modus starten vom Startzustand (der Link ist vollständig);
-  // der andere Modus behält den gespeicherten Zustand.
-  const clone = (o) => JSON.parse(JSON.stringify(o));
-  state.view = clone(DEFAULTS.view);
-  if (q.get('m') === 'form') state.poly = clone(DEFAULTS.poly);
-  else state.pg = { ...clone(DEFAULTS.pg), famPref: state.pg.famPref || {} };
-  const bools = (list, obj) => { for (const [k, key] of list) if (q.has(k)) obj[key] = isOn(q.get(k)); };
-  if (q.get('m') === 'form') {
-    state.mode = 'poly';
-    const sys = q.get('sys');
-    if (sys && Object.prototype.hasOwnProperty.call(LATTICE_DEFAULTS, sys)) state.poly.system = sys;
-    if (q.has('f')) state.poly.entryBySys[state.poly.system] = q.get('f');
-    const ex = exampleById(q.get('bsp'));
-    if (ex && ex.sys === state.poly.system) {
-      state.poly.example = ex.id;
-      if (q.has('ab')) state.poly.exScale[ex.id] = q.get('ab').split(',').map((x) => num(x, 0.5, 2) ?? 1);
-    }
-    if (q.has('lage')) state.poly.presetId = q.get('lage');
-    const lat = { ...LATTICE_DEFAULTS[state.poly.system], ...(ex && ex.sys === state.poly.system ? ex.lat : {}) };
-    for (const k of LAT_KEYS) {
-      if (!q.has(k)) continue;
-      const v = k === 'ba' || k === 'ca' ? num(q.get(k), 0.25, 3) : num(q.get(k), 60, 150);
-      if (v != null) lat[k] = v;
-    }
-    state.poly.lats[state.poly.system] = lat;
-    bools(URL_FORM, state.poly);
-    if (q.has('abstand')) state.poly.auxDist = num(q.get('abstand'), 0.3, 3) ?? state.poly.auxDist;
-    if (q.has('gr')) state.poly.size = num(q.get('gr'), 0.3, 1.2) ?? state.poly.size;
-    state.poly.tool = TOOL_IDS[q.get('w')] || null;
-    if (q.has('zonen')) state.poly.zones = q.get('zonen').split(';').filter((k) => /^-?\d+,-?\d+,-?\d+$/.test(k) && k !== '0,0,0');
-  } else {
-    state.mode = 'pg';
-    if (POINT_GROUPS.some((g) => g.id === q.get('g'))) state.pg.id = q.get('g');
-    // rho nach Borchardt-Ott (untere Halbkugel negativ); Werte über 90° aus Links bis v1.0.0 gelten weiter
-    if (q.has('rho')) { const r = num(q.get('rho'), -90, 180); if (r != null) state.pg.theta = thetaOf(r); }
-    // az: Azimut nach Borchardt-Ott (ab →, im Uhrzeigersinn); phi: alte Zählung bis v1.0.0 (ab ↓, Gegenuhrzeigersinn)
-    if (q.has('az')) { const p = num(q.get('az'), -1e6, 1e6); if (p != null) state.pg.phi = ((p % 360) + 360) % 360; }
-    else if (q.has('phi')) { const p = num(q.get('phi'), -1e6, 1e6); if (p != null) state.pg.phi = phiFromOld(p); }
-    bools(URL_PG, state.pg);
-    if (q.has('aus')) state.pg.hideDirs = q.get('aus').split(',').map((s) => Number(s) - 1).filter((k) => k >= 0 && k <= 2);
-    state.pg.tool = q.get('w') === 'winkel' ? 'angle' : null;
-  }
-  bools(URL_VIEW, state.view);
-  if (q.has('netz')) state.view.wulffRot = num(q.get('netz'), 0, 180) ?? 0;
-  return true;
-}
+const applyHash = (hash) => applyHashTo(state, hash, DEFAULTS);
 
 let lastHash = '';
 // Ohne Hash geöffnet (oder nach „Alle Einstellungen zurücksetzen“): Adresse bleibt ohne Hash,
@@ -203,41 +90,6 @@ const save = () => {
 window.addEventListener('hashchange', () => { if (location.hash !== lastHash) location.reload(); });
 
 // ------------------------------------------------------------------ Farben aus CSS-Tokens
-function palette() {
-  const cs = getComputedStyle(document.documentElement);
-  const g = (n) => cs.getPropertyValue('--' + n).trim();
-  return {
-    paper: g('paper'), ink: g('ink'), muted: g('muted'), net: g('net'),
-    mirror: g('ink'), axis: g('ink'), dir: [g('dir1'), g('dir2'), g('dir3')],
-    upper: g('upper'), accent: g('accent'), accent2: g('accent2'),
-    ray: g('ray'), crystal: g('crystal'), crystal2: g('crystal2'), edge: g('edge'),
-    normal: g('normal'), sphere: g('muted'), mirror3d: g('mirror'),
-    ax2: g('ax2'), ax3: g('ax3'), ax4: g('ax4'), ax6: g('ax6'),
-    form: [0, 1, 2, 3, 4, 5, 6, 7].map((i) => g('fc' + i)),
-  };
-}
-/** Farbe der i-ten Form eines Beispielkristalls (Pol) bzw. ihrer Flächen in 3D (aufgehellt). */
-const formColor = (col, i) => col.form[i % col.form.length];
-function mixHex(a, b, t) {
-  const p = (h) => { const x = h.replace('#', ''); const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x; return [0, 2, 4].map((k) => parseInt(f.slice(k, k + 2), 16)); };
-  try {
-    const A = p(a), Bc = p(b);
-    return '#' + A.map((v, k) => Math.round(v + (Bc[k] - v) * t).toString(16).padStart(2, '0')).join('');
-  } catch { return a; }
-}
-const formFill = (col, i) => mixHex(formColor(col, i), col.paper, 0.38);
-/** Farbe der i-ten gewählten Zone: zuerst die Formfarben, danach weitere Farbtöne, keine Wiederholung. */
-function zoneColor(col, i) {
-  if (i < col.form.length) return col.form[i];
-  const dark = (() => { const x = col.paper.replace('#', ''); return x.length >= 6 && parseInt(x.slice(0, 2), 16) + parseInt(x.slice(2, 4), 16) + parseInt(x.slice(4, 6), 16) < 384; })();
-  // zuerst Farbtöne, die die Formfarben nicht belegen (Grün, Violett, Gold, Himmelblau …), danach goldener Winkel
-  const GAPS = [125, 265, 45, 195, 290, 95, 345, 235];
-  const j = i - col.form.length;
-  const h = j < GAPS.length ? GAPS[j] : (GAPS[0] + j * 137.508) % 360, sat = 0.6, l = dark ? 0.66 : 0.4;
-  const f = (n) => { const k = (n + h / 30) % 12; const c = l - sat * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(c * 255).toString(16).padStart(2, '0'); };
-  return '#' + f(0) + f(8) + f(4);
-}
-const FONT = "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif";
 
 // ------------------------------------------------------------------ Bedienelemente aufbauen
 /** Punktgruppen mit zwei Aufstellungen in ITA: ein Button je Punktgruppe, die Aufstellung darunter. */
@@ -322,7 +174,6 @@ function buildGroupPicker() {
   });
   syncPicker();
 }
-const groupOf = (id) => POINT_GROUPS.find((g) => g.id === id);
 const monoId = (hm, axis) => POINT_GROUPS.find((g) => g.system === 'monoklin' && g.hm === hm && g.setting === 'Achse ' + axis).id;
 function syncPicker() {
   const g = groupOf(state.pg.id);
@@ -344,10 +195,6 @@ function syncPicker() {
 }
 
 const SYSTEM_NAMES = { triklin: 'Triklin', monoklin: 'Monoklin', orthorhombisch: 'Orthorhombisch', tetragonal: 'Tetragonal', trigonal: 'Trigonal', hexagonal: 'Hexagonal', kubisch: 'Kubisch' };
-const DEFAULT_ENTRY = {
-  triklin: '-1:a2', monoklin: '2/mb:c6', orthorhombisch: 'mmm:g7', tetragonal: '4/mmm:f14',
-  trigonal: '-3m1:c21', hexagonal: '6/mmm:e31', kubisch: 'm-3m:b35',
-};
 const sysOK = (sys) => Object.prototype.hasOwnProperty.call(SYSTEM_NAMES, sys);
 if (!sysOK(state.poly.system)) state.poly.system = 'kubisch';
 /**
@@ -356,39 +203,11 @@ if (!sysOK(state.poly.system)) state.poly.system = 'kubisch';
  * in 4̄3m). Geometrisch gleiche Formen anderer Punktgruppen unterscheiden sich erst durch die
  * Flächensymmetrie; sie erscheinen, sobald diese gezeigt wird. (Absprache mit dem Autor.)
  */
-const EIG_SAME = { '-62m': '-6m2', '-4m2': '-42m' };
-const groupOrder = new Map();
-function formListed(e) {
-  if (state.poly.faceSym) return true;
-  const g = groupOf(e.pg);
-  if (!groupOrder.has(g.id)) groupOrder.set(g.id, buildPointGroup(g.id).order);
-  const norm = (s) => EIG_SAME[s] || s;
-  return e.mult === groupOrder.get(g.id) || norm(formEig(e)) === norm(g.hm);
-}
-const currentEntryId = () => {
-  const sys = state.poly.system;
-  const id = state.poly.entryBySys[sys];
-  const e = id && entryById(id);
-  if (!e || SYSTEM_OF[e.pg] !== sys) return DEFAULT_ENTRY[sys];
-  if (formListed(e)) return id;
-  // ausgeblendete Form: dieselbe Form (gleicher Typ) dort zeigen, wo sie ihre Eigensymmetrie hat
-  const same = CATALOG.find((x) => SYSTEM_OF[x.pg] === sys && x.type === e.type && formListed(x));
-  return same ? same.id : DEFAULT_ENTRY[sys];
-};
-/** Beispielkristall (nur gültig, solange sein Kristallsystem gewählt ist). */
-const currentExample = () => {
-  const ex = exampleById(state.poly.example);
-  return ex && ex.sys === state.poly.system ? ex : null;
-};
-const exFactors = (ex) => {
-  const f = state.poly.exScale[ex.id];
-  return ex.forms.map((_, i) => (Array.isArray(f) && Number.isFinite(f[i]) ? f[i] : 1));
-};
-/** Formen des Beispiels mit den eingestellten Abständen (die erste Form ist die Bezugsform). */
-const exForms = (ex) => {
-  const fs = exFactors(ex);
-  return ex.forms.map((f, i) => (f.t != null ? { hkl: f.hkl, t: f.t * fs[i] } : { hkl: f.hkl, r: f.r * fs[i] }));
-};
+// Formen und Beispiele des aktuellen Zustands (Kern in scene.js)
+const formListed = (e) => S.formListed(state, e);
+const currentEntryId = () => S.currentEntryId(state);
+const currentExample = () => S.currentExample(state);
+const exFactors = (ex) => S.exFactors(state, ex);
 function setExample(id) {
   const ex = exampleById(id);
   state.poly.example = ex ? ex.id : null;
@@ -405,11 +224,7 @@ function setExample(id) {
   refreshPolyControls();
 }
 
-const currentLat = () => {
-  const sys = state.poly.system;
-  if (!state.poly.lats[sys]) state.poly.lats[sys] = { ...LATTICE_DEFAULTS[sys] };
-  return state.poly.lats[sys];
-};
+const currentLat = () => S.currentLat(state);
 
 function buildSystemSelect() {
   $('sys-select').innerHTML = Object.entries(SYSTEM_NAMES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
@@ -500,48 +315,13 @@ function formLabelText(hkl, hex) {
 const svg = $('stereo');
 let current = null; // zuletzt gerenderte Daten
 
-function generalPole() {
-  // φ ab b (→, y) im Uhrzeigersinn, d. h. zur a-Achse (↓, x) hin
-  const t = state.pg.theta * deg, p = state.pg.phi * deg;
-  return [Math.sin(t) * Math.sin(p), Math.sin(t) * Math.cos(p), Math.cos(t)];
-}
 
-function crystalAxesFor(hex) {
-  return hex
-    ? [{ name: 'a₁', dir: HEX_A }, { name: 'a₂', dir: HEX_B }, { name: 'a₃', dir: normalize([-HEX_A[0], -HEX_A[1] - 1, 0]) }, { name: 'c', dir: [0, 0, 1] }]
-    : [{ name: 'a', dir: [1, 0, 0] }, { name: 'b', dir: [0, 1, 0] }, { name: 'c', dir: [0, 0, 1] }];
-}
-
-const CUBIC_ZONES = [[1, 0, 0], [0, 1, 0], [1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]];
+const generalPole = () => S.generalPole(state);
 
 function renderPG() {
   const col = palette();
-  const info = buildPointGroup(state.pg.id);
-  const p0 = generalPole();
-  const orb = orbit(info.ops, p0);
-  const axisAlongZ = info.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
-  const classes = symmetryDirections(info);
-  state.pgSel = state.pg.tool && state.pg.showObject ? state.pgSel.filter((k) => k < orb.length) : [];
-  const pgAngle = state.pgSel.length === 2 ? angleOf(orb[state.pgSel[0]].p, orb[state.pgSel[1]].p) : null;
-  // Farbe nach Blickrichtung (Position im vollen HM-Symbol) oder einheitlich schwarz wie in ITA
-  const dcol = (k) => (state.view.dirColors && k >= 0 ? col.dir[k] : null);
-  const zMirror = info.mirrors.findIndex((n) => Math.abs(n[2]) > 1 - 1e-6);
-  const scene = {
-    col, fontFamily: FONT,
-    wulff: { on: state.view.wulff, rot: state.view.wulffRot },
-    primitiveBold: state.pg.showElements && zMirror >= 0,
-    primitiveColor: zMirror >= 0 ? dcol(info.mirrorCls[zMirror]) : null,
-    mirrors: state.pg.showElements ? info.mirrors.map((n, i) => ({ n, color: dcol(info.mirrorCls[i]) })) : [],
-    axes: state.pg.showElements ? info.axes.map((a) => ({ ...a, color: dcol(a.cls) })) : [],
-    centreAtOrigin: state.pg.showElements && info.centro && !axisAlongZ,
-    zones: state.pg.showElements && info.system === 'kubisch' ? CUBIC_ZONES : [],
-    poles: state.pg.showObject ? orb.map((o, i) => ({ p: o.p, det: o.det, idx: i, gen: i === 0, selected: state.pgSel.includes(i) })) : [],
-    hitR: touchRadius(13, 22),
-    arc: pgAngle ? { a: pgAngle.a, b: pgAngle.b, label: pgAngle.deg.toFixed(1) + '°' } : null,
-    colorByDet: state.pg.colorful,
-    showLower: true,
-    axisLabels: state.view.axes ? crystalAxesFor(info.hex) : [],
-  };
+  const { info, p0, orb, classes, sel, pgAngle, scene } = pgScene(state, col, { hitR: touchRadius(13, 22) });
+  state.pgSel = sel;
   const out = buildSVG(scene);
   svg.innerHTML = out.inner;
   current = { kind: 'pg', info, scene };
@@ -592,25 +372,10 @@ function updateDirChips(classes, col) {
   if (focused != null) box.querySelector(`button[data-pos="${focused}"]`)?.focus();
 }
 
-/** Richtung [uvw] als Teile für SVG-Text. */
-function dirParts(v, hex4) {
-  const w = hex4 ? dirToFour(v) : v;
-  const big = w.some((x) => Math.abs(x) > 9);
-  const out = [{ t: '[', bar: false }];
-  w.forEach((x, i) => { if (big && i) out.push({ t: ' ', bar: false }); out.push({ t: String(Math.abs(x)), bar: x < 0 }); });
-  out.push({ t: ']', bar: false });
-  return out;
-}
-
-const ORBIT_COLORS = (col) => [col.accent, col.accent2, col.ax2, col.ax4, col.ax3, col.ax6];
 
 function renderPoly() {
   const col = palette();
-  const ex = currentExample();
-  const C = buildCrystal(ex
-    ? { groupId: ex.pg, forms: exForms(ex), lat: currentLat(), broken: false, auxDist: state.poly.auxDist, presetId: state.poly.presetId }
-    : { entryId: currentEntryId(), lat: currentLat(), broken: state.poly.broken, auxDist: state.poly.auxDist, presetId: state.poly.presetId });
-  C.example = ex;
+  const C = polyCrystal(state, col);
   // Auswahl über die Indizes weiterführen: Flächen können wegfallen oder neu nummeriert werden
   // (Abstände, Gitter), ein Index allein würde dann eine andere Fläche treffen.
   if (current && current.kind === 'poly') {
@@ -621,61 +386,13 @@ function renderPoly() {
     const zs = state.zoneSel.map(remap);
     state.zoneSel = zs.some((k) => k == null) ? [] : zs;
   }
-  const hex4 = C.hex && state.poly.bravais;
-  const oc = ORBIT_COLORS(col);
-  const multi = C.isReduced && C.orbitsMain.length > 1;
-  C.faces.forEach((f) => {
-    f.hidden = state.poly.open && f.role === 'aux';
-    f.color2d = f.role === 'aux' ? col.muted : ex ? formColor(col, f.form) : multi ? oc[f.orbit % oc.length] : null;
-    f.color3d = f.role === 'aux' ? col.crystal2 : ex ? formFill(col, f.form) : multi ? oc[f.orbit % oc.length] : col.crystal;
-  });
   if (state.selected != null && (!C.faces[state.selected] || C.faces[state.selected].hidden)) state.selected = null;
   state.zoneSel = state.zoneSel.filter((k) => C.faces[k] && !C.faces[k].hidden);
   if (!state.poly.tool) state.zoneSel = [];
-  const two = state.zoneSel.length === 2;
-  const zone = state.poly.tool === 'zone' && two ? zoneOf(C, state.zoneSel[0], state.zoneSel[1]) : null;
-  C.zone = zone;
-  // Zonenliste: alle Zonen des Kristalls (nur mit Werkzeug „Zone“) und die gewählten, je in eigener Farbe
-  C.zoneClasses = state.poly.tool === 'zone' ? zonesOf(C) : [];
   // gespeicherte Schlüssel lageunabhängig machen und Doppelte entfernen (ältere Zustände, Links)
-  state.poly.zones = [...new Set(state.poly.zones.map((k) => zoneKey(k.split(',').map(Number))))];
-  C.selZones = state.poly.tool === 'zone'
-    ? state.poly.zones.map((k, i) => ({ ...zoneByUvw(C, k.split(',').map(Number)), color: zoneColor(col, i) }))
-    : [];
-  const zoneColorsOf = (i) => C.selZones.filter((z) => z.inZone.includes(i)).map((z) => z.color);
-  const angle = state.poly.tool === 'angle' && two ? angleOf(C.faces[state.zoneSel[0]].normal, C.faces[state.zoneSel[1]].normal) : null;
-  C.angle = angle;
-  const fw = state.poly.frame ? C.framework : null;
-  // Symmetriegerüst nach Blickrichtung färben (nicht bei erniedrigter Symmetrie: andere Gruppe, andere Aufstellung)
-  let fwClasses = null, fwMirrorCls = [];
-  if (fw && state.view.dirColors && !C.isReduced) {
-    const fwInfo = { system: C.sys, full: groupOf(C.groupId).full, axes: fw.axes, mirrors: fw.mirrors };
-    fwClasses = symmetryDirections(fwInfo, (u) => mulVec(C.O, mulVec(C.A, u)));
-    fwMirrorCls = fwInfo.mirrorCls;
-  }
-  const fcol = (k) => (fwClasses && k >= 0 ? col.dir[k] : null);
-  const fwZ = fw ? fw.mirrors.findIndex((n) => Math.abs(n[2]) > 1 - 1e-6) : -1;
-  const scene = {
-    col: { ...col, mirror: col.ink }, fontFamily: FONT,
-    wulff: { on: state.view.wulff, rot: state.view.wulffRot },
-    primitiveBold: !!fw && fwZ >= 0,
-    primitiveColor: fwZ >= 0 && fwClasses ? fcol(fwMirrorCls[fwZ]) : null,
-    mirrors: fw ? fw.mirrors.map((n, i) => ({ n, color: fwClasses ? fcol(fwMirrorCls[i]) : null })) : [],
-    axes: fw ? fw.axes.map((a) => ({ ...a, color: fwClasses ? fcol(a.cls) : null })) : [],
-    zones: fw && C.sys === 'kubisch' && !C.isReduced ? C.zones : [],
-    faint: true,
-    centreAtOrigin: !!fw && fw.centro && !fw.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6),
-    poles: C.faces.map((f, i) => (f.hidden ? null : {
-      p: f.normal, det: 1, idx: i, color: f.color2d, aux: f.role === 'aux',
-      label: state.poly.labels ? hklParts(f.hkl, hex4) : null, selected: state.selected === i || state.zoneSel.includes(i), zoneColors: zoneColorsOf(i),
-    })).filter(Boolean),
-    showLower: state.poly.showLower,
-    hitR: touchRadius(13, 22),
-    labelSize: Math.max(14.5, 11 * svgUnit()), // mindestens ca. 11 px auf dem Bildschirm
-    axisLabels: state.view.axes ? C.axes : [],
-    zoneList: C.selZones.map((z) => ({ axis: z.axis, label: dirParts(z.uvw, hex4), color: z.color })),
-    arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null,
-  };
+  state.poly.zones = normalizeZones(state.poly.zones);
+  const { scene, fwClasses, hex4 } = polyScene(state, C, col, { hitR: touchRadius(13, 22), labelSize: Math.max(14.5, 11 * svgUnit()) });
+  const angle = C.angle;
   const out = buildSVG(scene);
   svg.innerHTML = out.inner;
   current = { kind: 'poly', C, scene };
@@ -694,11 +411,6 @@ function renderPoly() {
     state.selected, labels3d);
 }
 
-/** Winkel zwischen zwei Flächennormalen (= Winkel zwischen den Polen). */
-function angleOf(a, b) {
-  const d = Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]));
-  return { a, b, deg: Math.acos(d) / deg };
-}
 
 let syncToolBtns = () => {};
 let syncFormHint = () => {};

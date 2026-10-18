@@ -22,7 +22,7 @@ test('Service Worker: Offline-Liste deckt alle Dateien der App ab', () => {
     const p = join(dir, f);
     return statSync(join(ROOT, p)).isDirectory() ? walk(p) : [p];
   });
-  const app = ['index.html', 'manifest.webmanifest', ...['js', 'lib', 'icons'].flatMap(walk)]
+  const app = ['index.html', 'skript.html', 'manifest.webmanifest', ...['js', 'css', 'lib', 'icons'].flatMap(walk)]
     .map((p) => relative('.', p).split('\\').join('/'))
     .filter((p) => !p.endsWith('.txt'));
   for (const p of app) assert.ok(listed.includes(p), `fehlt in sw.js: ${p}`);

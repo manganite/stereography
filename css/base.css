@@ -1,0 +1,90 @@
+/* Gemeinsame Grundlage von App (index.html) und Skript (skript.html): Farben (hell/dunkel),
+   Schriften, Grundtypografie und Kopfzeile. */
+:root {
+  --bg: #eceff2;
+  --surface: #f8f9fb;
+  --paper: #ffffff;
+  --ink: #15202b;
+  --muted: #586472;
+  --line: #d2d9e0;
+  --accent: #0b63b6;
+  --accent2: #c2410c;
+  --upper: #1d4f91;
+  --mirror: #0b63b6;
+  --net: #9aa6b2;
+  --ray: #d97706;
+  --crystal: #a9cbe8;
+  --crystal2: #cfd9e3;
+  --edge: #1b2a3a;
+  --normal: #0b63b6;
+  --ax2: #2f855a;
+  --ax3: #b7791f;
+  --ax4: #6b46c1;
+  --ax6: #c53030;
+  /* Blickrichtungen (Positionen im Hermann-Mauguin-Symbol) */
+  --dir1: #6b46c1;
+  --dir2: #2f855a;
+  --dir3: #a16207;
+  /* Formfarben der Beispielkristalle: bewusst verschieden von den Blickrichtungsfarben (dir1–3) */
+  --fc0: #2b6cb0; --fc1: #c53030; --fc2: #b83280; --fc3: #2c7a7b; --fc4: #dd6b20; --fc5: #7c8a12; --fc6: #8b5a2b; --fc7: #718096;
+  --font-display: 'Source Serif 4', 'Georgia', 'Times New Roman', serif;
+  --font-ui: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1318; --surface: #151c23; --paper: #1a222b; --ink: #e5ebf1; --muted: #98a6b4;
+    --line: #2a3541; --accent: #4fa3ff; --accent2: #ff8a4c; --upper: #79b0ff; --mirror: #4fa3ff;
+    --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
+    --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
+    --dir1: #a78bfa; --dir2: #48bb78; --dir3: #e0b341;
+    --fc0: #63b3ed; --fc1: #fc8181; --fc2: #f687b3; --fc3: #4fd1c5; --fc4: #f6ad55; --fc5: #c3d04a; --fc6: #d6a26b; --fc7: #a0aec0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1318; --surface: #151c23; --paper: #1a222b; --ink: #e5ebf1; --muted: #98a6b4;
+  --line: #2a3541; --accent: #4fa3ff; --accent2: #ff8a4c; --upper: #79b0ff; --mirror: #4fa3ff;
+  --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
+  --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
+  --dir1: #a78bfa; --dir2: #48bb78; --dir3: #e0b341;
+  --fc0: #63b3ed; --fc1: #fc8181; --fc2: #f687b3; --fc3: #4fd1c5; --fc4: #f6ad55; --fc5: #c3d04a; --fc6: #d6a26b; --fc7: #a0aec0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 32px;
+}
+/* Querstrich (Drehinversion, negative Indizes): knapp über der Ziffer statt auf Höhe der Oberlänge.
+   --ovt: Abstand von der Oberkante der Schriftzeile (Plex Sans 0,17 em, Source Serif 0,22 em). */
+.ov { position: relative; text-decoration: none; }
+.ov::before { content: ''; position: absolute; left: 0.06em; right: 0.06em; top: var(--ovt, 0.17em); border-top: max(1px, 0.07em) solid currentColor; }
+.pgb, .hm-big:not(.form-sym), .dirhm, .brand h1 { --ovt: 0.22em; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Kopf */
+.top {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px;
+  padding-block: 12px 10px; border-bottom: 1px solid var(--line); margin-bottom: 14px;
+  max-width: 1480px; margin-inline: auto;
+}
+.brand { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
+.brand h1 {
+  font-family: var(--font-display); font-weight: 600; font-size: clamp(1.3rem, 1rem + 0.9vw, 1.7rem);
+  line-height: 1.1; margin: 0; letter-spacing: -0.01em; text-wrap: balance;
+}
+.brand p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+.tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; padding: 3px; background: var(--surface); }
+.tabs button {
+  border: 0; background: transparent; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; color: var(--muted);
+}
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.top .tabs { margin-left: auto; }
+.linkcopy { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 12px; cursor: pointer; color: var(--muted); font-weight: 500; }
+a.linkcopy { text-decoration: none; display: inline-block; }
+.linkcopy:hover { color: var(--ink); border-color: var(--muted); }

@@ -12,6 +12,7 @@ import { hmHTML, hmText, hklParts, hklHTML, indices } from './format.js';
 import { cross, normalize, mulVec } from './linalg.js';
 import { View3D } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
+import { VERSION } from './version.js';
 
 const $ = (id) => document.getElementById(id);
 const deg = Math.PI / 180;
@@ -1317,3 +1318,19 @@ function init() {
 }
 
 init();
+
+// ------------------------------------------------------------------ Version und Offline-Betrieb
+{
+  const el = document.getElementById('app-version');
+  if (el) el.innerHTML = `<a href="https://github.com/manganite/stereography/releases/tag/v${VERSION}">Version ${VERSION}</a> · <a href="https://github.com/manganite/stereography">Quellcode</a>`;
+}
+// Service Worker nur auf HTTPS (GitHub Pages), lokal zum Testen mit ?sw. Nach einem Update übernimmt
+// die neue Version beim nächsten Öffnen; die Seite lädt dann einmal neu (Zustand bleibt gespeichert).
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || new URLSearchParams(location.search).has('sw'))) {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController && !reloaded) { reloaded = true; location.reload(); }
+  });
+  navigator.serviceWorker.register('sw.js').catch(() => { /* ohne Offline-Betrieb weiter */ });
+}

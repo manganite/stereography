@@ -1,0 +1,54 @@
+name: Deploy to GitHub Pages
+
+# Die Live-Seite wird nur bei einem Release-Tag aktualisiert: main kann geprüfte
+# Änderungen sammeln, das Veröffentlichen ist ein bewusster Schritt.
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate semver tag
+        if: github.event_name == 'push'
+        run: |
+          if [[ ! "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag '${GITHUB_REF_NAME}' ist kein Semver-Tag (vX.Y.Z)."
+            exit 1
+          fi
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Tests
+        run: node --test tests/*.test.mjs
+      - name: Assemble site
+        run: |
+          mkdir _site
+          cp -r index.html manifest.webmanifest sw.js LICENSE js lib icons _site/
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './_site'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

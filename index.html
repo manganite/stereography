@@ -45,7 +45,8 @@
   --dir1: #6b46c1;
   --dir2: #2f855a;
   --dir3: #a16207;
-  --fc0: #2b6cb0; --fc1: #c05621; --fc2: #2f855a; --fc3: #b83280; --fc4: #6b46c1; --fc5: #b7791f; --fc6: #2c7a7b; --fc7: #718096;
+  /* Formfarben der Beispielkristalle: bewusst verschieden von den Blickrichtungsfarben (dir1–3) */
+  --fc0: #2b6cb0; --fc1: #c53030; --fc2: #b83280; --fc3: #2c7a7b; --fc4: #dd6b20; --fc5: #7c8a12; --fc6: #8b5a2b; --fc7: #718096;
   --font-display: 'Source Serif 4', 'Georgia', 'Times New Roman', serif;
   --font-ui: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
@@ -57,7 +58,7 @@
     --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
     --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
     --dir1: #a78bfa; --dir2: #48bb78; --dir3: #e0b341;
-    --fc0: #63b3ed; --fc1: #f6ad55; --fc2: #68d391; --fc3: #f687b3; --fc4: #b794f4; --fc5: #ecc94b; --fc6: #4fd1c5; --fc7: #a0aec0;
+    --fc0: #63b3ed; --fc1: #fc8181; --fc2: #f687b3; --fc3: #4fd1c5; --fc4: #f6ad55; --fc5: #c3d04a; --fc6: #d6a26b; --fc7: #a0aec0;
     color-scheme: dark;
   }
 }
@@ -67,7 +68,7 @@
   --net: #4b5967; --ray: #f5a524; --crystal: #3f73a8; --crystal2: #4b5d70; --edge: #dbe6f0;
   --normal: #4fa3ff; --ax2: #48bb78; --ax3: #ecc94b; --ax4: #9f7aea; --ax6: #f56565;
   --dir1: #a78bfa; --dir2: #48bb78; --dir3: #e0b341;
-  --fc0: #63b3ed; --fc1: #f6ad55; --fc2: #68d391; --fc3: #f687b3; --fc4: #b794f4; --fc5: #ecc94b; --fc6: #4fd1c5; --fc7: #a0aec0;
+  --fc0: #63b3ed; --fc1: #fc8181; --fc2: #f687b3; --fc3: #4fd1c5; --fc4: #f6ad55; --fc5: #c3d04a; --fc6: #d6a26b; --fc7: #a0aec0;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -309,6 +310,7 @@ select {
 #form-select { font-size: 0.92rem; }
 .sel-hkl small { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size: 0.78rem; }
+footer a { color: inherit; }
 /* Telefon: eine Tafel oben angeheftet (Umschalter Stereogramm/3D), Bedienung darunter */
 @media (max-width: 719px) {
   .brand p { display: none; }
@@ -496,7 +498,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
   <section class="info card" id="info" aria-live="polite"></section>
 </main>
 
-<footer>Konventionen nach International Tables for Crystallography, Vol. A: a zeigt nach unten, b nach rechts, c zum Betrachter. Pole oberhalb der Projektionsebene als Punkt, unterhalb als Kreis. Hexagonale Achsen mit drei Indizes (hkl), wahlweise Miller-Bravais (hkil).</footer>
+<footer>Konventionen nach International Tables for Crystallography, Vol. A: a zeigt nach unten, b nach rechts, c zum Betrachter. Pole oberhalb der Projektionsebene als Punkt, unterhalb als Kreis. Hexagonale Achsen mit drei Indizes (hkl), wahlweise Miller-Bravais (hkil). <span id="app-version"></span></footer>
 
 <script type="module" src="js/main.js"></script>
 </body>

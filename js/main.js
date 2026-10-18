@@ -13,6 +13,7 @@ import { cross, normalize, mulVec } from './linalg.js';
 import { View3D } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
+import { initHelp, setTip, showTipAt, hideTip } from './help.js';
 
 const $ = (id) => document.getElementById(id);
 const deg = Math.PI / 180;
@@ -230,6 +231,27 @@ const FAMILIES = {
   '-42m': ['-42m', '-4m2'], '-6m2': ['-6m2', '-62m'],
 };
 const famOf = (id) => Object.keys(FAMILIES).find((k) => FAMILIES[k].includes(id)) || null;
+/** Unterschied der Aufstellungen (Tooltip). */
+const SETTING_TIPS = {
+  '321': '2-zählige Achsen entlang a₁, a₂, a₃.',
+  '312': '2-zählige Achsen zwischen den a-Achsen (um 30° gedreht).',
+  '3m1': 'Spiegelebenen senkrecht zu a₁, a₂, a₃.',
+  '31m': 'Spiegelebenen enthalten die a-Achsen (um 30° gedreht).',
+  '-3m1': 'Spiegelebenen senkrecht zu a₁, a₂, a₃, 2-zählige Achsen entlang der a-Achsen.',
+  '-31m': 'Spiegelebenen enthalten die a-Achsen, 2-zählige Achsen dazwischen.',
+  '-42m': '2-zählige Achsen entlang a und b, Spiegelebenen diagonal.',
+  '-4m2': 'Spiegelebenen senkrecht zu a und b, 2-zählige Achsen diagonal.',
+  '-6m2': 'Spiegelebenen senkrecht zu a₁, a₂, a₃.',
+  '-62m': '2-zählige Achsen entlang a₁, a₂, a₃.',
+};
+/** Text für ein HTML-Attribut (Tooltip-Inhalt mit Markup). */
+const attr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+/** Tooltip eines Punktgruppen-Buttons: Symbol, Schoenflies, System, Ordnung (als Attributwert). */
+function groupTip(id, extra) {
+  const g = POINT_GROUPS.find((x) => x.id === id);
+  const sf = g.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>');
+  return attr(`Punktgruppe ${hmHTML(g.hm)} (${sf}), ${g.system}, Ordnung ${buildPointGroup(id).order}.${extra ? ' ' + extra : ''}`);
+}
 
 function buildGroupPicker() {
   const box = $('pg-picker');
@@ -244,23 +266,23 @@ function buildGroupPicker() {
       if (sys === 'monoklin') {
         if (seen.has(g.hm)) continue;
         seen.add(g.hm);
-        btns += `<button class="pgb" data-mono="${g.hm}" type="button">${hmHTML(g.hm)}</button>`;
+        btns += `<button class="pgb" data-mono="${g.hm}" type="button" data-tip="${groupTip(g.id, 'Aufstellung mit eindeutiger Achse b oder c darunter.')}">${hmHTML(g.hm)}</button>`;
         continue;
       }
       const fam = famOf(g.id);
       if (!fam) {
-        btns += `<button class="pgb" data-id="${g.id}" type="button">${hmHTML(g.hm)}</button>`;
+        btns += `<button class="pgb" data-id="${g.id}" type="button" data-tip="${groupTip(g.id)}">${hmHTML(g.hm)}</button>`;
       } else if (!seen.has(fam)) {
         seen.add(fam);
-        btns += `<button class="pgb" data-fam="${fam}" type="button" title="Punktgruppe ${hmText(fam)}, zwei Aufstellungen">${hmHTML(fam)}</button>`;
+        btns += `<button class="pgb" data-fam="${fam}" type="button" data-tip="${groupTip(g.id, 'Zwei Aufstellungen, Auswahl darunter.')}">${hmHTML(fam)}</button>`;
         sets += `<span class="mono-axis setrow" data-setrow="${fam}" hidden><span>Aufstellung</span>${FAMILIES[fam].map((id) => {
           const m = groupOf(id);
-          return `<button class="pgb" data-id="${id}" type="button" title="Punktgruppe ${hmText(fam)}, Aufstellung ${hmText(m.setting || m.hm)}">${hmHTML(m.setting || m.hm)}</button>`;
+          return `<button class="pgb" data-id="${id}" type="button" data-tip="${attr(`Aufstellung ${hmHTML(m.setting || m.hm)}: ${SETTING_TIPS[id]}`)}">${hmHTML(m.setting || m.hm)}</button>`;
         }).join('')}</span>`;
       }
     }
     if (sys === 'monoklin') {
-      sets += `<span class="mono-axis setrow" data-setrow="mono" hidden><span>Aufstellung: eindeutige Achse</span><button class="pgb" data-axis="b" type="button" aria-label="Achse b">b</button><button class="pgb" data-axis="c" type="button" aria-label="Achse c">c</button></span>`;
+      sets += `<span class="mono-axis setrow" data-setrow="mono" hidden><span>Aufstellung: eindeutige Achse</span><button class="pgb" data-axis="b" type="button" aria-label="Achse b" data-tip="Eindeutige Achse b (Standard der International Tables): 2-zählige Achse bzw. Normale der Spiegelebene entlang b.">b</button><button class="pgb" data-axis="c" type="button" aria-label="Achse c" data-tip="Eindeutige Achse c: 2-zählige Achse bzw. Normale der Spiegelebene entlang c.">c</button></span>`;
     }
     row.innerHTML = `<span class="sys">${name}</span><div class="btns">${btns}${sets}</div>`;
     box.appendChild(row);
@@ -533,7 +555,7 @@ function updateDirChips(classes, col) {
   box.innerHTML = '<span class="cap">Blickrichtungen:</span>' + used.map((c) => {
     const on = !hide.has(c.pos);
     const dc = state.view.dirColors ? `style="--dc:${col.dir[c.pos]}"` : '';
-    return `<button type="button" data-pos="${c.pos}" aria-pressed="${on}" ${dc} title="${on ? 'Ausblenden' : 'Einblenden'}: Symmetrieelemente der Blickrichtung ${c.label.replace(/<[^>]+>/g, '')} in der 3D-Ansicht"><i class="sw"></i>${c.label}</button>`;
+    return `<button type="button" data-pos="${c.pos}" aria-pressed="${on}" ${dc} data-tip="${on ? 'Ausblenden' : 'Einblenden'}: Symmetrieelemente der Blickrichtung ${c.label.replace(/<[^>]+>/g, '')} in der 3D-Ansicht"><i class="sw"></i>${c.label}</button>`;
   }).join('');
   if (focused != null) box.querySelector(`button[data-pos="${focused}"]`)?.focus();
 }
@@ -732,6 +754,10 @@ function updateLegendPoly(C, col, fwClasses) {
 }
 
 const yesno = (b) => (b ? 'ja' : 'nein');
+// Längere Erläuterungen der Infobox einklappbar; der Zustand bleibt beim Neuzeichnen und Neuladen erhalten
+let explainOpen = false;
+try { explainOpen = localStorage.getItem('stereo-explain') === 'offen'; } catch { /* Speicher nicht verfügbar */ }
+const explain = (html) => (html ? `<details class="explain"${explainOpen ? ' open' : ''}><summary>Erläuterungen</summary>${html}</details>` : '');
 const FORM_TYPES_EIG = Object.fromEntries(Object.entries(FORM_TYPES).map(([k, v]) => [k, v.eig]));
 
 /** Name eines Achsensymbols, Mehrzahl mit n > 1. */
@@ -828,7 +854,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
     </dl>
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
-    ${classes.length ? '<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>' : ''}
+    ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
     ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>` : ''}`;
 }
 
@@ -957,8 +983,7 @@ function updateInfoPoly(C, col) {
     ${sel}
     ${aux}
     <p class="note">Quelle: ${ex.src}. Die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt, nicht gemessen; sie lassen sich unter „Gitter und Gestalt“ ändern.</p>
-    ${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}
-    ${habitNote}`;
+    ${explain(`${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}${habitNote}`)}`;
     return;
   }
   // Tracht und Habitus (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2)
@@ -998,9 +1023,9 @@ function updateInfoPoly(C, col) {
     ${twinNote}
     ${sel}
     ${aux}
-    ${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}
+    ${explain(`${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}
     <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern die Gestalt des Kristalls, aber nicht das Stereogramm.</p>
-    ${habitNote}`;
+    ${habitNote}`)}`;
 }
 
 /** ITA-Indexmuster als HTML (z. B. h0-hl → h0h̄l); bei drei Indizes ohne i. */
@@ -1090,6 +1115,26 @@ svg.addEventListener('click', (e) => {
   pickStack(stack);
 });
 
+// Laptop: Tooltip über einem Flächenpol mit Indizes, Poldistanz und Azimut (zusammenfallende Pole gemeinsam)
+svg.addEventListener('pointermove', (e) => {
+  if (e.pointerType !== 'mouse' || dragging || state.mode !== 'poly' || !current || current.kind !== 'poly') return;
+  const hits = document.elementsFromPoint(e.clientX, e.clientY).filter((el) => el.classList && el.classList.contains('hit'));
+  if (!hits.length) { hideTip(); return; }
+  const s = svgPoint(e);
+  const near = hits.map((el) => ({ el, d: Math.hypot(s.x - Number(el.getAttribute('cx')), s.y - Number(el.getAttribute('cy'))) })).sort((a, b) => a.d - b.d)[0].el;
+  const cx = Number(near.getAttribute('cx')), cy = Number(near.getAttribute('cy'));
+  const C = current.C, hex4 = C.hex && state.poly.bravais;
+  const lines = hits.filter((el) => Math.hypot(Number(el.getAttribute('cx')) - cx, Number(el.getAttribute('cy')) - cy) < 2)
+    .map((el) => C.faces[Number(el.dataset.idx)]).filter(Boolean).sort((f, g) => g.normal[2] - f.normal[2]) // oben zuerst
+    .map((f) => {
+      const { rho, phi } = poleAngles(f.normal);
+      const az = Math.hypot(f.normal[0], f.normal[1]) < 1e-6 ? '–' : phi.toFixed(1) + '°';
+      return `<b>${hklHTML(f.hkl, hex4)}</b>${f.role === 'aux' ? ' Ergänzungsform' : ''} · ρ ${rhoText(rho, 1)} · φ ${az}`;
+    });
+  if (lines.length) showTipAt(lines.join('<br>'), e.clientX, e.clientY);
+});
+svg.addEventListener('pointerleave', hideTip);
+
 /** Aktives Werkzeug und Auswahl je Modus (Punktgruppen: nur Winkel; Kristallformen: Zone/Winkel). */
 const curTool = () => (state.mode === 'pg' ? state.pg.tool : state.poly.tool);
 const getPicks = () => (state.mode === 'pg' ? state.pgSel : state.zoneSel);
@@ -1176,6 +1221,7 @@ function setMode(mode) {
 
 function init() {
   buildGroupPicker();
+  initHelp();
   refreshPolyControls();
 
   bindCheck('pg-elements', state.pg, 'showElements');
@@ -1278,8 +1324,80 @@ function init() {
   for (const b of document.querySelectorAll('.figswitch button')) b.addEventListener('click', () => setFig(b.dataset.fig));
   setFig(state.fig);
 
-  // Auf dem Telefon „Darstellung“ zunächst eingeklappt
-  if (window.matchMedia('(max-width: 719px)').matches) $('sec-view').open = false;
+  // Erläuterungen: offen/zu für alle Infoboxen merken (toggle bubbelt nicht, daher Capture)
+  $('info').addEventListener('toggle', (e) => {
+    if (!e.target.classList || !e.target.classList.contains('explain')) return;
+    explainOpen = e.target.open;
+    try { localStorage.setItem('stereo-explain', explainOpen ? 'offen' : 'zu'); } catch { /* ignorieren */ }
+  }, true);
+  // Abschnitte der Seitenleiste: zugeklappt starten, offen/zu je Abschnitt merken
+  const SECT_KEY = 'stereo-sections';
+  let sects = {};
+  try { sects = JSON.parse(localStorage.getItem(SECT_KEY) || '{}') || {}; } catch { sects = {}; }
+  for (const d of document.querySelectorAll('details.sect, details.subsect')) {
+    if (typeof sects[d.id] === 'boolean') d.open = sects[d.id];
+    d.addEventListener('toggle', () => {
+      if (d.dataset.quiet) { delete d.dataset.quiet; return; } // von der ⓘ-Erklärung vorübergehend geöffnet
+      sects[d.id] = d.open;
+      try { localStorage.setItem(SECT_KEY, JSON.stringify(sects)); } catch { /* ignorieren */ }
+    });
+  }
+  // „Weitere Optionen“ öffnen, wenn dort etwas eingeschaltet ist (z. B. über einen Link)
+  if (state.poly.faceSym || state.poly.bravais) $('sec-more').open = true;
+
+  // Erste Schritte: beim ersten Besuch ohne Link sichtbar, wegklickbar, über „?“ wieder zu öffnen
+  const INTRO_KEY = 'stereo-intro';
+  const showIntro = (on) => { $('intro').hidden = !on; $('help-open').setAttribute('aria-expanded', String(on)); };
+  let introClosed = false;
+  try { introClosed = localStorage.getItem(INTRO_KEY) === 'zu'; } catch { /* Speicher nicht verfügbar */ }
+  showIntro(!introClosed && !hashActive);
+  $('intro-close').addEventListener('click', () => {
+    showIntro(false);
+    try { localStorage.setItem(INTRO_KEY, 'zu'); } catch { /* ignorieren */ }
+  });
+  $('help-open').addEventListener('click', () => {
+    const on = $('intro').hidden;
+    showIntro(on);
+    if (on) { $('intro').closest('.side').scrollTop = 0; $('intro').scrollIntoView({ block: 'nearest' }); }
+  });
+  const isPhone = () => window.matchMedia('(max-width: 719px)').matches;
+  const afterRender = (fn) => requestAnimationFrame(() => requestAnimationFrame(fn));
+  const galenaShown = () => state.mode === 'poly' && state.poly.example === 'galenit';
+  const loadGalena = () => {
+    setExample('galenit');
+    state.poly.tool = null; state.zoneSel = [];
+    state.poly.labels = true; $('poly-labels').checked = true;
+    for (const [id, key] of [['v-sphere', 'sphere'], ['v-plane', 'plane'], ['v-rays', 'rays'], ['v-normals', 'normals']]) {
+      state.view[key] = true; $(id).checked = true;
+    }
+    setMode('poly');
+  };
+  const selectFace = (hkl) => {
+    const C = current && current.kind === 'poly' ? current.C : null;
+    const i = C ? C.faces.findIndex((f) => f.role === 'main' && f.hkl.join() === hkl.join()) : -1;
+    if (i >= 0) { state.selected = i; render(); }
+  };
+  const STEPS = {
+    1: () => { loadGalena(); view3d.setView('oblique'); if (isPhone()) setFig('3d'); },
+    2: () => { if (!galenaShown()) loadGalena(); afterRender(() => selectFace([0, 0, 1])); if (isPhone()) setFig('stereo'); },
+    3: () => {
+      if (!galenaShown()) loadGalena();
+      afterRender(() => selectFace([0, 0, 1]));
+      view3d.setView('side'); if (isPhone()) setFig('3d');
+    },
+    4: () => {
+      if (!galenaShown()) loadGalena();
+      state.poly.frame = true; $('poly-frame').checked = true;
+      render(); if (isPhone()) setFig('stereo');
+    },
+  };
+  $('intro').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-step]');
+    if (!b) return;
+    STEPS[b.dataset.step]();
+    b.closest('li').classList.add('done');
+  });
+
 
   $('copy-link').addEventListener('click', async () => {
     const btn = $('copy-link');
@@ -1291,7 +1409,7 @@ function init() {
 
   $('reset-all').addEventListener('click', () => {
     resetting = true;
-    try { localStorage.removeItem('stereo-state'); } catch { /* ignorieren */ }
+    try { for (const k of ['stereo-state', 'stereo-intro', 'stereo-sections', 'stereo-explain']) localStorage.removeItem(k); } catch { /* ignorieren */ }
     location.replace(location.pathname + location.search);
   });
 

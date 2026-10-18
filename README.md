@@ -24,6 +24,7 @@ Interaktive Lern-App für die Kristallographie-Vorlesung: Stereogramme der 32 kr
 - **Links auf Ansichten:** Der Zustand steht lesbar in der Adresse (z. B. `#m=pg&g=4/mmm&rho=40&az=30`); „Link kopieren“ kopiert sie, etwa für Folien. Ein Link hat Vorrang vor dem gespeicherten Zustand.
 - **Verzerrung in zwei Stufen:** Standardmässig sind nur die Gitterparameter frei, die das Kristallsystem zulässt; die Symmetrie bleibt erhalten. Mit „Symmetrie brechen“ sind alle Parameter frei; die App bestimmt dann die verbleibende Punktgruppe und zeigt, in welche Formen die gewählte Form zerfällt (farbig).
 - **Blickrichtungen:** Die Symmetrieelemente werden den Positionen des vollen Hermann-Mauguin-Symbols zugeordnet (Klassen äquivalenter Richtungen, z. B. in m3̄m ⟨100⟩, ⟨111⟩, ⟨110⟩) und auf Wunsch in deren Farbe gezeichnet, im Stereogramm, in der 3D-Ansicht, im vollen Symbol und in der nach Blickrichtungen gegliederten Liste der Infobox. In der 3D-Ansicht lassen sich einzelne Blickrichtungen ausblenden. Ohne Farben entspricht das Stereogramm der schwarzen ITA-Darstellung.
+- **Hilfen für den Einstieg:** Karte „Erste Schritte“ beim ersten Besuch (über „?“ wieder zu öffnen), Tooltips am Laptop, ⓘ-Erklärungen je Abschnitt auf Touch-Geräten, Tooltip mit (hkl), ρ und φ über jedem Flächenpol. Selten gebrauchte Optionen liegen in zugeklappten Abschnitten.
 - **3D-Konstruktion,** gekoppelt an das Stereogramm: Projektionskugel, Flächennormalen, Projektionsstrahlen zum Süd- bzw. Nordpol und das Stereogramm in der Äquatorebene.
 
 ## Nutzung
@@ -86,6 +87,7 @@ Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Mod
 | `js/stereogram.js` | SVG-Stereogramm mit ITA-Symbolen und Wulffschem Netz |
 | `js/view3d.js` | 3D-Ansicht (three.js) |
 | `js/main.js` | Zustand und Bedienung |
+| `js/help.js` | Tooltip-Texte, Tooltips und ⓘ-Erklärungen |
 | `js/version.js` | Versionsnummer der App |
 | `sw.js` | Service Worker für den Offline-Betrieb |
 | `tests/` | Automatische Tests (Node, ohne Abhängigkeiten) |

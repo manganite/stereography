@@ -139,8 +139,20 @@ select {
 .pgb:hover { border-color: var(--muted); }
 .pgb[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .mono-axis { display: flex; align-items: center; gap: 4px; font-size: 0.74rem; color: var(--muted); width: 100%; margin-top: 2px; }
-.mono-axis span { margin-right: 4px; }
+.mono-axis > span:first-child { margin-right: 4px; }
 .mono-axis button { padding: 2px 10px; min-width: 32px; font-style: italic; }
+.setrow { flex-wrap: wrap; }
+.setrow > span:first-child { flex-basis: 100%; }
+.setrow button { font-style: normal; }
+.stereo-wrap { position: relative; }
+.stereo-tools { position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 6px; }
+.stereo-tools button {
+  display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+  border-radius: 7px; padding: 4px 9px; font-size: 0.8rem; cursor: pointer; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}
+.stereo-tools button:hover { border-color: var(--muted); }
+.stereo-tools button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+.lg .sym-icon { flex: none; }
 .check { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 0.92rem; }
 .check input { width: 17px; height: 17px; accent-color: var(--accent); margin: 0; }
 .range { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; }
@@ -180,7 +192,7 @@ select {
 /* Touch: grössere Ziele (Richtwert 44 pt; hier mindestens 40 px) */
 @media (pointer: coarse) {
   .pgb { min-height: 40px; min-width: 44px; }
-  .tools button, .seg button, .linkbtn, .figswitch button, .tabs button { min-height: 40px; }
+  .tools button, .seg button, .linkbtn, .figswitch button, .tabs button, .stereo-tools button { min-height: 40px; }
   .check { min-height: 40px; }
   .check input { width: 20px; height: 20px; }
   select { min-height: 44px; }
@@ -269,6 +281,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
   #stereo, #view3d { width: min(100%, 38svh); margin-inline: auto; }
   .legend { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; padding: 5px 10px 6px; font-size: 0.75rem; scrollbar-width: none; }
   .panel-foot { display: none; }
+  .legend .lg.hint { display: none; }
   .wide-only { display: none; }
   .panel-head { gap: 6px; }
   .figswitch button { padding: 5px 8px; }
@@ -335,7 +348,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
             <label for="pg-phi">Azimut φ (ab a, im Gegenuhrzeigersinn)</label><output id="pg-phi-out"></output>
             <input type="range" id="pg-phi" min="0" max="359.5" step="0.5">
           </div>
-          <p class="hintline">Den markierten Pol im Stereogramm ziehen oder an eine Stelle tippen.</p>
+          <p class="hintline">Im Stereogramm: Ausgangspol ziehen oder an eine Stelle tippen; Ausgangspol antippen wechselt die Halbkugel.</p>
         </div>
       </details>
 
@@ -388,7 +401,6 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       <details class="sect" id="sec-adv" hidden>
         <summary>Erweitert <span class="badge" id="adv-badge"></span></summary>
         <div class="stack">
-          <label class="check"><input type="checkbox" id="poly-zone">Zonen bestimmen (zwei Pole antippen)</label>
           <label class="check"><input type="checkbox" id="poly-broken">Symmetrie brechen (alle Gitterparameter frei)</label>
           <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
         </div>
@@ -404,7 +416,12 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
         <span class="t">Stereogramm<small id="stereo-sub">Blick ∥ c</small></span>
         <div class="tools export"><button id="copy-svg" type="button" title="Stereogramm als SVG in die Zwischenablage kopieren">SVG kopieren</button><button id="save-svg" type="button" title="Stereogramm als SVG-Datei speichern">Speichern</button></div>
       </div>
-      <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
+      <div class="stereo-wrap">
+        <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
+        <div class="stereo-tools" id="stereo-tools" role="toolbar" aria-label="Werkzeuge" hidden>
+          <button id="zone-btn" type="button" aria-pressed="false" title="Zwei Pole antippen: Zonenkreis, Zonenachse und Flächen der Zone"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
+        </div>
+      </div>
       <div class="legend" id="legend"></div>
     </figure>
 

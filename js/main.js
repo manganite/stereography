@@ -23,7 +23,7 @@ const touchRadius = (minUnits, px) => (coarse.matches ? Math.max(minUnits, px * 
 // ------------------------------------------------------------------ Zustand
 const state = {
   mode: 'pg',
-  pg: { id: 'mm2', monoAxis: 'b', showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false },
+  pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false },
   poly: {
     system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
     size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: true, zoneMode: false,
@@ -65,36 +65,55 @@ function palette() {
 const FONT = "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif";
 
 // ------------------------------------------------------------------ Bedienelemente aufbauen
+/** Punktgruppen mit zwei Aufstellungen in ITA: ein Button je Punktgruppe, die Aufstellung darunter. */
+const FAMILIES = {
+  '32': ['321', '312'], '3m': ['3m1', '31m'], '-3m': ['-3m1', '-31m'],
+  '-42m': ['-42m', '-4m2'], '-6m2': ['-6m2', '-62m'],
+};
+const famOf = (id) => Object.keys(FAMILIES).find((k) => FAMILIES[k].includes(id)) || null;
+
 function buildGroupPicker() {
   const box = $('pg-picker');
   box.innerHTML = '';
   for (const sys of SYSTEMS) {
     const row = document.createElement('div');
     row.className = 'sysrow';
-    const name = (sys[0].toUpperCase() + sys.slice(1)).replace('Orthorhombisch', 'Ortho\u00ADrhombisch');
-    let btns = '';
+    const name = (sys[0].toUpperCase() + sys.slice(1)).replace('Orthorhombisch', 'Ortho­rhombisch');
+    let btns = '', sets = '';
     const seen = new Set();
     for (const g of POINT_GROUPS.filter((x) => x.system === sys)) {
       if (sys === 'monoklin') {
         if (seen.has(g.hm)) continue;
         seen.add(g.hm);
         btns += `<button class="pgb" data-mono="${g.hm}" type="button">${hmHTML(g.hm)}</button>`;
-      } else {
-        const label = g.setting || g.hm;
-        btns += `<button class="pgb" data-id="${g.id}" type="button" title="${g.setting ? 'Punktgruppe ' + hmText(g.hm) + ', Aufstellung ' + hmText(g.setting) : ''}">${hmHTML(label)}</button>`;
+        continue;
+      }
+      const fam = famOf(g.id);
+      if (!fam) {
+        btns += `<button class="pgb" data-id="${g.id}" type="button">${hmHTML(g.hm)}</button>`;
+      } else if (!seen.has(fam)) {
+        seen.add(fam);
+        btns += `<button class="pgb" data-fam="${fam}" type="button" title="Punktgruppe ${hmText(fam)}, zwei Aufstellungen">${hmHTML(fam)}</button>`;
+        sets += `<span class="mono-axis setrow" data-setrow="${fam}" hidden><span>Aufstellung</span>${FAMILIES[fam].map((id) => {
+          const m = groupOf(id);
+          return `<button class="pgb" data-id="${id}" type="button" title="Punktgruppe ${hmText(fam)}, Aufstellung ${hmText(m.setting || m.hm)}">${hmHTML(m.setting || m.hm)}</button>`;
+        }).join('')}</span>`;
       }
     }
     if (sys === 'monoklin') {
-      btns += `<span class="mono-axis"><span>eindeutige Achse</span><button class="pgb" data-axis="b" type="button" aria-label="Achse b">b</button><button class="pgb" data-axis="c" type="button" aria-label="Achse c">c</button></span>`;
+      sets += `<span class="mono-axis"><span>eindeutige Achse</span><button class="pgb" data-axis="b" type="button" aria-label="Achse b">b</button><button class="pgb" data-axis="c" type="button" aria-label="Achse c">c</button></span>`;
     }
-    row.innerHTML = `<span class="sys">${name}</span><div class="btns">${btns}</div>`;
+    row.innerHTML = `<span class="sys">${name}</span><div class="btns">${btns}${sets}</div>`;
     box.appendChild(row);
   }
   box.addEventListener('click', (e) => {
     const b = e.target.closest('button');
     if (!b) return;
     const cur = groupOf(state.pg.id);
-    if (b.dataset.id) state.pg.id = b.dataset.id;
+    if (b.dataset.fam) {
+      const pref = state.pg.famPref[b.dataset.fam];
+      state.pg.id = FAMILIES[b.dataset.fam].includes(pref) ? pref : FAMILIES[b.dataset.fam][0];
+    } else if (b.dataset.id) state.pg.id = b.dataset.id;
     else if (b.dataset.mono) state.pg.id = monoId(b.dataset.mono, state.pg.monoAxis);
     else if (b.dataset.axis) {
       state.pg.monoAxis = b.dataset.axis;
@@ -110,9 +129,14 @@ const monoId = (hm, axis) => POINT_GROUPS.find((g) => g.system === 'monoklin' &&
 function syncPicker() {
   const g = groupOf(state.pg.id);
   if (g.system === 'monoklin') state.pg.monoAxis = g.setting.endsWith('c') ? 'c' : 'b';
+  const fam = famOf(state.pg.id);
+  if (!state.pg.famPref || typeof state.pg.famPref !== 'object') state.pg.famPref = {};
+  if (fam) state.pg.famPref[fam] = state.pg.id;
+  for (const r of document.querySelectorAll('#pg-picker [data-setrow]')) r.hidden = r.dataset.setrow !== fam;
   for (const b of document.querySelectorAll('#pg-picker button')) {
     let on = false;
-    if (b.dataset.id) on = b.dataset.id === state.pg.id;
+    if (b.dataset.fam) on = b.dataset.fam === fam;
+    else if (b.dataset.id) on = b.dataset.id === state.pg.id;
     else if (b.dataset.mono) on = g.system === 'monoklin' && g.hm === b.dataset.mono;
     else if (b.dataset.axis) on = (state.pg.monoAxis || 'b') === b.dataset.axis;
     b.setAttribute('aria-pressed', String(on));
@@ -295,7 +319,7 @@ function renderPoly() {
 
 /** Anzahl aktiver Optionen im eingeklappten Bereich „Erweitert“. */
 function advActive() {
-  return [state.poly.zoneMode, state.poly.broken, state.poly.bravais && isHexSystem(state.poly.system)].filter(Boolean).length;
+  return [state.poly.broken, state.poly.bravais && isHexSystem(state.poly.system)].filter(Boolean).length;
 }
 function updateAdvBadge() {
   const n = advActive();
@@ -315,17 +339,37 @@ function render() {
 }
 
 // ------------------------------------------------------------------ Legende und Info
+/** Kurzbeschreibung eines Achsensymbols für die Legende. */
+function axisLegendText(symbol, centre) {
+  const n = symbol.replace('-', '');
+  const base = symbol.startsWith('-') ? `${hmHTML(symbol)}-Achse` : `${n}-zählige Achse`;
+  return base + (centre ? ' mit Inversionszentrum' : '');
+}
+
 function updateLegendPG(info, col) {
   const items = [];
   if (state.pg.showObject) {
     items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="4" fill="${col.ink}"/></svg>Pol oben</span>`);
     items.push(`<span class="lg"><svg width="16" height="16" viewBox="-8 -8 16 16"><circle r="6" fill="none" stroke="${col.ink}" stroke-width="1.6"/></svg>Pol unten</span>`);
     items.push(`<span class="lg"><svg width="16" height="16" viewBox="-8 -8 16 16"><circle r="6" fill="none" stroke="${col.ink}" stroke-width="1.6"/><circle r="4" fill="${col.ink}"/></svg>beide</span>`);
+    items.push(`<span class="lg"><svg width="20" height="20" viewBox="-10 -10 20 20"><circle r="8" fill="none" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="2.6 2.2"/><circle r="3" fill="${col.ink}"/></svg>Ausgangspol</span>`);
   }
-  if (state.pg.showElements && info.mirrors.length) items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.mirror}" stroke-width="3.2" stroke-linecap="round"/></svg>Spiegelebene</span>`);
+  if (state.pg.showElements) {
+    if (info.mirrors.length) items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.mirror}" stroke-width="3.2" stroke-linecap="round"/></svg>Spiegelebene</span>`);
+    const icol = { ...col, axis: col.ink, paper: col.paper };
+    for (const a of elementSummary(info).axes) {
+      items.push(`<span class="lg">${symbolIcon(a.symbol, a.centre, icol, 18)}${axisLegendText(a.symbol, a.centre)}</span>`);
+    }
+    if (current && current.scene && current.scene.centreAtOrigin) {
+      items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="3.6" fill="${col.paper}" stroke="${col.ink}" stroke-width="1.3"/></svg>Inversionszentrum</span>`);
+    }
+  }
   if (state.pg.colorful && state.pg.showObject) {
     items.push(`<span class="lg"><i class="sw" style="background:${col.upper}"></i>gleiche Händigkeit</span>`);
     items.push(`<span class="lg"><i class="sw" style="background:${col.accent2}"></i>Spiegelbild</span>`);
+  }
+  if (state.pg.showObject) {
+    items.push(`<span class="lg hint"><span class="only-fine">Ausgangspol ziehen oder Stelle anklicken; Ausgangspol anklicken: Halbkugel wechseln</span><span class="only-coarse">Ausgangspol ziehen oder Stelle antippen; Ausgangspol antippen: Halbkugel wechseln</span></span>`);
   }
   $('legend').innerHTML = items.join('');
 }
@@ -340,7 +384,7 @@ function updateLegendPoly(C, col) {
     items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="5 4"/></svg>untere Hälfte</span>`);
     items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><path d="M-5,-5L5,5M-5,5L5,-5" stroke="${col.accent}" stroke-width="2"/></svg>Zonenachse</span>`);
   }
-  items.push(state.poly.zoneMode ? '<span class="lg hint">Zwei Pole antippen: Zone bestimmen</span>' : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben</span>');
+  items.push(state.poly.zoneMode ? '<span class="lg hint">Zwei Pole antippen: Zone bestimmen (Werkzeug „Zone“ beendet)</span>' : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben · Werkzeug „Zone“: Zonen bestimmen</span>');
   $('legend').innerHTML = items.join('');
 }
 
@@ -369,7 +413,7 @@ function updateInfoPG(info, orb, col) {
     </dl>
     <h3>Symmetrieelemente</h3>
     <ul class="elems">${elems.join('')}</ul>
-    ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol.</p>` : ''}`;
+    ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → 180° − ρ).</p>` : ''}`;
 }
 
 function poleAngles(n) {
@@ -502,31 +546,44 @@ function nearGenerator(e) {
   const s = svgPoint(e.touches ? e.touches[0] : e);
   return Math.hypot(s.x - q.x, s.y - q.y) < touchRadius(30, 28);
 }
-let dragging = false, moved = false;
+/** Ausgangspol auf die andere Halbkugel spiegeln (ρ → 180° − ρ, φ bleibt): Punkt ↔ Kreis. */
+function toggleHemisphere() {
+  state.pg.theta = 180 - state.pg.theta;
+  syncSliders();
+  render();
+}
+// Ausgangspol: ziehen verschiebt ihn, antippen ohne Bewegung wechselt die Halbkugel.
+// Mit der Maus setzt ein Klick neben den Pol ihn an diese Stelle.
+let dragging = false, moved = false, onGen = false, downAt = null;
 svg.addEventListener('touchstart', (e) => { if (nearGenerator(e)) e.preventDefault(); }, { passive: false });
 svg.addEventListener('pointerdown', (e) => {
-  moved = false;
+  moved = false; onGen = false;
   if (state.mode !== 'pg' || !state.pg.showObject) return;
-  if (e.pointerType === 'mouse' || nearGenerator(e)) {
+  downAt = [e.clientX, e.clientY];
+  onGen = nearGenerator(e);
+  if (e.pointerType === 'mouse' || onGen) {
     dragging = true;
     svg.setPointerCapture(e.pointerId);
-    const s = svgPoint(e);
-    setPoleFromScreen(s.x, s.y);
+    if (!onGen) { const s = svgPoint(e); setPoleFromScreen(s.x, s.y); }
   }
 });
 svg.addEventListener('pointermove', (e) => {
   if (!dragging) return;
+  if (!moved && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 4) return;
   moved = true;
   const s = svgPoint(e);
   setPoleFromScreen(s.x, s.y);
 });
-const endDrag = () => { dragging = false; };
-svg.addEventListener('pointerup', endDrag);
-svg.addEventListener('pointercancel', endDrag);
+svg.addEventListener('pointerup', () => {
+  // Hier statt im click-Ereignis: nach touchstart.preventDefault() feuert kein click.
+  if (dragging && onGen && !moved && state.mode === 'pg') toggleHemisphere();
+  dragging = false;
+});
+svg.addEventListener('pointercancel', () => { dragging = false; });
 svg.addEventListener('click', (e) => {
   const s = svgPoint(e);
   if (state.mode === 'pg') {
-    if (!state.pg.showObject || moved) return;
+    if (!state.pg.showObject || moved || onGen) return;
     if (Math.hypot(s.x - C, s.y - C) <= 212) setPoleFromScreen(s.x, s.y);
     return;
   }
@@ -586,7 +643,7 @@ function setMode(mode) {
   $('tab-pg').setAttribute('aria-selected', String(mode === 'pg'));
   $('tab-poly').setAttribute('aria-selected', String(mode === 'poly'));
   for (const id of ['ctl-pg', 'ctl-pg-opts']) $(id).hidden = mode !== 'pg';
-  for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-open', 'sec-adv', 'row-normals', 'row-size']) $(id).hidden = mode !== 'poly';
+  for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-open', 'sec-adv', 'row-normals', 'row-size', 'stereo-tools']) $(id).hidden = mode !== 'poly';
   $('stereo-sub').textContent = 'Blick ∥ c';
   render();
 }
@@ -639,8 +696,14 @@ function init() {
   bindCheck('poly-lower', state.poly, 'showLower');
   bindCheck('poly-frame', state.poly, 'frame');
   bindCheck('poly-facesym', state.poly, 'faceSym');
-  bindCheck('poly-zone', state.poly, 'zoneMode');
-  $('poly-zone').addEventListener('change', () => { state.zoneSel = []; state.selected = null; });
+  // Werkzeug „Zone“ am Stereogramm
+  const syncZoneBtn = () => $('zone-btn').setAttribute('aria-pressed', String(!!state.poly.zoneMode));
+  $('zone-btn').addEventListener('click', () => {
+    state.poly.zoneMode = !state.poly.zoneMode;
+    state.zoneSel = []; state.selected = null;
+    syncZoneBtn(); render();
+  });
+  syncZoneBtn();
 
   bindCheck('v-wulff', state.view, 'wulff');
   bindRange('v-wulffrot', state.view, 'wulffRot', (v) => v.toFixed(0) + '°');

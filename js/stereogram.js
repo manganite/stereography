@@ -98,7 +98,7 @@ function symbolAngle(symbol, q, alongZ) {
 /** Kleines eigenständiges SVG eines Achsensymbols (für Legenden), Lage wie Achse ⊥ Projektionsebene. */
 export function symbolIcon(symbol, centre, col, size = 26) {
   const a = symbolAngle(symbol, { x: C, y: C }, true);
-  return `<svg class="sym-icon" viewBox="-14 -14 28 28" width="${size}" height="${size}" aria-hidden="true"><g transform="rotate(${a})">${axisSymbolSVG(symbol, centre, col)}</g></svg>`;
+  return `<svg class="sym-icon" viewBox="-21 -21 42 42" width="${size}" height="${size}" aria-hidden="true"><g transform="rotate(${a})">${axisSymbolSVG(symbol, centre, col)}</g></svg>`;
 }
 
 /** Punkte auf dem kürzeren Grosskreisbogen von a nach b (Einheitsvektoren); bei a ≈ −b ein beliebiger Halbkreis. */
@@ -183,9 +183,31 @@ function wulffNet(rot, col) {
     <path d="${main}" stroke="${col.net}" stroke-width="0.8"/></g>`;
 }
 
-function textWithBars(parts, x, y, attrs) {
-  const ts = parts.map((p) => (p.bar ? `<tspan text-decoration="overline">${p.t}</tspan>` : `<tspan>${p.t}</tspan>`)).join('');
-  return `<text x="${f(x)}" y="${f(y)}" ${attrs}>${ts}</text>`;
+/**
+ * Text mit Querstrichen über einzelnen Teilen. Die Striche werden als eigene Rechtecke knapp über
+ * den Ziffern gezeichnet (text-decoration: overline sitzt auf Höhe der Oberlänge, deutlich zu hoch).
+ * Breiten nach IBM Plex Sans (Ziffern tabellarisch 0,6 em); o = { fs, anchor, italic, fill }.
+ */
+const GLYPH_W = { ' ': 0.236, '[': 0.32, ']': 0.32, '(': 0.335, ')': 0.335, '{': 0.33, '}': 0.33 };
+const glyphW = (ch) => GLYPH_W[ch] ?? 0.6;
+function textWithBars(parts, x, y, attrs, o) {
+  const ts = parts.map((p) => `<tspan>${p.t}</tspan>`).join('');
+  let out = `<text x="${f(x)}" y="${f(y)}" ${attrs}>${ts}</text>`;
+  if (!parts.some((p) => p.bar)) return out;
+  const fs = o.fs;
+  const widths = parts.map((p) => [...p.t].reduce((s, ch) => s + glyphW(ch), 0) * fs);
+  const total = widths.reduce((s, w) => s + w, 0);
+  let x0 = o.anchor === 'middle' ? x - total / 2 : o.anchor === 'end' ? x - total : x;
+  const slant = o.italic ? 0.13 * fs : 0;
+  const h = Math.max(1, 0.075 * fs);
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i].bar) {
+      const inset = 0.09 * fs;
+      out += `<rect x="${f(x0 + inset + slant)}" y="${f(y - 0.82 * fs - h)}" width="${f(widths[i] - 2 * inset)}" height="${f(h)}" fill="${o.fill}"/>`;
+    }
+    x0 += widths[i];
+  }
+  return out;
 }
 
 /**
@@ -215,7 +237,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   for (const ax of scene.axes || []) {
     if (Math.abs(ax.dir[2]) >= 1e-6) continue;
     const a = project(ax.dir), b = project(scale(ax.dir, -1));
-    addPath((!scene.faint && ax.color) || fc.ink, `M ${f(a.x)},${f(a.y)} L ${f(b.x)},${f(b.y)}`);
+    addPath(ax.color || fc.ink, `M ${f(a.x)},${f(a.y)} L ${f(b.x)},${f(b.y)}`);
   }
   for (const n of scene.zones || []) {
     const p = greatCirclePath(n);
@@ -227,12 +249,12 @@ export function buildSVG(scene, { standalone = false } = {}) {
   const mirrBy = new Map();
   for (const m of scene.mirrors || []) {
     const n = Array.isArray(m) ? m : m.n;
-    const color = (!Array.isArray(m) && !scene.faint && m.color) || fc.mirror;
+    const color = (!Array.isArray(m) && m.color) || fc.mirror;
     const p = greatCirclePath(n);
     if (p) mirrBy.set(color, (mirrBy.get(color) || '') + p + ' ');
   }
   for (const [color, d] of mirrBy) fw.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="${scene.faint ? 2 : 2.8}" stroke-linecap="round" stroke-linejoin="round"/>`);
-  if (scene.primitiveBold) fw.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${(!scene.faint && scene.primitiveColor) || fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}"/>`);
+  if (scene.primitiveBold) fw.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${scene.primitiveColor || fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}"/>`);
   out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${col.ink}" stroke-width="1.2"/>`);
   const centreTaken = scene.centreAtOrigin || (scene.axes || []).some((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
   if (!centreTaken) out.push(`<g stroke="${col.ink}" stroke-width="1"><line x1="${C - 5}" y1="${C}" x2="${C + 5}" y2="${C}"/><line x1="${C}" y1="${C - 5}" x2="${C}" y2="${C + 5}"/></g>`);
@@ -265,7 +287,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   }
   const tr = (P) => `translate(${f(P.q.x)},${f(P.q.y)}) rotate(${f(P.ang)})${scene.faint ? ' scale(0.8)' : ''}`;
   for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, false, fc, true)}</g>`);
-  for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, !scene.faint && P.ax.color ? { ...fc, axis: P.ax.color } : fc)}</g>`);
+  for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, P.ax.color ? { ...fc, axis: P.ax.color } : fc)}</g>`);
   if (scene.centreAtOrigin) fw.push(`<circle cx="${C}" cy="${C}" r="${f(SYM * 0.38)}" fill="${col.paper}" stroke="${fc.axis}" stroke-width="1.4"/>`);
   if (fw.length) out.push(`<g${scene.faint ? ' opacity="0.55"' : ''}>${fw.join('')}</g>`);
 
@@ -283,7 +305,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
     const q = project(scene.zone.axis);
     const s = 6;
     out.push(`<g stroke="${col.accent}" stroke-width="2.2" stroke-linecap="round"><line x1="${f(q.x - s)}" y1="${f(q.y - s)}" x2="${f(q.x + s)}" y2="${f(q.y + s)}"/><line x1="${f(q.x - s)}" y1="${f(q.y + s)}" x2="${f(q.x + s)}" y2="${f(q.y - s)}"/></g>`);
-    if (scene.zone.label) out.push(textWithBars(scene.zone.label, q.x + 10, q.y + 18, `font-family="${font}" font-size="13.5" font-weight="600" fill="${col.accent}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"`));
+    if (scene.zone.label) out.push(textWithBars(scene.zone.label, q.x + 10, q.y + 18, `font-family="${font}" font-size="13.5" font-weight="600" fill="${col.accent}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"`, { fs: 13.5, anchor: 'start', fill: col.accent }));
   }
 
   // Winkel: Grosskreisbogen zwischen zwei Polen; Abschnitte auf der unteren Halbkugel gestrichelt
@@ -351,7 +373,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
     else if (Math.abs(dy) <= 0.35) by -= ((cl.items.length - 1) * lh) / 2;
     cl.items.forEach((P, k) => {
       const fill = P.selected ? col.accent : P.aux ? col.muted : P.q.upper ? col.ink : col.muted;
-      out.push(textWithBars(P.label, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="${f(fs)}" fill="${fill}"${P.selected ? ' font-weight="600"' : ''} text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`));
+      out.push(textWithBars(P.label, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="${f(fs)}" fill="${fill}"${P.selected ? ' font-weight="600"' : ''} text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`, { fs, anchor, italic: !P.q.upper, fill }));
     });
   }
   // Treffer-Flächen für Klick/Tippen

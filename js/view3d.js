@@ -331,8 +331,24 @@ export class View3D {
       });
       if (opts.showRays) this._rays(data.orbit.map((o) => o.p), col);
     }
+    if (opts.arc) this._arc(opts.arc, col);
     if (opts.showAxes) this._axisArrows(data.crystalAxes, col);
     this.requestRender();
+  }
+
+  /** Grosskreisbogen zwischen zwei Polen auf der Lagekugel mit Winkelangabe (Werkzeug Winkel). */
+  _arc(arc, col) {
+    const pts = arcPoints(arc.a, arc.b, 96).map((p) => V(p).multiplyScalar(1.004));
+    const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, 0.014, 8, false), new THREE.MeshBasicMaterial({ color: new THREE.Color(col.accent) }));
+    this.content.add(tube);
+    if (arc.label) {
+      const el = document.createElement('div');
+      el.className = 'lbl3d lbl-angle';
+      el.textContent = arc.label;
+      const lab = new THREE.CSS2DObject(el);
+      lab.position.copy(pts[Math.floor(pts.length / 2)].clone().multiplyScalar(1.12));
+      this.content.add(lab);
+    }
   }
 
   /** Polyeder-Szene. Flächen mit hidden (offene Form) werden nicht gezeichnet. */
@@ -451,20 +467,7 @@ export class View3D {
         }
       });
     }
-    if (opts.arc) {
-      // Winkel: Grosskreisbogen zwischen den beiden Polen auf der Lagekugel
-      const pts = arcPoints(opts.arc.a, opts.arc.b, 96).map((p) => V(p).multiplyScalar(1.004));
-      const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, 0.014, 8, false), new THREE.MeshBasicMaterial({ color: c(col.accent) }));
-      this.content.add(tube);
-      if (opts.arc.label) {
-        const el = document.createElement('div');
-        el.className = 'lbl3d lbl-angle';
-        el.textContent = opts.arc.label;
-        const lab = new THREE.CSS2DObject(el);
-        lab.position.copy(pts[Math.floor(pts.length / 2)].clone().multiplyScalar(1.12));
-        this.content.add(lab);
-      }
-    }
+    if (opts.arc) this._arc(opts.arc, col);
     if (opts.showRays) this._rays(vis.map(({ f }) => f.normal), col);
     if (opts.showAxes) this._axisArrows(poly.axes, col);
     this.requestRender();

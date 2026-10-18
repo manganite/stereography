@@ -113,6 +113,7 @@ function buildGroupPicker() {
     const b = e.target.closest('button');
     if (!b) return;
     const cur = groupOf(state.pg.id);
+    state.pg.hideDirs = []; // ausgeblendete Blickrichtungen gelten nur für die jeweilige Gruppe
     if (b.dataset.fam) {
       const pref = state.pg.famPref[b.dataset.fam];
       state.pg.id = FAMILIES[b.dataset.fam].includes(pref) ? pref : FAMILIES[b.dataset.fam][0];
@@ -267,14 +268,16 @@ function renderPG() {
 function updateDirChips(classes, col) {
   const box = $('v3d-dirs');
   const used = classes.filter((c) => c.axes.length || c.mirrors.length);
-  box.hidden = state.mode !== 'pg' || !state.pg.showElements || used.length < 2;
+  box.hidden = state.mode !== 'pg' || !state.pg.showElements || used.length < 1;
   if (box.hidden) { box.innerHTML = ''; return; }
   const hide = new Set(state.pg.hideDirs);
+  const focused = box.contains(document.activeElement) ? document.activeElement.dataset.pos : null;
   box.innerHTML = '<span class="cap">Blickrichtungen:</span>' + used.map((c) => {
     const on = !hide.has(c.pos);
     const dc = state.pg.dirColors ? `style="--dc:${col.dir[c.pos]}"` : '';
     return `<button type="button" data-pos="${c.pos}" aria-pressed="${on}" ${dc} title="${on ? 'Ausblenden' : 'Einblenden'}: Symmetrieelemente der Blickrichtung ${c.label.replace(/<[^>]+>/g, '')} in der 3D-Ansicht"><i class="sw"></i>${c.label}</button>`;
   }).join('');
+  if (focused != null) box.querySelector(`button[data-pos="${focused}"]`)?.focus();
 }
 
 /** Richtung [uvw] als Teile für SVG-Text. */
@@ -430,7 +433,7 @@ function updateLegendPoly(C, col) {
   const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
   items.push(state.poly.tool
     ? `<span class="lg hint">${tn}: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen („${tn}“ erneut drücken: beenden)</span>`
-    : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter · Werkzeuge „Zone“ und „Winkel“</span>');
+    : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter (mit Werkzeug auch auf beide) · Werkzeuge „Zone“ und „Winkel“</span>');
   $('legend').innerHTML = items.join('');
 }
 
@@ -690,14 +693,18 @@ svg.addEventListener('click', (e) => {
 });
 
 /** Antippen einer Stelle mit einem oder mehreren zusammenfallenden Polen:
- *  nichts gewählt → erster (oberer) Pol; sonst der nächste; nach dem letzten → keiner. */
+ *  nichts gewählt → erster (oberer) Pol; sonst der nächste; nach dem letzten → keiner.
+ *  Mit Werkzeug (Zone/Winkel) kommt bei zwei Polen zusätzlich „beide“ dazu. */
 function pickStack(stack) {
   if (stack.length === 1) { pickFace(stack[0]); return; }
   if (state.poly.tool) {
-    const sel = state.zoneSel.filter((k) => stack.includes(k));
+    // Folge: oberer → unterer → beide (bei zwei Polen) → keiner; so lässt sich auch der Winkel
+    // bzw. die Zone zweier übereinanderliegender Pole allein im Stereogramm bestimmen.
+    const options = [...stack.map((i) => [i]), ...(stack.length === 2 ? [stack.slice()] : []), []];
+    const sel = stack.filter((k) => state.zoneSel.includes(k));
     const rest = state.zoneSel.filter((k) => !stack.includes(k));
-    const k = sel.length ? stack.indexOf(sel[sel.length - 1]) : -1;
-    const next = k + 1 < stack.length ? [stack[k + 1]] : [];
+    const k = options.findIndex((o) => o.length === sel.length && o.every((x) => sel.includes(x)));
+    const next = options[(k + 1) % options.length];
     state.zoneSel = [...rest, ...next].slice(-2);
     state.selected = null;
   } else {

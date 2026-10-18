@@ -18,9 +18,22 @@ function stateFor(hash) {
 }
 
 /** Stereogramm (SVG-Inhalt) für eine Link-Adresse der App. */
-function stereoFor(hash, col) {
+function stereoFor(hash, col, dirs = null) {
   const st = stateFor(hash);
-  if (st.mode === 'pg') return { st, scene: pgScene(st, col).scene };
+  if (st.mode === 'pg') {
+    const { info, scene } = pgScene(st, col);
+    // data-dirs="1,3": nur die Symmetrieelemente dieser Blickrichtungen (1. bis 3. Position im HM-Symbol)
+    if (dirs) {
+      const keep = (k) => dirs.includes(k + 1);
+      scene.axes = scene.axes.filter((a) => keep(a.cls));
+      scene.mirrors = scene.mirrors.filter((m, i) => keep(info.mirrorCls[i]));
+      const zm = info.mirrors.findIndex((n) => Math.abs(n[2]) > 1 - 1e-6);
+      if (zm >= 0 && !keep(info.mirrorCls[zm])) scene.primitiveBold = false;
+      scene.centreAtOrigin = false;
+      scene.zones = [];
+    }
+    return { st, scene };
+  }
   const C = polyCrystal(st, col);
   return { st, C, scene: polyScene(st, C, col).scene };
 }
@@ -28,7 +41,8 @@ function stereoFor(hash, col) {
 const appLink = (hash) => 'index.html' + hash;
 
 function renderStereo(fig, col) {
-  const { scene } = stereoFor(fig.dataset.app, col);
+  const dirs = fig.dataset.dirs ? fig.dataset.dirs.split(',').map(Number) : null;
+  const { scene } = stereoFor(fig.dataset.app, col, dirs);
   const box = fig.querySelector('.fig-art');
   box.innerHTML = `<svg viewBox="0 0 520 520" role="img" aria-label="${fig.dataset.alt || 'Stereogramm'}">${buildSVG(scene).inner}</svg>`;
 }
@@ -61,7 +75,7 @@ function addAppLink(fig) {
   const a = document.createElement('a');
   a.className = 'to-app';
   a.href = appLink(fig.dataset.app);
-  a.textContent = 'In der App öffnen';
+  a.textContent = fig.closest('.fig-grid5') ? 'App' : 'In der App öffnen';
   cap.append(' ', a);
 }
 

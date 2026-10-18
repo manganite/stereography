@@ -8,7 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Hinzugefügt
 
-- **Skript zur Vorlesung** als eigene Seite (`skript.html`, Link „Skript“ in der Kopfzeile der App): Text in der Reihenfolge der Vorlesung, Begriffe nach Borchardt-Ott & Sowa, Abbildungen mit dem Code der App erzeugt und jeweils mit „In der App öffnen“. Erstes Kapitel „Die stereographische Projektion“ (Umkugel und Flächenpole, Normalen- und Flächenwinkel, Projektion mit interaktiver Schnittskizze, φ und ρ, Kreis- und Winkeltreue, Wulffsches Netz); weitere Kapitel folgen. Offline verfügbar wie die App.
+- **Skript zur Vorlesung** als eigene Seite (`skript.html`, Link „Skript“ in der Kopfzeile der App): Text in der Reihenfolge der Vorlesung, Begriffe nach Borchardt-Ott & Sowa, Abbildungen mit dem Code der App erzeugt und jeweils mit „In der App öffnen“. Sieben Kapitel: 1 Die stereographische Projektion (mit interaktiver Schnittskizze), 2 Kristallformen im Stereogramm, 3 Symmetriegerüste im Stereogramm, 4 Zonen (Zonengleichung, Kreuzschema, Zonenachse und Flächennormale), 5 Tracht und Habitus, 6 Blickrichtungen (Hermann-Mauguin-Symbol, volles und gekürztes Symbol), 7 Hexagonale Achsen und vierstellige Indizes. Jedes Kapitel mit Lernzielen, Merksätzen, Zusammenfassung und Quellen; fachlich gegen Borchardt-Ott & Sowa gegengeprüft. Offline verfügbar wie die App.
 
 ### Geändert
 

@@ -4,7 +4,7 @@ import {
   POINT_GROUPS, SYSTEMS, buildPointGroup, orbit, elementSummary, symmetryDirections, HEX_A, HEX_B,
 } from './pointgroups.js';
 import {
-  buildCrystal, habitOf, zoneOf, zoneByUvw, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
+  buildCrystal, habitOf, zoneOf, zoneByUvw, zoneKey, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig, entryById, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
@@ -226,6 +226,17 @@ function mixHex(a, b, t) {
   } catch { return a; }
 }
 const formFill = (col, i) => mixHex(formColor(col, i), col.paper, 0.38);
+/** Farbe der i-ten gewählten Zone: zuerst die Formfarben, danach weitere Farbtöne, keine Wiederholung. */
+function zoneColor(col, i) {
+  if (i < col.form.length) return col.form[i];
+  const dark = (() => { const x = col.paper.replace('#', ''); return x.length >= 6 && parseInt(x.slice(0, 2), 16) + parseInt(x.slice(2, 4), 16) + parseInt(x.slice(4, 6), 16) < 384; })();
+  // zuerst Farbtöne, die die Formfarben nicht belegen (Grün, Violett, Gold, Himmelblau …), danach goldener Winkel
+  const GAPS = [125, 265, 45, 195, 290, 95, 345, 235];
+  const j = i - col.form.length;
+  const h = j < GAPS.length ? GAPS[j] : (GAPS[0] + j * 137.508) % 360, sat = 0.6, l = dark ? 0.66 : 0.4;
+  const f = (n) => { const k = (n + h / 30) % 12; const c = l - sat * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(c * 255).toString(16).padStart(2, '0'); };
+  return '#' + f(0) + f(8) + f(4);
+}
 const FONT = "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif";
 
 // ------------------------------------------------------------------ Bedienelemente aufbauen
@@ -549,6 +560,23 @@ function renderPG() {
 }
 
 /** Schalter in der 3D-Ansicht: Symmetrieelemente einzelner Blickrichtungen ein-/ausblenden. */
+/**
+ * Infobox neu schreiben; hatte ein Bedienelement der Zonenliste den Fokus, erhält ihn danach dasselbe Element
+ * (bzw. nach „Alle Zonen abwählen“ die erste Zonengruppe oder der Button „Zone“), damit die Tastatur ihren Platz behält.
+ */
+function setInfo(html) {
+  const box = $('info');
+  const a = box.contains(document.activeElement) ? document.activeElement : null;
+  const sel = !a ? null
+    : a.dataset.zone ? `[data-zone="${a.dataset.zone}"]`
+      : a.dataset.zclass != null ? `[data-zclass="${a.dataset.zclass}"]`
+        : a.hasAttribute('data-zclear') ? '[data-zclear]' : null;
+  box.innerHTML = html;
+  if (!sel) return;
+  const t = box.querySelector(sel) || box.querySelector('[data-zclass]') || (state.mode === 'poly' ? $('zone-btn') : null);
+  t?.focus({ preventScroll: true });
+}
+
 function updateDirChips(classes, col) {
   const box = $('v3d-dirs');
   const used = classes.filter((c) => c.axes.length || c.mirrors.length);
@@ -609,8 +637,10 @@ function renderPoly() {
   C.zone = zone;
   // Zonenliste: alle Zonen des Kristalls (nur mit Werkzeug „Zone“) und die gewählten, je in eigener Farbe
   C.zoneClasses = state.poly.tool === 'zone' ? zonesOf(C) : [];
+  // gespeicherte Schlüssel lageunabhängig machen und Doppelte entfernen (ältere Zustände, Links)
+  state.poly.zones = [...new Set(state.poly.zones.map((k) => zoneKey(k.split(',').map(Number))))];
   C.selZones = state.poly.tool === 'zone'
-    ? state.poly.zones.map((k, i) => ({ ...zoneByUvw(C, k.split(',').map(Number)), color: formColor(col, i) }))
+    ? state.poly.zones.map((k, i) => ({ ...zoneByUvw(C, k.split(',').map(Number)), color: zoneColor(col, i) }))
     : [];
   const zoneColorsOf = (i) => C.selZones.filter((z) => z.inZone.includes(i)).map((z) => z.color);
   const angle = state.poly.tool === 'angle' && two ? angleOf(C.faces[state.zoneSel[0]].normal, C.faces[state.zoneSel[1]].normal) : null;
@@ -845,7 +875,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
   if (!classes.length && !info.centro) free.push('<li><span>nur die Identität 1</span></li>');
   if (free.length) rows.push(`<div class="dirrow"><div class="dirhead"><span class="dirlab">ohne Richtung</span></div><ul>${free.join('')}</ul></div>`);
   const lower = orb.filter((o) => o.p[2] < -1e-9).length;
-  $('info').innerHTML = `
+  setInfo(`
     <div class="info-head">
       <div class="hm-big">${hmHTML(info.hm)}</div>
       <div class="hm-meta"><span>${info.system[0].toUpperCase() + info.system.slice(1)}${info.setting ? ' · Aufstellung ' + (info.setting.startsWith('Achse') ? info.setting : hmHTML(info.setting)) : ''}</span>
@@ -864,7 +894,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
     ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
-    ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>` : ''}`;
+    ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>` : ''}`);
 }
 
 function poleAngles(n) {
@@ -975,7 +1005,7 @@ function updateInfoPoly(C, col) {
         <td class="num">${F.present < F.hkls.length ? `${F.present} von ${F.hkls.length}` : F.hkls.length}</td><td>${eig ? hmHTML(eig) : '–'}</td></tr>`;
     }).join('');
     const gone = C.forms.some((F) => F.present < F.hkls.length);
-    $('info').innerHTML = `
+    setInfo(`
     <div class="info-head">
       <div class="hm-big form-sym ex-name">${ex.name}</div>
       <div class="hm-meta">${ex.formula ? `<span class="form-name">${ex.formula}</span>` : ''}<span>Punktgruppe <b>${hmHTML(groupOf(C.groupId).hm)}</b> (${groupOf(C.groupId).sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}</span></div>
@@ -994,7 +1024,7 @@ function updateInfoPoly(C, col) {
     ${sel}
     ${aux}
     <p class="note">Quelle: ${ex.src}. Die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt, nicht gemessen; sie lassen sich unter „Gitter und Gestalt“ ändern.</p>
-    ${explain(`${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}${habitNote}`)}`;
+    ${explain(`${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}${habitNote}`)}`);
     return;
   }
   // Tracht und Habitus (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2)
@@ -1014,7 +1044,7 @@ function updateInfoPoly(C, col) {
       twinNote = `<p class="note">Die Punktgruppe ${hmHTML(g.hm)} ist hier nur erzeugende Symmetrie; die Eigensymmetrie der Form (${hmHTML(formEig(e))}) ist höher (Begriffe nach Borchardt-Ott). Geometrisch gleicht die Form der Form „${formName(tw[0])}“ in ${hmHTML(tg.hm)}; der Unterschied liegt nur in der Flächensymmetrie (1 statt ${fsList}), sichtbar mit „Flächensymmetrie zeigen“ oder an der Lage der Pole zum Symmetriegerüst.</p>`;
     }
   }
-  $('info').innerHTML = `
+  setInfo(`
     <div class="info-head">
       <div class="hm-big form-sym">${brace(e.hkl)}</div>
       <div class="hm-meta"><span class="form-name">${formName(e)}</span><span>Punktgruppe <b>${hmHTML(g.hm)}</b> (${g.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}</span></div>
@@ -1036,7 +1066,7 @@ function updateInfoPoly(C, col) {
     ${aux}
     ${explain(`${state.poly.faceSym ? `<p class="note">Die dunklen Dreiecke auf den Flächen sind ein Muster in allgemeiner Lage, vervielfältigt mit allen Operationen der Punktgruppe${C.isReduced ? ' (Restsymmetrie)' : ''}. Ihre Anordnung auf einer Fläche zeigt die Flächensymmetrie, z. B. wie Streifen oder Ätzfiguren auf realen Kristallen. Dieselbe Form kann so in verschiedenen Punktgruppen unterschiedliche Flächensymmetrie haben.</p>` : ''}
     <p class="note">Die Pole hängen nur von den Flächennormalen ab, also von Indizes und Gitter. Grösse und Abstand der Ergänzungsformen ändern die Gestalt des Kristalls, aber nicht das Stereogramm.</p>
-    ${habitNote}`)}`;
+    ${habitNote}`)}`);
 }
 
 /** Richtung [uvw] (bei hexagonalen Achsen wahlweise [uvtw]) als HTML. */

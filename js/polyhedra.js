@@ -472,7 +472,14 @@ export function zoneByUvw(C, raw) {
   const B = transpose(inverse(C.A));
   const planeNormal = normalize(mulVec(C.O, mulVec(B, uvw)));
   const normalDev = (Math.acos(Math.max(-1, Math.min(1, Math.abs(dot(planeNormal, axis))))) * 180) / Math.PI;
-  return { uvw, key: uvw.join(','), axis, inZone, normalDev, planeNormal };
+  return { uvw, key: zoneKey(uvw), axis, inZone, normalDev, planeNormal };
+}
+
+/** Schlüssel einer Zone unabhängig von der Lage: teilerfremd, erste von null verschiedene Komponente positiv. */
+export function zoneKey(raw) {
+  const u = reduceInt(raw);
+  const s = u.find((x) => x !== 0) < 0 ? -1 : 1;
+  return u.map((x) => s * x + 0).join(',');
 }
 
 /** Mindestzahl der Flächen einer Zone (Borchardt-Ott & Sowa, Abschn. 5.2: drei oder mehr Flächen mit parallelen Kanten). */

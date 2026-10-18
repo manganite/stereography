@@ -87,4 +87,11 @@ test('Zonen des Kristalls: mindestens drei Flächen, nach Symmetrie gruppiert', 
     const h = galenit.faces[k].hkl;
     assert.equal(h[0] * z.uvw[0] + h[1] * z.uvw[1] + h[2] * z.uvw[2], 0);
   }
+  // Schlüssel der Zonen hängen nicht von der Lage ab (Auswahl bleibt beim Wechsel der Blickrichtung gültig)
+  const { zoneByUvw, zoneKey } = await import('../js/polyhedra.js');
+  const cube110 = buildCrystal({ entryId: 'm-3m:a34', lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: '110' });
+  assert.equal(zoneByUvw(cube, [0, 0, 1]).key, '0,0,1');
+  assert.equal(zoneByUvw(cube110, [0, 0, 1]).key, '0,0,1');
+  assert.equal(zoneKey([0, 0, -2]), '0,0,1');
+  assert.deepEqual(zonesOf(cube110)[0].zones.map((z) => z.key).sort(), zonesOf(cube)[0].zones.map((z) => z.key).sort());
 });

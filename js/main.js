@@ -1,7 +1,7 @@
 // Steuerung der App: Zustand, Bedienelemente, Verknüpfung von Stereogramm und 3D-Ansicht.
 
 import {
-  POINT_GROUPS, SYSTEMS, buildPointGroup, orbit, elementSummary, HEX_A, HEX_B,
+  POINT_GROUPS, SYSTEMS, buildPointGroup, orbit, elementSummary, symmetryDirections, HEX_A, HEX_B,
 } from './pointgroups.js';
 import {
   buildCrystal, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, SYSTEM_OF, isHexSystem, auxFormName,
@@ -23,10 +23,10 @@ const touchRadius = (minUnits, px) => (coarse.matches ? Math.max(minUnits, px * 
 // ------------------------------------------------------------------ Zustand
 const state = {
   mode: 'pg',
-  pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false },
+  pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, theta: 59, phi: 14.5, colorful: false, dirColors: true, hideDirs: [] },
   poly: {
     system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
-    size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: true, zoneMode: false,
+    size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: true, tool: null,
   },
   view: { wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
   selected: null,
@@ -38,8 +38,12 @@ try {
   if (saved && (saved.v === 2 || saved.v === 3)) {
     Object.assign(state.pg, saved.pg); Object.assign(state.view, saved.view);
     if (saved.v === 3) Object.assign(state.poly, saved.poly);
+    if (state.poly.zoneMode) state.poly.tool = 'zone'; // älterer Zustand
+    delete state.poly.zoneMode;
+    if (!['zone', 'angle'].includes(state.poly.tool)) state.poly.tool = null;
     state.mode = saved.mode === 'poly' ? 'poly' : 'pg';
     if (!POINT_GROUPS.some((g) => g.id === state.pg.id)) state.pg.id = 'mm2';
+    if (!Array.isArray(state.pg.hideDirs)) state.pg.hideDirs = [];
   }
 } catch { /* Speicher nicht verfügbar */ }
 let resetting = false;
@@ -52,10 +56,9 @@ const save = () => {
 function palette() {
   const cs = getComputedStyle(document.documentElement);
   const g = (n) => cs.getPropertyValue('--' + n).trim();
-  const colorful = state.mode === 'pg' ? state.pg.colorful : false;
   return {
     paper: g('paper'), ink: g('ink'), muted: g('muted'), net: g('net'),
-    mirror: colorful ? g('mirror') : g('ink'), axis: g('ink'),
+    mirror: g('ink'), axis: g('ink'), dir: [g('dir1'), g('dir2'), g('dir3')],
     upper: g('upper'), accent: g('accent'), accent2: g('accent2'),
     ray: g('ray'), crystal: g('crystal'), crystal2: g('crystal2'), edge: g('edge'),
     normal: g('normal'), sphere: g('muted'), mirror3d: g('mirror'),
@@ -110,6 +113,7 @@ function buildGroupPicker() {
     const b = e.target.closest('button');
     if (!b) return;
     const cur = groupOf(state.pg.id);
+    state.pg.hideDirs = []; // ausgeblendete Blickrichtungen gelten nur für die jeweilige Gruppe
     if (b.dataset.fam) {
       const pref = state.pg.famPref[b.dataset.fam];
       state.pg.id = FAMILIES[b.dataset.fam].includes(pref) ? pref : FAMILIES[b.dataset.fam][0];
@@ -226,12 +230,17 @@ function renderPG() {
   const p0 = generalPole();
   const orb = orbit(info.ops, p0);
   const axisAlongZ = info.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
+  const classes = symmetryDirections(info);
+  // Farbe nach Blickrichtung (Position im vollen HM-Symbol) oder einheitlich schwarz wie in ITA
+  const dcol = (k) => (state.pg.dirColors && k >= 0 ? col.dir[k] : null);
+  const zMirror = info.mirrors.findIndex((n) => Math.abs(n[2]) > 1 - 1e-6);
   const scene = {
     col, fontFamily: FONT,
     wulff: { on: state.view.wulff, rot: state.view.wulffRot },
-    primitiveBold: state.pg.showElements && info.mirrors.some((n) => Math.abs(n[2]) > 1 - 1e-6),
-    mirrors: state.pg.showElements ? info.mirrors : [],
-    axes: state.pg.showElements ? info.axes : [],
+    primitiveBold: state.pg.showElements && zMirror >= 0,
+    primitiveColor: zMirror >= 0 ? dcol(info.mirrorCls[zMirror]) : null,
+    mirrors: state.pg.showElements ? info.mirrors.map((n, i) => ({ n, color: dcol(info.mirrorCls[i]) })) : [],
+    axes: state.pg.showElements ? info.axes.map((a) => ({ ...a, color: dcol(a.cls) })) : [],
     centreAtOrigin: state.pg.showElements && info.centro && !axisAlongZ,
     zones: state.pg.showElements && info.system === 'kubisch' ? CUBIC_ZONES : [],
     poles: state.pg.showObject ? orb.map((o, i) => ({ p: o.p, det: o.det, idx: i, gen: i === 0 })) : [],
@@ -242,15 +251,33 @@ function renderPG() {
   const out = buildSVG(scene);
   svg.innerHTML = out.inner;
   current = { kind: 'pg', info, scene };
-  updateLegendPG(info, col);
-  updateInfoPG(info, orb, col);
+  updateLegendPG(info, col, classes);
+  updateInfoPG(info, orb, col, classes);
+  updateDirChips(classes, col);
   const tex = buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, gen: false })) }, { standalone: true }).full;
   view3d.setStereoTexture(tex);
   view3d.showPointGroup(
     { ...info, orbit: state.pg.showObject ? orb : null, p0, crystalAxes: crystalAxesFor(info.hex) },
     col,
-    { showElements: state.pg.showElements, showObject: state.pg.showObject, showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes },
+    { showElements: state.pg.showElements, showObject: state.pg.showObject, showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes,
+      dirColors: state.pg.dirColors ? col.dir : null, hiddenDirs: new Set(state.pg.hideDirs) },
   );
+}
+
+/** Schalter in der 3D-Ansicht: Symmetrieelemente einzelner Blickrichtungen ein-/ausblenden. */
+function updateDirChips(classes, col) {
+  const box = $('v3d-dirs');
+  const used = classes.filter((c) => c.axes.length || c.mirrors.length);
+  box.hidden = state.mode !== 'pg' || !state.pg.showElements || used.length < 1;
+  if (box.hidden) { box.innerHTML = ''; return; }
+  const hide = new Set(state.pg.hideDirs);
+  const focused = box.contains(document.activeElement) ? document.activeElement.dataset.pos : null;
+  box.innerHTML = '<span class="cap">Blickrichtungen:</span>' + used.map((c) => {
+    const on = !hide.has(c.pos);
+    const dc = state.pg.dirColors ? `style="--dc:${col.dir[c.pos]}"` : '';
+    return `<button type="button" data-pos="${c.pos}" aria-pressed="${on}" ${dc} title="${on ? 'Ausblenden' : 'Einblenden'}: Symmetrieelemente der Blickrichtung ${c.label.replace(/<[^>]+>/g, '')} in der 3D-Ansicht"><i class="sw"></i>${c.label}</button>`;
+  }).join('');
+  if (focused != null) box.querySelector(`button[data-pos="${focused}"]`)?.focus();
 }
 
 /** Richtung [uvw] als Teile für SVG-Text. */
@@ -281,9 +308,12 @@ function renderPoly() {
   });
   if (state.selected != null && (!C.faces[state.selected] || C.faces[state.selected].hidden)) state.selected = null;
   state.zoneSel = state.zoneSel.filter((k) => C.faces[k] && !C.faces[k].hidden);
-  if (!state.poly.zoneMode) state.zoneSel = [];
-  const zone = state.zoneSel.length === 2 ? zoneOf(C, state.zoneSel[0], state.zoneSel[1]) : null;
+  if (!state.poly.tool) state.zoneSel = [];
+  const two = state.zoneSel.length === 2;
+  const zone = state.poly.tool === 'zone' && two ? zoneOf(C, state.zoneSel[0], state.zoneSel[1]) : null;
   C.zone = zone;
+  const angle = state.poly.tool === 'angle' && two ? angleOf(C.faces[state.zoneSel[0]].normal, C.faces[state.zoneSel[1]].normal) : null;
+  C.angle = angle;
   const inZone = new Set(zone ? zone.inZone : []);
   const fw = state.poly.frame ? C.framework : null;
   const scene = {
@@ -300,8 +330,10 @@ function renderPoly() {
     })).filter(Boolean),
     showLower: state.poly.showLower,
     hitR: touchRadius(13, 22),
+    labelSize: Math.max(14.5, 11 * svgUnit()), // mindestens ca. 11 px auf dem Bildschirm
     axisLabels: state.view.axes ? C.axes : [],
     zone: zone ? { axis: zone.axis, label: dirParts(zone.uvw, hex4) } : null,
+    arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null,
   };
   const out = buildSVG(scene);
   svg.innerHTML = out.inner;
@@ -309,15 +341,22 @@ function renderPoly() {
   updateLegendPoly(C, col);
   updateInfoPoly(C, col);
   $('ctl-poly-open').hidden = !C.auxForms.length;
-  $('v3d-hint').textContent = state.poly.zoneMode
-    ? ['Zone: zwei Flächen oder Pole antippen', 'Zone: zweite Fläche oder zweiten Pol antippen', 'Zone bestimmt; nächstes Antippen beginnt eine neue'][Math.min(state.zoneSel.length, 2)]
+  const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
+  $('v3d-hint').textContent = state.poly.tool
+    ? [`${tn}: zwei Flächen oder Pole antippen`, `${tn}: zweite Fläche oder zweiten Pol antippen`, `${state.poly.tool === 'zone' ? 'Zone bestimmt' : 'Winkel gemessen'}; nächstes Antippen beginnt neu`][Math.min(state.zoneSel.length, 2)]
     : 'Fläche oder Pol antippen zum Hervorheben';
   $('stereo-sub').textContent = 'Blick ∥ ' + C.preset.name.replace(' ∥ Blickrichtung', '').replace(/ \(.*\)/, '');
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
   const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
   view3d.showPolyhedron(C, col,
-    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zone, picked: state.poly.zoneMode ? state.zoneSel : [] },
+    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zone, arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null, picked: state.poly.tool ? state.zoneSel : [] },
     state.selected, labels3d);
+}
+
+/** Winkel zwischen zwei Flächennormalen (= Winkel zwischen den Polen). */
+function angleOf(a, b) {
+  const d = Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]));
+  return { a, b, deg: Math.acos(d) / deg };
 }
 
 let pending = false;
@@ -339,7 +378,7 @@ function axisLegendText(symbol, centre) {
   return base + (centre ? ' mit Inversionszentrum' : '');
 }
 
-function updateLegendPG(info, col) {
+function updateLegendPG(info, col, classes) {
   const items = [];
   if (state.pg.showObject) {
     items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="4" fill="${col.ink}"/></svg>Pol oben</span>`);
@@ -348,18 +387,24 @@ function updateLegendPG(info, col) {
     items.push(`<span class="lg"><svg width="20" height="20" viewBox="-10 -10 20 20"><circle r="8" fill="none" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="2.6 2.2"/><circle r="3" fill="${col.ink}"/></svg>Ausgangspol</span>`);
   }
   if (state.pg.showElements) {
-    if (info.mirrors.length) items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.mirror}" stroke-width="3.2" stroke-linecap="round"/></svg>Spiegelebene</span>`);
+    if (info.mirrors.length) items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.ink}" stroke-width="3.2" stroke-linecap="round"/></svg>Spiegelebene</span>`);
     const icol = { ...col, axis: col.ink, paper: col.paper };
     // Wie im Stereogramm: Punkt für das Inversionszentrum nur im Symbol der Achse ∥ c
     const ORDER = ['6', '-6', '4', '-4', '3', '-3', '2'];
     const drawn = new Set(info.axes.map((a) => a.symbol + '|' + (a.centre && Math.abs(a.dir[2]) > 1 - 1e-6 ? 'c' : '')));
     for (const s of ORDER) {
       for (const c of [true, false]) {
-        if (drawn.has(s + '|' + (c ? 'c' : ''))) items.push(`<span class="lg">${symbolIcon(s, c, icol, 18)}${axisLegendText(s, c)}</span>`);
+        if (drawn.has(s + '|' + (c ? 'c' : ''))) items.push(`<span class="lg">${symbolIcon(s, c, icol, 18)}<span>${axisLegendText(s, c)}</span></span>`);
       }
     }
     if (current && current.scene && current.scene.centreAtOrigin) {
       items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="3.6" fill="${col.paper}" stroke="${col.ink}" stroke-width="1.3"/></svg>Inversionszentrum</span>`);
+    }
+    if (state.pg.dirColors) {
+      for (const c of classes) {
+        if (!c.axes.length && !c.mirrors.length) continue;
+        items.push(`<span class="lg"><i class="sw" style="background:${col.dir[c.pos]}"></i><span>Blickrichtung ${c.label}</span></span>`);
+      }
     }
   }
   if (state.pg.colorful && state.pg.showObject) {
@@ -382,18 +427,52 @@ function updateLegendPoly(C, col) {
     items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="5 4"/></svg>untere Hälfte</span>`);
     items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><path d="M-5,-5L5,5M-5,5L5,-5" stroke="${col.accent}" stroke-width="2"/></svg>Zonenachse</span>`);
   }
-  items.push(state.poly.zoneMode ? '<span class="lg hint">Zone: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen („Zone“ erneut drücken: beenden)</span>' : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter · Werkzeug „Zone“: Zonen bestimmen</span>');
+  if (C.angle) {
+    items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="3"/></svg>Bogen (Grosskreis) zwischen den Polen</span>`);
+  }
+  const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
+  items.push(state.poly.tool
+    ? `<span class="lg hint">${tn}: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen („${tn}“ erneut drücken: beenden)</span>`
+    : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter (mit Werkzeug auch auf beide) · Werkzeuge „Zone“ und „Winkel“</span>');
   $('legend').innerHTML = items.join('');
 }
 
 const yesno = (b) => (b ? 'ja' : 'nein');
 
-function updateInfoPG(info, orb, col) {
-  const sum = elementSummary(info);
-  const elems = sum.axes.map((a) => `<li>${symbolIcon(a.symbol, a.centre, { ...col, axis: col.ink, paper: col.paper })}<span>${a.count}× ${hmHTML(a.symbol)}${a.centre ? ' (mit Inversionszentrum)' : ''}</span></li>`);
-  if (sum.mirrors) elems.push(`<li><svg class="sym-icon" width="26" height="26" viewBox="0 0 26 26"><line x1="3" y1="13" x2="23" y2="13" stroke="${col.ink}" stroke-width="3.2" stroke-linecap="round"/></svg><span>${sum.mirrors} Spiegelebene${sum.mirrors > 1 ? 'n' : ''}</span></li>`);
-  if (sum.centre) elems.push(`<li><svg class="sym-icon" width="26" height="26" viewBox="-13 -13 26 26"><circle r="4.5" fill="${col.paper}" stroke="${col.ink}" stroke-width="1.4"/></svg><span>Inversionszentrum</span></li>`);
-  if (!elems.length) elems.push('<li><span>nur die Identität 1</span></li>');
+/** Name eines Achsensymbols, Mehrzahl mit n > 1. */
+function axisName(symbol, n) {
+  const k = symbol.replace('-', '');
+  const base = symbol.startsWith('-') ? `${hmHTML(symbol)}-Achse` : `${k}-zählige Drehachse`;
+  return n > 1 ? base + 'n' : base;
+}
+
+function updateInfoPG(info, orb, col, classes) {
+  const icol = { ...col, axis: col.ink, paper: col.paper };
+  const dc = (k) => (state.pg.dirColors ? col.dir[k] : col.ink);
+  const mirrorIcon = (c) => `<svg class="sym-icon" width="22" height="22" viewBox="0 0 26 26"><line x1="3" y1="13" x2="23" y2="13" stroke="${c}" stroke-width="3.2" stroke-linecap="round"/></svg>`;
+  // Volles Symbol: jede Position in der Farbe ihrer Blickrichtung
+  const parts = info.full.split(' ');
+  const fullHTML = parts.map((p, i) => (classes[i] && p !== '1' && state.pg.dirColors
+    ? `<span class="hmpos" style="--dc:${col.dir[i]}">${hmHTML(p)}</span>` : hmHTML(p))).join('&#8239;');
+  // Symmetrieelemente nach Blickrichtung
+  const rows = classes.map((c) => {
+    const items = [];
+    const bySym = new Map();
+    for (const a of c.axes) bySym.set(a.symbol, (bySym.get(a.symbol) || 0) + 1);
+    for (const [s, n] of bySym) items.push(`<li>${symbolIcon(s, false, { ...icol, axis: dc(c.pos) }, 20)}<span>${n}× ${axisName(s, n)}</span></li>`);
+    if (c.mirrors.length) {
+      const n = c.mirrors.length;
+      items.push(`<li>${mirrorIcon(dc(c.pos))}<span>${n} Spiegelebene${n > 1 ? 'n' : ''} ⊥ ${n > 1 ? 'diesen Richtungen' : 'dieser Richtung'}</span></li>`);
+    }
+    const none = !items.length;
+    if (none) items.push('<li><span class="muted">keine Symmetrieelemente (Symbol 1)</span></li>');
+    const nd = c.dirs.length;
+    return `<div class="dirrow${none ? ' none' : ''}" style="--dc:${dc(c.pos)}"><div class="dirhead"><span class="dirlab">${c.label}</span>${c.hm ? `<span class="dirhm">${hmHTML(c.hm)}</span>` : ''}<span class="dirn">${nd > 1 ? nd + ' äquivalente Richtungen' : '1 Richtung'}</span></div><ul>${items.join('')}</ul></div>`;
+  }).filter((r, i) => classes[i].hm !== null || classes[i].axes.length || classes[i].mirrors.length);
+  const free = [];
+  if (info.centro) free.push(`<li><svg class="sym-icon" width="22" height="22" viewBox="-13 -13 26 26"><circle r="4.5" fill="${col.paper}" stroke="${col.ink}" stroke-width="1.4"/></svg><span>Inversionszentrum ${hmHTML('-1')} (im Ursprung)</span></li>`);
+  if (!classes.length && !info.centro) free.push('<li><span>nur die Identität 1</span></li>');
+  if (free.length) rows.push(`<div class="dirrow"><div class="dirhead"><span class="dirlab">ohne Richtung</span></div><ul>${free.join('')}</ul></div>`);
   const lower = orb.filter((o) => o.p[2] < -1e-9).length;
   $('info').innerHTML = `
     <div class="info-head">
@@ -402,15 +481,16 @@ function updateInfoPG(info, orb, col) {
       <span>Schoenflies ${info.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}</span></div>
     </div>
     <dl class="facts">
-      <div><dt>Volles Symbol</dt><dd>${info.full.split(' ').map(hmHTML).join('&#8239;')}</dd></div>
+      <div><dt>Volles Symbol</dt><dd>${fullHTML}</dd></div>
       <div><dt>Ordnung</dt><dd class="num">${info.order}</dd></div>
       <div><dt>Laue-Klasse</dt><dd>${hmHTML(info.laue)}</dd></div>
       <div><dt>Zentrosymmetrisch</dt><dd>${yesno(info.centro)}</dd></div>
       <div><dt>Enantiomorph</dt><dd>${yesno(info.chiral)}</dd></div>
       <div><dt>Polar</dt><dd>${yesno(info.polar)}</dd></div>
     </dl>
-    <h3>Symmetrieelemente</h3>
-    <ul class="elems">${elems.join('')}</ul>
+    <h3>Symmetrieelemente nach Blickrichtung</h3>
+    <div class="dirlist">${rows.join('')}</div>
+    ${classes.length ? '<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>' : ''}
     ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → 180° − ρ).</p>` : ''}`;
 }
 
@@ -446,7 +526,7 @@ function updateInfoPoly(C, col) {
     const { rho, phi } = poleAngles(f.normal);
     sel = `<div class="selbox"><div class="sel-hkl">${hklHTML(f.hkl, hex4)}${f.role === 'aux' ? ' <small>Ergänzungsform</small>' : ''}</div>
       <dl class="facts"><div><dt>ρ (Abstand vom Zentrum)</dt><dd class="num">${rho.toFixed(1)}°</dd></div>
-      <div><dt>φ (Azimut ab x↓)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
+      <div><dt>φ (Azimut ab ↓, Gegenuhrzeigersinn)</dt><dd class="num">${phi.toFixed(1)}°</dd></div></dl></div>`;
   }
   const auxList = C.auxReps.map((a) => {
     const n = auxFormName(C.groupId, a.hkls);
@@ -471,7 +551,18 @@ function updateInfoPoly(C, col) {
     }
   }
   let zoneBox = '';
-  if (state.poly.zoneMode) {
+  if (state.poly.tool === 'angle') {
+    if (!C.angle) {
+      zoneBox = `<div class="zonebox">Winkel messen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht antippen.</div>`;
+    } else {
+      const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
+      const w = C.angle.deg;
+      zoneBox = `<div class="zonebox"><strong>Winkel ${hklHTML(f1, hex4)} ∠ ${hklHTML(f2, hex4)} = <span class="num">${w.toFixed(1)}°</span></strong>
+        <p>Das ist der Winkel zwischen den beiden Flächennormalen, also der Bogen zwischen den Polen auf der Lagekugel (im Stereogramm als Grosskreisbogen eingezeichnet).</p>
+        <p>Der Winkel zwischen den Flächen selbst, innen am Kristall gemessen (bei gemeinsamer Kante: der Kantenwinkel), ist der Ergänzungswinkel: 180° − ${w.toFixed(1)}° = <b class="num">${(180 - w).toFixed(1)}°</b>.</p>
+        <p class="note">Mit dem Wulffschen Netz: Netz so drehen, dass beide Pole auf demselben Grosskreis (Meridian) liegen, dann die Teilstriche zwischen ihnen zählen.</p></div>`;
+    }
+  } else if (state.poly.tool === 'zone') {
     if (!C.zone) {
       zoneBox = state.zoneSel.length === 2
         ? '<div class="zonebox">Die beiden Flächen sind parallel und bestimmen keine Zone. Bitte eine andere Fläche wählen.</div>'
@@ -602,14 +693,18 @@ svg.addEventListener('click', (e) => {
 });
 
 /** Antippen einer Stelle mit einem oder mehreren zusammenfallenden Polen:
- *  nichts gewählt → erster (oberer) Pol; sonst der nächste; nach dem letzten → keiner. */
+ *  nichts gewählt → erster (oberer) Pol; sonst der nächste; nach dem letzten → keiner.
+ *  Mit Werkzeug (Zone/Winkel) kommt bei zwei Polen zusätzlich „beide“ dazu. */
 function pickStack(stack) {
   if (stack.length === 1) { pickFace(stack[0]); return; }
-  if (state.poly.zoneMode) {
-    const sel = state.zoneSel.filter((k) => stack.includes(k));
+  if (state.poly.tool) {
+    // Folge: oberer → unterer → beide (bei zwei Polen) → keiner; so lässt sich auch der Winkel
+    // bzw. die Zone zweier übereinanderliegender Pole allein im Stereogramm bestimmen.
+    const options = [...stack.map((i) => [i]), ...(stack.length === 2 ? [stack.slice()] : []), []];
+    const sel = stack.filter((k) => state.zoneSel.includes(k));
     const rest = state.zoneSel.filter((k) => !stack.includes(k));
-    const k = sel.length ? stack.indexOf(sel[sel.length - 1]) : -1;
-    const next = k + 1 < stack.length ? [stack[k + 1]] : [];
+    const k = options.findIndex((o) => o.length === sel.length && o.every((x) => sel.includes(x)));
+    const next = options[(k + 1) % options.length];
     state.zoneSel = [...rest, ...next].slice(-2);
     state.selected = null;
   } else {
@@ -619,9 +714,9 @@ function pickStack(stack) {
   render();
 }
 
-/** Fläche antippen: normale Auswahl oder, im Zonenmodus, bis zu zwei Flächen für die Zone. */
+/** Fläche antippen: normale Auswahl oder, mit Werkzeug Zone/Winkel, bis zu zwei Flächen. */
 function pickFace(idx) {
-  if (state.poly.zoneMode) {
+  if (state.poly.tool) {
     if (idx == null) state.zoneSel = [];
     else if (state.zoneSel.includes(idx)) state.zoneSel = state.zoneSel.filter((k) => k !== idx);
     else state.zoneSel = state.zoneSel.length >= 2 ? [idx] : [...state.zoneSel, idx];
@@ -667,6 +762,7 @@ function setMode(mode) {
   for (const id of ['ctl-pg', 'ctl-pg-opts']) $(id).hidden = mode !== 'pg';
   for (const id of ['ctl-poly', 'ctl-poly-lat', 'row-normals', 'stereo-tools', 'v3d-tools']) $(id).hidden = mode !== 'poly';
   if (mode !== 'poly') $('v3d-hint').textContent = '';
+  if (mode !== 'pg') $('v3d-dirs').hidden = true;
   $('stereo-sub').textContent = 'Blick ∥ c';
   render();
 }
@@ -678,16 +774,26 @@ function init() {
   bindCheck('pg-elements', state.pg, 'showElements');
   bindCheck('pg-object', state.pg, 'showObject');
   bindCheck('pg-colorful', state.pg, 'colorful');
+  bindCheck('pg-dircolors', state.pg, 'dirColors');
+  $('v3d-dirs').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-pos]');
+    if (!b) return;
+    const k = Number(b.dataset.pos);
+    const hide = new Set(state.pg.hideDirs);
+    if (hide.has(k)) hide.delete(k); else hide.add(k);
+    state.pg.hideDirs = [...hide];
+    render();
+  });
   bindRange('pg-theta', state.pg, 'theta', (v) => v.toFixed(0) + '°');
   bindRange('pg-phi', state.pg, 'phi', (v) => v.toFixed(1) + '°');
 
   buildSystemSelect();
   $('sys-select').addEventListener('change', (e) => {
-    state.poly.system = e.target.value; state.selected = null;
+    state.poly.system = e.target.value; state.selected = null; state.zoneSel = [];
     refreshPolyControls(); render();
   });
   $('form-select').addEventListener('change', (e) => {
-    state.poly.entryBySys[state.poly.system] = e.target.value; state.selected = null; render();
+    state.poly.entryBySys[state.poly.system] = e.target.value; state.selected = null; state.zoneSel = []; render();
   });
   $('preset-select').addEventListener('change', (e) => { state.poly.presetId = e.target.value; render(); });
   for (const k of ['ba', 'ca', 'al', 'be', 'ga']) {
@@ -719,18 +825,19 @@ function init() {
   bindCheck('poly-lower', state.poly, 'showLower');
   bindCheck('poly-frame', state.poly, 'frame');
   bindCheck('poly-facesym', state.poly, 'faceSym');
-  // Werkzeug „Zone“: je ein Button am Stereogramm und in der 3D-Ansicht, gemeinsamer Zustand
-  const syncZoneBtn = () => {
-    for (const b of document.querySelectorAll('.zone-toggle')) b.setAttribute('aria-pressed', String(!!state.poly.zoneMode));
+  // Werkzeuge „Zone“ und „Winkel“: je ein Button am Stereogramm und in der 3D-Ansicht,
+  // gemeinsamer Zustand; höchstens ein Werkzeug aktiv
+  const syncToolBtns = () => {
+    for (const b of document.querySelectorAll('.tool-toggle')) b.setAttribute('aria-pressed', String(state.poly.tool === b.dataset.tool));
   };
-  for (const b of document.querySelectorAll('.zone-toggle')) {
+  for (const b of document.querySelectorAll('.tool-toggle')) {
     b.addEventListener('click', () => {
-      state.poly.zoneMode = !state.poly.zoneMode;
+      state.poly.tool = state.poly.tool === b.dataset.tool ? null : b.dataset.tool;
       state.zoneSel = []; state.selected = null;
-      syncZoneBtn(); render();
+      syncToolBtns(); render();
     });
   }
-  syncZoneBtn();
+  syncToolBtns();
 
   bindCheck('v-wulff', state.view, 'wulff');
   bindRange('v-wulffrot', state.view, 'wulffRot', (v) => v.toFixed(0) + '°');

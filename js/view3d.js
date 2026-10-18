@@ -3,7 +3,7 @@
 // Weltkoordinaten = kartesisches Kristallsystem (x ∥ a, y ∥ b, z ∥ c).
 
 import * as THREE from '../lib/three.bundle.js';
-import { SIZE, R } from './stereogram.js';
+import { SIZE, R, arcPoints } from './stereogram.js';
 
 const V = (p) => new THREE.Vector3(p[0], p[1], p[2]);
 
@@ -243,24 +243,30 @@ export class View3D {
     this.pickables = [];
     const c = (x) => new THREE.Color(x);
     if (opts.showElements) {
+      // Farben nach Blickrichtung (opts.dirColors[k]) oder neutral; ausgeblendete Blickrichtungen weglassen
+      const hidden = opts.hiddenDirs || new Set();
+      const dirCol = (k, fallback) => (opts.dirColors && k >= 0 ? opts.dirColors[k] : fallback);
       // Spiegelebenen als halbtransparente Scheiben
-      for (const n of data.mirrors) {
+      data.mirrors.forEach((n, i) => {
+        const k = data.mirrorCls ? data.mirrorCls[i] : -1;
+        if (hidden.has(k)) return;
+        const mc = c(dirCol(k, col.mirror3d));
         const disc = new THREE.Mesh(
           new THREE.CircleGeometry(1, 96),
-          new THREE.MeshBasicMaterial({ color: c(col.mirror3d), transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false }),
+          new THREE.MeshBasicMaterial({ color: mc, transparent: true, opacity: opts.dirColors ? 0.14 : 0.1, side: THREE.DoubleSide, depthWrite: false }),
         );
         disc.lookAt(V(n));
         this.content.add(disc);
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.008, 6, 160), new THREE.MeshBasicMaterial({ color: c(col.mirror3d) }));
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.008, 6, 160), new THREE.MeshBasicMaterial({ color: mc }));
         ring.lookAt(V(n));
         this.content.add(ring);
-      }
+      });
       // Drehachsen
-      const axColor = { 2: col.ax2, 3: col.ax3, 4: col.ax4, 6: col.ax6 };
       for (const ax of data.axes) {
+        if (hidden.has(ax.cls)) continue;
         const d = V(ax.dir).normalize();
         const n = Math.abs(parseInt(ax.symbol, 10));
-        const color = c(axColor[n] || col.ink);
+        const color = c(dirCol(ax.cls, col.ink));
         const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 2.5, 8), new THREE.MeshBasicMaterial({ color }));
         cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d);
         this.content.add(cyl);
@@ -444,6 +450,20 @@ export class View3D {
           this.content.add(e);
         }
       });
+    }
+    if (opts.arc) {
+      // Winkel: Grosskreisbogen zwischen den beiden Polen auf der Lagekugel
+      const pts = arcPoints(opts.arc.a, opts.arc.b, 96).map((p) => V(p).multiplyScalar(1.004));
+      const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, 0.014, 8, false), new THREE.MeshBasicMaterial({ color: c(col.accent) }));
+      this.content.add(tube);
+      if (opts.arc.label) {
+        const el = document.createElement('div');
+        el.className = 'lbl3d lbl-angle';
+        el.textContent = opts.arc.label;
+        const lab = new THREE.CSS2DObject(el);
+        lab.position.copy(pts[Math.floor(pts.length / 2)].clone().multiplyScalar(1.12));
+        this.content.add(lab);
+      }
     }
     if (opts.showRays) this._rays(vis.map(({ f }) => f.normal), col);
     if (opts.showAxes) this._axisArrows(poly.axes, col);

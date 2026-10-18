@@ -1,0 +1,97 @@
+/* Selbst gehostete Schriften (OFL-1.1, siehe LICENSE-*.txt); Quelle: npm-Pakete @fontsource/* */
+/* ibm-plex-sans-latin-400-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(ibm-plex-sans-latin-400-normal.woff2) format('woff2');
+}
+/* ibm-plex-sans-latin-400-italic */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src: url(ibm-plex-sans-latin-400-italic.woff2) format('woff2');
+}
+/* ibm-plex-sans-latin-500-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(ibm-plex-sans-latin-500-normal.woff2) format('woff2');
+}
+/* ibm-plex-sans-latin-600-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(ibm-plex-sans-latin-600-normal.woff2) format('woff2');
+}
+/* ibm-plex-sans-greek-400-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(ibm-plex-sans-greek-400-normal.woff2) format('woff2');
+}
+/* ibm-plex-sans-greek-400-italic */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src: url(ibm-plex-sans-greek-400-italic.woff2) format('woff2');
+}
+/* ibm-plex-sans-greek-500-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(ibm-plex-sans-greek-500-normal.woff2) format('woff2');
+}
+/* ibm-plex-sans-greek-600-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(ibm-plex-sans-greek-600-normal.woff2) format('woff2');
+}
+/* ibm-plex-mono-latin-400-normal */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(ibm-plex-mono-latin-400-normal.woff2) format('woff2');
+}
+/* ibm-plex-mono-latin-500-normal */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(ibm-plex-mono-latin-500-normal.woff2) format('woff2');
+}
+/* source-serif-4-latin-500-normal */
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(source-serif-4-latin-500-normal.woff2) format('woff2');
+}
+/* source-serif-4-latin-600-normal */
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(source-serif-4-latin-600-normal.woff2) format('woff2');
+}

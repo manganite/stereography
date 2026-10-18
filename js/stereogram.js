@@ -101,6 +101,26 @@ export function symbolIcon(symbol, centre, col, size = 26) {
   return `<svg class="sym-icon" viewBox="-14 -14 28 28" width="${size}" height="${size}" aria-hidden="true"><g transform="rotate(${a})">${axisSymbolSVG(symbol, centre, col)}</g></svg>`;
 }
 
+/** Punkte auf dem kürzeren Grosskreisbogen von a nach b (Einheitsvektoren); bei a ≈ −b ein beliebiger Halbkreis. */
+export function arcPoints(a, b, n = 90) {
+  a = normalize(a); b = normalize(b);
+  const d = Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]));
+  const om = Math.acos(d);
+  let u;
+  if (om > Math.PI - 1e-6) {
+    u = cross(a, Math.abs(a[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0]);
+  } else {
+    u = [b[0] - d * a[0], b[1] - d * a[1], b[2] - d * a[2]];
+  }
+  u = normalize(u);
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = (om * i) / n;
+    pts.push([a[0] * Math.cos(t) + u[0] * Math.sin(t), a[1] * Math.cos(t) + u[1] * Math.sin(t), a[2] * Math.cos(t) + u[2] * Math.sin(t)]);
+  }
+  return pts;
+}
+
 /** Polylinie eines Grosskreises (obere Hälfte) mit Normale n. */
 function greatCirclePath(n) {
   n = normalize(n);
@@ -189,26 +209,30 @@ export function buildSVG(scene, { standalone = false } = {}) {
   const fw = [];
   // Dünne Linien (ITA): liegende Symmetrieachsen als Durchmesser, im kubischen System
   // zusätzlich die Zonen {100} und {110}, soweit sie keine Spiegelebenen sind.
-  let thin = '';
+  // Farben je Element (Blickrichtung) optional: axis.color, mirror {n, color}; sonst Tinte
+  const byColor = new Map();
+  const addPath = (color, d) => byColor.set(color, (byColor.get(color) || '') + d + ' ');
   for (const ax of scene.axes || []) {
     if (Math.abs(ax.dir[2]) >= 1e-6) continue;
     const a = project(ax.dir), b = project(scale(ax.dir, -1));
-    thin += `M ${f(a.x)},${f(a.y)} L ${f(b.x)},${f(b.y)} `;
+    addPath((!scene.faint && ax.color) || fc.ink, `M ${f(a.x)},${f(a.y)} L ${f(b.x)},${f(b.y)}`);
   }
   for (const n of scene.zones || []) {
     const p = greatCirclePath(n);
-    if (p) thin += p + ' ';
+    if (p) addPath(fc.ink, p);
   }
-  if (thin) fw.push(`<path d="${thin}" fill="none" stroke="${fc.ink}" stroke-width="${scene.faint ? 0.9 : 1.1}"/>`);
+  for (const [color, d] of byColor) fw.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="${scene.faint ? 0.9 : 1.1}"/>`);
 
-  // Spiegelebenen
-  let mirr = '';
-  for (const n of scene.mirrors || []) {
+  // Spiegelebenen (nach Farbe gruppiert)
+  const mirrBy = new Map();
+  for (const m of scene.mirrors || []) {
+    const n = Array.isArray(m) ? m : m.n;
+    const color = (!Array.isArray(m) && !scene.faint && m.color) || fc.mirror;
     const p = greatCirclePath(n);
-    if (p) mirr += p + ' ';
+    if (p) mirrBy.set(color, (mirrBy.get(color) || '') + p + ' ');
   }
-  if (mirr) fw.push(`<path d="${mirr}" fill="none" stroke="${fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}" stroke-linecap="round" stroke-linejoin="round"/>`);
-  if (scene.primitiveBold) fw.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}"/>`);
+  for (const [color, d] of mirrBy) fw.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="${scene.faint ? 2 : 2.8}" stroke-linecap="round" stroke-linejoin="round"/>`);
+  if (scene.primitiveBold) fw.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${(!scene.faint && scene.primitiveColor) || fc.mirror}" stroke-width="${scene.faint ? 2 : 2.8}"/>`);
   out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${col.ink}" stroke-width="1.2"/>`);
   const centreTaken = scene.centreAtOrigin || (scene.axes || []).some((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
   if (!centreTaken) out.push(`<g stroke="${col.ink}" stroke-width="1"><line x1="${C - 5}" y1="${C}" x2="${C + 5}" y2="${C}"/><line x1="${C}" y1="${C - 5}" x2="${C}" y2="${C + 5}"/></g>`);
@@ -241,7 +265,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   }
   const tr = (P) => `translate(${f(P.q.x)},${f(P.q.y)}) rotate(${f(P.ang)})${scene.faint ? ' scale(0.8)' : ''}`;
   for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, false, fc, true)}</g>`);
-  for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, fc)}</g>`);
+  for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, !scene.faint && P.ax.color ? { ...fc, axis: P.ax.color } : fc)}</g>`);
   if (scene.centreAtOrigin) fw.push(`<circle cx="${C}" cy="${C}" r="${f(SYM * 0.38)}" fill="${col.paper}" stroke="${fc.axis}" stroke-width="1.4"/>`);
   if (fw.length) out.push(`<g${scene.faint ? ' opacity="0.55"' : ''}>${fw.join('')}</g>`);
 
@@ -260,6 +284,28 @@ export function buildSVG(scene, { standalone = false } = {}) {
     const s = 6;
     out.push(`<g stroke="${col.accent}" stroke-width="2.2" stroke-linecap="round"><line x1="${f(q.x - s)}" y1="${f(q.y - s)}" x2="${f(q.x + s)}" y2="${f(q.y + s)}"/><line x1="${f(q.x - s)}" y1="${f(q.y + s)}" x2="${f(q.x + s)}" y2="${f(q.y - s)}"/></g>`);
     if (scene.zone.label) out.push(textWithBars(scene.zone.label, q.x + 10, q.y + 18, `font-family="${font}" font-size="13.5" font-weight="600" fill="${col.accent}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"`));
+  }
+
+  // Winkel: Grosskreisbogen zwischen zwei Polen; Abschnitte auf der unteren Halbkugel gestrichelt
+  if (scene.arc) {
+    const pts = arcPoints(scene.arc.a, scene.arc.b, 120);
+    let run = [], up = null;
+    const flush = () => {
+      if (run.length > 1) out.push(`<path d="M ${run.map((q) => `${f(q.x)},${f(q.y)}`).join(' L ')}" fill="none" stroke="${col.accent}" stroke-width="${up ? 3.2 : 2}" stroke-linecap="round"${up ? '' : ' stroke-dasharray="6 5"'}/>`);
+    };
+    for (const p of pts) {
+      const q = project(p);
+      if (up !== null && q.upper !== up) { flush(); run = [run[run.length - 1]]; }
+      up = q.upper; run.push(q);
+    }
+    flush();
+    // Beschriftung am Bogenmittelpunkt, nach aussen versetzt
+    const m = project(pts[Math.floor(pts.length / 2)]);
+    let dx = m.x - C, dy = m.y - C;
+    const l = Math.hypot(dx, dy);
+    if (l < 1) { dx = 0; dy = -1; } else { dx /= l; dy /= l; }
+    const fs = (scene.labelSize || 14.5) * 1.05;
+    out.push(`<text x="${f(m.x + dx * 14)}" y="${f(m.y + dy * 14 + fs * 0.35)}" font-family="${font}" font-size="${f(fs)}" font-weight="600" fill="${col.accent}" text-anchor="${dx > 0.35 ? 'start' : dx < -0.35 ? 'end' : 'middle'}" paint-order="stroke" stroke="${col.paper}" stroke-width="4" stroke-linejoin="round">${scene.arc.label}</text>`);
   }
 
   // Pole
@@ -296,15 +342,16 @@ export function buildSVG(scene, { standalone = false } = {}) {
     let dx = cl.x - C, dy = cl.y - C;
     const l = Math.hypot(dx, dy);
     if (l < 1) { dx = 0.6; dy = 0.8; } else { dx /= l; dy /= l; }
-    const off = 16;
-    const lh = 16;
+    const fs = scene.labelSize || 14.5;
+    const off = fs * 1.1;
+    const lh = fs * 1.1;
     const anchor = dx > 0.35 ? 'start' : dx < -0.35 ? 'end' : 'middle';
-    let by = cl.y + dy * off + 4.5;
+    let by = cl.y + dy * off + fs * 0.31;
     if (dy < -0.35) by -= (cl.items.length - 1) * lh;
     else if (Math.abs(dy) <= 0.35) by -= ((cl.items.length - 1) * lh) / 2;
     cl.items.forEach((P, k) => {
       const fill = P.selected ? col.accent : P.aux ? col.muted : P.q.upper ? col.ink : col.muted;
-      out.push(textWithBars(P.label, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="14.5" fill="${fill}"${P.selected ? ' font-weight="700"' : ''} text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`));
+      out.push(textWithBars(P.label, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="${f(fs)}" fill="${fill}"${P.selected ? ' font-weight="600"' : ''} text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`));
     });
   }
   // Treffer-Flächen für Klick/Tippen

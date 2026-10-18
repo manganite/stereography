@@ -144,15 +144,15 @@ const AUX_CANDIDATES = (() => {
 })();
 
 /**
- * Ergänzt eine offene Form durch Formen derselben Punktgruppe, bis das Polyeder geschlossen ist.
- * Gibt die Liste der Ergänzungsformen zurück: [{hkls}]
+ * Ergänzt eine offene Form (oder Kombination) durch Formen derselben Punktgruppe, bis das Polyeder
+ * geschlossen ist. basePlanes: Ebenen der vorhandenen Formen. Rückgabe: [{hkls}]
  */
-function closeForm(mainHKL, Ws, B, tAux) {
-  const used = new Set(mainHKL.map(hklKey));
+function closeForm(basePlanes, Ws, B, tAux) {
+  const used = new Set(basePlanes.map((p) => hklKey(p.hkl)));
   const aux = [];
   const planesOf = (list, t, role) => list.map((h) => ({ hkl: h, n: mulVec(B, h), t, role }));
   for (let iter = 0; iter < 8; iter++) {
-    const planes = [...planesOf(mainHKL, 1, 'main'), ...aux.flatMap((a) => planesOf(a.hkls, tAux, 'aux')), ...boxPlanes()];
+    const planes = [...basePlanes, ...aux.flatMap((a) => planesOf(a.hkls, tAux, 'aux')), ...boxPlanes()];
     const poly = intersectHalfspaces(planes);
     // offene Richtung: Mittel der Richtungen zu den Ecken am Hilfswürfel (bzw. fernste Ecke)
     const farV = poly.verts.filter((v) => Math.max(...v.map(Math.abs)) > BOX * 0.9);
@@ -229,8 +229,17 @@ export function orientationMatrix(A, preset) {
  * Rückgabe: [{pts:[3 Punkte], det}] in Bildschirmkoordinaten (vor Grössenskalierung).
  */
 export function faceMotifs(faces, ops) {
-  const f0 = faces.find((f) => f.role === 'main');
-  if (!f0) return [];
+  const out = [];
+  const done = new Set();
+  for (const f0 of faces) {
+    if (f0.role !== 'main' || done.has(f0.form || 0)) continue;
+    done.add(f0.form || 0);
+    out.push(...motifsOn(f0, ops));
+  }
+  return out;
+}
+
+function motifsOn(f0, ops) {
   const c = f0.center, n = f0.normal;
   // Inkreisradius-Abschätzung: kleinster Abstand vom Flächenmittelpunkt zu den Kanten
   let r = Infinity;
@@ -259,10 +268,13 @@ function canonicalRep(hkls) {
 /**
  * Baut den Kristall zu einem Katalogeintrag.
  * params: { entryId, lat, broken, open, auxDist, presetId }
+ * Beispielkristall (Kombination): statt entryId { groupId, forms: [{hkl, r | t}] };
+ * r: Zentralabstand der Flächen, t: Abschnittsform h·x + k·y + l·z = t (Bruchkoordinaten).
  */
 export function buildCrystal(params) {
-  const entry = entryById(params.entryId);
-  const groupId = entry.pg;
+  const combo = params.forms && params.forms.length ? params.forms : null;
+  const entry = combo ? null : entryById(params.entryId);
+  const groupId = combo ? params.groupId : entry.pg;
   const sys = SYSTEM_OF[groupId];
   const hex = isHexSystem(sys);
   const lat = params.broken ? { ...params.lat } : constrainLattice(params.lat, sys);
@@ -272,9 +284,19 @@ export function buildCrystal(params) {
   const M = mul(transpose(A), A);
 
   const Ws = latticeOps(groupId);
-  const mainHKL = hklOrbit(Ws, entry.hkl);
+  // Formen: eine (Katalog) oder mehrere (Beispielkristall); doppelte Bahnen werden übersprungen
+  const formList = [];
+  const taken = new Set();
+  for (const f of combo || [{ hkl: entry.hkl, t: 1 }]) {
+    const hkls = hklOrbit(Ws, f.hkl);
+    if (hkls.some((h) => taken.has(hklKey(h)))) continue;
+    hkls.forEach((h) => taken.add(hklKey(h)));
+    formList.push({ hkls, rep: f.hkl, tOf: (h) => (f.t != null ? f.t : f.r * norm(mulVec(B, h))) });
+  }
+  const mainHKL = formList[0].hkls;
   const tAux = params.auxDist ?? 1;
-  const auxForms = closeForm(mainHKL, Ws, B, tAux);
+  const formPlanes = formList.flatMap((F, fi) => F.hkls.map((h) => ({ hkl: h, n: mulVec(B, h), t: F.tOf(h), role: 'main', form: fi })));
+  const auxForms = closeForm(formPlanes, Ws, B, tAux);
 
   // Restsymmetrie bei freier Verzerrung
   const Wred = reducedOps(Ws, M);
@@ -295,7 +317,7 @@ export function buildCrystal(params) {
   orbitsMain.forEach((orb, i) => orb.forEach((h) => orbitIndex.set(hklKey(h), i)));
 
   const planes = [
-    ...mainHKL.map((h) => ({ hkl: h, n: mulVec(B, h), t: 1, role: 'main', orbit: orbitIndex.get(hklKey(h)) })),
+    ...formPlanes.map((p) => ({ ...p, orbit: p.form === 0 ? orbitIndex.get(hklKey(p.hkl)) : 0 })),
     ...auxForms.flatMap((a, ai) => a.hkls.map((h) => ({ hkl: h, n: mulVec(B, h), t: tAux, role: 'aux', aux: ai }))),
   ];
   const poly = intersectHalfspaces(planes);
@@ -306,16 +328,18 @@ export function buildCrystal(params) {
   const Ot = transpose(O);
 
   const cen = scale(poly.verts.reduce((s, v) => add(s, v), [0, 0, 0]), 1 / Math.max(1, poly.verts.length));
-  const sc = poly.volume > 1e-9 ? 1 / Math.cbrt(poly.volume) : 1;
+  // Grösse nach dem Volumen; sehr gestreckte Körper zusätzlich so begrenzt, dass sie nicht weit aus der Kugel ragen
+  const maxR = Math.max(1e-9, ...poly.verts.map((v) => norm(sub(v, cen))));
+  const sc = Math.min(poly.volume > 1e-9 ? 1 / Math.cbrt(poly.volume) : 1, 1.3 / maxR);
   const tr = (v) => mulVec(O, scale(sub(v, cen), sc));
   const faces = poly.faces.map((f) => ({
-    hkl: f.hkl, role: f.role, orbit: f.orbit, aux: f.aux,
+    hkl: f.hkl, role: f.role, orbit: f.orbit, aux: f.aux, form: f.form,
     normal: normalize(mulVec(O, f.u)),
     verts: f.verts.map(tr),
     center: tr(f.center),
   }));
   // Flächen der Hauptform, die durch Ergänzungsformen ganz weggeschnitten wurden (sollte nicht vorkommen)
-  const lostMain = mainHKL.length - faces.filter((f) => f.role === 'main').length;
+  const lostMain = mainHKL.length - faces.filter((f) => f.role === 'main' && f.form === 0).length;
 
   const axes = [
     { name: hex ? 'a₁' : 'a', dir: normalize(mulVec(O, mulVec(A, [1, 0, 0]))) },
@@ -356,6 +380,7 @@ export function buildCrystal(params) {
     framework: groupScreen, motifs,
     motifsPerFace: Wred.length / Math.max(1, orbitsMain[0].length),
     auxReps: auxForms.map((a) => ({ hkls: a.hkls, rep: canonicalRep(a.hkls) })),
+    forms: formList.map((F, fi) => ({ hkls: F.hkls, rep: F.rep, present: faces.filter((f) => f.role === 'main' && f.form === fi).length })),
   };
 }
 

@@ -153,6 +153,7 @@ select {
 .stereo-tools button:hover { border-color: var(--muted); }
 .stereo-tools button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
 .lg .sym-icon { flex: none; }
+.check.sub { padding-left: 26px; font-size: 0.88rem; }
 .check { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 0.92rem; }
 .check input { width: 17px; height: 17px; accent-color: var(--accent); margin: 0; }
 .range { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; }
@@ -180,7 +181,6 @@ select {
 .sect > summary::after { content: ''; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform 0.15s; margin-right: 4px; }
 .sect[open] > summary::after { transform: rotate(45deg); }
 .sect[open] > summary { margin-bottom: 10px; }
-.sect > summary .badge { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--accent); }
 .resetbtn { justify-self: start; border: 0; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 0.82rem; padding: 4px 2px; }
 .resetbtn:hover { color: var(--ink); }
 
@@ -327,6 +327,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
           <select id="preset-select"></select>
         </div>
         <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
+        <label class="check sub" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
         <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
         <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster)</label>
         <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
@@ -353,7 +354,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       </details>
 
       <details class="sect" id="ctl-poly-lat" open hidden>
-        <summary>Gitter</summary>
+        <summary>Gitter und Gestalt</summary>
         <div class="stack">
           <p class="hintline" id="lat-fixed">Kubisch: Das Gitter hat keine freien Parameter.</p>
           <div class="range" id="row-lat-ba"><label for="lat-ba">b/a</label><output id="lat-ba-out"></output>
@@ -366,16 +367,16 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
             <input type="range" id="lat-be" min="60" max="150" step="1"></div>
           <div class="range" id="row-lat-ga"><label for="lat-ga">γ</label><output id="lat-ga-out"></output>
             <input type="range" id="lat-ga" min="60" max="150" step="1"></div>
-          <button class="linkbtn" id="poly-reset" type="button">Gitter und Abstände zurücksetzen</button>
-        </div>
-      </details>
-
-      <details class="sect" id="ctl-poly-open" open hidden>
-        <summary>Offene Form</summary>
-        <div class="stack">
-          <label class="check"><input type="checkbox" id="poly-open">Offene Form zeigen (Ergänzungsformen ausblenden)</label>
-          <div class="range"><label for="poly-aux">Abstand der Ergänzungsformen</label><output id="poly-aux-out"></output>
-            <input type="range" id="poly-aux" min="0.3" max="3" step="0.05"></div>
+          <label class="check"><input type="checkbox" id="poly-broken">Symmetrie brechen (alle Gitterparameter frei)</label>
+          <p class="group-title">Gestalt</p>
+          <div class="range"><label for="poly-size">Grösse des Kristalls</label><output id="poly-size-out"></output>
+            <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>
+          <div class="stack" id="ctl-poly-open" hidden>
+            <label class="check"><input type="checkbox" id="poly-open">Offene Form zeigen (Ergänzungsformen ausblenden)</label>
+            <div class="range"><label for="poly-aux">Abstand der Ergänzungsformen</label><output id="poly-aux-out"></output>
+              <input type="range" id="poly-aux" min="0.3" max="3" step="0.05"></div>
+          </div>
+          <button class="linkbtn" id="poly-reset" type="button">Gitter und Gestalt zurücksetzen</button>
         </div>
       </details>
 
@@ -393,16 +394,6 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
           <label class="check"><input type="checkbox" id="v-plane">Stereogramm in der Äquatorebene</label>
           <label class="check"><input type="checkbox" id="v-rays">Projektionsstrahlen (zum Süd- bzw. Nordpol)</label>
           <label class="check" id="row-normals"><input type="checkbox" id="v-normals">Flächennormalen</label>
-          <div class="range" id="row-size"><label for="poly-size">Grösse des Kristalls</label><output id="poly-size-out"></output>
-            <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>
-        </div>
-      </details>
-
-      <details class="sect" id="sec-adv" hidden>
-        <summary>Erweitert <span class="badge" id="adv-badge"></span></summary>
-        <div class="stack">
-          <label class="check"><input type="checkbox" id="poly-broken">Symmetrie brechen (alle Gitterparameter frei)</label>
-          <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
         </div>
       </details>
     </div>

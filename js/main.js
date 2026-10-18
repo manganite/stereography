@@ -317,15 +317,6 @@ function renderPoly() {
     state.selected, labels3d);
 }
 
-/** Anzahl aktiver Optionen im eingeklappten Bereich „Erweitert“. */
-function advActive() {
-  return [state.poly.broken, state.poly.bravais && isHexSystem(state.poly.system)].filter(Boolean).length;
-}
-function updateAdvBadge() {
-  const n = advActive();
-  $('adv-badge').textContent = n ? n + ' aktiv' : '';
-}
-
 let pending = false;
 function render() {
   if (pending) return;
@@ -333,7 +324,6 @@ function render() {
   requestAnimationFrame(() => {
     pending = false;
     if (state.mode === 'pg') renderPG(); else renderPoly();
-    updateAdvBadge();
     save();
   });
 }
@@ -648,7 +638,7 @@ function setMode(mode) {
   $('tab-pg').setAttribute('aria-selected', String(mode === 'pg'));
   $('tab-poly').setAttribute('aria-selected', String(mode === 'poly'));
   for (const id of ['ctl-pg', 'ctl-pg-opts']) $(id).hidden = mode !== 'pg';
-  for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-open', 'sec-adv', 'row-normals', 'row-size', 'stereo-tools']) $(id).hidden = mode !== 'poly';
+  for (const id of ['ctl-poly', 'ctl-poly-lat', 'row-normals', 'stereo-tools']) $(id).hidden = mode !== 'poly';
   $('stereo-sub').textContent = 'Blick ∥ c';
   render();
 }
@@ -729,9 +719,8 @@ function init() {
   for (const b of document.querySelectorAll('.figswitch button')) b.addEventListener('click', () => setFig(b.dataset.fig));
   setFig(state.fig);
 
-  // Auf dem Telefon „Darstellung“ zunächst eingeklappt; „Erweitert“ offen, falls dort etwas aktiv ist
+  // Auf dem Telefon „Darstellung“ zunächst eingeklappt
   if (window.matchMedia('(max-width: 719px)').matches) $('sec-view').open = false;
-  $('sec-adv').open = advActive() > 0;
 
   $('reset-all').addEventListener('click', () => {
     resetting = true;

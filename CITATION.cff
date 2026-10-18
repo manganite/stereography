@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "Wenn Sie die App in Lehre oder Publikationen nennen, zitieren Sie sie bitte mit diesen Angaben."
+title: "Stereographische Projektion: Lern-App zu den 32 kristallographischen Punktgruppen und ihren Kristallformen"
+type: software
+authors:
+  - family-names: Lottermoser
+    given-names: Thomas
+    affiliation: "ETH Zürich"
+version: 1.0.0
+date-released: 2026-10-18
+license: MIT
+repository-code: "https://github.com/manganite/stereography"
+url: "https://manganite.github.io/stereography/"
+abstract: >-
+  Interaktive Web-App für die Kristallographie-Lehre: Stereogramme der 32
+  kristallographischen Punktgruppen nach International Tables for
+  Crystallography, Vol. A, Kristallformen mit Flächen- und Eigensymmetrie,
+  Beispielkristalle sowie eine gekoppelte 3D-Konstruktion der
+  stereographischen Projektion.
+keywords:
+  - crystallography
+  - stereographic projection
+  - point groups
+  - crystal forms
+  - crystal morphology
+  - teaching

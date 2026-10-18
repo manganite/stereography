@@ -75,7 +75,11 @@ body {
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 0 32px;
 }
-.ov { text-decoration: overline; text-decoration-thickness: 0.07em; text-underline-offset: 0; }
+/* Querstrich (Drehinversion, negative Indizes): knapp über der Ziffer statt auf Höhe der Oberlänge.
+   --ovt: Abstand von der Oberkante der Schriftzeile (Plex Sans 0,17 em, Source Serif 0,22 em). */
+.ov { position: relative; text-decoration: none; }
+.ov::before { content: ''; position: absolute; left: 0.06em; right: 0.06em; top: var(--ovt, 0.17em); border-top: max(1px, 0.07em) solid currentColor; }
+.pgb, .hm-big:not(.form-sym), .dirhm, .brand h1 { --ovt: 0.22em; }
 button, select, input { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
@@ -96,6 +100,9 @@ button, select, input { font: inherit; color: inherit; }
   border: 0; background: transparent; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; color: var(--muted);
 }
 .tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.top .tabs { margin-left: auto; }
+.linkcopy { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 12px; cursor: pointer; color: var(--muted); font-weight: 500; }
+.linkcopy:hover { color: var(--ink); border-color: var(--muted); }
 
 /* Raster: links eine angeheftete Seitenleiste mit allen Bedienelementen, rechts die Tafeln,
    darunter die Kenndaten. So bleiben Bedienung und Bild gleichzeitig sichtbar. */
@@ -148,6 +155,7 @@ select {
 .setrow { flex-wrap: wrap; }
 .setrow > span:first-child { flex-basis: 100%; }
 .setrow button { font-style: normal; }
+.setrow button[data-axis] { font-style: italic; }
 .stereo-wrap { position: relative; }
 .stereo-tools { position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 6px; }
 .stereo-tools button {
@@ -267,6 +275,7 @@ select {
 .facts div { border-top: 1px solid var(--line); padding-top: 5px; }
 .facts dt { font-size: 0.75rem; color: var(--muted); }
 .facts dd { margin: 0; font-weight: 500; }
+.facts .wide { grid-column: 1 / -1; }
 .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
 .info h3 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin: 16px 0 6px; font-weight: 600; }
 .elems { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 4px 16px; }
@@ -312,6 +321,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
   .panel-foot { display: none; }
   .legend .lg.hint { display: none; }
   .dir-tools .cap { display: none; }
+  .linkcopy { display: none; }
   .wide-only { display: none; }
   .panel-head { gap: 6px; }
   .figswitch button { padding: 5px 8px; }
@@ -332,6 +342,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
     <button id="tab-pg" role="tab" aria-selected="true">Punktgruppen</button>
     <button id="tab-poly" role="tab" aria-selected="false">Kristallformen</button>
   </div>
+  <button class="linkcopy" id="copy-link" type="button" title="Link auf genau diese Ansicht in die Zwischenablage kopieren (z. B. für Folien)">Link kopieren</button>
 </header>
 
 <main class="layout">
@@ -351,6 +362,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
         <div class="field">
           <label for="form-select">Form (nach Punktgruppe)</label>
           <select id="form-select"></select>
+          <p class="hintline" id="form-hint">Je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie. Alle Formen mit „Flächensymmetrie zeigen“.</p>
         </div>
         <div class="field">
           <label for="preset-select">Lage</label>
@@ -359,7 +371,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
         <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
         <label class="check sub" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
         <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
-        <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster)</label>
+        <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster, alle Formen)</label>
         <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
       </section>
     </div>
@@ -370,7 +382,6 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
         <div class="stack">
           <label class="check"><input type="checkbox" id="pg-elements">Symmetriegerüst</label>
           <label class="check"><input type="checkbox" id="pg-object">Objekt in allgemeiner Lage</label>
-          <label class="check"><input type="checkbox" id="pg-dircolors">Symmetrieelemente nach Blickrichtung färben</label>
           <label class="check"><input type="checkbox" id="pg-colorful">Pole nach Händigkeit färben</label>
           <div class="range">
             <label for="pg-theta">Polabstand ρ</label><output id="pg-theta-out"></output>
@@ -415,6 +426,7 @@ footer { max-width: 1480px; margin: 24px auto 0; color: var(--muted); font-size:
       <details class="sect" id="sec-view" open>
         <summary>Darstellung</summary>
         <div class="stack">
+          <label class="check"><input type="checkbox" id="v-dircolors">Symmetrieelemente nach Blickrichtung färben</label>
           <label class="check"><input type="checkbox" id="v-wulff">Wulffsches Netz</label>
           <div class="range" id="row-wulffrot">
             <label for="v-wulffrot">Netz drehen</label><output id="v-wulffrot-out"></output>

@@ -1,4 +1,4 @@
-// 3D-Ansicht: Projektionskugel, Äquatorebene mit dem Stereogramm, Symmetrieelemente,
+// 3D-Ansicht: Umkugel, Äquatorebene mit dem Stereogramm, Symmetrieelemente,
 // Objekte in allgemeiner Lage bzw. Polyeder, Flächennormalen und Projektionsstrahlen.
 // Weltkoordinaten = kartesisches Kristallsystem (x ∥ a, y ∥ b, z ∥ c).
 
@@ -336,7 +336,7 @@ export class View3D {
     this.requestRender();
   }
 
-  /** Grosskreisbogen zwischen zwei Polen auf der Lagekugel mit Winkelangabe (Werkzeug Winkel). */
+  /** Grosskreisbogen zwischen zwei Polen auf der Umkugel mit Winkelangabe (Werkzeug Winkel). */
   _arc(arc, col) {
     const pts = arcPoints(arc.a, arc.b, 96).map((p) => V(p).multiplyScalar(1.004));
     const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, 0.014, 8, false), new THREE.MeshBasicMaterial({ color: new THREE.Color(col.accent) }));

@@ -13,7 +13,7 @@ export const TIPS = {
   'pg-object': 'Ein Pol, der auf keinem Symmetrieelement liegt. Alle Operationen der Gruppe wirken auf ihn; die Zahl der Pole ist die Ordnung der Gruppe.',
   'pg-colorful': 'Pole, die durch eine Drehung aus dem Ausgangspol entstehen, in einer Farbe; Spiegelbilder (aus Spiegelung, Inversion oder Drehinversion) in der anderen.',
   'pg-theta': 'Poldistanz ρ: Winkel des Ausgangspols vom Nordpol, also vom Zentrum des Stereogramms. Negative Werte: untere Halbkugel, vom Südpol gezählt.',
-  'pg-phi': 'Azimut φ: Drehwinkel um die Blickrichtung, ab dem rechten Rand im Uhrzeigersinn.',
+  'pg-phi': 'Azimut φ: Drehwinkel um die Projektionsrichtung, ab dem rechten Rand im Uhrzeigersinn.',
   // Kristallformen
   'ex-select': 'Kristalle aus Vorlesung und Lehrbuch: mehrere Formen derselben Punktgruppe, jede in eigener Farbe.',
   'sys-select': 'Bestimmt das Achsensystem und die Punktgruppen, deren Formen zur Auswahl stehen.',
@@ -41,7 +41,7 @@ export const TIPS = {
   'v-wulff': 'Wulffsches Netz: projiziertes Gradnetz. Winkel zwischen Polen nur auf Grosskreisen (Längenkreisen) ablesen.',
   'v-wulffrot': 'Netz drehen, bis zwei Pole auf demselben Längenkreis liegen, dann die Teilstriche dazwischen zählen.',
   'v-axes': 'Richtungen der Kristallachsen a, b, c (hexagonal a₁, a₂, a₃, c) im Stereogramm und in 3D.',
-  'v-sphere': 'Lagekugel um den Kristall; ihre Durchstosspunkte mit den Flächennormalen sind die Flächenpole.',
+  'v-sphere': 'Umkugel um den Kristall; ihre Durchstosspunkte mit den Flächennormalen sind die Flächenpole.',
   'v-plane': 'Das Stereogramm in der Äquatorebene der Kugel, wie es die Projektion erzeugt.',
   'v-rays': 'Verbindung vom Pol zum Südpol (bei Polen der unteren Halbkugel zum Nordpol). Ihr Schnittpunkt mit der Äquatorebene ist der Punkt im Stereogramm.',
   'v-normals': 'Flächennormalen. Ihr Durchstosspunkt durch die Kugel ist der Flächenpol.',

@@ -216,7 +216,6 @@ export function orbit(ops, p0) {
  * Rückgabe: [{ pos, label (HTML), dirs, hm, axes:[...], mirrors:[normale] }]; Triklin: [].
  * Jede Achse erhält zusätzlich axis.cls = pos, info.mirrorCls[i] = pos des i-ten Spiegels.
  */
-const OV = (d) => `<span class="ov">${d}</span>`;
 /** Positionen des HM-Symbols als Gitterrichtungen [uvw] je Kristallsystem. */
 function directionPositions(system) {
   switch (system) {
@@ -226,7 +225,7 @@ function directionPositions(system) {
       return [{ label: '[001]', uvw: [[0, 0, 1]] }, { label: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0]] }, { label: '⟨110⟩', uvw: [[1, 1, 0], [1, -1, 0]] }];
     case 'trigonal': case 'hexagonal':
       return [{ label: '[001]', uvw: [[0, 0, 1]] }, { label: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0], [-1, -1, 0]] },
-        { label: `⟨1${OV(1)}0⟩`, uvw: [[1, -1, 0], [1, 2, 0], [-2, -1, 0]] }];
+        { label: '⟨210⟩', uvw: [[1, -1, 0], [1, 2, 0], [-2, -1, 0]] }];
     case 'kubisch':
       return [{ label: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] },
         { label: '⟨111⟩', uvw: [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1]] },

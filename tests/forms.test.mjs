@@ -46,3 +46,26 @@ test('reduzierte Formliste ohne Flächensymmetrie: 67 Formen', () => {
   });
   assert.equal(listed.length, 67);
 });
+
+test('Flächenform der kubischen Formen passt zum Namen (Drei- bzw. Vierecke)', () => {
+  // Tristetraeder und Trisoktaeder: Dreiecke; Deltoiddodekaeder und Deltoidikositetraeder: Vierecke (Deltoide).
+  // Borchardt-Ott & Sowa, Tab. 9.7; in 4̄3m und m3̄m ist die Zuordnung zu {hhl} h<l bzw. h>l vertauscht.
+  const ECKEN = { 33: 3, 34: 4, 35: 3, 38: 4, 39: 3, 40: 4, 42: 3, 43: 4, 45: 3, 46: 3, 47: 3 };
+  let checked = 0;
+  for (const e of CATALOG.filter((x) => ECKEN[x.type])) {
+    const C = buildCrystal({ entryId: e.id, lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: null });
+    const main = C.faces.filter((f) => f.role === 'main');
+    assert.equal(main.length, e.mult, e.id);
+    for (const f of main) assert.equal(f.verts.length, ECKEN[e.type], `${e.id} ${FORM_TYPES[e.type].name}`);
+    checked++;
+  }
+  assert.ok(checked >= 15);
+});
+
+test('Kennungen aus v1.0.0 zeigen dieselbe Form (4̄3m)', () => {
+  const byId = (id) => CATALOG.find((e) => e.id === id);
+  assert.deepEqual(byId('-43m:c38').hkl, [1, 1, 2]);
+  assert.equal(FORM_TYPES[byId('-43m:c38').type].name.split(' ')[0], 'Tristetraeder');
+  assert.deepEqual(byId('-43m:c39').hkl, [2, 2, 1]);
+  assert.equal(FORM_TYPES[byId('-43m:c39').type].name.split(' ')[0], 'Deltoiddodekaeder');
+});

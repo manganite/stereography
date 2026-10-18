@@ -57,7 +57,7 @@ export const EXAMPLES = [
       { hkl: [1, 1, 1], r: 1.15 },  // rhombische Pyramide (Ecken oben)
       { hkl: [0, 0, 1], r: 1.2 },   // Pedion oben
     ],
-    src: 'nach Hoffmann, Abb. 3.27 und 3.28, S. 113–114 (Formen aus der Abbildung rekonstruiert)',
+    src: 'nach Hoffmann, Abb. 3.27 und 3.28, S. 113–114 (Formen aus der Abbildung rekonstruiert, Gitter frei gewählt)',
     note: 'Die Pedien {001} und {hkl:0,0,-1} sind verschiedene Formen: Die 2-zählige Achse ist polar, oben und unten sind nicht symmetrieäquivalent.',
   },
   {
@@ -93,7 +93,7 @@ export const EXAMPLES = [
       { hkl: [0, 1, 0], r: 0.8 },
       { hkl: [1, -1, 0], r: 0.95 },
     ],
-    src: 'nach Hoffmann, Abb. 3.20 und 3.21, S. 109–110 (Formen aus der Abbildung rekonstruiert)',
+    src: 'nach Hoffmann, Abb. 3.20 und 3.21, S. 109–110 (Formen aus der Abbildung rekonstruiert, Gitter frei gewählt)',
     note: 'Alle Formen sind Pinakoide: Das Inversionszentrum ist das einzige Symmetrieelement, jede Fläche hat nur ihre Gegenfläche als Partner.',
   },
   {
@@ -104,7 +104,7 @@ export const EXAMPLES = [
       { hkl: [1, 0, 0], r: 8 },
       { hkl: [1, 0, 1], r: 11 },
     ],
-    src: 'Hoffmann, S. 125–126 („Nano-Weinfass“, Abstände 15, 8 und 11 Å)',
+    src: 'Hoffmann, S. 125–127, Abb. 3.39–3.42 („Nano-Weinfass“, Abstände 15, 8 und 11 Å)',
   },
   {
     id: 'quarz', name: 'Linksquarz', formula: 'SiO₂', sys: 'trigonal', pg: '321',
@@ -117,7 +117,7 @@ export const EXAMPLES = [
       { hkl: [6, -1, 1], r: 1.12 },  // x, linkes trigonales Trapezoeder {6-1-51}
     ],
     src: 'Formen und Händigkeit nach Wikipedia „Quarz“ (Morphologie); Raumgruppe P3₁21; Gitter a = 4,91 Å, c = 5,40 Å',
-    note: 'Beim Linksquarz liegen die Flächen der trigonalen Dipyramide und des Trapezoeders links von den Flächen des Hauptrhomboeders {hkl:1,0,1} (Blick auf eine Prismenfläche, c nach oben). Dipyramide und Trapezoeder gibt es in 32 je als linke und rechte Form; ein unverzwillingter Kristall zeigt nur eine Sorte. Vergleiche „Rechtsquarz“.',
+    note: 'Beim Linksquarz liegen die Flächen der trigonalen Dipyramide und des Trapezoeders links von den Flächen des Hauptrhomboeders {hkl:1,0,1} (Blick auf eine Prismenfläche, c nach oben). Dipyramide und Trapezoeder gibt es in 32 je als linke und rechte Form: Die beiden sind Spiegelbilder voneinander und durch keine Operation von 32 verknüpft. Das Trapezoeder ist schon für sich chiral; bei der Dipyramide bezeichnet links/rechts nur die Lage zu {hkl:1,0,1}. Ein unverzwillingter Kristall zeigt nur eine Sorte. Vergleiche „Rechtsquarz“.',
   },
   {
     id: 'rechtsquarz', name: 'Rechtsquarz', formula: 'SiO₂', sys: 'trigonal', pg: '321',
@@ -144,7 +144,7 @@ export const EXAMPLES = [
       { hkl: [1, 0, -1], r: 1.92 },  // unten: trigonale Pyramide {10-1-1}
     ],
     src: 'Borchardt-Ott & Sowa, Tab. 9.4 Nr. 19 (Punktgruppe 3m); Formen aus der Abbildung rekonstruiert, abgeglichen mit webmineral.com (Schorl, R3m: a = 15,99 Å, c = 7,20 Å)',
-    note: 'Hemimorph: Oben und unten treten verschiedene Formen auf, weil 3m keine Spiegelebene ⊥ c und kein Inversionszentrum hat. Die 3-zählige Achse ist polar (Pyroelektrizität).',
+    note: 'Hemimorph: Oben und unten treten verschiedene Formen auf, weil keine Operation von 3m die Richtung c in −c überführt (keine Spiegelebene ⊥ c, keine 2-zählige Achse ⊥ c, kein Inversionszentrum). Die 3-zählige Achse ist polar; deshalb ist Turmalin pyroelektrisch.',
   },
 ];
 

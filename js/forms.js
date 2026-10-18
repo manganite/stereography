@@ -1,11 +1,13 @@
 // Katalog der Kristallformen nach International Tables for Crystallography, Vol. A (2006),
 // Tab. 10.1.2.2 (Formen je Punktgruppe) und Tab. 10.1.2.3 (die 47 Formen).
+// Namen nach Borchardt-Ott & Sowa, Kristallographie (2018), Abb. 15.2 und Tab. 9.5–9.8;
+// abweichende ITA-Namen in Klammern.
 // Je Punktgruppe die allgemeine Form und die speziellen Grundformen, d. h. je Wyckoff-Lage
 // die erste (fett gedruckte) Form; Grenzformen sind nicht aufgenommen.
 // hkl: Repräsentant mit Zahlenwerten (bei hexagonalen Achsen drei Indizes h k l, i = −(h+k)).
 // sym: Indexmuster nach ITA; mult: Flächenzahl (Multiplizität, dient als Prüfung).
 
-/** Die 47 Formen: deutscher Name und Eigensymmetrie (ITA Tab. 10.1.2.3). */
+/** Die 47 Formen: deutscher Name (Borchardt-Ott, ITA-Name in Klammern) und Eigensymmetrie (ITA Tab. 10.1.2.3). */
 export const FORM_TYPES = {
   1: { name: 'Pedion', eig: '∞m' },
   2: { name: 'Pinakoid', eig: '∞/mm' },
@@ -42,22 +44,26 @@ export const FORM_TYPES = {
   33: { name: 'Tetraeder', eig: '-43m' },
   34: { name: 'Würfel (Hexaeder)', eig: 'm-3m' },
   35: { name: 'Oktaeder', eig: 'm-3m' },
-  36: { name: 'Pentagon-Tritetraeder (Tetartoid)', eig: '23' },
+  36: { name: 'Tetraedrisches Pentagondodekaeder (Tetartoid)', eig: '23' },
   37: { name: 'Pentagondodekaeder (Pyritoeder)', eig: 'm-3' },
   38: { name: 'Deltoiddodekaeder (Tetragon-Tritetraeder)', eig: '-43m' },
-  39: { name: 'Triakistetraeder (Trigon-Tritetraeder)', eig: '-43m' },
+  39: { name: 'Tristetraeder (Trigon-Tritetraeder)', eig: '-43m' },
   40: { name: 'Rhombendodekaeder', eig: 'm-3m' },
-  41: { name: 'Disdodekaeder (Diploeder)', eig: 'm-3' },
-  42: { name: 'Triakisoktaeder (Trigon-Trioktaeder)', eig: 'm-3m' },
+  41: { name: 'Disdodekaeder (Diploid)', eig: 'm-3' },
+  42: { name: 'Trisoktaeder (Trigon-Trioktaeder)', eig: 'm-3m' },
   43: { name: 'Deltoidikositetraeder (Tetragon-Trioktaeder)', eig: 'm-3m' },
-  44: { name: 'Pentagonikositetraeder (Gyroeder)', eig: '432' },
-  45: { name: 'Hexakistetraeder', eig: '-43m' },
-  46: { name: 'Tetrakishexaeder', eig: 'm-3m' },
-  47: { name: 'Hexakisoktaeder', eig: 'm-3m' },
+  44: { name: 'Pentagonikositetraeder (Gyroid)', eig: '432' },
+  45: { name: 'Hexakistetraeder (Hexatetraeder)', eig: '-43m' },
+  46: { name: 'Tetrakishexaeder (Tetrahexaeder)', eig: 'm-3m' },
+  47: { name: 'Hexakisoktaeder (Hexaoktaeder)', eig: 'm-3m' },
 };
 
 // [Wyckoff, Flächensymmetrie, Formtyp, Indexmuster, Repräsentant, Multiplizität, Namensvariante]
 const T = (pg, rows) => rows.map(([wy, fs, type, sym, hkl, mult, alt]) => ({ pg, wy, fs, type, sym, hkl, mult, alt }));
+
+// Kennungen aus v1.0.0 beibehalten, damit Links (f=…) und gespeicherte Auswahl dieselbe Form zeigen:
+// In 4̄3m waren die Formtypen von {112} und {221} vertauscht, die Kennung enthält den Typ.
+const LEGACY_IDS = { '-43m:1,1,2': '-43m:c38', '-43m:2,2,1': '-43m:c39' };
 
 /** Formen je Punktgruppe (Aufstellungen: monoklin Achse b, 321, 3m1, 3̄m1, 4̄2m, 6̄m2). */
 export const CATALOG = [
@@ -102,11 +108,11 @@ export const CATALOG = [
   ...T('23', [['c', '1', 36, 'hkl', [3, 2, 1], 12], ['b', '2..', 34, '100', [1, 0, 0], 6], ['a', '.3.', 33, '111', [1, 1, 1], 4]]),
   ...T('m-3', [['d', '1', 41, 'hkl', [3, 2, 1], 24], ['c', 'm..', 37, '0kl', [0, 2, 1], 12], ['b', '.3.', 35, '111', [1, 1, 1], 8], ['a', '2mm..', 34, '100', [1, 0, 0], 6]]),
   ...T('432', [['d', '1', 44, 'hkl', [3, 2, 1], 24], ['c', '..2', 40, '011', [0, 1, 1], 12], ['b', '.3.', 35, '111', [1, 1, 1], 8], ['a', '4..', 34, '100', [1, 0, 0], 6]]),
-  ...T('-43m', [['d', '1', 45, 'hkl', [3, 2, 1], 24], ['c', '..m', 38, 'hhl (h<l)', [1, 1, 2], 12], ['c', '..m', 39, 'hhl (h>l)', [2, 2, 1], 12],
+  ...T('-43m', [['d', '1', 45, 'hkl', [3, 2, 1], 24], ['c', '..m', 39, 'hhl (h<l)', [1, 1, 2], 12], ['c', '..m', 38, 'hhl (h>l)', [2, 2, 1], 12],
     ['b', '2.mm', 34, '100', [1, 0, 0], 6], ['a', '.3m', 33, '111', [1, 1, 1], 4]]),
   ...T('m-3m', [['f', '1', 47, 'hkl', [3, 2, 1], 48], ['e', '..m', 43, 'hhl (h<l)', [1, 1, 2], 24], ['e', '..m', 42, 'hhl (h>l)', [2, 2, 1], 24],
     ['d', 'm..', 46, '0kl', [0, 2, 1], 24], ['c', 'm.m2', 40, '011', [0, 1, 1], 12], ['b', '.3m', 35, '111', [1, 1, 1], 8], ['a', '4m.m', 34, '100', [1, 0, 0], 6]]),
-].map((e, i) => ({ ...e, id: `${e.pg}:${e.wy}${e.type}`, idx: i }));
+].map((e, i) => ({ ...e, id: LEGACY_IDS[`${e.pg}:${e.hkl.join(',')}`] || `${e.pg}:${e.wy}${e.type}`, idx: i }));
 
 export const formName = (e) => (e.alt && FORM_TYPES[e.type].alt ? FORM_TYPES[e.type].alt : FORM_TYPES[e.type].name);
 export const formEig = (e) => FORM_TYPES[e.type].eig;

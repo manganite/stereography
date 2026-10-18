@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- Begriffe wie in der Vorlesung: Die Lage heisst „[001] ∥ Projektionsrichtung“ (statt „Blickrichtung“, das für die Symmetrierichtungen des Hermann-Mauguin-Symbols reserviert bleibt), die Kugel der 3D-Ansicht „Umkugel“, und die dritte hexagonale Blickrichtung wird als ⟨210⟩ bezeichnet (Borchardt-Ott; dieselbe Richtungsfamilie wie ⟨11̄0⟩ in ITA).
+
 ## [1.2.0] - 2026-10-18
 
 Zonen direkt wählen: alle Zonen des Kristalls in der Infobox, auch mehrere zugleich, jede in eigener Farbe.

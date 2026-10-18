@@ -686,7 +686,7 @@ function renderPoly() {
   $('v3d-hint').textContent = state.poly.tool
     ? [`${tn}: zwei Flächen oder Pole antippen`, `${tn}: zweite Fläche oder zweiten Pol antippen`, `${state.poly.tool === 'zone' ? 'Zone bestimmt' : 'Winkel gemessen'}; nächstes Antippen beginnt neu`][Math.min(state.zoneSel.length, 2)]
     : 'Fläche oder Pol antippen zum Hervorheben';
-  $('stereo-sub').textContent = 'Blick ∥ ' + C.preset.name.replace(' ∥ Blickrichtung', '').replace(/ \(.*\)/, '');
+  $('stereo-sub').textContent = 'Projektion ∥ ' + C.preset.name.replace(' ∥ Projektionsrichtung', '').replace(/ \(.*\)/, '');
   view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
   const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
   view3d.showPolyhedron(C, col,
@@ -959,7 +959,7 @@ function updateInfoPoly(C, col) {
       const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
       const w = C.angle.deg;
       zoneBox = `<div class="zonebox"><strong>Winkel ${hklHTML(f1, hex4)} ∠ ${hklHTML(f2, hex4)} = <span class="num">${w.toFixed(1)}°</span></strong>
-        <p>Das ist der Normalenwinkel n, der Winkel zwischen den beiden Flächennormalen, also der Bogen zwischen den Polen auf der Lagekugel (im Stereogramm als Grosskreisbogen eingezeichnet). Das Reflexionsgoniometer misst diesen Winkel.</p>
+        <p>Das ist der Normalenwinkel n, der Winkel zwischen den beiden Flächennormalen, also der Bogen zwischen den Polen auf der Umkugel (im Stereogramm als Grosskreisbogen eingezeichnet). Das Reflexionsgoniometer misst diesen Winkel.</p>
         <p>Der Flächenwinkel f zwischen den Flächen selbst, innen am Kristall gemessen, ergänzt ihn zu 180°: f = 180° − n = <b class="num">${(180 - w).toFixed(1)}°</b>.</p>
         <p class="note">Mit dem Wulffschen Netz: Netz so drehen, dass beide Pole auf demselben Grosskreis (Meridian) liegen, dann die Teilstriche zwischen ihnen zählen.</p></div>`;
     }
@@ -1292,7 +1292,7 @@ function setMode(mode) {
   syncToolBtns();
   if (mode !== 'poly') $('v3d-hint').textContent = '';
   if (mode !== 'pg') $('v3d-dirs').hidden = true;
-  $('stereo-sub').textContent = 'Blick ∥ c';
+  $('stereo-sub').textContent = 'Projektion ∥ c';
   render();
 }
 

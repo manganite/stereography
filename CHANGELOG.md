@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-18
+
+Hilfen für den Einstieg: Tooltips, ⓘ-Erklärungen auf Touch-Geräten, Karte „Erste Schritte“ und weniger gleichzeitig sichtbare Optionen.
+
 ### Hinzugefügt
 
 - **Tooltips:** Am Laptop erklären Tooltips (Maus oder Tastaturfokus) jedes Bedienelement, die Punktgruppen-Buttons (Symbol, Schoenflies, System, Ordnung) und die Aufstellungen. Über einem Flächenpol zeigt ein Tooltip (hkl), ρ und φ, bei zusammenfallenden Polen beide.
@@ -58,6 +62,7 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/manganite/stereography/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/manganite/stereography/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/manganite/stereography/releases/tag/v1.0.0

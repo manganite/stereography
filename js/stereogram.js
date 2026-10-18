@@ -291,21 +291,23 @@ export function buildSVG(scene, { standalone = false } = {}) {
   if (scene.centreAtOrigin) fw.push(`<circle cx="${C}" cy="${C}" r="${f(SYM * 0.38)}" fill="${col.paper}" stroke="${fc.axis}" stroke-width="1.4"/>`);
   if (fw.length) out.push(`<g${scene.faint ? ' opacity="0.55"' : ''}>${fw.join('')}</g>`);
 
-  // Zone: Zonenkreis (Grosskreis ⊥ Zonenachse) und Pol der Zonenachse
-  if (scene.zone) {
-    const zc = greatCirclePath(scene.zone.axis);
+  // Zonen: Zonenkreis (Grosskreis ⊥ Zonenachse) und Pol der Zonenachse, je Zone in ihrer Farbe
+  const zoneList = scene.zoneList || (scene.zone ? [{ ...scene.zone, color: col.accent }] : []);
+  for (const z of zoneList) {
+    const zcol = z.color || col.accent;
+    const zc = greatCirclePath(z.axis);
     if (zc) {
       // untere Hälfte des Zonenkreises (Projektion vom Nordpol): gespiegelter Bogen, gestrichelt
-      const a = scene.zone.axis;
+      const a = z.axis;
       const zl = scene.showLower !== false ? greatCirclePath([a[0], a[1], -a[2]]) : null;
-      if (zl && Math.abs(a[2]) > 1e-6) out.push(`<path d="${zl}" fill="none" stroke="${col.accent}" stroke-width="1.6" stroke-dasharray="6 5" stroke-linecap="round"/>`);
-      out.push(`<path d="${zc}" fill="none" stroke="${col.accent}" stroke-width="2.2" stroke-linecap="round"/>`);
+      if (zl && Math.abs(a[2]) > 1e-6) out.push(`<path d="${zl}" fill="none" stroke="${zcol}" stroke-width="1.6" stroke-dasharray="6 5" stroke-linecap="round"/>`);
+      out.push(`<path d="${zc}" fill="none" stroke="${zcol}" stroke-width="2.2" stroke-linecap="round"/>`);
     }
-    else out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${col.accent}" stroke-width="2.6"/>`);
-    const q = project(scene.zone.axis);
+    else out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${zcol}" stroke-width="2.6"/>`);
+    const q = project(z.axis);
     const s = 6;
-    out.push(`<g stroke="${col.accent}" stroke-width="2.2" stroke-linecap="round"><line x1="${f(q.x - s)}" y1="${f(q.y - s)}" x2="${f(q.x + s)}" y2="${f(q.y + s)}"/><line x1="${f(q.x - s)}" y1="${f(q.y + s)}" x2="${f(q.x + s)}" y2="${f(q.y - s)}"/></g>`);
-    if (scene.zone.label) out.push(textWithBars(scene.zone.label, q.x + 10, q.y + 18, `font-family="${font}" font-size="13.5" font-weight="600" fill="${col.accent}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"`, { fs: 13.5, anchor: 'start', fill: col.accent }));
+    out.push(`<g stroke="${zcol}" stroke-width="2.2" stroke-linecap="round"><line x1="${f(q.x - s)}" y1="${f(q.y - s)}" x2="${f(q.x + s)}" y2="${f(q.y + s)}"/><line x1="${f(q.x - s)}" y1="${f(q.y + s)}" x2="${f(q.x + s)}" y2="${f(q.y - s)}"/></g>`);
+    if (z.label) out.push(textWithBars(z.label, q.x + 10, q.y + 18, `font-family="${font}" font-size="13.5" font-weight="600" fill="${zcol}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"`, { fs: 13.5, anchor: 'start', fill: zcol }));
   }
 
   // Winkel: Grosskreisbogen zwischen zwei Polen; Abschnitte auf der unteren Halbkugel gestrichelt
@@ -348,8 +350,10 @@ export function buildSVG(scene, { standalone = false } = {}) {
   // Markierungen (Auswahl, Ausgangspunkt)
   for (const P of drawn) {
     if (P.gen) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="11" fill="none" stroke="${col.accent}" stroke-width="2" stroke-dasharray="3 2.5"/>`);
-    if (P.zone && !P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="9.5" fill="none" stroke="${col.accent}" stroke-width="2"/>`);
-    if (P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="12.5" fill="none" stroke="${col.accent}" stroke-width="3"/>`);
+    // Pol in einer oder mehreren Zonen: je Zone ein Ring in ihrer Farbe (Schnittpunkte von Zonenkreisen fallen auf)
+    const zc = P.zoneColors || (P.zone ? [col.accent] : []);
+    zc.forEach((c, k) => out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(9.5 + 2.6 * k)}" fill="none" stroke="${c}" stroke-width="2"/>`));
+    if (P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(Math.max(12.5, 10.5 + 2.6 * zc.length))}" fill="none" stroke="${col.accent}" stroke-width="3"/>`);
   }
   // Beschriftungen: zusammenfallende Pole (oben/unten) werden gestapelt beschriftet
   const clusters = [];

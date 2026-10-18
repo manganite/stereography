@@ -58,8 +58,10 @@ function stateToHash() {
   if (state.mode === 'pg') {
     q.set('m', 'pg');
     q.set('g', state.pg.id);
-    if (Math.abs(state.pg.theta - d.pg.theta) > 1e-6) q.set('rho', String(Math.round(state.pg.theta)));
-    if (Math.abs(state.pg.phi - d.pg.phi) > 1e-6) q.set('phi', String(Math.round(state.pg.phi * 2) / 2));
+    // volle Genauigkeit (auf 10⁻⁴° gekürzt), damit ein Link die Pole nicht verschiebt
+    const exact = (x) => String(Number(x.toFixed(4)));
+    if (Math.abs(state.pg.theta - d.pg.theta) > 1e-6) q.set('rho', exact(state.pg.theta));
+    if (Math.abs(state.pg.phi - d.pg.phi) > 1e-6) q.set('phi', exact(state.pg.phi));
     bools(URL_PG, state.pg, d.pg);
     if (state.pg.hideDirs.length) q.set('aus', state.pg.hideDirs.map((k) => k + 1).join(','));
     if (state.pg.tool) q.set('w', TOOL_NAMES[state.pg.tool]);
@@ -112,8 +114,8 @@ function applyHash(hash) {
   } else {
     state.mode = 'pg';
     if (POINT_GROUPS.some((g) => g.id === q.get('g'))) state.pg.id = q.get('g');
-    if (q.has('rho')) state.pg.theta = num(q.get('rho'), 1, 179) ?? state.pg.theta;
-    if (q.has('phi')) state.pg.phi = num(q.get('phi'), 0, 359.5) ?? state.pg.phi;
+    if (q.has('rho')) state.pg.theta = num(q.get('rho'), 0, 180) ?? state.pg.theta;
+    if (q.has('phi')) { const p = num(q.get('phi'), -1e6, 1e6); if (p != null) state.pg.phi = ((p % 360) + 360) % 360; }
     bools(URL_PG, state.pg);
     if (q.has('aus')) state.pg.hideDirs = q.get('aus').split(',').map((s) => Number(s) - 1).filter((k) => k >= 0 && k <= 2);
     state.pg.tool = q.get('w') === 'winkel' ? 'angle' : null;
@@ -124,6 +126,10 @@ function applyHash(hash) {
 }
 
 let lastHash = '';
+// Ohne Hash geöffnet (oder nach „Alle Einstellungen zurücksetzen“): Adresse bleibt ohne Hash,
+// bis etwas geändert wird. „Link kopieren“ erzeugt trotzdem immer einen vollständigen Link.
+let hashActive = location.hash.length > 1;
+let baseHash = null; // Zustand beim ersten Speichern; erst eine Abweichung davon schreibt den Hash
 try {
   const saved = JSON.parse(localStorage.getItem('stereo-state') || 'null');
   if (saved && (saved.v === 2 || saved.v === 3)) {
@@ -147,6 +153,9 @@ const save = () => {
   try { localStorage.setItem('stereo-state', JSON.stringify({ v: 3, mode: state.mode, pg: state.pg, poly: state.poly, view: state.view })); } catch { /* ignorieren */ }
   try {
     const h = stateToHash();
+    if (baseHash === null) baseHash = h;
+    if (!hashActive && h === baseHash) return;
+    hashActive = true;
     if (h !== lastHash) { lastHash = h; history.replaceState(null, '', location.pathname + location.search + h); }
   } catch { /* z. B. in eingebetteten Vorschauen */ }
 };
@@ -740,7 +749,7 @@ function updateInfoPoly(C, col) {
       const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
       const dir = (v) => '[' + (hex4 ? dirToFour(v) : v).map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join(Math.max(...v.map(Math.abs)) > 9 ? ' ' : '') + ']';
       const faces = z.inZone.map((k) => hklHTML(C.faces[k].hkl, hex4)).join(' ');
-      const same = (a, b) => a.every((x, i) => x === b[i]) || a.every((x, i) => x === -b[i]);
+      const same = (a, b) => a.every((x, i) => x === b[i]); // Vorzeichen beachten: die Gegenfläche hat den Gegenpol
       const hasFace = C.faces.some((fc) => !fc.hidden && same(fc.hkl, z.uvw));
       const pl = hklHTML(z.uvw, false);
       const dev = z.normalDev > 0.05
@@ -1050,7 +1059,7 @@ function init() {
   $('copy-link').addEventListener('click', async () => {
     const btn = $('copy-link');
     save();
-    try { await navigator.clipboard.writeText(location.href); btn.textContent = 'Link kopiert'; }
+    try { await navigator.clipboard.writeText(location.origin + location.pathname + location.search + stateToHash()); btn.textContent = 'Link kopiert'; }
     catch { btn.textContent = 'Nicht möglich'; }
     setTimeout(() => { btn.textContent = 'Link kopieren'; }, 1600);
   });

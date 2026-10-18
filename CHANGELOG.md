@@ -13,6 +13,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 - **Turmalin:** Begründung der Hemimorphie vervollständigt (keine Operation von 3m führt c in −c über).
 - **Zone mit vier Indizes:** Zonenachse zuerst dreiindiziert berechnet, vierindiziert angegeben; Zonengleichung hu + kv + it + lw = 0.
 
+### Hinzugefügt
+
+- **Piezoelektrisch:** Die Infobox der Punktgruppen zeigt neben „Polar“ (10 Gruppen, spontane Polarisation) auch „Piezoelektrisch“ (20 Gruppen: ohne Inversionszentrum, ausser 432), berechnet aus den Invarianten des Piezotensors. Bei Quarz (32): polar nein, piezoelektrisch ja.
+
 ### Geändert
 
 - **Azimut φ nach Borchardt-Ott & Sowa (Tab. 5.1):** ab dem rechten Rand (→, bei orthogonalen Achsen b) im Uhrzeigersinn, (100) bei 90°; bisher ab ↓ im Gegenuhrzeigersinn. Die Adresse verwendet `az=`; alte Links mit `phi=` und gespeicherte Einstellungen werden umgerechnet, der Pol bleibt an derselben Stelle.

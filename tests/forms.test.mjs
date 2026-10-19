@@ -95,3 +95,23 @@ test('Zonen des Kristalls: mindestens drei Flächen, nach Symmetrie gruppiert', 
   assert.equal(zoneKey([0, 0, -2]), '0,0,1');
   assert.deepEqual(zonesOf(cube110)[0].zones.map((z) => z.key).sort(), zonesOf(cube)[0].zones.map((z) => z.key).sort());
 });
+
+test('Habitus: isometrisch nur bei L₃/L₁ ≥ 2/3; hexagonales Prisma je nach Abstand des Pinakoids', async () => {
+  const { createState, applyHashTo, polyCrystal } = await import('../js/scene.js');
+  const K = '#000';
+  const col = new Proxy({ form: Array(8).fill(K), dir: [K, K, K] }, { get: (o, k) => (k in o ? o[k] : K) });
+  const habit = (hash) => {
+    const st = createState();
+    applyHashTo(st, hash, createState());
+    return habitOf(polyCrystal(st, col).faces.filter((f) => !f.hidden));
+  };
+  // Abb. 5.1–5.3 des Skripts
+  assert.equal(habit('#m=form&sys=hexagonal&f=6/mmm:c25&abstand=0.3').type, 'planar');
+  assert.equal(habit('#m=form&sys=hexagonal&f=6/mmm:c25&abstand=0.8').type, 'isometrisch');
+  assert.equal(habit('#m=form&sys=hexagonal&f=6/mmm:c25&abstand=2.5').type, 'prismatisch');
+  assert.equal(habit('#m=form&sys=kubisch&bsp=galenit').type, 'isometrisch');
+  // L₂/L₁ und L₃/L₂ je ≥ 2/3, aber L₃/L₁ < 2/3: nicht mehr isometrisch
+  const h = habit('#m=form&sys=orthorhombisch&f=mmm:a2');
+  assert.ok(h.e >= 2 / 3 && h.p >= 2 / 3 && h.L[2] / h.L[0] < 2 / 3);
+  assert.notEqual(h.type, 'isometrisch');
+});

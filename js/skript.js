@@ -3,7 +3,7 @@
 // mit scene.js genau das Stereogramm, das die App für diese Adresse zeigt.
 
 import { buildSVG } from './stereogram.js';
-import { createState, applyHashTo, palette, pgScene, polyCrystal, polyScene, normalizeZones } from './scene.js';
+import { createState, applyHashTo, palette, pgScene, polyCrystal, polyScene, normalizeZones, crystalAxesFor } from './scene.js';
 import { hklHTML } from './format.js';
 import { VERSION } from './version.js';
 
@@ -18,9 +18,22 @@ function stateFor(hash) {
 }
 
 /** Stereogramm (SVG-Inhalt) für eine Link-Adresse der App. */
-function stereoFor(hash, col) {
+function stereoFor(hash, col, dirs = null) {
   const st = stateFor(hash);
-  if (st.mode === 'pg') return { st, scene: pgScene(st, col).scene };
+  if (st.mode === 'pg') {
+    const { info, scene } = pgScene(st, col);
+    // data-dirs="1,3": nur die Symmetrieelemente dieser Blickrichtungen (1. bis 3. Position im HM-Symbol)
+    if (dirs) {
+      const keep = (k) => dirs.includes(k + 1);
+      scene.axes = scene.axes.filter((a) => keep(a.cls));
+      scene.mirrors = scene.mirrors.filter((m, i) => keep(info.mirrorCls[i]));
+      const zm = info.mirrors.findIndex((n) => Math.abs(n[2]) > 1 - 1e-6);
+      if (zm >= 0 && !keep(info.mirrorCls[zm])) scene.primitiveBold = false;
+      scene.centreAtOrigin = false;
+      scene.zones = [];
+    }
+    return { st, scene };
+  }
   const C = polyCrystal(st, col);
   return { st, C, scene: polyScene(st, C, col).scene };
 }
@@ -28,16 +41,30 @@ function stereoFor(hash, col) {
 const appLink = (hash) => 'index.html' + hash;
 
 function renderStereo(fig, col) {
-  const { scene } = stereoFor(fig.dataset.app, col);
+  const dirs = fig.dataset.dirs ? fig.dataset.dirs.split(',').map(Number) : null;
+  const { scene } = stereoFor(fig.dataset.app, col, dirs);
   const box = fig.querySelector('.fig-art');
   box.innerHTML = `<svg viewBox="0 0 520 520" role="img" aria-label="${fig.dataset.alt || 'Stereogramm'}">${buildSVG(scene).inner}</svg>`;
 }
 
-// 3D-Abbildungen: three.js erst laden, wenn eine solche Abbildung in Sicht kommt
+// 3D-Abbildungen: three.js erst laden, wenn eine solche Abbildung in Sicht kommt. Jede Ansicht braucht einen
+// eigenen WebGL-Kontext, und Browser halten nur wenige (Safari auf iPhone/iPad etwa 8) gleichzeitig; das Skript
+// hat mehr 3D-Abbildungen. Deshalb leben nur Ansichten in der Nähe des sichtbaren Bereichs; beim Verlassen wird
+// der Kontext freigegeben und die Kameraposition gemerkt.
 const views3d = new Map();
+const live3d = new Set();
+const cams3d = new Map();
+function release3d(fig) {
+  live3d.delete(fig);
+  const v = views3d.get(fig);
+  if (!v) return;
+  cams3d.set(fig, v.camera.position.clone());
+  v.destroy();
+  views3d.delete(fig);
+}
 async function render3d(fig, col) {
   const { View3D } = await import('./view3d.js');
-  const { st, C, scene } = stereoFor(fig.dataset.app, col);
+  if (!live3d.has(fig)) return; // inzwischen aus dem Bild gescrollt
   let v = views3d.get(fig);
   if (!v) {
     const box = fig.querySelector('.fig-art');
@@ -45,7 +72,24 @@ async function render3d(fig, col) {
     v = new View3D(box, {});
     views3d.set(fig, v);
     v.setView(fig.dataset.view || 'oblique');
+    // vom Leser gedrehte Ansicht wiederherstellen
+    const cam = cams3d.get(fig);
+    if (cam) { v.camera.position.copy(cam); v.controls.update(); }
   }
+  const st0 = stateFor(fig.dataset.app);
+  if (st0.mode === 'pg') {
+    // Symmetriegerüst in 3D wie in der App (renderPG in main.js)
+    const { info, p0, orb, scene } = pgScene(st0, col);
+    v.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, gen: false, selected: false })) }, { standalone: true }).full);
+    v.showPointGroup(
+      { ...info, orbit: st0.pg.showObject ? orb : null, p0, crystalAxes: crystalAxesFor(info.hex) },
+      col,
+      { showElements: st0.pg.showElements, showObject: st0.pg.showObject, showRays: st0.view.rays, showSphere: st0.view.sphere, showPlane: st0.view.plane, showAxes: st0.view.axes,
+        dirColors: st0.view.dirColors ? col.dir : null, hiddenDirs: new Set(st0.pg.hideDirs), arc: null },
+    );
+    return;
+  }
+  const { st, C, scene } = stereoFor(fig.dataset.app, col);
   v.setStereoTexture(buildSVG(scene, { standalone: true }).full);
   // data-labels="aus": Indizes nur in dieser Abbildung ausblenden (der Link in die App behält sie)
   const labels = st.poly.labels && fig.dataset.labels !== 'aus' ? C.faces.map((f) => hklHTML(f.hkl, C.hex && st.poly.bravais)) : null;
@@ -61,7 +105,7 @@ function addAppLink(fig) {
   const a = document.createElement('a');
   a.className = 'to-app';
   a.href = appLink(fig.dataset.app);
-  a.textContent = 'In der App öffnen';
+  a.textContent = fig.closest('.fig-grid5') ? 'App' : 'In der App öffnen';
   cap.append(' ', a);
 }
 
@@ -79,14 +123,15 @@ function watch3d() {
   if (!figs.length) return;
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
-      if (!e.isIntersecting) continue;
-      io.unobserve(e.target);
+      if (!e.isIntersecting) { release3d(e.target); continue; }
+      if (live3d.has(e.target)) continue;
+      live3d.add(e.target);
       render3d(e.target, palette()).catch((err) => {
         e.target.querySelector('.fig-art').innerHTML = '<p class="fig-err">Die 3D-Ansicht konnte nicht geladen werden.</p>';
         console.error(err);
       });
     }
-  }, { rootMargin: '200px' });
+  }, { rootMargin: '300px 0px' });
   figs.forEach((f) => io.observe(f));
 }
 

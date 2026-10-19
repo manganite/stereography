@@ -8,10 +8,11 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Hinzugefügt
 
-- **Skript zur Vorlesung** als eigene Seite (`skript.html`, Link „Skript“ in der Kopfzeile der App): Text in der Reihenfolge der Vorlesung, Begriffe nach Borchardt-Ott & Sowa, Abbildungen mit dem Code der App erzeugt und jeweils mit „In der App öffnen“. Erstes Kapitel „Die stereographische Projektion“ (Umkugel und Flächenpole, Normalen- und Flächenwinkel, Projektion mit interaktiver Schnittskizze, φ und ρ, Kreis- und Winkeltreue, Wulffsches Netz); weitere Kapitel folgen. Offline verfügbar wie die App.
+- **Skript zur Vorlesung** als eigene Seite (`skript.html`, Link „Skript“ in der Kopfzeile der App): Text in der Reihenfolge der Vorlesung, Begriffe nach Borchardt-Ott & Sowa, Abbildungen mit dem Code der App erzeugt und jeweils mit „In der App öffnen“. Sieben Kapitel: 1 Die stereographische Projektion (mit interaktiver Schnittskizze), 2 Kristallformen im Stereogramm, 3 Symmetriegerüste im Stereogramm, 4 Zonen (Zonengleichung, Kreuzschema, Zonenachse und Flächennormale), 5 Tracht und Habitus, 6 Blickrichtungen (Hermann-Mauguin-Symbol, volles und gekürztes Symbol), 7 Hexagonale Achsen und vierstellige Indizes. Kapitel 2 zeigt zu jedem Stereogramm den Körper in derselben Lage in 3D, Kapitel 3 das Symmetriegerüst von *mmm* auch in 3D. Jedes Kapitel mit Lernzielen, Merksätzen, Zusammenfassung und Quellen; fachlich gegen Borchardt-Ott & Sowa gegengeprüft. Offline verfügbar wie die App.
 
 ### Geändert
 
+- Habitus: isometrisch nur noch, wenn auch L₃/L₁ ≥ 2/3 (bisher genügten L₂/L₁ ≥ 2/3 und L₃/L₂ ≥ 2/3, womit L₃/L₁ bis 0,44 sinken konnte). Dadurch gelten z. B. die orthorhombischen Formen mit Standardgitter (1,24 : 1 : 0,80) und die triklinen Formen nicht mehr als isometrisch.
 - Auf Laptops ohne Untertitel in der Kopfzeile, damit sie auf eine Zeile passt.
 - Intern: Szenenberechnung und Link-Adresse in `js/scene.js`, gemeinsame Farben und Kopfzeile in `css/base.css` (von App und Skript genutzt; die App zeigt unverändert dasselbe).
 - Begriffe wie in der Vorlesung: Die Lage heisst „[001] ∥ Projektionsrichtung“ (statt „Blickrichtung“, das für die Symmetrierichtungen des Hermann-Mauguin-Symbols reserviert bleibt), die Kugel der 3D-Ansicht „Umkugel“, und die dritte hexagonale Blickrichtung wird als ⟨210⟩ bezeichnet (Borchardt-Ott; dieselbe Richtungsfamilie wie ⟨11̄0⟩ in ITA).

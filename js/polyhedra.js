@@ -562,8 +562,10 @@ export function habitOf(faces) {
   const C = M.map((r, i) => r.map((x, k) => x / V - cen[i] * cen[k]));
   const L = jacobiEigen(C).map((l) => Math.sqrt(12 * Math.max(0, l))).sort((x, y) => y - x);
   const e = L[1] / L[0], p = L[2] / L[1];
+  // isometrisch nur, wenn auch L₃/L₁ ≥ 2/3 (daraus folgen L₂/L₁ ≥ 2/3 und L₃/L₂ ≥ 2/3); sonst
+  // prismatisch (eine Richtung lang) oder planar (eine Richtung kurz), bei Zweifel entscheidet das kleinere Verhältnis
   let type;
-  if (e >= HABIT_LIMIT && p >= HABIT_LIMIT) type = 'isometrisch';
+  if (L[2] / L[0] >= HABIT_LIMIT) type = 'isometrisch';
   else if (e < HABIT_LIMIT && p >= HABIT_LIMIT) type = 'prismatisch';
   else if (e >= HABIT_LIMIT && p < HABIT_LIMIT) type = 'planar';
   else type = e < p ? 'prismatisch' : 'planar';

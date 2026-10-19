@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createState, hashOf, applyHashTo, pgScene, polyCrystal, polyScene, normalizeZones } from '../js/scene.js';
+import { createState, hashOf, applyHashTo, pgScene, polyCrystal, polyScene, normalizeZones, currentEntryId } from '../js/scene.js';
 import { buildSVG } from '../js/stereogram.js';
 
 // Farben ohne CSS (palette() liest sonst die CSS-Variablen der Seite)
@@ -35,7 +35,10 @@ test('Skript: jede Abbildung ist ein gültiger Link der App und ergibt ein Stere
   const hashes = [...html.matchAll(/data-app="([^"]+)"/g)].map((m) => m[1].replace(/&amp;/g, '&'));
   assert.ok(hashes.length >= 3);
   for (const h of hashes) {
-    const { scene } = sceneFor(h);
+    const { st, scene } = sceneFor(h);
+    // eine verlinkte Form wird ohne Ersatz gezeigt (keine ausgeblendete Form)
+    const f = new URLSearchParams(h.slice(1)).get('f');
+    if (f) assert.equal(currentEntryId(st), f, h);
     const svg = buildSVG(scene).inner;
     assert.match(svg, /<circle/, h);
   }

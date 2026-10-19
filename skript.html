@@ -76,6 +76,8 @@ figure { margin: 20px 0; }
 .fig-note { font-size: 0.86rem; color: var(--muted); }
 .fig-note b { color: var(--ink); }
 .tabwrap { overflow-x: auto; margin: 12px 0 16px; }
+.tab caption { caption-side: top; text-align: left; font-size: 0.86rem; color: var(--muted); padding-bottom: 6px; white-space: normal; }
+.tab caption b { color: var(--ink); font-weight: 600; }
 .tab { border-collapse: collapse; font-size: 0.9rem; min-width: 460px; }
 .tab th, .tab td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
 .tab th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
@@ -225,6 +227,16 @@ footer a { color: inherit; }
             <ol>
               <li><a href="#hexachsen">Das hexagonale Achsensystem</a></li>
               <li><a href="#hkil">Vier Indizes für Flächen</a></li>
+            </ol>
+          </li>
+          <li><a href="#verzerrung"><span class="nr">8</span>Symmetrieändernde Verzerrungen</a>
+            <ol>
+              <li><a href="#verzerrung-prinzip">Was bei einer Verzerrung erhalten bleibt</a></li>
+              <li><a href="#streck-100">Streckung entlang ⟨100⟩</a></li>
+              <li><a href="#streck-111">Streckung entlang ⟨111⟩</a></li>
+              <li><a href="#streck-110">Streckung entlang ⟨110⟩</a></li>
+              <li><a href="#polar">Streckung oder Polarisation</a></li>
+              <li><a href="#batio3">Keine Spielerei: Bariumtitanat</a></li>
             </ol>
           </li>
         </ol>
@@ -943,6 +955,132 @@ footer a { color: inherit; }
           <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 7.1 (hexagonales P-Gitter, Tab. 7.2, S. 88), 7.2.5 (Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, Richtungen ⟨100⟩ und ⟨210⟩, S. 107–109, Abb. 7.22), Tab. 7.4 (S. 115), 9.2.2 (Bravais-Miller-Indizes, <i>h</i> + <i>k</i> + <i>i</i> = 0, S. 151, Abb. 9.12; Tab. 9.6, S. 154 f.).</li>
         </ul>
       </div>
+    </section>
+
+    <section id="verzerrung">
+      <h2><span class="nr">8</span>Symmetrieändernde Verzerrungen</h2>
+      <p class="lead">Bisher hatte jeder Kristall eine feste Punktgruppe. Verzerrt man ihn, bleibt nur ein Teil seiner Symmetrie erhalten. Dieses Kapitel streckt den Würfel nacheinander entlang der drei kubischen Blickrichtungen und zeigt am Bariumtitanat, dass solche Verzerrungen in der Natur tatsächlich vorkommen und einem Kristall neue Eigenschaften geben.</p>
+      <p class="fig-note"><b>Ausblick.</b> Das Kapitel greift dem Stoff der Vorlesung weit voraus (Untergruppen, physikalische Eigenschaften, Phasenumwandlungen). Es ist als Beispiel und Motivation gedacht: Es zeigt, wozu man Punktgruppen und Stereogramme später braucht.</p>
+
+      <div class="box ziele">
+        <h4>Lernziele</h4>
+        <ul>
+          <li>angeben, welche Symmetrieelemente des Würfels eine Streckung entlang ⟨100⟩, ⟨111⟩ oder ⟨110⟩ übrig lässt, und die verbleibende Punktgruppe benennen</li>
+          <li>im Stereogramm erkennen, in welche Formen eine Form bei der Verzerrung zerfällt</li>
+          <li>eine Streckung (ohne Richtungssinn) von einer Polarisation (mit Richtungssinn) unterscheiden und die zugehörige Untergruppe angeben</li>
+          <li>begründen, warum ein Kristall niedrigerer Symmetrie in mehreren gleichwertigen Orientierungen, den Domänen, auftreten kann</li>
+        </ul>
+      </div>
+
+      <section id="verzerrung-prinzip">
+        <h3>Was bei einer Verzerrung erhalten bleibt</h3>
+        <p>Wir strecken einen Würfel entlang einer Richtung: Alle Abstände in dieser Richtung werden um einen Faktor <i>s</i> länger (<i>s</i> &gt; 1) oder kürzer (<i>s</i> &lt; 1), quer dazu ändert sich nichts. Die Flächen bleiben eben und behalten ihre Indizes, aber die Winkel zwischen ihnen ändern sich. Welche Symmetrieoperationen des Würfels sind danach noch Symmetrieoperationen des Körpers?</p>
+        <p>Genau die, die die Streckrichtung in sich selbst überführen. Eine Streckung hat dabei keinen Richtungssinn: Ob man sie „nach oben“ oder „nach unten“ betrachtet, ist gleich. Eine Operation, die die Streckrichtung umkehrt (<i>n</i> → −<i>n</i>), bleibt also ebenfalls erhalten. Jede andere Operation brächte die gestreckte Richtung in eine ungestreckte und kann keine Symmetrie mehr sein.</p>
+        <p>Die verbleibenden Operationen bilden wieder eine Gruppe: Die Hintereinanderausführung zweier Operationen, die die Streckrichtung erhalten, erhält sie ebenfalls. Diese Gruppe ist eine <span class="term">Untergruppe</span> der Punktgruppe <i>m</i>3̄<i>m</i> des Würfels. Wie viele Elemente verloren gehen, hängt davon ab, wie viele Symmetrieelemente die Streckrichtung „sehen“, also von der Blickrichtung, entlang der man streckt.</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Bei einer Verzerrung bleiben nur die Symmetrieoperationen erhalten, die auch die Verzerrung selbst unverändert lassen. Die neue Punktgruppe ist eine Untergruppe der alten (Prinzip von Curie).</p>
+        </div>
+        <p>In der App: Kristallformen, Würfel, unter „Gitter und Gestalt“ die Streckung entlang einer Blickrichtung. Die Infobox nennt die verbleibende Punktgruppe, die Pole der Formen, in die der Würfel zerfällt, erscheinen in verschiedenen Farben. Die Abbildungen dieses Kapitels strecken um den Faktor 1,3, damit man die Verzerrung gut sieht; in echten Kristallen ist sie meist viel kleiner (Abschnitt <a href="#batio3">Bariumtitanat</a>).</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;strahlen=0&amp;normalen=0" data-alt="Würfel in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.1a</b> Ausgangspunkt: Würfel {100}, Punktgruppe <i>m</i>3̄<i>m</i>, [001] senkrecht.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;geruest=1" data-alt="Würfel über dem Symmetriegerüst von m3̄m">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.1b</b> Stereogramm des Würfels über dem Symmetriegerüst von <i>m</i>3̄<i>m</i>: 4-zählige Achsen entlang ⟨100⟩, 3̄-Achsen entlang ⟨111⟩, 2-zählige Achsen entlang ⟨110⟩.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="streck-100">
+        <h3>Streckung entlang ⟨100⟩: tetragonal</h3>
+        <p>Wir strecken entlang [001], einer der drei 4-zähligen Achsen (1. Blickrichtung). Die 4-zählige Achse entlang [001] und die Spiegelebene senkrecht dazu bleiben erhalten. Die 4-zähligen Achsen entlang [100] und [010] würden [001] um 90° in die Ebene drehen; von ihnen bleibt nur die Drehung um 180°, also je eine 2-zählige Achse, die [001] umkehrt, samt der Spiegelebene senkrecht dazu. Erhalten bleiben auch die 2-zähligen Achsen entlang [110] und [11̄0], die senkrecht auf [001] stehen, jeweils mit ihren Spiegelebenen. Alle 3̄-Achsen und die übrigen vier 2-zähligen Achsen gehen verloren.</p>
+        <p>Übrig bleibt 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> = 4/<i>mmm</i> mit 16 statt 48 Operationen. Das Gitter ist jetzt tetragonal: <i>a</i> = <i>b</i> ≠ <i>c</i>. Der Würfel zerfällt in zwei Formen: Die Flächen (001) und (001̄) senkrecht zur Streckrichtung bilden ein Pinakoid, die vier Flächen parallel dazu ein tetragonales Prisma (Abb. 8.2). Das ist genau die Kombination aus Kapitel 2 (Abb. 2.1).</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=001,1.3&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [001] gestreckt">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.2a</b> Würfel entlang [001] um 1,3 gestreckt (senkrecht): Pinakoid {001} und tetragonales Prisma {100}.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=001,1.3&amp;geruest=1" data-alt="Gestreckter Würfel über dem Symmetriegerüst von 4/mmm">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.2b</b> Stereogramm dazu über dem verbleibenden Symmetriegerüst 4/<i>mmm</i>; die beiden Farben zeigen die beiden Formen.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="streck-111">
+        <h3>Streckung entlang ⟨111⟩: trigonal</h3>
+        <p>Nun strecken wir entlang der Raumdiagonalen [111], einer 3̄-Achse (2. Blickrichtung). Die 3̄-Achse entlang [111] bleibt. Senkrecht zu [111] liegen drei der sechs 2-zähligen Achsen, entlang [11̄0], [011̄] und [1̄01]; sie kehren [111] um und bleiben mit ihren Spiegelebenen erhalten. Alle 4-zähligen Achsen und die übrigen 3̄-Achsen gehen verloren.</p>
+        <p>Übrig bleibt 3̄ 2/<i>m</i> = 3̄<i>m</i> mit 12 Operationen. Alle sechs Würfelflächen werden durch die 3̄-Achse ineinander überführt; sie bleiben eine einzige Form, aber ihre Winkel ändern sich: Aus dem Würfel wird ein <span class="term">Rhomboeder</span> (Abb. 8.3). Seine Kanten sind gleich lang, die Winkel zwischen ihnen gleich, aber nicht mehr 90°: Bei Streckung (<i>s</i> &gt; 1) entsteht ein spitzes, bei Stauchung (<i>s</i> &lt; 1) ein stumpfes Rhomboeder. Für <i>s</i> = 1,3 beträgt der Kantenwinkel 79,2°.</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [111] gestreckt: Rhomboeder">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.3a</b> Würfel entlang [111] um 1,3 gestreckt, [111] senkrecht: ein Rhomboeder.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;geruest=1" data-alt="Rhomboeder über dem Symmetriegerüst von 3̄m">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.3b</b> Stereogramm, [111] ∥ Projektionsrichtung, über dem Symmetriegerüst 3̄<i>m</i>: 3̄-Achse im Mittelpunkt, drei Spiegelebenen, drei 2-zählige Achsen.</figcaption>
+          </figure>
+        </div>
+        <p>Für die trigonale Punktgruppe verwendet man hexagonale Achsen (Kapitel 7): <i>c</i> entlang der 3̄-Achse, also <i>c</i> ∥ [111], und <i>a</i>₁ ∥ [11̄0], <i>a</i>₂ ∥ [011̄] senkrecht dazu. In diesen Achsen ist die Würfelfläche (100) die Rhomboederfläche (101) = (101̄1). Die App zeigt diese Umrechnung in der Infobox, sobald die Restgruppe trigonal ist, zusammen mit dem Achsenverhältnis <i>c</i>/<i>a</i>; beim unverzerrten Würfel wäre <i>c</i>/<i>a</i> = √(3/2) ≈ 1,22, bei Streckung um <i>s</i> ist es <i>s</i> · √(3/2). Streckt man ein Oktaeder auf dieselbe Weise, zerfällt es in ein Pinakoid aus den beiden Flächen senkrecht zu [111] und ein Rhomboeder aus den übrigen sechs.</p>
+      </section>
+
+      <section id="streck-110">
+        <h3>Streckung entlang ⟨110⟩: orthorhombisch</h3>
+        <p>Schliesslich strecken wir entlang der Flächendiagonalen [110], einer 2-zähligen Achse (3. Blickrichtung). Drei 2-zählige Achsen bleiben, alle drei mit ihren Spiegelebenen: die entlang [110] selbst, die senkrecht dazu entlang [11̄0], und entlang [001] die Drehung um 180° der früheren 4-zähligen Achse. Die 4-zählige Drehung um [001] selbst würde [110] in [1̄10] drehen und geht verloren, ebenso alle 3̄-Achsen und die übrigen 2-zähligen Achsen.</p>
+        <p>Übrig bleibt 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> = <i>mmm</i> mit nur 8 Operationen. Das Gitter ist orthorhombisch, aber seine Achsen liegen nicht mehr entlang der Würfelkanten, sondern entlang [110], [11̄0] und [001]. Der Würfel zerfällt in ein Pinakoid aus (001) und (001̄) und ein rhombisches Prisma aus den vier übrigen Flächen, deren Querschnitt jetzt eine Raute ist (Abb. 8.4).</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=110,1.3&amp;lage=110&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [110] gestreckt">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.4a</b> Würfel entlang [110] um 1,3 gestreckt, [110] senkrecht: Pinakoid {001} und rhombisches Prisma.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=110,1.3&amp;lage=110&amp;geruest=1" data-alt="Entlang [110] gestreckter Würfel über dem Symmetriegerüst von mmm">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.4b</b> Stereogramm, [110] ∥ Projektionsrichtung, über dem Symmetriegerüst <i>mmm</i>.</figcaption>
+          </figure>
+        </div>
+        <p>Tabelle 8.1 fasst die drei Fälle zusammen. Je höherzählig die Achse entlang der Streckrichtung, desto mehr Symmetrie bleibt übrig.</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <caption><b>Tab. 8.1</b> Streckung des Würfels (<i>m</i>3̄<i>m</i>, 48 Operationen)</caption>
+            <thead><tr><th>Streckung entlang</th><th>Restgruppe</th><th>Operationen</th><th>Würfel wird zu</th></tr></thead>
+            <tbody>
+              <tr><td>[001] (⟨100⟩, 4-zählig)</td><td>4/<i>mmm</i></td><td>16</td><td>tetragonales Prisma + Pinakoid</td></tr>
+              <tr><td>[111] (⟨111⟩, 3̄)</td><td>3̄<i>m</i></td><td>12</td><td>Rhomboeder</td></tr>
+              <tr><td>[110] (⟨110⟩, 2-zählig)</td><td><i>mmm</i></td><td>8</td><td>rhombisches Prisma + Pinakoid</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="polar">
+        <h3>Streckung oder Polarisation</h3>
+        <p>Eine Streckung hat keinen Richtungssinn. Anders eine Verschiebung von Atomen, durch die ein elektrisches Dipolmoment entsteht, eine <span class="term">Polarisation</span>: Sie ist ein Pfeil und unterscheidet „vorn“ von „hinten“. Bei ihr bleiben nur die Operationen erhalten, die den Pfeil in sich selbst überführen; alle, die ihn umkehren, gehen zusätzlich verloren, darunter das Inversionszentrum. Aus 4/<i>mmm</i> wird so 4<i>mm</i>, aus <i>mmm</i> wird <i>mm</i>2 und aus 3̄<i>m</i> wird 3<i>m</i>.</p>
+        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung bleiben alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 8.5), bei den zentrosymmetrischen Gruppen liegen sie auf beiden (vgl. <i>mmm</i> in Abb. 3.2b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 2.2): oben und unten sind verschieden.</p>
+        <div class="fig-row fig-row3">
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4mm" data-alt="Punktgruppe 4mm mit Bahn eines allgemeinen Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.5a</b> 4<i>mm</i>: 8 Pole, alle oben.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mm2" data-alt="Punktgruppe mm2 mit Bahn eines allgemeinen Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.5b</b> <i>mm</i>2: 4 Pole, alle oben.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=3m1" data-alt="Punktgruppe 3m mit Bahn eines allgemeinen Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.5c</b> 3<i>m</i>: 6 Pole, alle oben.</figcaption>
+          </figure>
+        </div>
+        <p class="fig-note">Polare Achse jeweils als Projektionsrichtung (Standardaufstellung der App). Bezogen auf den Würfel liegt sie entlang [001], [110] bzw. [111].</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Eine Streckung erhält die Operationen, die die Streckrichtung als Gerade in sich überführen; beim Würfel bleibt die Restgruppe zentrosymmetrisch. Eine Polarisation erhält nur die Operationen, die den Pfeil in sich überführen; die Restgruppe ist polar.</p>
+        </div>
+      </section>
+
+      <!-- KAPITEL8_TEIL2 -->
     </section>
 
   </article>

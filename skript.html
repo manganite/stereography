@@ -69,6 +69,7 @@ figure { margin: 20px 0; }
 .fig-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 20px 0; }
 .fig-row figure { margin: 0; }
 .fig-row3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fig-cols { grid-auto-flow: column; grid-template-rows: auto auto; }
 .fig-grid5 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0 6px; }
 .fig-grid5 figure { margin: 0; padding: 8px; }
 .fig-grid5 figcaption { font-size: 0.8rem; margin-top: 4px; }
@@ -149,6 +150,7 @@ footer a { color: inherit; }
   .brand p { display: none; }
   .brand { flex: 1; }
   .fig-row, .fig-row3 { grid-template-columns: minmax(0, 1fr); }
+  .fig-cols { grid-auto-flow: row; grid-template-rows: none; }
   .fig-grid5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   article h2 { font-size: 1.45rem; }
 }
@@ -365,13 +367,21 @@ footer a { color: inherit; }
         <p>Die Pole einer Form bilden im Stereogramm ein regelmässiges Muster. Beim tetragonalen Prisma {100} stehen alle vier Flächen senkrecht auf der Projektionsebene: Ihre Pole liegen auf dem Grundkreis, je 90° voneinander entfernt (Abb. 2.1). Bei der tetragonalen Pyramide {101} sind alle vier Flächen gleich stark gegen die Projektionsebene geneigt; ihre Pole haben deshalb den gleichen Abstand vom Grundkreis (Abb. 2.2).</p>
 
         <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:c10&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonales Prisma mit Pinakoid in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 2.1a</b> Tetragonales Prisma {100} mit Pinakoid {001} (grau) in der Umkugel, [001] ∥ Projektionsrichtung (senkrecht).</figcaption>
+          </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:c10" data-alt="Stereogramm von tetragonalem Prisma und Pinakoid">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.1</b> Tetragonales Prisma {100} mit Pinakoid {001} (grau): Die Prismenpole liegen auf dem Grundkreis, die beiden Pinakoidflächen oben und unten im Mittelpunkt (● im ○).</figcaption>
+            <figcaption><b>Abb. 2.1b</b> Stereogramm dazu: Die Prismenpole liegen auf dem Grundkreis, die beiden Pinakoidflächen oben und unten im Mittelpunkt (● im ○).</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4mm:c8&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonale Pyramide mit Pedion in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 2.2a</b> Tetragonale Pyramide {101} mit Pedion (001̄) (grau), gleiche Lage.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4mm:c8" data-alt="Stereogramm von tetragonaler Pyramide und Pedion">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.2</b> Tetragonale Pyramide {101} mit Pedion (001̄) (grau): vier Pole im gleichen Abstand vom Grundkreis; die Grundfläche zeigt nach unten (○ im Mittelpunkt).</figcaption>
+            <figcaption><b>Abb. 2.2b</b> Stereogramm dazu: vier Pole im gleichen Abstand vom Grundkreis; die Grundfläche zeigt nach unten (○ im Mittelpunkt).</figcaption>
           </figure>
         </div>
 
@@ -389,13 +399,21 @@ footer a { color: inherit; }
         <p>Abb. 2.3 und 2.4 zeigen beides in der Punktgruppe 4/<i>mmm</i>, mit dem Symmetriegerüst gedämpft im Hintergrund. Die ditetragonale Dipyramide {211} ist die allgemeine Form: 16 Pole, keiner auf einem Symmetrieelement. Die tetragonale Dipyramide {111} ist eine spezielle Form: Ihre 8 Pole liegen auf Spiegelebenen.</p>
 
         <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:g16&amp;strahlen=0&amp;normalen=0" data-alt="Ditetragonale Dipyramide in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 2.3a</b> Allgemeine Form der Punktgruppe 4/<i>mmm</i>: ditetragonale Dipyramide {211} mit 16 Flächen, [001] senkrecht.</figcaption>
+          </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:g16&amp;geruest=1" data-alt="Ditetragonale Dipyramide über dem Symmetriegerüst von 4/mmm">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.3</b> Allgemeine Form der Punktgruppe 4/<i>mmm</i>: ditetragonale Dipyramide {211} mit 16 Flächen.</figcaption>
+            <figcaption><b>Abb. 2.3b</b> Stereogramm dazu, über dem Symmetriegerüst: 16 Pole, keiner auf einem Symmetrieelement.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:e14&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonale Dipyramide in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 2.4a</b> Spezielle Form derselben Punktgruppe: tetragonale Dipyramide {111}, gleiche Lage.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:e14&amp;geruest=1" data-alt="Tetragonale Dipyramide über dem Symmetriegerüst von 4/mmm">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.4</b> Spezielle Form derselben Punktgruppe: tetragonale Dipyramide {111}. Die 8 Pole liegen auf Spiegelebenen.</figcaption>
+            <figcaption><b>Abb. 2.4b</b> Stereogramm dazu: Die 8 Pole liegen auf Spiegelebenen.</figcaption>
           </figure>
         </div>
 
@@ -411,18 +429,30 @@ footer a { color: inherit; }
         <h3>Andere Projektionsrichtung, gleicher Kristall</h3>
         <p>Das Stereogramm hängt davon ab, welche Richtung des Kristalls zum Betrachter zeigt. Abb. 2.5–2.7 zeigen den Galenit mit [001], [111] und [110] als Projektionsrichtung. Die Winkel zwischen den Polen bleiben dabei gleich; nur der Blickwinkel ändert sich. Dreht man den Kristall, so wandern die Pole auf Kleinkreisen um die Drehachse.</p>
         <p>Mit [111] als Projektionsrichtung liegt der Pol einer Oktaederfläche im Mittelpunkt, und die dreizählige Symmetrie um diese Richtung wird sichtbar; mit [110] die zweizählige. So lässt sich dieselbe Form aus verschiedenen Richtungen erkennen.</p>
-        <div class="fig-row fig-row3">
+        <div class="fig-row fig-row3 fig-cols">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;strahlen=0&amp;normalen=0" data-alt="Galenit in der Umkugel, Projektionsrichtung [001]">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 2.5a</b> Galenit, [001] senkrecht.</figcaption>
+          </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;idx=0" data-alt="Galenit, Projektionsrichtung [001]">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.5</b> Galenit, [001] ∥ Projektionsrichtung.</figcaption>
+            <figcaption><b>Abb. 2.5b</b> Stereogramm, [001] ∥ Projektionsrichtung.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=111&amp;strahlen=0&amp;normalen=0" data-alt="Galenit in der Umkugel, Projektionsrichtung [111]">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 2.6a</b> Galenit, [111] senkrecht.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=111&amp;idx=0" data-alt="Galenit, Projektionsrichtung [111]">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.6</b> Galenit, [111] ∥ Projektionsrichtung.</figcaption>
+            <figcaption><b>Abb. 2.6b</b> Stereogramm, [111] ∥ Projektionsrichtung.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=110&amp;strahlen=0&amp;normalen=0" data-alt="Galenit in der Umkugel, Projektionsrichtung [110]">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 2.7a</b> Galenit, [110] senkrecht.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=110&amp;idx=0" data-alt="Galenit, Projektionsrichtung [110]">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.7</b> Galenit, [110] ∥ Projektionsrichtung.</figcaption>
+            <figcaption><b>Abb. 2.7b</b> Stereogramm, [110] ∥ Projektionsrichtung.</figcaption>
           </figure>
         </div>
       </section>
@@ -511,10 +541,14 @@ footer a { color: inherit; }
         <p>Wendet man alle Symmetrieoperationen einer Punktgruppe auf einen Pol in allgemeiner Lage an, so entsteht seine Bahn: so viele Pole, wie die Gruppe Operationen hat. Das sind die Pole der allgemeinen Form aus Kapitel 2. Im Tab „Punktgruppen“ der App ist das das Objekt in allgemeiner Lage; man kann den Ausgangspol ziehen und durch Antippen auf die andere Halbkugel bringen.</p>
         <p>Symmetrieelemente erzeugen einander. Zwei zueinander senkrechte Spiegelebenen erzeugen in ihrer Schnittgeraden eine (mindestens) 2-zählige Drehachse. In <i>mmm</i> entstehen so aus den drei Spiegelebenen die drei 2-zähligen Achsen, und das vollständige Symbol lautet 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> (Abb. 3.2). Ebenso erzeugen eine 2-zählige Achse und ein Inversionszentrum auf ihr eine Spiegelebene senkrecht zur Achse.</p>
         <p>Bei einer Drehinversionsachse sind Drehung und Inversion zu <em>einer</em> Operation gekoppelt; die einzelnen Operationen müssen dann keine Symmetrieoperationen sein. Abb. 3.3 und 3.4 vergleichen eine 4-zählige Drehachse mit einer 4-zähligen Drehinversionsachse 4̄: Bei 4 liegen alle vier Pole auf derselben Halbkugel, bei 4̄ wechseln sie mit jedem Schritt um 90° die Halbkugel. 4̄ enthält eine 2-zählige Drehachse, aber weder 4 noch ein Inversionszentrum.</p>
-        <div class="fig-row fig-row3">
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-app="#m=pg&amp;g=mmm" data-alt="Symmetriegerüst von mmm in 3D mit Bahn eines allgemeinen Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 3.2a</b> <i>mmm</i> in 3D: die drei Spiegelebenen (Scheiben), die 2-zähligen Achsen in ihren Schnittgeraden und die 8 äquivalenten Pole auf der Umkugel. Ziehen dreht die Ansicht.</figcaption>
+          </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mmm" data-alt="Punktgruppe mmm mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 3.2</b> <i>mmm</i>: Drei Spiegelebenen erzeugen drei 2-zählige Achsen; der allgemeine Pol ergibt 8 äquivalente Pole.</figcaption>
+            <figcaption><b>Abb. 3.2b</b> <i>mmm</i> im Stereogramm: Drei Spiegelebenen erzeugen drei 2-zählige Achsen; der allgemeine Pol ergibt 8 äquivalente Pole.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4" data-alt="Punktgruppe 4 mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
@@ -856,7 +890,7 @@ footer a { color: inherit; }
               <line class="hx-210" x1="56.1" y1="100" x2="263.9" y2="220"/>
               <line class="hx-210" x1="56.1" y1="220" x2="263.9" y2="100"/>
               <text class="hx-l2" x="160" y="298" text-anchor="middle">[210]</text>
-              <text class="hx-l2" x="272" y="236">[120]</text>
+              <text class="hx-l2" x="50" y="94" text-anchor="end">[1̄2̄0]</text>
               <text class="hx-l2" x="272" y="94">[1̄10]</text>
               <path class="hx-arc" d="M196,160 A36,36 0 0 1 142,191.2"/>
               <text class="hx-g" x="180" y="214">γ = 120°</text>

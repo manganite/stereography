@@ -3,7 +3,7 @@
 // mit scene.js genau das Stereogramm, das die App für diese Adresse zeigt.
 
 import { buildSVG } from './stereogram.js';
-import { createState, applyHashTo, palette, pgScene, polyCrystal, polyScene, normalizeZones } from './scene.js';
+import { createState, applyHashTo, palette, pgScene, polyCrystal, polyScene, normalizeZones, crystalAxesFor } from './scene.js';
 import { hklHTML } from './format.js';
 import { VERSION } from './version.js';
 
@@ -51,7 +51,6 @@ function renderStereo(fig, col) {
 const views3d = new Map();
 async function render3d(fig, col) {
   const { View3D } = await import('./view3d.js');
-  const { st, C, scene } = stereoFor(fig.dataset.app, col);
   let v = views3d.get(fig);
   if (!v) {
     const box = fig.querySelector('.fig-art');
@@ -60,6 +59,20 @@ async function render3d(fig, col) {
     views3d.set(fig, v);
     v.setView(fig.dataset.view || 'oblique');
   }
+  const st0 = stateFor(fig.dataset.app);
+  if (st0.mode === 'pg') {
+    // Symmetriegerüst in 3D wie in der App (renderPG in main.js)
+    const { info, p0, orb, scene } = pgScene(st0, col);
+    v.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, gen: false, selected: false })) }, { standalone: true }).full);
+    v.showPointGroup(
+      { ...info, orbit: st0.pg.showObject ? orb : null, p0, crystalAxes: crystalAxesFor(info.hex) },
+      col,
+      { showElements: st0.pg.showElements, showObject: st0.pg.showObject, showRays: st0.view.rays, showSphere: st0.view.sphere, showPlane: st0.view.plane, showAxes: st0.view.axes,
+        dirColors: st0.view.dirColors ? col.dir : null, hiddenDirs: new Set(st0.pg.hideDirs), arc: null },
+    );
+    return;
+  }
+  const { st, C, scene } = stereoFor(fig.dataset.app, col);
   v.setStereoTexture(buildSVG(scene, { standalone: true }).full);
   // data-labels="aus": Indizes nur in dieser Abbildung ausblenden (der Link in die App behält sie)
   const labels = st.poly.labels && fig.dataset.labels !== 'aus' ? C.faces.map((f) => hklHTML(f.hkl, C.hex && st.poly.bravais)) : null;

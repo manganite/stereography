@@ -222,10 +222,11 @@ export function applyHashTo(state, hash, DEFAULTS) {
     state.poly.lats[state.poly.system] = lat;
     bools(URL_FORM, state.poly);
     // str=<Richtung>,<Faktor>, z. B. str=111,1.3 (Richtung als Gitterrichtung ohne Klammern)
-    if (q.has('str')) {
+    // nur ohne Beispielkristall; Faktor ausserhalb 0,5 … 2 oder leer: Link ohne Streckung
+    if (q.has('str') && !state.poly.example) {
       const [id, f] = q.get('str').split(',');
-      const s = num(f, 0.5, 2);
-      if (STRETCH_DIRS[state.poly.system].some((x) => x.id === id) && s != null) state.poly.stretch = { dir: id, s };
+      const s = f != null && f.trim() !== '' ? Number(f) : NaN;
+      if (STRETCH_DIRS[state.poly.system].some((x) => x.id === id) && s >= 0.5 && s <= 2) state.poly.stretch = { dir: id, s };
     }
     if (q.has('abstand')) state.poly.auxDist = num(q.get('abstand'), 0.3, 3) ?? state.poly.auxDist;
     if (q.has('gr')) state.poly.size = num(q.get('gr'), 0.3, 1.2) ?? state.poly.size;

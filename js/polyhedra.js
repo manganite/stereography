@@ -281,9 +281,12 @@ export function orientationMatrix(A, preset) {
 export function faceMotifs(faces, ops) {
   const out = [];
   const done = new Set();
+  // je Form und (bei erniedrigter Symmetrie) je Teilform eine Keimfläche: die Restoperationen erreichen
+  // die übrigen Teilformen nicht
   for (const f0 of faces) {
-    if (f0.role !== 'main' || done.has(f0.form || 0)) continue;
-    done.add(f0.form || 0);
+    const key = `${f0.form || 0}:${f0.orbit || 0}`;
+    if (f0.role !== 'main' || done.has(key)) continue;
+    done.add(key);
     out.push(...motifsOn(f0, ops));
   }
   return out;

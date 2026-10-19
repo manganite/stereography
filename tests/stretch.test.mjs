@@ -121,10 +121,22 @@ test('Link-Adresse: str=Richtung,Faktor hin und zurück; ungültige Werte werden
   assert.equal(hashOf(b, D), h);
   // Richtung eines anderen Systems, Faktor 1, Beispielkristall: keine Streckung
   for (const bad of ['#m=form&sys=kubisch&f=m-3m:a34&str=210,1.3', '#m=form&sys=kubisch&f=m-3m:a34&str=111,1',
-    '#m=form&sys=kubisch&bsp=galenit&str=111,1.3']) {
+    '#m=form&sys=kubisch&bsp=galenit&str=111,1.3', '#m=form&sys=kubisch&f=m-3m:a34&str=111,',
+    '#m=form&sys=kubisch&f=m-3m:a34&str=111,-1', '#m=form&sys=kubisch&f=m-3m:a34&str=111,3', '#m=form&sys=kubisch&f=m-3m:a34&str=111,x']) {
     const c = createState();
     applyHashTo(c, bad, D);
     assert.equal(currentStretch(c), null, bad);
     assert.doesNotMatch(hashOf(c, D), /str=/, bad);
+    // auch nach Verlassen des Beispiels keine versteckte Streckung
+    c.poly.example = null;
+    assert.equal(currentStretch(c), null, bad + ' (ohne Beispiel)');
   }
+});
+
+test('Flächenmuster: jede Teilform erhält ein Muster, wenn die Form zerfällt', () => {
+  const C = build('m-3m:b35', [1, 1, 1], 0.7); // Oktaeder → Pinakoid + Rhomboeder
+  assert.equal(C.orbitsMain.length, 2);
+  assert.equal(C.motifs.length, C.latOps.length * 2);
+  const U = build('m-3m:b35', null, 1);
+  assert.equal(U.motifs.length, U.latOps.length, 'ohne Verzerrung unverändert');
 });

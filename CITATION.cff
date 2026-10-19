@@ -6,8 +6,8 @@ authors:
   - family-names: Lottermoser
     given-names: Thomas
     affiliation: "ETH Zürich"
-version: 1.2.0
-date-released: 2026-10-18
+version: 1.3.0
+date-released: 2026-10-19
 license: MIT
 repository-code: "https://github.com/manganite/stereography"
 url: "https://manganite.github.io/stereography/"

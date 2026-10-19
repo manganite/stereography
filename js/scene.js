@@ -5,6 +5,7 @@
 import { POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, HEX_A, HEX_B } from './pointgroups.js';
 import {
   buildCrystal, zoneOf, zoneByUvw, zoneKey, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, SYSTEM_OF,
+  STRETCH_DIRS, stretchDir,
 } from './polyhedra.js';
 import { CATALOG, formEig, entryById } from './forms.js';
 import { hklParts } from './format.js';
@@ -24,6 +25,7 @@ export function createState() {
       size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: false, tool: null,
       example: null, exScale: {}, // Beispielkristall und Faktoren der Formabstände
       zones: [], // gewählte Zonen (Werkzeug „Zone“) als 'u,v,w'
+      stretch: { dir: '', s: 1 }, // Streckung entlang einer Blickrichtung (Kennung aus STRETCH_DIRS, Faktor)
     },
     view: { dirColors: true, wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
     selected: null,
@@ -119,6 +121,16 @@ export const exForms = (state, ex) => {
   const fs = exFactors(state, ex);
   return ex.forms.map((f, i) => (f.t != null ? { hkl: f.hkl, t: f.t * fs[i] } : { hkl: f.hkl, r: f.r * fs[i] }));
 };
+/**
+ * Wirksame Streckung { id, uvw, cls, s } oder null (s = 1, Beispielkristall oder System ohne Blickrichtung).
+ * Beispielkristalle werden nicht gestreckt (wie „Symmetrie brechen“).
+ */
+export function currentStretch(state) {
+  const st = state.poly.stretch;
+  if (!st || currentExample(state) || !(Math.abs(st.s - 1) > 1e-9)) return null;
+  const d = stretchDir(state.poly.system, st.dir);
+  return d ? { ...d, s: st.s } : null;
+}
 export const currentLat = (state) => {
   const sys = state.poly.system;
   if (!state.poly.lats[sys]) state.poly.lats[sys] = { ...LATTICE_DEFAULTS[sys] };
@@ -167,6 +179,8 @@ export function hashOf(state, DEFAULTS) {
     const lat = currentLat(state), l0 = { ...LATTICE_DEFAULTS[sys], ...(ex ? ex.lat : {}) };
     for (const k of LAT_KEYS) if (Math.abs(lat[k] - l0[k]) > 1e-6) q.set(k, String(Math.round(lat[k] * 100) / 100));
     bools(URL_FORM, state.poly, d.poly);
+    const st = currentStretch(state);
+    if (st) q.set('str', st.id + ',' + String(Math.round(st.s * 100) / 100));
     if (Math.abs(state.poly.auxDist - d.poly.auxDist) > 1e-6) q.set('abstand', String(state.poly.auxDist));
     if (Math.abs(state.poly.size - d.poly.size) > 1e-6) q.set('gr', String(state.poly.size));
     if (state.poly.tool) q.set('w', TOOL_NAMES[state.poly.tool]);
@@ -207,6 +221,12 @@ export function applyHashTo(state, hash, DEFAULTS) {
     }
     state.poly.lats[state.poly.system] = lat;
     bools(URL_FORM, state.poly);
+    // str=<Richtung>,<Faktor>, z. B. str=111,1.3 (Richtung als Gitterrichtung ohne Klammern)
+    if (q.has('str')) {
+      const [id, f] = q.get('str').split(',');
+      const s = num(f, 0.5, 2);
+      if (STRETCH_DIRS[state.poly.system].some((x) => x.id === id) && s != null) state.poly.stretch = { dir: id, s };
+    }
     if (q.has('abstand')) state.poly.auxDist = num(q.get('abstand'), 0.3, 3) ?? state.poly.auxDist;
     if (q.has('gr')) state.poly.size = num(q.get('gr'), 0.3, 1.2) ?? state.poly.size;
     state.poly.tool = TOOL_IDS[q.get('w')] || null;
@@ -303,7 +323,7 @@ export function polyCrystal(state, col) {
   const ex = currentExample(state);
   const C = buildCrystal(ex
     ? { groupId: ex.pg, forms: exForms(state, ex), lat: currentLat(state), broken: false, auxDist: state.poly.auxDist, presetId: state.poly.presetId }
-    : { entryId: currentEntryId(state), lat: currentLat(state), broken: state.poly.broken, auxDist: state.poly.auxDist, presetId: state.poly.presetId });
+    : { entryId: currentEntryId(state), lat: currentLat(state), broken: state.poly.broken, auxDist: state.poly.auxDist, presetId: state.poly.presetId, stretch: currentStretch(state) });
   C.example = ex;
   const oc = ORBIT_COLORS(col);
   const multi = C.isReduced && C.orbitsMain.length > 1;

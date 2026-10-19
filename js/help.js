@@ -32,11 +32,13 @@ export const TIPS = {
   'lat-be': 'Winkel β zwischen den Achsen a und c.',
   'lat-ga': 'Winkel γ zwischen den Achsen a und b.',
   'poly-broken': 'Gibt alle Gitterparameter frei und zeigt, welche Punktgruppe übrig bleibt und in welche Formen die Form zerfällt.',
+  'stretch-dir': 'Richtung der Streckung, je eine Richtung aus jeder Blickrichtung des Kristallsystems (Positionen im Hermann-Mauguin-Symbol).',
+  'stretch-s': 'Streckt (über 1) oder staucht (unter 1) Gitter und Kristall entlang der gewählten Richtung. Die Symmetrie quer dazu geht verloren; die Infobox zeigt die Restsymmetrie und den Zerfall der Form. Beispiel: Würfel entlang [111] → Rhomboeder.',
   'poly-size': 'Grösse des Kristalls in 3D. Das Stereogramm hängt nicht davon ab: Die Pole hängen nur von den Flächennormalen ab.',
   'ctl-ex-dists': 'Zentralabstand der Formen. Er ändert die Gestalt und damit den Habitus, aber nicht das Stereogramm.',
   'poly-open': 'Pyramiden, Prismen, Pedien und Pinakoide schliessen allein keinen Raum ein. Ausgeschaltet schliessen graue Ergänzungsformen den Körper.',
   'poly-aux': 'Abstand der grauen Ergänzungsformen vom Zentrum. Er ändert nur die Gestalt, nicht das Stereogramm.',
-  'poly-reset': 'Gitterparameter, Grösse und Abstände auf die Ausgangswerte zurücksetzen.',
+  'poly-reset': 'Gitterparameter, Streckung, Grösse und Abstände auf die Ausgangswerte zurücksetzen.',
   // Darstellung
   'v-dircolors': 'Farbe der Symmetrieelemente nach ihrer Position im vollen Hermann-Mauguin-Symbol (1., 2., 3. Blickrichtung). Ausgeschaltet schwarz wie in den International Tables.',
   'v-wulff': 'Wulffsches Netz: projiziertes Gradnetz. Winkel zwischen Polen nur auf Grosskreisen (Längenkreisen) ablesen.',
@@ -72,7 +74,7 @@ export const SECTIONS = [
     intro: 'Pol oder Fläche antippen hebt beide hervor: Jede Fläche hat genau einen Pol.',
     ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-labels', 'poly-bravais', 'poly-lower', 'poly-facesym', 'poly-frame'],
   },
-  { heading: '#ctl-poly-lat > summary', ids: ['lat-ba', 'lat-ca', 'lat-al', 'lat-be', 'lat-ga', 'poly-broken', 'poly-size', 'ctl-ex-dists', 'poly-open', 'poly-aux'] },
+  { heading: '#ctl-poly-lat > summary', ids: ['lat-ba', 'lat-ca', 'lat-al', 'lat-be', 'lat-ga', 'poly-broken', 'stretch-dir', 'stretch-s', 'poly-size', 'ctl-ex-dists', 'poly-open', 'poly-aux'] },
   {
     heading: '#sec-view > summary',
     ids: ['v-dircolors', 'v-wulff', 'v-wulffrot', 'v-axes', 'v-sphere', 'v-plane', 'v-rays', 'v-normals', 'zone-btn', 'angle-btn-3d', 'view-side'],

@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Streckung entlang einer Blickrichtung** (unter „Gitter und Gestalt“): Richtung aus jeder Blickrichtung des Kristallsystems (kubisch [001], [111], [110]; tetragonal [001], [100], [110]; trigonal und hexagonal [001], [100], [210]; orthorhombisch a, b, c; monoklin b) und ein Faktor von 0,5 bis 2. Gitter und Kristall werden affin gestreckt oder gestaucht; die Infobox zeigt die verbleibende Punktgruppe und den Zerfall der Form, z. B. Würfel entlang [111]: m3̄m → 3̄m, Rhomboeder. Streckungen, die die Symmetrie erhalten (z. B. tetragonal entlang c), werden als solche benannt: Sie ändern nur Gitterparameter, die das System ohnehin freilässt. Ist die Restgruppe eines kubischen Kristalls trigonal, nennt die Infobox die hexagonalen Achsen (c ∥ [111], a₁ ∥ [11̄0], a₂ ∥ [011̄]), c/a und die Formen mit Namen und Indizes in hexagonalen Achsen (z. B. Würfel {100} → Rhomboeder {101} = {101̄1}; Oktaeder → Pinakoid {0001} + Rhomboeder {022̄1}). Die Streckung steht im Link (`str=111,1.3`); bei Beispielkristallen ist sie wie „Symmetrie brechen“ nicht verfügbar.
+
 ## [1.3.0] - 2026-10-19
 
 Skript zur Vorlesung als eigene Seite mit sieben Kapiteln; Habitus-Regel verschärft; Begriffe wie in der Vorlesung.

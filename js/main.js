@@ -5,6 +5,7 @@ import {
 } from './pointgroups.js';
 import {
   habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, isHexSystem, auxFormName,
+  STRETCH_DIRS, stretchDir,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
@@ -71,6 +72,8 @@ try {
     if (!exampleById(state.poly.example)) state.poly.example = null;
     if (!state.poly.exScale || typeof state.poly.exScale !== 'object') state.poly.exScale = {};
     if (!Array.isArray(state.poly.zones)) state.poly.zones = [];
+    const st = state.poly.stretch;
+    if (!st || typeof st !== 'object' || typeof st.dir !== 'string' || !(st.s >= 0.5 && st.s <= 2)) state.poly.stretch = { dir: '', s: 1 };
   }
 } catch { /* Speicher nicht verfügbar */ }
 if (location.hash.length > 1) applyHash(location.hash); // Link hat Vorrang
@@ -217,6 +220,7 @@ function setExample(id) {
     state.poly.lats[ex.sys] = { ...LATTICE_DEFAULTS[ex.sys], ...(ex.lat || {}) };
     delete state.poly.exScale[ex.id];
     state.poly.broken = false; state.poly.open = false;
+    state.poly.stretch = { dir: '', s: 1 };
     state.poly.presetId = orientationPresets(ex.sys)[0].id;
     $('poly-broken').checked = false; $('poly-open').checked = false;
   }
@@ -287,6 +291,7 @@ function refreshPolyControls() {
   buildFormSelect();
   buildExDists();
   $('row-broken').hidden = !!currentExample();
+  buildStretch();
   syncFormHint();
   const presets = orientationPresets(sys);
   $('preset-select').innerHTML = presets.map((p) => `<option value="${p.id}">${p.name}</option>`).join('');
@@ -297,6 +302,21 @@ function refreshPolyControls() {
   $('lat-fixed').hidden = free.size > 0;
   $('row-bravais').hidden = !isHexSystem(sys);
   syncLatSliders();
+}
+
+/** Streckung entlang einer Blickrichtung: Auswahl der Richtung je System, Faktor. */
+const stretchLabel = (d) => `[${d.id}]` + (/^[abc]$/.test(d.cls) ? ` = ${d.cls}` : `, Blickrichtung ${d.cls}`);
+function buildStretch() {
+  const dirs = STRETCH_DIRS[state.poly.system];
+  $('ctl-stretch').hidden = !!currentExample() || !dirs.length;
+  if (!dirs.length) return;
+  $('stretch-dir').innerHTML = dirs.map((d) => `<option value="${d.id}">${stretchLabel(d)}</option>`).join('');
+  $('stretch-dir').value = stretchDir(state.poly.system, state.poly.stretch.dir).id;
+  syncStretch();
+}
+function syncStretch() {
+  $('stretch-s').value = state.poly.stretch.s;
+  $('stretch-s-out').textContent = state.poly.stretch.s.toFixed(2);
 }
 
 function syncLatSliders() {
@@ -652,13 +672,28 @@ function updateInfoPoly(C, col) {
       : `<h3>Ergänzungsformen</h3><p class="note">Die Form ist offen. Sie wird durch Formen derselben Punktgruppe geschlossen (grau):</p><ul class="auxlist">${auxList}</ul>`;
   }
   let broken = '';
-  if (state.poly.broken) {
+  const st = C.stretch;
+  if (state.poly.broken || st) {
+    const stText = st ? `Streckung entlang ${dirHTML(st.uvw, false)} um den Faktor ${st.s.toFixed(2).replace('.', ',')}` : '';
     if (C.isReduced) {
       const oc = ORBIT_COLORS(col);
-      const ax = C.reducedAxis ? ` (${hmHTML(C.reducedAxis.symbol)} ∥ [${C.reducedAxis.uvw.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join('')}])` : '';
-      const parts = C.orbitsMain.map((o, i) => `<li><i class="sw" style="background:${C.orbitsMain.length > 1 ? oc[i % oc.length] : col.crystal}"></i>${brace(o.rep)}, ${o.hkls.length} Fläche${o.hkls.length > 1 ? 'n' : ''}</li>`).join('');
+      const ax = C.reducedAxis ? ` (${hmHTML(C.reducedAxis.symbol)} ∥ ${dirHTML(C.reducedAxis.uvw, false)})` : '';
+      const hs = C.hexSetting;
+      // trigonale Restgruppe eines kubischen Kristalls: Formen auch in hexagonalen Achsen (drei und vier Indizes)
+      const hexPart = (i) => {
+        if (!hs) return '';
+        const o = hs.orbits[i];
+        return ` → ${o.name ? o.name + ' ' : ''}${hklHTML(o.rep, false, ['{', '}'])} = ${hklHTML(o.rep, true, ['{', '}'])}`;
+      };
+      const parts = C.orbitsMain.map((o, i) => `<li><i class="sw" style="background:${C.orbitsMain.length > 1 ? oc[i % oc.length] : col.crystal}"></i>${brace(o.rep)}, ${o.hkls.length} Fläche${o.hkls.length > 1 ? 'n' : ''}${hexPart(i)}</li>`).join('');
+      const hexNote = hs
+        ? `<p>Die Restgruppe ist trigonal. In hexagonalen Achsen gilt c ∥ ${dirHTML(hs.c, false)}, a₁ ∥ ${dirHTML(hs.a1, false)}, a₂ ∥ ${dirHTML(hs.a2, false)} (Richtungen im kubischen Gitter), c/a = ${hs.ca.toFixed(2).replace('.', ',')}; die Formen dort stehen hinter dem Pfeil.${hs.c.join('') === '111' && state.poly.presetId !== '111' ? ' Die Lage „[111] ∥ Projektionsrichtung“ zeigt den Kristall entlang der neuen c-Achse.' : ''}</p>`
+        : '';
       broken = `<div class="warnbox"><strong>Symmetrie erniedrigt: ${hmHTML(g.hm)} → ${hmHTML(C.reduced.hm)}</strong>${ax}
-        <p>${C.orbitsMain.length > 1 ? `Die Form ${brace(e.hkl)} zerfällt in ${C.orbitsMain.length} Formen:` : `Die Form ${brace(e.hkl)} bleibt eine Form der Restsymmetrie:`}</p><ul class="auxlist">${parts}</ul></div>`;
+        ${st ? `<p>${stText}.</p>` : ''}
+        <p>${C.orbitsMain.length > 1 ? `Die Form ${brace(e.hkl)} zerfällt in ${C.orbitsMain.length} Formen:` : `Die Form ${brace(e.hkl)} bleibt eine Form der Restsymmetrie:`}</p><ul class="auxlist">${parts}</ul>${hexNote}</div>`;
+    } else if (st && !state.poly.broken) {
+      broken = `<div class="okbox">Die ${stText} erhält die Punktgruppe ${hmHTML(g.hm)}. Sie ändert nur Gitterparameter, die im ${SYSTEM_NAMES[C.sys].toLowerCase()}en System ohnehin frei sind (siehe Gitter).</div>`;
     } else {
       broken = `<div class="okbox">Die Verzerrung erhält die Punktgruppe ${hmHTML(g.hm)}.</div>`;
     }
@@ -769,8 +804,8 @@ function updateInfoPoly(C, col) {
       <div><dt>Flächen der Form</dt><dd class="num">${C.mainHKL.length}</dd></div>
       <div><dt>Indexmuster (ITA)</dt><dd>{${symText(e.sym, hex4)}}</dd></div>
       <div><dt>Wyckoff-Lage, Flächensymmetrie</dt><dd>${e.wy}, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
-      <div><dt>Eigensymmetrie der Form${state.poly.broken && C.isReduced ? ' (unverzerrt)' : ''}</dt><dd>${hmHTML(formEig(e))}</dd></div>
-      <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken)}</dd></div>
+      <div><dt>Eigensymmetrie der Form${C.isReduced ? ' (unverzerrt)' : ''}</dt><dd>${hmHTML(formEig(e))}</dd></div>
+      <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken || !!st)}</dd></div>
       <div><dt>Lage</dt><dd>${C.preset.name}</dd></div>
     </dl>
     ${twinNote}
@@ -1032,6 +1067,7 @@ function init() {
   buildSystemSelect();
   $('sys-select').addEventListener('change', (e) => {
     state.poly.system = e.target.value; state.poly.example = null; state.selected = null; state.zoneSel = []; state.poly.zones = [];
+    state.poly.stretch = { dir: '', s: 1 };
     refreshPolyControls(); render();
   });
   $('form-select').addEventListener('change', (e) => {
@@ -1057,9 +1093,16 @@ function init() {
     state.poly.lats[sys] = constrainLattice(currentLat(), sys);
     refreshPolyControls(); render();
   });
+  $('stretch-dir').addEventListener('change', (ev) => { state.poly.stretch.dir = ev.target.value; render(); });
+  $('stretch-s').addEventListener('input', (ev) => {
+    state.poly.stretch.dir = $('stretch-dir').value;
+    state.poly.stretch.s = Number(ev.target.value);
+    syncStretch(); render();
+  });
   $('poly-reset').addEventListener('click', () => {
     const ex = currentExample();
     state.poly.lats[state.poly.system] = { ...LATTICE_DEFAULTS[state.poly.system], ...(ex ? ex.lat : {}) };
+    state.poly.stretch.s = 1; syncStretch();
     if (ex) delete state.poly.exScale[ex.id];
     state.poly.auxDist = 1; state.poly.size = 0.75;
     syncLatSliders(); syncSliders(); buildExDists(); render();

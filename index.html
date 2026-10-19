@@ -449,6 +449,16 @@ footer a { color: inherit; }
           <div class="range" id="row-lat-ga"><label for="lat-ga">γ</label><output id="lat-ga-out"></output>
             <input type="range" id="lat-ga" min="60" max="150" step="1"></div>
           <label class="check" id="row-broken"><input type="checkbox" id="poly-broken">Symmetrie brechen (alle Gitterparameter frei)</label>
+          <div class="stack" id="ctl-stretch" hidden>
+            <p class="group-title">Streckung entlang einer Blickrichtung</p>
+            <div class="field">
+              <label for="stretch-dir">Richtung</label>
+              <select id="stretch-dir"></select>
+            </div>
+            <div class="range"><label for="stretch-s">Faktor</label><output id="stretch-s-out"></output>
+              <input type="range" id="stretch-s" min="0.5" max="2" step="0.01"></div>
+            <p class="hintline">Faktor über 1 streckt den Kristall, unter 1 staucht ihn. Die Infobox zeigt, welche Punktgruppe übrig bleibt.</p>
+          </div>
           <p class="group-title">Gestalt</p>
           <div class="range"><label for="poly-size">Grösse des Kristalls</label><output id="poly-size-out"></output>
             <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>

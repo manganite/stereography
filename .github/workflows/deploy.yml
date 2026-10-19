@@ -48,7 +48,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir _site
-          cp -r index.html manifest.webmanifest sw.js LICENSE js lib icons _site/
+          cp -r index.html skript.html manifest.webmanifest sw.js LICENSE js lib icons css _site/
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

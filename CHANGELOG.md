@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-19
+
+Skript zur Vorlesung als eigene Seite mit sieben Kapiteln; Habitus-Regel verschärft; Begriffe wie in der Vorlesung.
+
 ### Hinzugefügt
 
 - **Skript zur Vorlesung** als eigene Seite (`skript.html`, Link „Skript“ in der Kopfzeile der App): Text in der Reihenfolge der Vorlesung, Begriffe nach Borchardt-Ott & Sowa, Abbildungen mit dem Code der App erzeugt und jeweils mit „In der App öffnen“. Sieben Kapitel: 1 Die stereographische Projektion (mit interaktiver Schnittskizze), 2 Kristallformen im Stereogramm, 3 Symmetriegerüste im Stereogramm, 4 Zonen (Zonengleichung, Kreuzschema, Zonenachse und Flächennormale), 5 Tracht und Habitus, 6 Blickrichtungen (Hermann-Mauguin-Symbol, volles und gekürztes Symbol), 7 Hexagonale Achsen und vierstellige Indizes. Kapitel 2 zeigt zu jedem Stereogramm den Körper in derselben Lage in 3D, Kapitel 3 das Symmetriegerüst von *mmm* auch in 3D. Jedes Kapitel mit Lernzielen, Merksätzen, Zusammenfassung und Quellen; fachlich gegen Borchardt-Ott & Sowa gegengeprüft. Offline verfügbar wie die App.
@@ -81,7 +85,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/manganite/stereography/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/manganite/stereography/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/manganite/stereography/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/manganite/stereography/compare/v1.0.0...v1.0.1

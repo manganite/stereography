@@ -34,3 +34,13 @@ test('Service Worker: jede Seite wird bei Seitenaufrufen aus ihrem eigenen Cache
   const html = readdirSync(ROOT).filter((f) => f.endsWith('.html'));
   for (const p of html) assert.ok(pages.includes(p), `fehlt in PAGES (sw.js): ${p}`);
 });
+
+test('Deployment: der Schritt „Assemble site“ kopiert jede Datei der Offline-Liste', () => {
+  // Fehlt eine Datei auf GitHub Pages, schlägt cache.addAll() fehl und der neue Service Worker installiert sich nicht.
+  const cp = read('.github/workflows/deploy.yml').match(/^\s*cp -r (.+) _site\/$/m);
+  assert.ok(cp, 'cp-Zeile in deploy.yml');
+  const copied = cp[1].trim().split(/\s+/);
+  const listed = [...sw.matchAll(/^ {2}'([^']+)',$/gm)].map((m) => m[1]).filter((p) => p !== './');
+  for (const p of listed) assert.ok(copied.includes(p.split('/')[0]), `wird nicht veröffentlicht: ${p}`);
+  assert.ok(copied.includes('sw.js'), 'sw.js');
+});

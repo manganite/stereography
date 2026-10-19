@@ -47,10 +47,24 @@ function renderStereo(fig, col) {
   box.innerHTML = `<svg viewBox="0 0 520 520" role="img" aria-label="${fig.dataset.alt || 'Stereogramm'}">${buildSVG(scene).inner}</svg>`;
 }
 
-// 3D-Abbildungen: three.js erst laden, wenn eine solche Abbildung in Sicht kommt
+// 3D-Abbildungen: three.js erst laden, wenn eine solche Abbildung in Sicht kommt. Jede Ansicht braucht einen
+// eigenen WebGL-Kontext, und Browser halten nur wenige (Safari auf iPhone/iPad etwa 8) gleichzeitig; das Skript
+// hat mehr 3D-Abbildungen. Deshalb leben nur Ansichten in der Nähe des sichtbaren Bereichs; beim Verlassen wird
+// der Kontext freigegeben und die Kameraposition gemerkt.
 const views3d = new Map();
+const live3d = new Set();
+const cams3d = new Map();
+function release3d(fig) {
+  live3d.delete(fig);
+  const v = views3d.get(fig);
+  if (!v) return;
+  cams3d.set(fig, v.camera.position.clone());
+  v.destroy();
+  views3d.delete(fig);
+}
 async function render3d(fig, col) {
   const { View3D } = await import('./view3d.js');
+  if (!live3d.has(fig)) return; // inzwischen aus dem Bild gescrollt
   let v = views3d.get(fig);
   if (!v) {
     const box = fig.querySelector('.fig-art');
@@ -58,6 +72,9 @@ async function render3d(fig, col) {
     v = new View3D(box, {});
     views3d.set(fig, v);
     v.setView(fig.dataset.view || 'oblique');
+    // vom Leser gedrehte Ansicht wiederherstellen
+    const cam = cams3d.get(fig);
+    if (cam) { v.camera.position.copy(cam); v.controls.update(); }
   }
   const st0 = stateFor(fig.dataset.app);
   if (st0.mode === 'pg') {
@@ -106,14 +123,15 @@ function watch3d() {
   if (!figs.length) return;
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
-      if (!e.isIntersecting) continue;
-      io.unobserve(e.target);
+      if (!e.isIntersecting) { release3d(e.target); continue; }
+      if (live3d.has(e.target)) continue;
+      live3d.add(e.target);
       render3d(e.target, palette()).catch((err) => {
         e.target.querySelector('.fig-art').innerHTML = '<p class="fig-err">Die 3D-Ansicht konnte nicht geladen werden.</p>';
         console.error(err);
       });
     }
-  }, { rootMargin: '200px' });
+  }, { rootMargin: '300px 0px' });
   figs.forEach((f) => io.observe(f));
 }
 

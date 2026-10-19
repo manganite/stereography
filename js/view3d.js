@@ -84,6 +84,20 @@ export class View3D {
     this.requestRender();
   }
 
+  /** WebGL-Kontext und alle Ressourcen freigeben (das Skript hält nur sichtbare Ansichten am Leben). */
+  destroy() {
+    if (this._raf) cancelAnimationFrame(this._raf);
+    this._raf = null;
+    this._ro.disconnect();
+    this.controls.dispose?.();
+    this._dispose(this.base);
+    this._dispose(this.content);
+    this.texture.dispose();
+    this.renderer.dispose();
+    this.renderer.forceContextLoss();
+    this.container.innerHTML = '';
+  }
+
   requestRender() {
     if (this._raf) return;
     this._raf = requestAnimationFrame(() => {

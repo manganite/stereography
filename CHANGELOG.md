@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-20
+
+Seitenleiste neu geordnet: „Gitter“ und „Gestalt“ getrennt; „Symmetrie brechen“ als einziger Weg zur Symmetrieänderung, mit Streckung oder allen Parametern frei.
+
 ### Geändert
 
 - **„Gitter und Gestalt“ aufgeteilt** in zwei Abschnitte: **Gitter** (alles, was das Gitter und damit das Stereogramm ändert) und darunter **Gestalt** (Grösse, Abstände der Formen, offene Form und Ergänzungsformen; ändert nur den Körper, nicht das Stereogramm).
@@ -105,7 +109,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/manganite/stereography/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/manganite/stereography/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/manganite/stereography/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/manganite/stereography/compare/v1.1.0...v1.2.0

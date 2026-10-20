@@ -46,16 +46,19 @@ export const FREE_PARAMS = {
 
 /**
  * Richtungen, entlang derer der Kristall gestreckt werden kann: je Blickrichtung des Kristallsystems
- * (Positionen des Hermann-Mauguin-Symbols, Borchardt-Ott Tab. 7.3) eine Gitterrichtung [uvw].
+ * (Positionen des Hermann-Mauguin-Symbols, Borchardt-Ott Tab. 7.3) eine Gitterrichtung [uvw], aber nur
+ * dort, wo die Streckung die Symmetrie ändert. Streckungen entlang c (tetragonal, trigonal, hexagonal)
+ * und entlang der Achsen orthorhombischer und monokliner Gitter ändern nur Gitterparameter, die das
+ * System ohnehin freilässt; sie entfallen (Absprache mit dem Autor, 20.10.2026).
  * Kubisch ⟨100⟩ als [001], damit die verbleibende 4-zählige Achse wie im tetragonalen System ∥ c liegt.
  */
 export const STRETCH_DIRS = {
   triklin: [],
-  monoklin: [{ id: '010', uvw: [0, 1, 0], cls: 'b' }],
-  orthorhombisch: [{ id: '100', uvw: [1, 0, 0], cls: 'a' }, { id: '010', uvw: [0, 1, 0], cls: 'b' }, { id: '001', uvw: [0, 0, 1], cls: 'c' }],
-  tetragonal: [{ id: '001', uvw: [0, 0, 1], cls: 'c' }, { id: '100', uvw: [1, 0, 0], cls: '⟨100⟩' }, { id: '110', uvw: [1, 1, 0], cls: '⟨110⟩' }],
-  trigonal: [{ id: '001', uvw: [0, 0, 1], cls: 'c' }, { id: '100', uvw: [1, 0, 0], cls: '⟨100⟩' }, { id: '210', uvw: [2, 1, 0], cls: '⟨210⟩' }],
-  hexagonal: [{ id: '001', uvw: [0, 0, 1], cls: 'c' }, { id: '100', uvw: [1, 0, 0], cls: '⟨100⟩' }, { id: '210', uvw: [2, 1, 0], cls: '⟨210⟩' }],
+  monoklin: [],
+  orthorhombisch: [],
+  tetragonal: [{ id: '100', uvw: [1, 0, 0], cls: '⟨100⟩' }, { id: '110', uvw: [1, 1, 0], cls: '⟨110⟩' }],
+  trigonal: [{ id: '100', uvw: [1, 0, 0], cls: '⟨100⟩' }, { id: '210', uvw: [2, 1, 0], cls: '⟨210⟩' }],
+  hexagonal: [{ id: '100', uvw: [1, 0, 0], cls: '⟨100⟩' }, { id: '210', uvw: [2, 1, 0], cls: '⟨210⟩' }],
   kubisch: [{ id: '001', uvw: [0, 0, 1], cls: '⟨100⟩' }, { id: '111', uvw: [1, 1, 1], cls: '⟨111⟩' }, { id: '110', uvw: [1, 1, 0], cls: '⟨110⟩' }],
 };
 /** Gültige Streckrichtung eines Systems (sonst die erste). */

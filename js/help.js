@@ -25,20 +25,23 @@ export const TIPS = {
   'poly-lower': 'Pole von Flächen, die vom Betrachter wegzeigen, als Kreise. Ausgeschaltet nur die obere Halbkugel, wie in vielen Lehrbuchabbildungen.',
   'poly-facesym': 'Ein asymmetrisches Muster auf jeder Fläche; seine Wiederholung auf einer Fläche zeigt deren Flächensymmetrie, ähnlich wie Ätzfiguren. Die Formauswahl zeigt dann alle 115 Formen.',
   'poly-frame': 'Legt die Symmetrieelemente der Punktgruppe unter die Pole. Liegt ein Pol auf einem Symmetrieelement, gehört er zu einer speziellen Form.',
-  // Gitter und Gestalt
+  // Gitter
   'lat-ba': 'Achsenverhältnis b/a. Es ändert die Winkel zwischen den Flächen und damit die Lage der Pole.',
   'lat-ca': 'Achsenverhältnis c/a. Es ändert die Winkel zwischen den Flächen und damit die Lage der Pole.',
   'lat-al': 'Winkel α zwischen den Achsen b und c.',
   'lat-be': 'Winkel β zwischen den Achsen a und c.',
   'lat-ga': 'Winkel γ zwischen den Achsen a und b.',
-  'poly-broken': 'Gibt alle Gitterparameter frei und zeigt, welche Punktgruppe übrig bleibt und in welche Formen die Form zerfällt.',
-  'stretch-dir': 'Richtung der Streckung, je eine Richtung aus jeder Blickrichtung des Kristallsystems (Positionen im Hermann-Mauguin-Symbol).',
+  'poly-broken': 'Ohne diesen Schalter bleibt die Symmetrie immer erhalten. Mit ihm lässt sich das Gitter so verzerren, dass sich die Punktgruppe ändert; die Infobox zeigt, welche übrig bleibt und in welche Formen die Form zerfällt.',
+  'break-mode': 'Streckung: entlang einer Blickrichtung, bezogen auf das unverzerrte Gitter; die Gitterregler zeigen das Ergebnis. Alle Parameter frei: jeder Gitterparameter einzeln, ausgehend vom gerade gezeigten Gitter.',
+  'lat-reset': 'Gitterparameter und Streckung auf die Ausgangswerte zurücksetzen.',
+  'stretch-dir': 'Richtung der Streckung: Blickrichtungen des Kristallsystems (Positionen im Hermann-Mauguin-Symbol), entlang derer eine Streckung die Symmetrie ändert.',
   'stretch-s': 'Streckt (über 1) oder staucht (unter 1) Gitter und Kristall entlang der gewählten Richtung. Die Symmetrie quer dazu geht verloren; die Infobox zeigt die Restsymmetrie und den Zerfall der Form. Beispiel: Würfel entlang [111] → Rhomboeder.',
   'poly-size': 'Grösse des Kristalls in 3D. Das Stereogramm hängt nicht davon ab: Die Pole hängen nur von den Flächennormalen ab.',
   'ctl-ex-dists': 'Zentralabstand der Formen. Er ändert die Gestalt und damit den Habitus, aber nicht das Stereogramm.',
   'poly-open': 'Pyramiden, Prismen, Pedien und Pinakoide schliessen allein keinen Raum ein. Ausgeschaltet schliessen graue Ergänzungsformen den Körper.',
   'poly-aux': 'Abstand der grauen Ergänzungsformen vom Zentrum. Er ändert nur die Gestalt, nicht das Stereogramm.',
-  'poly-reset': 'Gitterparameter, Streckung, Grösse und Abstände auf die Ausgangswerte zurücksetzen.',
+  // Gestalt
+  'shape-reset': 'Grösse und Abstände auf die Ausgangswerte zurücksetzen.',
   // Darstellung
   'v-dircolors': 'Farbe der Symmetrieelemente nach ihrer Position im vollen Hermann-Mauguin-Symbol (1., 2., 3. Blickrichtung). Ausgeschaltet schwarz wie in den International Tables.',
   'v-wulff': 'Wulffsches Netz: projiziertes Gradnetz. Winkel zwischen Polen nur auf Grosskreisen (Längenkreisen) ablesen.',
@@ -74,7 +77,16 @@ export const SECTIONS = [
     intro: 'Pol oder Fläche antippen hebt beide hervor: Jede Fläche hat genau einen Pol.',
     ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-labels', 'poly-bravais', 'poly-lower', 'poly-facesym', 'poly-frame'],
   },
-  { heading: '#ctl-poly-lat > summary', ids: ['lat-ba', 'lat-ca', 'lat-al', 'lat-be', 'lat-ga', 'poly-broken', 'stretch-dir', 'stretch-s', 'poly-size', 'ctl-ex-dists', 'poly-open', 'poly-aux'] },
+  {
+    heading: '#ctl-poly-lat > summary',
+    intro: 'Alles in diesem Abschnitt ändert das Gitter und damit die Winkel zwischen den Flächen, also auch das Stereogramm.',
+    ids: ['lat-ba', 'lat-ca', 'lat-al', 'lat-be', 'lat-ga', 'poly-broken', 'break-mode', 'stretch-dir', 'stretch-s'],
+  },
+  {
+    heading: '#ctl-poly-shape > summary',
+    intro: 'Die Gestalt ändert nur den Körper, nicht das Stereogramm.',
+    ids: ['poly-size', 'ctl-ex-dists', 'poly-open', 'poly-aux'],
+  },
   {
     heading: '#sec-view > summary',
     ids: ['v-dircolors', 'v-wulff', 'v-wulffrot', 'v-axes', 'v-sphere', 'v-plane', 'v-rays', 'v-normals', 'zone-btn', 'angle-btn-3d', 'view-side'],
@@ -82,7 +94,7 @@ export const SECTIONS = [
 ];
 
 const LABELS = {
-  'zone-btn': 'Zone', 'angle-btn': 'Winkel', 'angle-btn-3d': 'Winkel', 'view-side': '3D seitlich', 'ctl-ex-dists': 'Abstände der Formen',
+  'zone-btn': 'Zone', 'angle-btn': 'Winkel', 'angle-btn-3d': 'Winkel', 'view-side': '3D seitlich', 'ctl-ex-dists': 'Abstände der Formen', 'break-mode': 'Art des Symmetriebruchs',
 };
 
 let tipEl = null, tipFor = null, tipDesc = null, showTimer = 0;

@@ -117,6 +117,9 @@ select {
   font-family: var(--font-mono);
 }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.seg.seg-text button { font-family: var(--font-ui); font-size: 0.85rem; }
+.range input:disabled { opacity: 0.45; cursor: not-allowed; }
+.range:has(input:disabled) output { color: var(--muted); }
 .hintline { font-size: 0.8rem; color: var(--muted); margin: 0; }
 .linkbtn { border: 1px solid var(--line); background: var(--paper); border-radius: 7px; padding: 6px 10px; cursor: pointer; font-size: 0.85rem; justify-self: start; }
 .group-title { font-size: 0.78rem; color: var(--muted); margin: 4px 0 -4px; font-weight: 600; }
@@ -435,8 +438,26 @@ footer a { color: inherit; }
       </details>
 
       <details class="sect" id="ctl-poly-lat" hidden>
-        <summary>Gitter und Gestalt</summary>
+        <summary>Gitter</summary>
         <div class="stack">
+          <label class="check" id="row-broken"><input type="checkbox" id="poly-broken">Symmetrie brechen</label>
+          <div class="stack" id="ctl-break" hidden>
+            <div class="seg seg-text" id="break-mode" role="group" aria-label="Art des Symmetriebruchs">
+              <button type="button" data-mode="stretch" aria-pressed="true">Streckung</button>
+              <button type="button" data-mode="free" aria-pressed="false">Alle Parameter frei</button>
+            </div>
+            <div class="stack" id="ctl-stretch">
+              <div class="field">
+                <label for="stretch-dir">Streckung entlang</label>
+                <select id="stretch-dir"></select>
+              </div>
+              <div class="range"><label for="stretch-s">Faktor</label><output id="stretch-s-out"></output>
+                <input type="range" id="stretch-s" min="0.5" max="2" step="0.01"></div>
+              <p class="hintline">Faktor über 1 streckt den Kristall, unter 1 staucht ihn, bezogen auf das unverzerrte Gitter.</p>
+            </div>
+            <p class="hintline">Die Infobox zeigt, welche Punktgruppe übrig bleibt.</p>
+          </div>
+          <p class="group-title" id="lat-title" hidden>Gitterparameter</p>
           <p class="hintline" id="lat-fixed">Kubisch: Das Gitter hat keine freien Parameter.</p>
           <div class="range" id="row-lat-ba"><label for="lat-ba">b/a</label><output id="lat-ba-out"></output>
             <input type="range" id="lat-ba" min="0.4" max="3" step="0.01"></div>
@@ -448,18 +469,14 @@ footer a { color: inherit; }
             <input type="range" id="lat-be" min="60" max="150" step="1"></div>
           <div class="range" id="row-lat-ga"><label for="lat-ga">γ</label><output id="lat-ga-out"></output>
             <input type="range" id="lat-ga" min="60" max="150" step="1"></div>
-          <label class="check" id="row-broken"><input type="checkbox" id="poly-broken">Symmetrie brechen (alle Gitterparameter frei)</label>
-          <div class="stack" id="ctl-stretch" hidden>
-            <p class="group-title">Streckung entlang einer Blickrichtung</p>
-            <div class="field">
-              <label for="stretch-dir">Richtung</label>
-              <select id="stretch-dir"></select>
-            </div>
-            <div class="range"><label for="stretch-s">Faktor</label><output id="stretch-s-out"></output>
-              <input type="range" id="stretch-s" min="0.5" max="2" step="0.01"></div>
-            <p class="hintline">Faktor über 1 streckt den Kristall, unter 1 staucht ihn. Die Infobox zeigt, welche Punktgruppe übrig bleibt.</p>
-          </div>
-          <p class="group-title">Gestalt</p>
+          <p class="hintline" id="lat-locked" hidden>Die Regler zeigen das gestreckte Gitter und sind gesperrt. Einzeln ändern lassen sich die Gitterparameter mit „Alle Parameter frei“.</p>
+          <button class="linkbtn" id="lat-reset" type="button">Gitter zurücksetzen</button>
+        </div>
+      </details>
+
+      <details class="sect" id="ctl-poly-shape" hidden>
+        <summary>Gestalt</summary>
+        <div class="stack">
           <div class="range"><label for="poly-size">Grösse des Kristalls</label><output id="poly-size-out"></output>
             <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>
           <div class="stack" id="ctl-ex-dists" hidden></div>
@@ -468,7 +485,8 @@ footer a { color: inherit; }
             <div class="range"><label for="poly-aux">Abstand der Ergänzungsformen</label><output id="poly-aux-out"></output>
               <input type="range" id="poly-aux" min="0.3" max="3" step="0.05"></div>
           </div>
-          <button class="linkbtn" id="poly-reset" type="button">Gitter und Gestalt zurücksetzen</button>
+          <p class="hintline">Die Gestalt ändert nur den Körper, nicht das Stereogramm: Die Pole hängen nur von den Flächennormalen ab.</p>
+          <button class="linkbtn" id="shape-reset" type="button">Gestalt zurücksetzen</button>
         </div>
       </details>
 

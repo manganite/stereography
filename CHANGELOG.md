@@ -6,6 +6,13 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **„Gitter und Gestalt“ aufgeteilt** in zwei Abschnitte: **Gitter** (alles, was das Gitter und damit das Stereogramm ändert) und darunter **Gestalt** (Grösse, Abstände der Formen, offene Form und Ergänzungsformen; ändert nur den Körper, nicht das Stereogramm).
+- **Symmetrie brechen** ist der einzige Weg zu einer Symmetrieänderung: Ohne den Schalter bleibt die Symmetrie immer erhalten. Mit ihm wählt man **Streckung** (entlang einer Blickrichtung, bezogen auf das unverzerrte Gitter) oder **Alle Parameter frei**. Bei der Streckung zeigen die Gitterregler das gestreckte Gitter und sind gesperrt; der Wechsel zu „Alle Parameter frei“ übernimmt das gezeigte Gitter.
+- **Streckung nur noch entlang symmetrieändernder Richtungen:** tetragonal ⟨100⟩, ⟨110⟩; trigonal und hexagonal ⟨100⟩, ⟨210⟩; kubisch ⟨100⟩, ⟨111⟩, ⟨110⟩. Entlang *c* sowie im orthorhombischen und monoklinen System entfällt sie, weil sie dort nur Gitterparameter ändert, die das System ohnehin freilässt.
+- Links: `str=` schaltet „Symmetrie brechen“ mit Streckung ein (auch Faktor 1); `br=1` ohne `str` bedeutet wie bisher alle Gitterparameter frei. Links und gespeicherter Zustand aus früheren Versionen gelten weiter (Streckung entlang *c* oder in orthorhombischen und monoklinen Kristallen wird ignoriert).
+
 ## [1.4.0] - 2026-10-20
 
 Streckung entlang einer Blickrichtung (Würfel → Rhomboeder) und Skript-Kapitel 8 „Symmetrieändernde Verzerrungen“.

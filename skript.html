@@ -76,6 +76,8 @@ figure { margin: 20px 0; }
 .fig-note { font-size: 0.86rem; color: var(--muted); }
 .fig-note b { color: var(--ink); }
 .tabwrap { overflow-x: auto; margin: 12px 0 16px; }
+.tab caption { caption-side: top; text-align: left; font-size: 0.86rem; color: var(--muted); padding-bottom: 6px; white-space: normal; }
+.tab caption b { color: var(--ink); font-weight: 600; }
 .tab { border-collapse: collapse; font-size: 0.9rem; min-width: 460px; }
 .tab th, .tab td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
 .tab th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
@@ -91,6 +93,21 @@ figure { margin: 20px 0; }
 .hx-arc { fill: none; stroke: var(--muted); stroke-width: 1.2; }
 .hx-c { fill: var(--paper); stroke: var(--ink); stroke-width: 1.6; }
 .hx-cdot { fill: var(--ink); }
+.pvfig { max-width: 640px; margin-inline: auto; }
+.pvfig svg text { font-family: var(--font-ui); fill: var(--ink); }
+.pv-edge { stroke: var(--ink); stroke-width: 1.4; }
+.pv-bond { stroke: var(--muted); stroke-width: 0.9; stroke-dasharray: 3 3; }
+.pv-ba { fill: var(--crystal2); stroke: var(--ink); stroke-width: 1.2; }
+.pv-o { fill: var(--accent2); stroke: var(--ink); stroke-width: 1; }
+.pv-ti { fill: var(--accent); stroke: var(--ink); stroke-width: 1.2; }
+.pv-str { stroke: var(--dir2); stroke-width: 2.4; }
+.pv-strh { fill: var(--dir2); }
+.pv-pol { stroke: var(--ax4); stroke-width: 2.6; }
+.pv-polh { fill: var(--ax4); }
+.pvfig .pv-p { font-size: 15px; font-weight: 600; fill: var(--ax4); }
+.pvfig .pv-t { font-size: 14px; font-weight: 600; }
+.pvfig .pv-s { font-size: 14px; }
+.pvfig .pv-leg text { font-size: 13px; fill: var(--muted); }
 .hexfig .hx-c-l { font-size: 14px; font-style: italic; }
 .formel { font-size: 1.15rem; text-align: center; margin: 14px 0; font-family: var(--font-display); }
 .schema { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
@@ -225,6 +242,16 @@ footer a { color: inherit; }
             <ol>
               <li><a href="#hexachsen">Das hexagonale Achsensystem</a></li>
               <li><a href="#hkil">Vier Indizes für Flächen</a></li>
+            </ol>
+          </li>
+          <li><a href="#verzerrung"><span class="nr">8</span>Symmetrieändernde Verzerrungen</a>
+            <ol>
+              <li><a href="#verzerrung-prinzip">Was bei einer Verzerrung erhalten bleibt</a></li>
+              <li><a href="#streck-100">Streckung entlang ⟨100⟩</a></li>
+              <li><a href="#streck-111">Streckung entlang ⟨111⟩</a></li>
+              <li><a href="#streck-110">Streckung entlang ⟨110⟩</a></li>
+              <li><a href="#polar">Streckung oder Polarisation</a></li>
+              <li><a href="#batio3">Ein Beispiel aus der Natur</a></li>
             </ol>
           </li>
         </ol>
@@ -941,6 +968,286 @@ footer a { color: inherit; }
         <h4>Quellen</h4>
         <ul>
           <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 7.1 (hexagonales P-Gitter, Tab. 7.2, S. 88), 7.2.5 (Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, Richtungen ⟨100⟩ und ⟨210⟩, S. 107–109, Abb. 7.22), Tab. 7.4 (S. 115), 9.2.2 (Bravais-Miller-Indizes, <i>h</i> + <i>k</i> + <i>i</i> = 0, S. 151, Abb. 9.12; Tab. 9.6, S. 154 f.).</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="verzerrung">
+      <h2><span class="nr">8</span>Symmetrieändernde Verzerrungen</h2>
+      <p class="lead">Verzerrt man einen Kristall, bleibt nur ein Teil seiner Symmetrie erhalten. Am gestreckten Würfel lässt sich im Stereogramm ablesen, welcher Teil das ist. Das Kapitel ist ein Ausblick über den Stoff der Vorlesung hinaus: Am Bariumtitanat zeigt es, dass solche Verzerrungen in realen Kristallen vorkommen und ihnen neue Eigenschaften geben.</p>
+
+      <div class="box ziele">
+        <h4>Lernziele</h4>
+        <ul>
+          <li>die Restgruppe eines entlang ⟨100⟩, ⟨111⟩ oder ⟨110⟩ gestreckten Würfels bestimmen</li>
+          <li>im Stereogramm erkennen, in welche Formen eine Form bei der Verzerrung zerfällt</li>
+          <li>Streckung und Polarisation unterscheiden und die zugehörige Punktgruppe angeben</li>
+          <li>begründen, warum beim Übergang zu niedrigerer Symmetrie Domänen entstehen</li>
+        </ul>
+      </div>
+
+      <section id="verzerrung-prinzip">
+        <h3>Was bei einer Verzerrung erhalten bleibt</h3>
+        <p>Streckt man einen Würfel entlang einer Richtung, so werden alle Abstände in dieser Richtung um einen Faktor <i>s</i> länger (<i>s</i> &gt; 1) oder kürzer (<i>s</i> &lt; 1); quer dazu ändert sich nichts. Die Flächen bleiben eben und behalten ihre Indizes, die Winkel zwischen ihnen ändern sich im Allgemeinen. Welche Symmetrieoperationen des Würfels sind danach noch Symmetrieoperationen des Körpers?</p>
+        <p>Genau die, die die Streckrichtung in sich selbst überführen. Da eine Streckung keinen Richtungssinn hat, bleiben auch die Operationen erhalten, die die Streckrichtung umkehren, darunter das Inversionszentrum. Jede andere Operation brächte die gestreckte Richtung in eine ungestreckte und kann keine Symmetrie mehr sein. Weil das Inversionszentrum erhalten bleibt, gehört zu jeder verbleibenden 2- oder 4-zähligen Achse auch die Spiegelebene senkrecht zu ihr; bleibt von einer Achse nicht einmal die Drehung um 180°, verschwindet auch diese Spiegelebene.</p>
+        <p>Die verbleibenden Operationen bilden wieder eine Gruppe, eine <span class="term">Untergruppe</span> der Punktgruppe <i>m</i>3̄<i>m</i> des Würfels; die App nennt sie <span class="term">Restgruppe</span>. Wie gross sie ist, hängt davon ab, entlang welcher Blickrichtung man streckt.</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;strahlen=0&amp;normalen=0" data-alt="Würfel in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.1a</b> Würfel {100} der Punktgruppe <i>m</i>3̄<i>m</i>, [001] senkrecht.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;geruest=1" data-alt="Würfel über dem Symmetriegerüst von m3̄m">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.1b</b> Stereogramm des Würfels über dem Symmetriegerüst von <i>m</i>3̄<i>m</i>: 4-zählige Achsen entlang ⟨100⟩, 3̄-Achsen entlang ⟨111⟩, 2-zählige Achsen entlang ⟨110⟩, neun Spiegelebenen.</figcaption>
+          </figure>
+        </div>
+        <p>In der App wählt man unter „Kristallformen“ den Würfel und stellt unter „Gitter und Gestalt“ eine Streckung entlang einer Blickrichtung ein. Die Infobox nennt die Restgruppe; die Pole der Formen, in die der Würfel zerfällt, erscheinen in verschiedenen Farben. Die Abbildungen dieses Kapitels strecken um den Faktor 1,3, damit man die Verzerrung gut sieht; in realen Kristallen ist sie viel kleiner (Bariumtitanat, am Ende des Kapitels).</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Bei einer Verzerrung bleiben nur die Symmetrieoperationen erhalten, die auch die Verzerrung selbst unverändert lassen. Die neue Punktgruppe ist eine Untergruppe der alten.</p>
+        </div>
+      </section>
+
+      <section id="streck-100">
+        <h3>Streckung entlang ⟨100⟩</h3>
+        <p>Streckt man entlang [001], einer der drei 4-zähligen Achsen (1. Blickrichtung), so bleibt die 4-zählige Achse entlang [001] erhalten. Die 4-zähligen Achsen entlang [100] und [010] würden [001] um 90° in die Ebene senkrecht zu [001] drehen; von ihnen bleibt nur die Drehung um 180°, also je eine 2-zählige Achse, die [001] umkehrt. Erhalten bleiben auch die 2-zähligen Achsen entlang [110] und [11̄0], die senkrecht auf [001] stehen. Alle 3̄-Achsen und die übrigen vier 2-zähligen Achsen gehen verloren.</p>
+        <p>Übrig bleibt 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> = 4/<i>mmm</i> mit 16 statt 48 Operationen. Das Gitter ist jetzt tetragonal: <i>a</i> = <i>b</i> ≠ <i>c</i>. Der Würfel zerfällt in zwei Formen: Die Flächen (001) und (001̄) senkrecht zur Streckrichtung bilden ein Pinakoid, die vier Flächen parallel dazu ein tetragonales Prisma (Abb. 8.2). Das ist genau die Kombination aus Kapitel 2 (Abb. 2.1). Die Pole liegen dabei wie beim unverzerrten Würfel, denn die Würfelflächen bleiben senkrecht zueinander. Die Verzerrung zeigt sich im Stereogramm daran, dass Pinakoid und Prisma jetzt verschiedene Formen sind, und am kleineren Symmetriegerüst.</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=001,1.3&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [001] gestreckt">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.2a</b> Würfel, entlang [001] um den Faktor 1,3 gestreckt, [001] senkrecht: Pinakoid {001} und tetragonales Prisma {100}.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=001,1.3&amp;geruest=1" data-alt="Gestreckter Würfel über dem Symmetriegerüst von 4/mmm">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.2b</b> Stereogramm dazu über dem Symmetriegerüst der Restgruppe 4/<i>mmm</i>; die beiden Farben zeigen die beiden Formen.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="streck-111">
+        <h3>Streckung entlang ⟨111⟩</h3>
+        <p>Streckt man entlang der Raumdiagonalen [111], einer 3̄-Achse (2. Blickrichtung), so bleibt die 3̄-Achse entlang [111]. Senkrecht zu [111] liegen drei der sechs 2-zähligen Achsen, entlang [11̄0], [011̄] und [1̄01]; sie kehren [111] um und bleiben erhalten. Verloren gehen alle 4-zähligen Achsen, die übrigen drei 3̄-Achsen und die übrigen drei 2-zähligen Achsen.</p>
+        <p>Übrig bleibt 3̄ 2/<i>m</i> = 3̄<i>m</i> mit 12 Operationen. Alle sechs Würfelflächen werden durch die 3̄-Achse ineinander überführt; sie bleiben eine einzige Form, aber ihre Winkel ändern sich: Aus dem Würfel wird ein <span class="term">Rhomboeder</span> (Abb. 8.3), aus dem kubischen ein rhomboedrisches Gitter. Der Würfel ist der Sonderfall eines Rhomboeders mit 90°. Alle Kanten sind gleich lang; an den beiden Ecken auf der 3̄-Achse schliessen sie den gleichen Winkel α ein. Bei Streckung (<i>s</i> &gt; 1) ist α kleiner als 90° (spitzes Rhomboeder), bei Stauchung (<i>s</i> &lt; 1) grösser (stumpfes Rhomboeder); für <i>s</i> = 1,3 ist α = 79,2°.</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [111] gestreckt: Rhomboeder">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.3a</b> Würfel, entlang [111] um den Faktor 1,3 gestreckt, [111] senkrecht: ein Rhomboeder.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;geruest=1" data-alt="Rhomboeder über dem Symmetriegerüst von 3̄m">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.3b</b> Stereogramm, [111] ∥ Projektionsrichtung, über dem Symmetriegerüst 3̄<i>m</i>: 3̄-Achse im Mittelpunkt, drei Spiegelebenen, drei 2-zählige Achsen.</figcaption>
+          </figure>
+        </div>
+        <p>Für die trigonale Punktgruppe verwendet man hexagonale Achsen (Kapitel 7): <i>c</i> entlang der 3̄-Achse, also <i>c</i> ∥ [111], und <i>a</i>₁ ∥ [11̄0], <i>a</i>₂ ∥ [011̄] senkrecht dazu. In diesen Achsen ist die Würfelfläche (100) die Rhomboederfläche (101) = (101̄1). Die Infobox der App zeigt diese Umrechnung, sobald die Restgruppe trigonal ist. Streckt man ein Oktaeder auf dieselbe Weise, zerfällt es in ein Pinakoid aus den beiden Flächen senkrecht zu [111] und ein Rhomboeder aus den übrigen sechs.</p>
+      </section>
+
+      <section id="streck-110">
+        <h3>Streckung entlang ⟨110⟩</h3>
+        <p>Streckt man schliesslich entlang der Flächendiagonalen [110], einer 2-zähligen Achse (3. Blickrichtung), so bleiben drei 2-zählige Achsen: die entlang [110] selbst, die senkrecht dazu entlang [11̄0] und entlang [001] die Drehung um 180° der früheren 4-zähligen Achse. Die Drehung um 90° um [001] würde [110] in [1̄10] drehen und geht verloren. Ganz verloren gehen die 4-zähligen Achsen entlang [100] und [010], alle 3̄-Achsen und die übrigen vier 2-zähligen Achsen.</p>
+        <p>Übrig bleibt 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> = <i>mmm</i> mit nur 8 Operationen. Das Gitter ist orthorhombisch, aber seine Achsen liegen nicht mehr entlang der Würfelkanten, sondern entlang [110], [11̄0] und [001]. Der Würfel zerfällt in ein Pinakoid aus (001) und (001̄) und ein rhombisches Prisma aus den vier übrigen Flächen, deren Querschnitt jetzt eine Raute ist (Abb. 8.4).</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=110,1.3&amp;lage=110&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [110] gestreckt">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.4a</b> Würfel, entlang [110] um den Faktor 1,3 gestreckt, [110] senkrecht: Pinakoid {001} und rhombisches Prisma.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=110,1.3&amp;lage=110&amp;geruest=1" data-alt="Entlang [110] gestreckter Würfel über dem Symmetriegerüst von mmm">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.4b</b> Stereogramm, [110] ∥ Projektionsrichtung, über dem Symmetriegerüst <i>mmm</i>.</figcaption>
+          </figure>
+        </div>
+        <p>Je höherzählig die Achse entlang der Streckrichtung, desto mehr Symmetrie bleibt übrig. Die drei Fälle im Überblick:</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Streckung entlang</th><th>Achse dort</th><th>Restgruppe</th><th>Operationen</th><th>Der Würfel wird zu</th></tr></thead>
+            <tbody>
+              <tr><td>[001], ⟨100⟩</td><td>4-zählig</td><td>4/<i>mmm</i></td><td>16</td><td>tetragonales Prisma und Pinakoid</td></tr>
+              <tr><td>[111], ⟨111⟩</td><td>3̄</td><td>3̄<i>m</i></td><td>12</td><td>Rhomboeder</td></tr>
+              <tr><td>[110], ⟨110⟩</td><td>2-zählig</td><td><i>mmm</i></td><td>8</td><td>rhombisches Prisma und Pinakoid</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Teilt man die 48 Operationen des Würfels durch die Zahl der verbleibenden, erhält man 3, 4 und 6: genau die Zahl der gleichwertigen Geraden ⟨100⟩, ⟨111⟩ und ⟨110⟩, entlang derer man den Würfel gleichwertig strecken könnte.</p>
+      </section>
+
+      <section id="polar">
+        <h3>Streckung oder Polarisation</h3>
+        <p>Eine Streckung hat keinen Richtungssinn. Anders eine Verschiebung von Atomen, durch die ein elektrisches Dipolmoment entsteht, eine <span class="term">Polarisation</span>: Sie ist ein Pfeil und unterscheidet „vorn“ von „hinten“. Bei ihr bleiben nur die Operationen erhalten, die den Pfeil in sich selbst überführen; alle, die ihn umkehren, gehen zusätzlich verloren, darunter das Inversionszentrum. Aus 4/<i>mmm</i> wird so 4<i>mm</i>, aus <i>mmm</i> wird <i>mm</i>2 und aus 3̄<i>m</i> wird 3<i>m</i>. Abb. 8.5 zeigt den Unterschied an der Elementarzelle von Bariumtitanat (siehe unten): Wird die Zelle nur gestreckt, sitzt das Ti weiter in ihrer Mitte, und das Inversionszentrum bleibt. Rückt das Ti zusätzlich aus der Mitte, zeigt die Polarisation <i>P</i> nach oben, und oben und unten sind nicht mehr gleichwertig.</p>
+        <figure class="fig-card pvfig">
+          <div class="fig-art">
+            <svg viewBox="0 0 650 262" role="img" aria-label="Perowskitzelle von BaTiO₃: kubisch, entlang c gestreckt mit Ti in der Mitte, gestreckt mit nach oben verschobenem Ti und Polarisationspfeil">
+            <defs><marker id="pvarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="pv-strh" d="M0,0 L10,5 L0,10 z"/></marker><marker id="pvarr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path class="pv-polh" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+            <line class="pv-edge" x1="30.0" y1="178.0" x2="30.0" y2="82.0"/>
+            <line class="pv-edge" x1="30.0" y1="178.0" x2="63.0" y2="154.9"/>
+            <line class="pv-edge" x1="30.0" y1="178.0" x2="126.0" y2="178.0"/>
+            <line class="pv-edge" x1="30.0" y1="82.0" x2="63.0" y2="58.9"/>
+            <line class="pv-edge" x1="30.0" y1="82.0" x2="126.0" y2="82.0"/>
+            <line class="pv-edge" x1="63.0" y1="154.9" x2="63.0" y2="58.9"/>
+            <line class="pv-edge" x1="63.0" y1="154.9" x2="159.0" y2="154.9"/>
+            <line class="pv-edge" x1="63.0" y1="58.9" x2="159.0" y2="58.9"/>
+            <line class="pv-edge" x1="126.0" y1="178.0" x2="126.0" y2="82.0"/>
+            <line class="pv-edge" x1="126.0" y1="178.0" x2="159.0" y2="154.9"/>
+            <line class="pv-edge" x1="126.0" y1="82.0" x2="159.0" y2="58.9"/>
+            <line class="pv-edge" x1="159.0" y1="154.9" x2="159.0" y2="58.9"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="94.5" y2="166.4"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="94.5" y2="70.4"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="46.5" y2="118.4"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="142.5" y2="118.4"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="78.0" y2="130.0"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="111.0" y2="106.9"/>
+            <circle class="pv-ba" cx="63.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="63.0" cy="58.9" r="11"/>
+            <circle class="pv-ba" cx="159.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="159.0" cy="58.9" r="11"/>
+            <circle class="pv-o" cx="111.0" cy="106.9" r="6.5"/>
+            <circle class="pv-o" cx="94.5" cy="166.4" r="6.5"/>
+            <circle class="pv-o" cx="94.5" cy="70.4" r="6.5"/>
+            <circle class="pv-o" cx="46.5" cy="118.4" r="6.5"/>
+            <circle class="pv-o" cx="142.5" cy="118.4" r="6.5"/>
+            <circle class="pv-ti" cx="94.5" cy="118.4" r="8"/>
+            <circle class="pv-ba" cx="30.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="30.0" cy="82.0" r="11"/>
+            <circle class="pv-ba" cx="126.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="126.0" cy="82.0" r="11"/>
+            <circle class="pv-o" cx="78.0" cy="130.0" r="6.5"/>
+            <text class="pv-t" x="94.5" y="208.0" text-anchor="middle">kubisch</text>
+            <text class="pv-s" x="94.5" y="226.0" text-anchor="middle"><tspan font-style="italic">m</tspan>3̄<tspan font-style="italic">m</tspan></text>
+            <line class="pv-edge" x1="250.0" y1="178.0" x2="250.0" y2="53.2"/>
+            <line class="pv-edge" x1="250.0" y1="178.0" x2="283.0" y2="154.9"/>
+            <line class="pv-edge" x1="250.0" y1="178.0" x2="346.0" y2="178.0"/>
+            <line class="pv-edge" x1="250.0" y1="53.2" x2="283.0" y2="30.1"/>
+            <line class="pv-edge" x1="250.0" y1="53.2" x2="346.0" y2="53.2"/>
+            <line class="pv-edge" x1="283.0" y1="154.9" x2="283.0" y2="30.1"/>
+            <line class="pv-edge" x1="283.0" y1="154.9" x2="379.0" y2="154.9"/>
+            <line class="pv-edge" x1="283.0" y1="30.1" x2="379.0" y2="30.1"/>
+            <line class="pv-edge" x1="346.0" y1="178.0" x2="346.0" y2="53.2"/>
+            <line class="pv-edge" x1="346.0" y1="178.0" x2="379.0" y2="154.9"/>
+            <line class="pv-edge" x1="346.0" y1="53.2" x2="379.0" y2="30.1"/>
+            <line class="pv-edge" x1="379.0" y1="154.9" x2="379.0" y2="30.1"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="314.5" y2="166.4"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="314.5" y2="41.6"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="266.5" y2="104.0"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="362.5" y2="104.0"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="298.0" y2="115.6"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="331.0" y2="92.5"/>
+            <circle class="pv-ba" cx="283.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="283.0" cy="30.1" r="11"/>
+            <circle class="pv-ba" cx="379.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="379.0" cy="30.1" r="11"/>
+            <circle class="pv-o" cx="331.0" cy="92.5" r="6.5"/>
+            <circle class="pv-o" cx="314.5" cy="166.4" r="6.5"/>
+            <circle class="pv-o" cx="314.5" cy="41.6" r="6.5"/>
+            <circle class="pv-o" cx="266.5" cy="104.0" r="6.5"/>
+            <circle class="pv-o" cx="362.5" cy="104.0" r="6.5"/>
+            <circle class="pv-ti" cx="314.5" cy="104.0" r="8"/>
+            <circle class="pv-ba" cx="250.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="250.0" cy="53.2" r="11"/>
+            <circle class="pv-ba" cx="346.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="346.0" cy="53.2" r="11"/>
+            <circle class="pv-o" cx="298.0" cy="115.6" r="6.5"/>
+            <line class="pv-str" x1="397.0" y1="150.9" x2="397.0" y2="34.1" marker-start="url(#pvarr)" marker-end="url(#pvarr)"/>
+            <text class="pv-t" x="314.5" y="208.0" text-anchor="middle">gestreckt</text>
+            <text class="pv-s" x="314.5" y="226.0" text-anchor="middle">4/<tspan font-style="italic">mmm</tspan></text>
+            <line class="pv-edge" x1="470.0" y1="178.0" x2="470.0" y2="53.2"/>
+            <line class="pv-edge" x1="470.0" y1="178.0" x2="503.0" y2="154.9"/>
+            <line class="pv-edge" x1="470.0" y1="178.0" x2="566.0" y2="178.0"/>
+            <line class="pv-edge" x1="470.0" y1="53.2" x2="503.0" y2="30.1"/>
+            <line class="pv-edge" x1="470.0" y1="53.2" x2="566.0" y2="53.2"/>
+            <line class="pv-edge" x1="503.0" y1="154.9" x2="503.0" y2="30.1"/>
+            <line class="pv-edge" x1="503.0" y1="154.9" x2="599.0" y2="154.9"/>
+            <line class="pv-edge" x1="503.0" y1="30.1" x2="599.0" y2="30.1"/>
+            <line class="pv-edge" x1="566.0" y1="178.0" x2="566.0" y2="53.2"/>
+            <line class="pv-edge" x1="566.0" y1="178.0" x2="599.0" y2="154.9"/>
+            <line class="pv-edge" x1="566.0" y1="53.2" x2="599.0" y2="30.1"/>
+            <line class="pv-edge" x1="599.0" y1="154.9" x2="599.0" y2="30.1"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="534.5" y2="166.4"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="534.5" y2="41.6"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="486.5" y2="104.0"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="582.5" y2="104.0"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="518.0" y2="115.6"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="551.0" y2="92.5"/>
+            <circle class="pv-ba" cx="503.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="503.0" cy="30.1" r="11"/>
+            <circle class="pv-ba" cx="599.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="599.0" cy="30.1" r="11"/>
+            <circle class="pv-o" cx="551.0" cy="92.5" r="6.5"/>
+            <circle class="pv-o" cx="534.5" cy="166.4" r="6.5"/>
+            <circle class="pv-o" cx="534.5" cy="41.6" r="6.5"/>
+            <circle class="pv-o" cx="486.5" cy="104.0" r="6.5"/>
+            <circle class="pv-o" cx="582.5" cy="104.0" r="6.5"/>
+            <circle class="pv-ti" cx="534.5" cy="90.0" r="8"/>
+            <circle class="pv-ba" cx="470.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="470.0" cy="53.2" r="11"/>
+            <circle class="pv-ba" cx="566.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="566.0" cy="53.2" r="11"/>
+            <circle class="pv-o" cx="518.0" cy="115.6" r="6.5"/>
+            <line class="pv-pol" x1="617.0" y1="140.9" x2="617.0" y2="40.1" marker-end="url(#pvarr2)"/>
+            <text class="pv-p" x="626.0" y="97.5"><tspan font-style="italic">P</tspan></text>
+            <text class="pv-t" x="534.5" y="208.0" text-anchor="middle">polarisiert</text>
+            <text class="pv-s" x="534.5" y="226.0" text-anchor="middle">4<tspan font-style="italic">mm</tspan></text>
+            <g class="pv-leg"><circle class="pv-ba" cx="210" cy="246" r="7"/><text x="222" y="250">Ba</text><circle class="pv-ti" cx="275" cy="246" r="6"/><text x="286" y="250">Ti</text><circle class="pv-o" cx="333" cy="246" r="5"/><text x="343" y="250">O</text></g>
+            </svg>
+          </div>
+          <figcaption><b>Abb. 8.5</b> Elementarzelle von BaTiO₃ (Perowskitstruktur), Verzerrung und Verschiebung stark übertrieben. Links kubisch (<i>m</i>3̄<i>m</i>), Mitte entlang <i>c</i> gestreckt, Ti in der Mitte (4/<i>mmm</i>, Doppelpfeil: Streckung ohne Richtungssinn), rechts zusätzlich Ti nach oben verschoben (4<i>mm</i>, Pfeil: Polarisation <i>P</i>). Gestrichelt die Verbindungen vom Ti zu den sechs O des Oktaeders.</figcaption>
+        </figure>
+        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 8.6), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 3.2b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 2.2): Oben und unten sind verschieden.</p>
+        <div class="fig-row fig-row3">
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4mm" data-alt="Punktgruppe 4mm mit Bahn eines allgemeinen Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 8.6a</b> 4<i>mm</i></figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mm2" data-alt="Punktgruppe mm2 mit Bahn eines allgemeinen Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>b</b> <i>mm</i>2</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=3m1" data-alt="Punktgruppe 3m mit Bahn eines allgemeinen Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>c</b> 3<i>m</i></figcaption>
+          </figure>
+        </div>
+        <p class="fig-note"><b>Abb. 8.6</b> Bahn eines allgemeinen Pols in den polaren Punktgruppen (a) 4<i>mm</i> (8 Pole), (b) <i>mm</i>2 (4 Pole) und (c) 3<i>m</i> (6 Pole), die polare Achse jeweils als Projektionsrichtung; bezogen auf den Würfel liegt sie entlang [001], [110] bzw. [111]. Alle Pole liegen auf derselben Halbkugel.</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Eine Streckung erhält die Operationen, die die Streckrichtung als Gerade in sich überführen; beim Würfel behält die Restgruppe ihr Inversionszentrum. Eine Polarisation erhält nur die Operationen, die den Pfeil in sich überführen; die Restgruppe ist polar.</p>
+        </div>
+      </section>
+
+      <section id="batio3">
+        <h3>Ein Beispiel aus der Natur</h3>
+        <p>Bariumtitanat BaTiO₃ hat oberhalb von etwa 120 °C (rund 395 K) die kubische Perowskitstruktur: Ba auf den Ecken der Elementarzelle, Ti in ihrer Mitte, umgeben von einem Oktaeder aus sechs O-Atomen auf den Flächenmitten; Punktgruppe <i>m</i>3̄<i>m</i>. Kühlt man den Kristall ab, rückt das Ti um etwa 0,1 Å aus der Mitte des Oktaeders heraus (Abb. 8.5). Die Schwerpunkte der positiven und negativen Ladungen fallen dann nicht mehr zusammen: Jede Zelle trägt ein elektrisches Dipolmoment, der Kristall eine <span class="term">spontane Polarisation</span>. Zugleich verformt sich die Zelle mit der Symmetrie einer Streckung entlang dieser Richtung, allerdings nur sehr wenig: Die Winkel ändern sich um Bruchteile eines Grades, viel weniger als in den Abbildungen dieses Kapitels.</p>
+        <p>Je nach Temperatur liegt die Polarisation entlang einer der drei Blickrichtungen des Würfels, genau wie in den drei Fällen dieses Kapitels. Die Verformung allein ergäbe 4/<i>mmm</i>, <i>mmm</i> bzw. 3̄<i>m</i>; die Verschiebung des Ti nimmt zusätzlich alle Operationen weg, die die Polarisationsrichtung umkehren, und führt auf die polaren Punktgruppen (Abb. 8.6). Die Phasen eines BaTiO₃-Einkristalls beim Abkühlen:</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Phase</th><th>Temperatur</th><th>Polarisation entlang</th><th>Punktgruppe</th><th>Verformung wie</th></tr></thead>
+            <tbody>
+              <tr><td>kubisch</td><td>über 394 K (121 °C)</td><td>–</td><td><i>m</i>3̄<i>m</i></td><td>Abb. 8.1</td></tr>
+              <tr><td>tetragonal</td><td>279 K bis 394 K (6 °C bis 121 °C)</td><td>⟨100⟩</td><td>4<i>mm</i></td><td>Abb. 8.2</td></tr>
+              <tr><td>orthorhombisch</td><td>181 K bis 279 K (−92 °C bis 6 °C)</td><td>⟨110⟩</td><td><i>mm</i>2</td><td>Abb. 8.4</td></tr>
+              <tr><td>rhomboedrisch</td><td>unter 181 K (−92 °C)</td><td>⟨111⟩</td><td>3<i>m</i></td><td>Abb. 8.3</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Beim Aufheizen liegen die Umwandlungstemperaturen einige Kelvin höher, bei 196 K, 285 K und 401 K.</p>
+        <p>Die Symmetrie bestimmt, welche Eigenschaften ein Kristall haben kann. Im kubischen BaTiO₃ hebt das Inversionszentrum jede Polarisation auf; der Kristall ist weder pyroelektrisch noch piezoelektrisch. In den polaren Phasen ist beides möglich: Erwärmen ändert die Polarisation (Pyroelektrizität), Druck erzeugt eine elektrische Spannung, und eine angelegte elektrische Spannung verformt den Kristall (Piezoelektrizität). Beim BaTiO₃ lässt sich die Polarisation zudem durch ein elektrisches Feld umkehren; solche Kristalle heissen <span class="term">ferroelektrisch</span>. BaTiO₃ ist ein wichtiger Werkstoff für Kondensatoren, piezoelektrische Kristalle setzen elektrische in mechanische Signale um und umgekehrt, etwa in Ultraschallgebern. In der App zeigt die Infobox der Punktgruppen, ob eine Gruppe polar und ob sie piezoelektrisch ist: <i>m</i>3̄<i>m</i> nein, 4<i>mm</i>, <i>mm</i>2 und 3<i>m</i> ja.</p>
+        <p>Die Symmetrie erklärt auch, warum Domänen entstehen: Die Polarisation kann in der tetragonalen Phase in jede der sechs gleichwertigen Richtungen <span class="sym">±[100]</span>, <span class="sym">±[010]</span>, <span class="sym">±[001]</span> zeigen. Kühlt ein Kristall ab, wählen verschiedene Bereiche verschiedene Richtungen. Es entstehen <span class="term">Domänen</span>, die durch die beim Übergang verlorenen Symmetrieoperationen ineinander übergehen, eine Art Zwillinge. Ihre möglichen Orientierungen zählt man wie oben: 48/8 = 6 tetragonal, 48/4 = 12 orthorhombisch, 48/6 = 8 rhomboedrisch, doppelt so viele wie bei der reinen Streckung (3, 4 bzw. 6), weil die Polarisation auch den Richtungssinn unterscheidet. Ein elektrisches Feld lässt die günstig orientierten Domänen wachsen.</p>
+      </section>
+
+      <div class="box zusammen">
+        <h4>Zusammenfassung</h4>
+        <ul>
+          <li>Bei einer Verzerrung bleiben nur die Symmetrieoperationen erhalten, die auch die Verzerrung unverändert lassen; die neue Punktgruppe ist eine Untergruppe der alten.</li>
+          <li>Der Würfel (<i>m</i>3̄<i>m</i>) wird bei Streckung entlang ⟨100⟩ zu tetragonalem Prisma und Pinakoid (4/<i>mmm</i>), entlang ⟨111⟩ zum Rhomboeder (3̄<i>m</i>), entlang ⟨110⟩ zu rhombischem Prisma und Pinakoid (<i>mmm</i>).</li>
+          <li>Eine Polarisation (Pfeil) nimmt zusätzlich alle Operationen weg, die ihre Richtung umkehren, darunter das Inversionszentrum: 4<i>mm</i>, <i>mm</i>2 und 3<i>m</i> sind polar.</li>
+          <li>BaTiO₃ durchläuft beim Abkühlen genau diese drei polaren Phasen. Erst die niedrigere Symmetrie erlaubt Pyro- und Piezoelektrizität, und sie führt zu Domänen.</li>
+        </ul>
+      </div>
+
+      <div class="quellen">
+        <h4>Quellen</h4>
+        <ul>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 7.3 (Rhomboeder, Sonderfall Würfel, S. 116), 9.1 (Punktgruppen als Untergruppen der Holoedrien, Tab. 9.2, Abb. 9.3, S. 127–130), 9.4 und 9.6.2–9.6.3 (polare Achsen, Piezo- und Pyroelektrizität, S. 164–172), 11.2 (Untergruppe, S. 263–265), 11.5.1.1 und 11.5.4 (Symmetrieabbau durch Verformung, Phasenübergänge, Zwillinge, S. 272–276, 288–290).</li>
+          <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 2.8 (Rhomboeder als gestreckter Würfel, S. 86–87), 7.5 (Ferroelektrika, S. 257–263), 7.5.2 (BaTiO₃, Verschiebung des Ti, Domänen, S. 259–261), 7.5.5 (Streckung und Polarisation, S. 263–264).</li>
+          <li>Phasen und Umwandlungstemperaturen von BaTiO₃: D. Fu, M. Itoh, in: A. Peláiz-Barranco (Hrsg.), <i>Ferroelectric Materials – Synthesis and Characterization</i>, IntechOpen (2015), Fig. 2; Punktgruppen der Phasen: P. W. Forsbergh, Phys. Rev. 76, 1187 (1949).</li>
+          <li>Domänen und Zahl ihrer Orientierungen: K. Aizu, Phys. Rev. B 2, 754 (1970), S. 755–757; H. Schmid, J. Phys.: Condens. Matter 20, 434201 (2008), Abschn. 3.</li>
         </ul>
       </div>
     </section>

@@ -236,7 +236,7 @@ footer a { color: inherit; }
               <li><a href="#streck-111">Streckung entlang ⟨111⟩</a></li>
               <li><a href="#streck-110">Streckung entlang ⟨110⟩</a></li>
               <li><a href="#polar">Streckung oder Polarisation</a></li>
-              <li><a href="#batio3">Keine Spielerei: Bariumtitanat</a></li>
+              <li><a href="#batio3">Ein Beispiel aus der Natur</a></li>
             </ol>
           </li>
         </ol>
@@ -959,135 +959,133 @@ footer a { color: inherit; }
 
     <section id="verzerrung">
       <h2><span class="nr">8</span>Symmetrieändernde Verzerrungen</h2>
-      <p class="lead">Bisher hatte jeder Kristall eine feste Punktgruppe. Verzerrt man ihn, bleibt nur ein Teil seiner Symmetrie erhalten. Dieses Kapitel streckt den Würfel nacheinander entlang der drei kubischen Blickrichtungen und zeigt am Bariumtitanat, dass solche Verzerrungen in der Natur tatsächlich vorkommen und einem Kristall neue Eigenschaften geben.</p>
-      <p class="fig-note"><b>Ausblick.</b> Das Kapitel greift dem Stoff der Vorlesung weit voraus (Untergruppen, physikalische Eigenschaften, Phasenumwandlungen). Es ist als Beispiel und Motivation gedacht: Es zeigt, wozu man Punktgruppen und Stereogramme später braucht.</p>
+      <p class="lead">Verzerrt man einen Kristall, bleibt nur ein Teil seiner Symmetrie erhalten. Am gestreckten Würfel lässt sich im Stereogramm ablesen, welcher Teil das ist. Das Kapitel ist ein Ausblick über den Stoff der Vorlesung hinaus: Am Bariumtitanat zeigt es, dass solche Verzerrungen in realen Kristallen vorkommen und ihnen neue Eigenschaften geben.</p>
 
       <div class="box ziele">
         <h4>Lernziele</h4>
         <ul>
-          <li>angeben, welche Symmetrieelemente des Würfels eine Streckung entlang ⟨100⟩, ⟨111⟩ oder ⟨110⟩ übrig lässt, und die verbleibende Punktgruppe benennen</li>
+          <li>die Restgruppe eines entlang ⟨100⟩, ⟨111⟩ oder ⟨110⟩ gestreckten Würfels bestimmen</li>
           <li>im Stereogramm erkennen, in welche Formen eine Form bei der Verzerrung zerfällt</li>
-          <li>eine Streckung (ohne Richtungssinn) von einer Polarisation (mit Richtungssinn) unterscheiden und die zugehörige Untergruppe angeben</li>
-          <li>begründen, warum ein Kristall niedrigerer Symmetrie in mehreren gleichwertigen Orientierungen, den Domänen, auftreten kann</li>
+          <li>Streckung und Polarisation unterscheiden und die zugehörige Punktgruppe angeben</li>
+          <li>begründen, warum beim Übergang zu niedrigerer Symmetrie Domänen entstehen</li>
         </ul>
       </div>
 
       <section id="verzerrung-prinzip">
         <h3>Was bei einer Verzerrung erhalten bleibt</h3>
-        <p>Wir strecken einen Würfel entlang einer Richtung: Alle Abstände in dieser Richtung werden um einen Faktor <i>s</i> länger (<i>s</i> &gt; 1) oder kürzer (<i>s</i> &lt; 1), quer dazu ändert sich nichts. Die Flächen bleiben eben und behalten ihre Indizes; die Winkel zwischen ihnen ändern sich im Allgemeinen. Welche Symmetrieoperationen des Würfels sind danach noch Symmetrieoperationen des Körpers?</p>
-        <p>Genau die, die die Streckrichtung in sich selbst überführen. Eine Streckung hat dabei keinen Richtungssinn: Ob man sie „nach oben“ oder „nach unten“ betrachtet, ist gleich. Eine Operation, die die Streckrichtung umkehrt (<i>n</i> → −<i>n</i>), bleibt also ebenfalls erhalten. Jede andere Operation brächte die gestreckte Richtung in eine ungestreckte und kann keine Symmetrie mehr sein.</p>
-        <p>Die verbleibenden Operationen bilden wieder eine Gruppe: Die Hintereinanderausführung zweier Operationen, die die Streckrichtung erhalten, erhält sie ebenfalls. Diese Gruppe ist eine <span class="term">Untergruppe</span> der Punktgruppe <i>m</i>3̄<i>m</i> des Würfels, hier kurz Restgruppe genannt. Wie gross sie ist, hängt davon ab, entlang welcher Blickrichtung man streckt.</p>
-        <div class="box merke">
-          <h4>Merke</h4>
-          <p>Bei einer Verzerrung bleiben nur die Symmetrieoperationen erhalten, die auch die Verzerrung selbst unverändert lassen. Die neue Punktgruppe ist eine Untergruppe der alten.</p>
-        </div>
-        <p>In der App: Kristallformen, Würfel, unter „Gitter und Gestalt“ die Streckung entlang einer Blickrichtung. Die Infobox nennt die verbleibende Punktgruppe, die Pole der Formen, in die der Würfel zerfällt, erscheinen in verschiedenen Farben. Die Abbildungen dieses Kapitels strecken um den Faktor 1,3, damit man die Verzerrung gut sieht; in echten Kristallen ist sie meist viel kleiner (Abschnitt <a href="#batio3">Bariumtitanat</a>).</p>
+        <p>Streckt man einen Würfel entlang einer Richtung, so werden alle Abstände in dieser Richtung um einen Faktor <i>s</i> länger (<i>s</i> &gt; 1) oder kürzer (<i>s</i> &lt; 1); quer dazu ändert sich nichts. Die Flächen bleiben eben und behalten ihre Indizes, die Winkel zwischen ihnen ändern sich im Allgemeinen. Welche Symmetrieoperationen des Würfels sind danach noch Symmetrieoperationen des Körpers?</p>
+        <p>Genau die, die die Streckrichtung in sich selbst überführen. Da eine Streckung keinen Richtungssinn hat, bleiben auch die Operationen erhalten, die die Streckrichtung umkehren, darunter das Inversionszentrum. Jede andere Operation brächte die gestreckte Richtung in eine ungestreckte und kann keine Symmetrie mehr sein. Weil das Inversionszentrum erhalten bleibt, gehört zu jeder verbleibenden 2- oder 4-zähligen Achse auch die Spiegelebene senkrecht zu ihr; bleibt von einer Achse nicht einmal die Drehung um 180°, verschwindet auch diese Spiegelebene.</p>
+        <p>Die verbleibenden Operationen bilden wieder eine Gruppe, eine <span class="term">Untergruppe</span> der Punktgruppe <i>m</i>3̄<i>m</i> des Würfels; die App nennt sie <span class="term">Restgruppe</span>. Wie gross sie ist, hängt davon ab, entlang welcher Blickrichtung man streckt.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;strahlen=0&amp;normalen=0" data-alt="Würfel in der Umkugel">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.1a</b> Ausgangspunkt: Würfel {100}, Punktgruppe <i>m</i>3̄<i>m</i>, [001] senkrecht.</figcaption>
+            <figcaption><b>Abb. 8.1a</b> Würfel {100} der Punktgruppe <i>m</i>3̄<i>m</i>, [001] senkrecht.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;geruest=1" data-alt="Würfel über dem Symmetriegerüst von m3̄m">
             <div class="fig-art"></div>
             <figcaption><b>Abb. 8.1b</b> Stereogramm des Würfels über dem Symmetriegerüst von <i>m</i>3̄<i>m</i>: 4-zählige Achsen entlang ⟨100⟩, 3̄-Achsen entlang ⟨111⟩, 2-zählige Achsen entlang ⟨110⟩, neun Spiegelebenen.</figcaption>
           </figure>
         </div>
+        <p>In der App wählt man unter „Kristallformen“ den Würfel und stellt unter „Gitter und Gestalt“ eine Streckung entlang einer Blickrichtung ein. Die Infobox nennt die Restgruppe; die Pole der Formen, in die der Würfel zerfällt, erscheinen in verschiedenen Farben. Die Abbildungen dieses Kapitels strecken um den Faktor 1,3, damit man die Verzerrung gut sieht; in realen Kristallen ist sie viel kleiner (Bariumtitanat, am Ende des Kapitels).</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Bei einer Verzerrung bleiben nur die Symmetrieoperationen erhalten, die auch die Verzerrung selbst unverändert lassen. Die neue Punktgruppe ist eine Untergruppe der alten.</p>
+        </div>
       </section>
 
       <section id="streck-100">
-        <h3>Streckung entlang ⟨100⟩: tetragonal</h3>
-        <p>Wir strecken entlang [001], einer der drei 4-zähligen Achsen (1. Blickrichtung). Die 4-zählige Achse entlang [001] und die Spiegelebene senkrecht dazu bleiben erhalten. Die 4-zähligen Achsen entlang [100] und [010] würden [001] um 90° in die Ebene senkrecht zu [001] drehen; von ihnen bleibt nur die Drehung um 180°, also je eine 2-zählige Achse, die [001] umkehrt, samt der Spiegelebene senkrecht dazu. Erhalten bleiben auch die 2-zähligen Achsen entlang [110] und [11̄0], die senkrecht auf [001] stehen, jeweils mit ihren Spiegelebenen. Alle 3̄-Achsen und die übrigen vier 2-zähligen Achsen gehen verloren.</p>
+        <h3>Streckung entlang ⟨100⟩</h3>
+        <p>Streckt man entlang [001], einer der drei 4-zähligen Achsen (1. Blickrichtung), so bleibt die 4-zählige Achse entlang [001] erhalten. Die 4-zähligen Achsen entlang [100] und [010] würden [001] um 90° in die Ebene senkrecht zu [001] drehen; von ihnen bleibt nur die Drehung um 180°, also je eine 2-zählige Achse, die [001] umkehrt. Erhalten bleiben auch die 2-zähligen Achsen entlang [110] und [11̄0], die senkrecht auf [001] stehen. Alle 3̄-Achsen und die übrigen vier 2-zähligen Achsen gehen verloren.</p>
         <p>Übrig bleibt 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> = 4/<i>mmm</i> mit 16 statt 48 Operationen. Das Gitter ist jetzt tetragonal: <i>a</i> = <i>b</i> ≠ <i>c</i>. Der Würfel zerfällt in zwei Formen: Die Flächen (001) und (001̄) senkrecht zur Streckrichtung bilden ein Pinakoid, die vier Flächen parallel dazu ein tetragonales Prisma (Abb. 8.2). Das ist genau die Kombination aus Kapitel 2 (Abb. 2.1). Die Pole liegen dabei wie beim unverzerrten Würfel, denn die Würfelflächen bleiben senkrecht zueinander. Die Verzerrung zeigt sich im Stereogramm daran, dass Pinakoid und Prisma jetzt verschiedene Formen sind, und am kleineren Symmetriegerüst.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=001,1.3&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [001] gestreckt">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.2a</b> Würfel entlang [001] um 1,3 gestreckt (senkrecht): Pinakoid {001} und tetragonales Prisma {100}.</figcaption>
+            <figcaption><b>Abb. 8.2a</b> Würfel, entlang [001] um den Faktor 1,3 gestreckt, [001] senkrecht: Pinakoid {001} und tetragonales Prisma {100}.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=001,1.3&amp;geruest=1" data-alt="Gestreckter Würfel über dem Symmetriegerüst von 4/mmm">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.2b</b> Stereogramm dazu über dem verbleibenden Symmetriegerüst 4/<i>mmm</i>; die beiden Farben zeigen die beiden Formen.</figcaption>
+            <figcaption><b>Abb. 8.2b</b> Stereogramm dazu über dem Symmetriegerüst der Restgruppe 4/<i>mmm</i>; die beiden Farben zeigen die beiden Formen.</figcaption>
           </figure>
         </div>
       </section>
 
       <section id="streck-111">
-        <h3>Streckung entlang ⟨111⟩: trigonal</h3>
-        <p>Nun strecken wir entlang der Raumdiagonalen [111], einer 3̄-Achse (2. Blickrichtung). Die 3̄-Achse entlang [111] bleibt. Senkrecht zu [111] liegen drei der sechs 2-zähligen Achsen, entlang [11̄0], [011̄] und [1̄01]; sie kehren [111] um und bleiben mit ihren Spiegelebenen erhalten. Verloren gehen alle 4-zähligen Achsen, die übrigen drei 3̄-Achsen, die übrigen drei 2-zähligen Achsen und die drei Spiegelebenen senkrecht zu den Würfelkanten.</p>
-        <p>Übrig bleibt 3̄ 2/<i>m</i> = 3̄<i>m</i> mit 12 Operationen. Alle sechs Würfelflächen werden durch die 3̄-Achse ineinander überführt; sie bleiben eine einzige Form, aber ihre Winkel ändern sich: Aus dem Würfel wird ein <span class="term">Rhomboeder</span> (Abb. 8.3), und aus dem kubischen ein rhomboedrisches Gitter; der Würfel ist der Sonderfall eines Rhomboeders mit 90°. Alle Kanten sind gleich lang; an den beiden Ecken auf der 3̄-Achse schliessen sie den gleichen Winkel α ein. Bei Streckung (<i>s</i> &gt; 1) ist α kleiner als 90° (spitzes Rhomboeder), bei Stauchung (<i>s</i> &lt; 1) grösser (stumpfes Rhomboeder); für <i>s</i> = 1,3 ist α = 79,2°.</p>
+        <h3>Streckung entlang ⟨111⟩</h3>
+        <p>Streckt man entlang der Raumdiagonalen [111], einer 3̄-Achse (2. Blickrichtung), so bleibt die 3̄-Achse entlang [111]. Senkrecht zu [111] liegen drei der sechs 2-zähligen Achsen, entlang [11̄0], [011̄] und [1̄01]; sie kehren [111] um und bleiben erhalten. Verloren gehen alle 4-zähligen Achsen, die übrigen drei 3̄-Achsen und die übrigen drei 2-zähligen Achsen.</p>
+        <p>Übrig bleibt 3̄ 2/<i>m</i> = 3̄<i>m</i> mit 12 Operationen. Alle sechs Würfelflächen werden durch die 3̄-Achse ineinander überführt; sie bleiben eine einzige Form, aber ihre Winkel ändern sich: Aus dem Würfel wird ein <span class="term">Rhomboeder</span> (Abb. 8.3), aus dem kubischen ein rhomboedrisches Gitter. Der Würfel ist der Sonderfall eines Rhomboeders mit 90°. Alle Kanten sind gleich lang; an den beiden Ecken auf der 3̄-Achse schliessen sie den gleichen Winkel α ein. Bei Streckung (<i>s</i> &gt; 1) ist α kleiner als 90° (spitzes Rhomboeder), bei Stauchung (<i>s</i> &lt; 1) grösser (stumpfes Rhomboeder); für <i>s</i> = 1,3 ist α = 79,2°.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [111] gestreckt: Rhomboeder">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.3a</b> Würfel entlang [111] um 1,3 gestreckt, [111] senkrecht: ein Rhomboeder.</figcaption>
+            <figcaption><b>Abb. 8.3a</b> Würfel, entlang [111] um den Faktor 1,3 gestreckt, [111] senkrecht: ein Rhomboeder.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;geruest=1" data-alt="Rhomboeder über dem Symmetriegerüst von 3̄m">
             <div class="fig-art"></div>
             <figcaption><b>Abb. 8.3b</b> Stereogramm, [111] ∥ Projektionsrichtung, über dem Symmetriegerüst 3̄<i>m</i>: 3̄-Achse im Mittelpunkt, drei Spiegelebenen, drei 2-zählige Achsen.</figcaption>
           </figure>
         </div>
-        <p>Für die trigonale Punktgruppe verwendet man hexagonale Achsen (Kapitel 7): <i>c</i> entlang der 3̄-Achse, also <i>c</i> ∥ [111], und <i>a</i>₁ ∥ [11̄0], <i>a</i>₂ ∥ [011̄] senkrecht dazu. In diesen Achsen ist die Würfelfläche (100) die Rhomboederfläche (101) = (101̄1). Die App zeigt diese Umrechnung in der Infobox, sobald die Restgruppe trigonal ist, zusammen mit dem Achsenverhältnis <i>c</i>/<i>a</i>; beim unverzerrten Würfel wäre <i>c</i>/<i>a</i> = √(3/2) ≈ 1,22, bei Streckung um <i>s</i> ist es <i>s</i> · √(3/2). Streckt man ein Oktaeder auf dieselbe Weise, zerfällt es in ein Pinakoid aus den beiden Flächen senkrecht zu [111] und ein Rhomboeder aus den übrigen sechs.</p>
+        <p>Für die trigonale Punktgruppe verwendet man hexagonale Achsen (Kapitel 7): <i>c</i> entlang der 3̄-Achse, also <i>c</i> ∥ [111], und <i>a</i>₁ ∥ [11̄0], <i>a</i>₂ ∥ [011̄] senkrecht dazu. In diesen Achsen ist die Würfelfläche (100) die Rhomboederfläche (101) = (101̄1). Die Infobox der App zeigt diese Umrechnung, sobald die Restgruppe trigonal ist. Streckt man ein Oktaeder auf dieselbe Weise, zerfällt es in ein Pinakoid aus den beiden Flächen senkrecht zu [111] und ein Rhomboeder aus den übrigen sechs.</p>
       </section>
 
       <section id="streck-110">
-        <h3>Streckung entlang ⟨110⟩: orthorhombisch</h3>
-        <p>Schliesslich strecken wir entlang der Flächendiagonalen [110], einer 2-zähligen Achse (3. Blickrichtung). Drei 2-zählige Achsen bleiben, alle drei mit ihren Spiegelebenen: die entlang [110] selbst, die senkrecht dazu entlang [11̄0], und entlang [001] die Drehung um 180° der früheren 4-zähligen Achse. Die 4-zählige Drehung um [001] selbst würde [110] in [1̄10] drehen und geht verloren; die 4-zähligen Achsen entlang [100] und [010] gehen ganz verloren, ebenso alle 3̄-Achsen und die übrigen vier 2-zähligen Achsen.</p>
-        <p>Übrig bleibt 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> = <i>mmm</i> mit nur 8 Operationen. Das Gitter ist orthorhombisch, aber seine Achsen liegen nicht mehr entlang der Würfelkanten, sondern entlang [110], [11̄0] und [001] (mit diesen Achsen ist es C-zentriert). Der Würfel zerfällt in ein Pinakoid aus (001) und (001̄) und ein rhombisches Prisma aus den vier übrigen Flächen, deren Querschnitt jetzt eine Raute ist (Abb. 8.4).</p>
+        <h3>Streckung entlang ⟨110⟩</h3>
+        <p>Streckt man schliesslich entlang der Flächendiagonalen [110], einer 2-zähligen Achse (3. Blickrichtung), so bleiben drei 2-zählige Achsen: die entlang [110] selbst, die senkrecht dazu entlang [11̄0] und entlang [001] die Drehung um 180° der früheren 4-zähligen Achse. Die Drehung um 90° um [001] würde [110] in [1̄10] drehen und geht verloren. Ganz verloren gehen die 4-zähligen Achsen entlang [100] und [010], alle 3̄-Achsen und die übrigen vier 2-zähligen Achsen.</p>
+        <p>Übrig bleibt 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> = <i>mmm</i> mit nur 8 Operationen. Das Gitter ist orthorhombisch, aber seine Achsen liegen nicht mehr entlang der Würfelkanten, sondern entlang [110], [11̄0] und [001]. Der Würfel zerfällt in ein Pinakoid aus (001) und (001̄) und ein rhombisches Prisma aus den vier übrigen Flächen, deren Querschnitt jetzt eine Raute ist (Abb. 8.4).</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=110,1.3&amp;lage=110&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [110] gestreckt">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.4a</b> Würfel entlang [110] um 1,3 gestreckt, [110] senkrecht: Pinakoid {001} und rhombisches Prisma.</figcaption>
+            <figcaption><b>Abb. 8.4a</b> Würfel, entlang [110] um den Faktor 1,3 gestreckt, [110] senkrecht: Pinakoid {001} und rhombisches Prisma.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=110,1.3&amp;lage=110&amp;geruest=1" data-alt="Entlang [110] gestreckter Würfel über dem Symmetriegerüst von mmm">
             <div class="fig-art"></div>
             <figcaption><b>Abb. 8.4b</b> Stereogramm, [110] ∥ Projektionsrichtung, über dem Symmetriegerüst <i>mmm</i>.</figcaption>
           </figure>
         </div>
-        <p>Tabelle 8.1 fasst die drei Fälle zusammen. Je höherzählig die Achse entlang der Streckrichtung, desto mehr Symmetrie bleibt übrig. Das Verhältnis der Ordnungen, 48/16 = 3, 48/12 = 4 und 48/8 = 6, ist gerade die Zahl der gleichwertigen Geraden ⟨100⟩, ⟨111⟩ und ⟨110⟩, entlang derer man den Würfel gleichwertig strecken könnte.</p>
+        <p>Je höherzählig die Achse entlang der Streckrichtung, desto mehr Symmetrie bleibt übrig. Die drei Fälle im Überblick:</p>
         <div class="tabwrap">
           <table class="tab">
-            <caption><b>Tab. 8.1</b> Streckung des Würfels (<i>m</i>3̄<i>m</i>, 48 Operationen)</caption>
-            <thead><tr><th>Streckung entlang</th><th>Restgruppe</th><th>Operationen</th><th>Würfel wird zu</th></tr></thead>
+            <thead><tr><th>Streckung entlang</th><th>Achse dort</th><th>Restgruppe</th><th>Operationen</th><th>Der Würfel wird zu</th></tr></thead>
             <tbody>
-              <tr><td>[001] (⟨100⟩, 4-zählig)</td><td>4/<i>mmm</i></td><td>16</td><td>tetragonales Prisma + Pinakoid</td></tr>
-              <tr><td>[111] (⟨111⟩, 3̄)</td><td>3̄<i>m</i></td><td>12</td><td>Rhomboeder</td></tr>
-              <tr><td>[110] (⟨110⟩, 2-zählig)</td><td><i>mmm</i></td><td>8</td><td>rhombisches Prisma + Pinakoid</td></tr>
+              <tr><td>[001], ⟨100⟩</td><td>4-zählig</td><td>4/<i>mmm</i></td><td>16</td><td>tetragonales Prisma und Pinakoid</td></tr>
+              <tr><td>[111], ⟨111⟩</td><td>3̄</td><td>3̄<i>m</i></td><td>12</td><td>Rhomboeder</td></tr>
+              <tr><td>[110], ⟨110⟩</td><td>2-zählig</td><td><i>mmm</i></td><td>8</td><td>rhombisches Prisma und Pinakoid</td></tr>
             </tbody>
           </table>
         </div>
+        <p>Teilt man die 48 Operationen des Würfels durch die Zahl der verbleibenden, erhält man 3, 4 und 6: genau die Zahl der gleichwertigen Geraden ⟨100⟩, ⟨111⟩ und ⟨110⟩, entlang derer man den Würfel gleichwertig strecken könnte.</p>
       </section>
 
       <section id="polar">
         <h3>Streckung oder Polarisation</h3>
         <p>Eine Streckung hat keinen Richtungssinn. Anders eine Verschiebung von Atomen, durch die ein elektrisches Dipolmoment entsteht, eine <span class="term">Polarisation</span>: Sie ist ein Pfeil und unterscheidet „vorn“ von „hinten“. Bei ihr bleiben nur die Operationen erhalten, die den Pfeil in sich selbst überführen; alle, die ihn umkehren, gehen zusätzlich verloren, darunter das Inversionszentrum. Aus 4/<i>mmm</i> wird so 4<i>mm</i>, aus <i>mmm</i> wird <i>mm</i>2 und aus 3̄<i>m</i> wird 3<i>m</i>.</p>
-        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung bleiben alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 8.5), bei den zentrosymmetrischen Gruppen liegen sie auf beiden (vgl. <i>mmm</i> in Abb. 3.2b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 2.2): oben und unten sind verschieden.</p>
+        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 8.5), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 3.2b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 2.2): Oben und unten sind verschieden.</p>
         <div class="fig-row fig-row3">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4mm" data-alt="Punktgruppe 4mm mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.5a</b> 4<i>mm</i>: 8 Pole, alle oben.</figcaption>
+            <figcaption><b>Abb. 8.5a</b> 4<i>mm</i></figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mm2" data-alt="Punktgruppe mm2 mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.5b</b> <i>mm</i>2: 4 Pole, alle oben.</figcaption>
+            <figcaption><b>b</b> <i>mm</i>2</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=3m1" data-alt="Punktgruppe 3m mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.5c</b> 3<i>m</i>: 6 Pole, alle oben.</figcaption>
+            <figcaption><b>c</b> 3<i>m</i></figcaption>
           </figure>
         </div>
-        <p class="fig-note">Polare Achse jeweils als Projektionsrichtung (Standardaufstellung der App). Bezogen auf den Würfel liegt sie entlang [001], [110] bzw. [111].</p>
+        <p class="fig-note"><b>Abb. 8.5</b> Bahn eines allgemeinen Pols in den polaren Punktgruppen (a) 4<i>mm</i> (8 Pole), (b) <i>mm</i>2 (4 Pole) und (c) 3<i>m</i> (6 Pole), die polare Achse jeweils als Projektionsrichtung; bezogen auf den Würfel liegt sie entlang [001], [110] bzw. [111]. Alle Pole liegen auf derselben Halbkugel.</p>
         <div class="box merke">
           <h4>Merke</h4>
-          <p>Eine Streckung erhält die Operationen, die die Streckrichtung als Gerade in sich überführen; beim Würfel bleibt die Restgruppe zentrosymmetrisch. Eine Polarisation erhält nur die Operationen, die den Pfeil in sich überführen; die Restgruppe ist polar.</p>
+          <p>Eine Streckung erhält die Operationen, die die Streckrichtung als Gerade in sich überführen; beim Würfel behält die Restgruppe ihr Inversionszentrum. Eine Polarisation erhält nur die Operationen, die den Pfeil in sich überführen; die Restgruppe ist polar.</p>
         </div>
       </section>
 
       <section id="batio3">
-        <h3>Keine Spielerei: Bariumtitanat</h3>
-        <p>Bariumtitanat BaTiO₃ hat oberhalb von etwa 400 K (rund 125 °C) die kubische Perowskitstruktur: Ba auf den Ecken der Elementarzelle, Ti in ihrer Mitte, umgeben von einem Oktaeder aus sechs O-Atomen auf den Flächenmitten; Punktgruppe <i>m</i>3̄<i>m</i>. Kühlt man den Kristall ab, rückt das Ti um etwa 0,1 Å aus der Mitte des Oktaeders heraus. Die Schwerpunkte der positiven und negativen Ladungen fallen dann nicht mehr zusammen: Jede Zelle trägt ein elektrisches Dipolmoment, der Kristall eine <span class="term">spontane Polarisation</span>. Zugleich verformt sich die Zelle mit der Symmetrie einer Streckung entlang dieser Richtung, allerdings nur sehr wenig: Die Winkel ändern sich um Bruchteile eines Grades, viel weniger als in den Abbildungen dieses Kapitels.</p>
-        <p>Je nach Temperatur liegt die Polarisation entlang einer der drei Blickrichtungen des Würfels, genau wie in den drei Fällen dieses Kapitels (Tab. 8.2). Die Verformung allein ergäbe 4/<i>mmm</i>, <i>mmm</i> bzw. 3̄<i>m</i>; die Verschiebung des Ti nimmt zusätzlich alle Operationen weg, die die Polarisationsrichtung umkehren, darunter das Inversionszentrum, und führt auf die polaren Gruppen (Abb. 8.5).</p>
+        <h3>Ein Beispiel aus der Natur</h3>
+        <p>Bariumtitanat BaTiO₃ hat oberhalb von etwa 120 °C (rund 395 K) die kubische Perowskitstruktur: Ba auf den Ecken der Elementarzelle, Ti in ihrer Mitte, umgeben von einem Oktaeder aus sechs O-Atomen auf den Flächenmitten; Punktgruppe <i>m</i>3̄<i>m</i>. Kühlt man den Kristall ab, rückt das Ti um etwa 0,1 Å aus der Mitte des Oktaeders heraus. Die Schwerpunkte der positiven und negativen Ladungen fallen dann nicht mehr zusammen: Jede Zelle trägt ein elektrisches Dipolmoment, der Kristall eine <span class="term">spontane Polarisation</span>. Zugleich verformt sich die Zelle mit der Symmetrie einer Streckung entlang dieser Richtung, allerdings nur sehr wenig: Die Winkel ändern sich um Bruchteile eines Grades, viel weniger als in den Abbildungen dieses Kapitels.</p>
+        <p>Je nach Temperatur liegt die Polarisation entlang einer der drei Blickrichtungen des Würfels, genau wie in den drei Fällen dieses Kapitels. Die Verformung allein ergäbe 4/<i>mmm</i>, <i>mmm</i> bzw. 3̄<i>m</i>; die Verschiebung des Ti nimmt zusätzlich alle Operationen weg, die die Polarisationsrichtung umkehren, und führt auf die polaren Punktgruppen (Abb. 8.5). Die Phasen eines BaTiO₃-Einkristalls beim Abkühlen:</p>
         <div class="tabwrap">
           <table class="tab">
-            <caption><b>Tab. 8.2</b> Phasen von BaTiO₃ beim Abkühlen (Einkristall, nach Fu &amp; Itoh 2015, Fig. 2)</caption>
-            <thead><tr><th>Phase</th><th>Temperatur beim Abkühlen</th><th>Polarisation entlang</th><th>Punktgruppe</th><th>Verformung wie</th></tr></thead>
+            <thead><tr><th>Phase</th><th>Temperatur</th><th>Polarisation entlang</th><th>Punktgruppe</th><th>Verformung wie</th></tr></thead>
             <tbody>
               <tr><td>kubisch</td><td>über 394 K (121 °C)</td><td>–</td><td><i>m</i>3̄<i>m</i></td><td>Abb. 8.1</td></tr>
               <tr><td>tetragonal</td><td>279 K bis 394 K (6 °C bis 121 °C)</td><td>⟨100⟩</td><td>4<i>mm</i></td><td>Abb. 8.2</td></tr>
@@ -1096,33 +1094,28 @@ footer a { color: inherit; }
             </tbody>
           </table>
         </div>
-        <p class="fig-note">Beim Aufheizen liegen die Umwandlungen etwas höher, bei 196 K, 285 K und 401 K: Die Umwandlungen zeigen eine thermische Hysterese. An jeder Umwandlung hat die Dielektrizitätszahl ein scharfes Maximum, am grössten am Curie-Punkt <i>T</i><sub>C</sub> zwischen kubischer und tetragonaler Phase. ⟨110⟩ und ⟨011⟩ (so in der Quelle) bezeichnen dieselbe Richtungsfamilie.</p>
-        <p>Die Symmetrie bestimmt, welche Eigenschaften ein Kristall haben kann. Im kubischen BaTiO₃ hebt das Inversionszentrum jede Polarisation auf; der Kristall ist weder pyroelektrisch noch piezoelektrisch. In den polaren Phasen ist beides möglich: Erwärmen ändert die Polarisation (Pyroelektrizität), Druck erzeugt eine elektrische Spannung, und eine angelegte elektrische Spannung verformt den Kristall (Piezoelektrizität). Beim BaTiO₃ lässt sich die Polarisation zudem durch ein elektrisches Feld umkehren; solche Kristalle heissen <span class="term">ferroelektrisch</span>. Seine sehr hohe Dielektrizitätszahl (heute Permittivitätszahl, etwa 1000 bis 10 000) macht BaTiO₃ zu einem Werkstoff für Kondensatoren. Piezoelektrische Kristalle setzen elektrische in mechanische Signale um und umgekehrt, etwa in Ultraschallgebern, Lautsprechern und Mikrofonen. In der App zeigt die Infobox der Punktgruppen, ob eine Gruppe polar und ob sie piezoelektrisch ist: <i>m</i>3̄<i>m</i> nein, 4<i>mm</i>, <i>mm</i>2 und 3<i>m</i> ja.</p>
-        <p>Und noch etwas folgt aus der Symmetrie: Die Polarisation kann in der tetragonalen Phase in jede der sechs gleichwertigen Richtungen <span class="sym">±[100]</span>, <span class="sym">±[010]</span>, <span class="sym">±[001]</span> zeigen. Kühlt ein Kristall ab, wählen verschiedene Bereiche verschiedene Richtungen. Es entstehen <span class="term">Domänen</span>, die durch die beim Übergang verlorenen Symmetrieoperationen ineinander übergehen, eine Art Zwillinge (Borchardt-Ott Abschn. 11.5.4). Die Zahl der möglichen Domänenorientierungen ist das Verhältnis der Ordnungen: 48/8 = 6 tetragonal, 48/4 = 12 orthorhombisch, 48/6 = 8 rhomboedrisch, doppelt so viele wie bei der reinen Streckung (Tab. 8.1), weil die Polarisation auch den Richtungssinn unterscheidet. Ohne Feld kommen im Mittel alle Richtungen gleich häufig vor; ein elektrisches Feld lässt die günstig orientierten Domänen wachsen.</p>
-        <div class="box merke">
-          <h4>Merke</h4>
-          <p>Symmetrieändernde Verzerrungen kommen in realen Kristallen vor. Die neue, niedrigere Symmetrie erlaubt Eigenschaften, die die alte verbietet, z. B. eine spontane Polarisation, und sie führt zu Domänen.</p>
-        </div>
+        <p>Beim Aufheizen liegen die Umwandlungstemperaturen einige Kelvin höher, bei 196 K, 285 K und 401 K.</p>
+        <p>Die Symmetrie bestimmt, welche Eigenschaften ein Kristall haben kann. Im kubischen BaTiO₃ hebt das Inversionszentrum jede Polarisation auf; der Kristall ist weder pyroelektrisch noch piezoelektrisch. In den polaren Phasen ist beides möglich: Erwärmen ändert die Polarisation (Pyroelektrizität), Druck erzeugt eine elektrische Spannung, und eine angelegte elektrische Spannung verformt den Kristall (Piezoelektrizität). Beim BaTiO₃ lässt sich die Polarisation zudem durch ein elektrisches Feld umkehren; solche Kristalle heissen <span class="term">ferroelektrisch</span>. BaTiO₃ ist ein wichtiger Werkstoff für Kondensatoren, piezoelektrische Kristalle setzen elektrische in mechanische Signale um und umgekehrt, etwa in Ultraschallgebern. In der App zeigt die Infobox der Punktgruppen, ob eine Gruppe polar und ob sie piezoelektrisch ist: <i>m</i>3̄<i>m</i> nein, 4<i>mm</i>, <i>mm</i>2 und 3<i>m</i> ja.</p>
+        <p>Die Symmetrie erklärt auch, warum Domänen entstehen: Die Polarisation kann in der tetragonalen Phase in jede der sechs gleichwertigen Richtungen <span class="sym">±[100]</span>, <span class="sym">±[010]</span>, <span class="sym">±[001]</span> zeigen. Kühlt ein Kristall ab, wählen verschiedene Bereiche verschiedene Richtungen. Es entstehen <span class="term">Domänen</span>, die durch die beim Übergang verlorenen Symmetrieoperationen ineinander übergehen, eine Art Zwillinge. Ihre möglichen Orientierungen zählt man wie oben: 48/8 = 6 tetragonal, 48/4 = 12 orthorhombisch, 48/6 = 8 rhomboedrisch, doppelt so viele wie bei der reinen Streckung (3, 4 bzw. 6), weil die Polarisation auch den Richtungssinn unterscheidet. Ein elektrisches Feld lässt die günstig orientierten Domänen wachsen.</p>
       </section>
 
       <div class="box zusammen">
         <h4>Zusammenfassung</h4>
         <ul>
           <li>Bei einer Verzerrung bleiben nur die Symmetrieoperationen erhalten, die auch die Verzerrung unverändert lassen; die neue Punktgruppe ist eine Untergruppe der alten.</li>
-          <li>Würfel (<i>m</i>3̄<i>m</i>) gestreckt entlang ⟨100⟩: 4/<i>mmm</i>, Prisma + Pinakoid; entlang ⟨111⟩: 3̄<i>m</i>, Rhomboeder; entlang ⟨110⟩: <i>mmm</i>, rhombisches Prisma + Pinakoid.</li>
-          <li>Eine Polarisation (Pfeil) nimmt zusätzlich alle Operationen weg, die ihre Richtung umkehren, darunter das Inversionszentrum: 4<i>mm</i>, 3<i>m</i>, <i>mm</i>2 sind polar.</li>
-          <li>BaTiO₃ durchläuft beim Abkühlen genau diese drei polaren Phasen; erst die niedrigere Symmetrie erlaubt Ferro- und Piezoelektrizität, und sie führt zu Domänen.</li>
+          <li>Der Würfel (<i>m</i>3̄<i>m</i>) wird bei Streckung entlang ⟨100⟩ zu tetragonalem Prisma und Pinakoid (4/<i>mmm</i>), entlang ⟨111⟩ zum Rhomboeder (3̄<i>m</i>), entlang ⟨110⟩ zu rhombischem Prisma und Pinakoid (<i>mmm</i>).</li>
+          <li>Eine Polarisation (Pfeil) nimmt zusätzlich alle Operationen weg, die ihre Richtung umkehren, darunter das Inversionszentrum: 4<i>mm</i>, <i>mm</i>2 und 3<i>m</i> sind polar.</li>
+          <li>BaTiO₃ durchläuft beim Abkühlen genau diese drei polaren Phasen. Erst die niedrigere Symmetrie erlaubt Pyro- und Piezoelektrizität, und sie führt zu Domänen.</li>
         </ul>
       </div>
 
       <div class="quellen">
         <h4>Quellen</h4>
         <ul>
-          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 9.1 (Punktgruppen als Untergruppen der Holoedrien, Tab. 9.2, Stammbaum Abb. 9.3, S. 127–130), 11.2 (Untergruppe, Ordnung, S. 263–265), 11.5.1.1 und 11.5.4 (Symmetrieabbau durch Verformung, displazive Phasenübergänge, Zwillinge, S. 272–276, 288–290), 7.3 (Rhomboeder, Sonderfall Würfel, S. 116), 9.4 und 9.6.2–9.6.3 (polare Achsen, Piezo- und Pyroelektrizität, Anwendungen, S. 164–172).</li>
-          <li>Hoffmann (2016), Abschn. 2.8 (Rhomboeder als gestreckter Würfel, S. 86–87), 7.5 (Ferroelektrika, S. 257), 7.5.2 (BaTiO₃: Perowskitstruktur, Umwandlung bei 120 °C, Raumgruppe P4<i>mm</i>, Verschiebung des Ti um etwa 0,1 Å, sechs Polarisationsrichtungen und Domänen, S. 259–261), 7.5.3 (Umschalten der Polarisation im Feld, S. 261–263), 7.5.4 (Permittivitätszahl, Kondensatoren, S. 263), 7.5.5 (Streckung allein ergäbe P4/<i>mmm</i>; die Ti-Verschiebung entfernt die Spiegelebene senkrecht zur 4-zähligen Achse; Symmetrie notwendig, aber nicht hinreichend, S. 263–264).</li>
-          <li>D. Fu, M. Itoh, Role of Ca off-Centering in Tuning Ferroelectric Phase Transitions in Ba(Zr,Ti)O₃ System, in: A. Peláiz-Barranco (Hrsg.), <i>Ferroelectric Materials – Synthesis and Characterization</i>, IntechOpen (2015), doi:10.5772/61017, Fig. 2: Dielektrizitätszahl eines BaTiO₃-Einkristalls in Abhängigkeit von der Temperatur mit den Umwandlungstemperaturen (Tab. 8.2) und den Polarisationsrichtungen der Phasen.</li>
-          <li>B. Matthias, A. von Hippel, Phys. Rev. 73, 1378 (1948): Umwandlungen bei etwa 120 °C, 5 °C und −70 °C. P. W. Forsbergh, Phys. Rev. 76, 1187 (1949): dieselben Temperaturen, Polarisation entlang ⟨100⟩, ⟨110⟩, ⟨111⟩, orthorhombische Phase „Cmm“, rhomboedrische Phase R3<i>m</i>.</li>
-          <li>K. Aizu, Phys. Rev. B 2, 754 (1970): BaTiO₃ tetragonal mit sechs Orientierungszuständen (S. 755); Zahl der Zustände = Ordnung der Ausgangsgruppe / Ordnung der neuen Gruppe (Theorem 3, S. 757); <i>m</i>3̄<i>m</i> → 3<i>m</i>: 8 (Tab. I, Nr. 753). H. Schmid, J. Phys.: Condens. Matter 20, 434201 (2008), Abschn. 3: Domänen gehen durch die verlorenen Symmetrieelemente ineinander über; spontane Scherung von BaTiO₃ (Tab. 6).</li>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 7.3 (Rhomboeder, Sonderfall Würfel, S. 116), 9.1 (Punktgruppen als Untergruppen der Holoedrien, Tab. 9.2, Abb. 9.3, S. 127–130), 9.4 und 9.6.2–9.6.3 (polare Achsen, Piezo- und Pyroelektrizität, S. 164–172), 11.2 (Untergruppe, S. 263–265), 11.5.1.1 und 11.5.4 (Symmetrieabbau durch Verformung, Phasenübergänge, Zwillinge, S. 272–276, 288–290).</li>
+          <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 2.8 (Rhomboeder als gestreckter Würfel, S. 86–87), 7.5 (Ferroelektrika, S. 257–263), 7.5.2 (BaTiO₃, Verschiebung des Ti, Domänen, S. 259–261), 7.5.5 (Streckung und Polarisation, S. 263–264).</li>
+          <li>Phasen und Umwandlungstemperaturen von BaTiO₃: D. Fu, M. Itoh, in: A. Peláiz-Barranco (Hrsg.), <i>Ferroelectric Materials – Synthesis and Characterization</i>, IntechOpen (2015), Fig. 2; Punktgruppen der Phasen: P. W. Forsbergh, Phys. Rev. 76, 1187 (1949).</li>
+          <li>Domänen und Zahl ihrer Orientierungen: K. Aizu, Phys. Rev. B 2, 754 (1970), S. 755–757; H. Schmid, J. Phys.: Condens. Matter 20, 434201 (2008), Abschn. 3.</li>
         </ul>
       </div>
     </section>

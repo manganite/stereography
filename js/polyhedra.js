@@ -44,6 +44,56 @@ export const FREE_PARAMS = {
   kubisch: [],
 };
 
+/**
+ * Richtungen, entlang derer der Kristall gestreckt werden kann: je Blickrichtung des Kristallsystems
+ * (Positionen des Hermann-Mauguin-Symbols, Borchardt-Ott Tab. 7.3) eine Gitterrichtung [uvw].
+ * Kubisch ⟨100⟩ als [001], damit die verbleibende 4-zählige Achse wie im tetragonalen System ∥ c liegt.
+ */
+export const STRETCH_DIRS = {
+  triklin: [],
+  monoklin: [{ id: '010', uvw: [0, 1, 0], cls: 'b' }],
+  orthorhombisch: [{ id: '100', uvw: [1, 0, 0], cls: 'a' }, { id: '010', uvw: [0, 1, 0], cls: 'b' }, { id: '001', uvw: [0, 0, 1], cls: 'c' }],
+  tetragonal: [{ id: '001', uvw: [0, 0, 1], cls: 'c' }, { id: '100', uvw: [1, 0, 0], cls: '⟨100⟩' }, { id: '110', uvw: [1, 1, 0], cls: '⟨110⟩' }],
+  trigonal: [{ id: '001', uvw: [0, 0, 1], cls: 'c' }, { id: '100', uvw: [1, 0, 0], cls: '⟨100⟩' }, { id: '210', uvw: [2, 1, 0], cls: '⟨210⟩' }],
+  hexagonal: [{ id: '001', uvw: [0, 0, 1], cls: 'c' }, { id: '100', uvw: [1, 0, 0], cls: '⟨100⟩' }, { id: '210', uvw: [2, 1, 0], cls: '⟨210⟩' }],
+  kubisch: [{ id: '001', uvw: [0, 0, 1], cls: '⟨100⟩' }, { id: '111', uvw: [1, 1, 1], cls: '⟨111⟩' }, { id: '110', uvw: [1, 1, 0], cls: '⟨110⟩' }],
+};
+/** Gültige Streckrichtung eines Systems (sonst die erste). */
+export const stretchDir = (sys, id) => STRETCH_DIRS[sys].find((d) => d.id === id) || STRETCH_DIRS[sys][0] || null;
+
+/**
+ * Streckung des Gitters um den Faktor s entlang der Gitterrichtung uvw: r → r + (s − 1)(r·n)n.
+ * Die Flächen einer Form liegen in Bruchkoordinaten fest (h·x = t), der Körper wird daher affin mitgestreckt.
+ */
+export function stretchLattice(A, uvw, s) {
+  const n = normalize(mulVec(A, uvw));
+  const S = [0, 1, 2].map((i) => [0, 1, 2].map((j) => (i === j ? 1 : 0) + (s - 1) * n[i] * n[j]));
+  return mul(S, A);
+}
+
+/** Gitterparameter (a = 1, b/a, c/a, α, β, γ) einer Gittermatrix. */
+export function paramsOfLattice(A) {
+  const [a, b, c] = [0, 1, 2].map((j) => [A[0][j], A[1][j], A[2][j]]);
+  const ang = (u, w) => Math.acos(Math.max(-1, Math.min(1, dot(u, w) / (norm(u) * norm(w))))) / deg;
+  return { ba: norm(b) / norm(a), ca: norm(c) / norm(a), al: ang(b, c), be: ang(a, c), ga: ang(a, b) };
+}
+
+/**
+ * Hexagonale Achsen einer trigonalen Restgruppe mit 3 ∥ [uvw] (u, v, w = ±1) im kubischen Gitter
+ * (rhomboedrische Basis a_R, b_R, c_R = ±a, ±b, ±c mit a_R + b_R + c_R = [uvw]):
+ * a₁ = a_R − b_R, a₂ = b_R − c_R, c = a_R + b_R + c_R (obverse Aufstellung). Für [111]:
+ * c ∥ [111], a₁ ∥ [11̄0], a₂ ∥ [011̄]; der Würfel {100} wird zum Rhomboeder {101} = {101̄1}.
+ * Rückgabe: { a1, a2, c (kubische Richtungen), toHex(hkl) → (hkl) in hexagonalen Achsen } oder null.
+ */
+export function hexSettingOf(uvw) {
+  if (!uvw || !uvw.every((x) => Math.abs(x) === 1)) return null;
+  let R = [[uvw[0], 0, 0], [0, uvw[1], 0], [0, 0, uvw[2]]];
+  // linkshändige Basis (ungerade Zahl negativer Komponenten): b_R und c_R tauschen
+  if (uvw[0] * uvw[1] * uvw[2] < 0) R = [R[0], R[2], R[1]];
+  const a1 = sub(R[0], R[1]), a2 = sub(R[1], R[2]), c = add(add(R[0], R[1]), R[2]);
+  return { a1, a2, c, toHex: (h) => reduceInt([dot(h, a1), dot(h, a2), dot(h, c)]) };
+}
+
 /** Parameter auf die Bedingungen des Systems setzen. */
 export function constrainLattice(lat, sys) {
   const d = LATTICE_DEFAULTS[sys];
@@ -231,9 +281,12 @@ export function orientationMatrix(A, preset) {
 export function faceMotifs(faces, ops) {
   const out = [];
   const done = new Set();
+  // je Form und (bei erniedrigter Symmetrie) je Teilform eine Keimfläche: die Restoperationen erreichen
+  // die übrigen Teilformen nicht
   for (const f0 of faces) {
-    if (f0.role !== 'main' || done.has(f0.form || 0)) continue;
-    done.add(f0.form || 0);
+    const key = `${f0.form || 0}:${f0.orbit || 0}`;
+    if (f0.role !== 'main' || done.has(key)) continue;
+    done.add(key);
     out.push(...motifsOn(f0, ops));
   }
   return out;
@@ -277,8 +330,11 @@ export function buildCrystal(params) {
   const groupId = combo ? params.groupId : entry.pg;
   const sys = SYSTEM_OF[groupId];
   const hex = isHexSystem(sys);
-  const lat = params.broken ? { ...params.lat } : constrainLattice(params.lat, sys);
-  const A = latticeFromParams(lat);
+  const lat0 = params.broken ? { ...params.lat } : constrainLattice(params.lat, sys);
+  // Streckung entlang einer Blickrichtung (nur wirksam, wenn s ≠ 1)
+  const st = params.stretch && params.stretch.uvw && Math.abs(params.stretch.s - 1) > 1e-9 ? params.stretch : null;
+  const A = st ? stretchLattice(latticeFromParams(lat0), st.uvw, st.s) : latticeFromParams(lat0);
+  const lat = st ? paramsOfLattice(A) : lat0;
   const Ai = inverse(A);
   const B = transpose(Ai);
   const M = mul(transpose(A), A);
@@ -346,7 +402,7 @@ export function buildCrystal(params) {
     { name: hex ? 'a₂' : 'b', dir: normalize(mulVec(O, mulVec(A, [0, 1, 0]))) },
     { name: 'c', dir: normalize(mulVec(O, mulVec(A, [0, 0, 1]))) },
   ];
-  if (hex && !params.broken) axes.push({ name: 'a₃', dir: normalize(mulVec(O, mulVec(A, [-1, -1, 0]))) });
+  if (hex && !params.broken && !isReduced) axes.push({ name: 'a₃', dir: normalize(mulVec(O, mulVec(A, [-1, -1, 0]))) });
 
   // Symmetrieoperationen in Bildschirmkoordinaten (für das Gerüst)
   const toScreen = (W) => mul(mul(O, cart(W)), Ot);
@@ -369,12 +425,30 @@ export function buildCrystal(params) {
     }
   }
 
+  // Trigonale Restgruppe eines kubischen Kristalls (3 ∥ ⟨111⟩): Indizes in hexagonalen Achsen, Formnamen
+  let hexSetting = null;
+  if (sys === 'kubisch' && reducedAxis && (reducedAxis.symbol === '3' || reducedAxis.symbol === '-3')) {
+    const hs = hexSettingOf(reducedAxis.uvw);
+    if (hs) {
+      const len = (u) => norm(mulVec(A, u));
+      hexSetting = {
+        ...hs, ca: len(hs.c) / len(hs.a1),
+        orbits: orbitsMain.map((o) => {
+          const hkls = o.map(hs.toHex);
+          const n = auxFormName('-3m1', hkls);
+          return { rep: canonicalRep(hkls), name: n ? n.name : null };
+        }),
+      };
+    }
+  }
+
   const zones = sys === 'kubisch'
     ? [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]].map((h) => normalize(mulVec(O, mulVec(B, h))))
     : [];
 
   return {
     entry, groupId, sys, hex, lat, A, O, faces, axes, preset, presets, zones,
+    stretched: !!st, stretch: st, hexSetting,
     mainHKL, auxForms, lostMain,
     isReduced, reduced, reducedAxis, orbitsMain: orbitsMain.map((o) => ({ hkls: o, rep: canonicalRep(o) })),
     framework: groupScreen, motifs, latOps: Wred,

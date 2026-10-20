@@ -93,6 +93,21 @@ figure { margin: 20px 0; }
 .hx-arc { fill: none; stroke: var(--muted); stroke-width: 1.2; }
 .hx-c { fill: var(--paper); stroke: var(--ink); stroke-width: 1.6; }
 .hx-cdot { fill: var(--ink); }
+.pvfig { max-width: 640px; margin-inline: auto; }
+.pvfig svg text { font-family: var(--font-ui); fill: var(--ink); }
+.pv-edge { stroke: var(--ink); stroke-width: 1.4; }
+.pv-bond { stroke: var(--muted); stroke-width: 0.9; stroke-dasharray: 3 3; }
+.pv-ba { fill: var(--crystal2); stroke: var(--ink); stroke-width: 1.2; }
+.pv-o { fill: var(--accent2); stroke: var(--ink); stroke-width: 1; }
+.pv-ti { fill: var(--accent); stroke: var(--ink); stroke-width: 1.2; }
+.pv-str { stroke: var(--dir2); stroke-width: 2.4; }
+.pv-strh { fill: var(--dir2); }
+.pv-pol { stroke: var(--ax4); stroke-width: 2.6; }
+.pv-polh { fill: var(--ax4); }
+.pvfig .pv-p { font-size: 15px; font-weight: 600; fill: var(--ax4); }
+.pvfig .pv-t { font-size: 14px; font-weight: 600; }
+.pvfig .pv-s { font-size: 14px; }
+.pvfig .pv-leg text { font-size: 13px; fill: var(--muted); }
 .hexfig .hx-c-l { font-size: 14px; font-style: italic; }
 .formel { font-size: 1.15rem; text-align: center; margin: 14px 0; font-family: var(--font-display); }
 .schema { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
@@ -1056,12 +1071,129 @@ footer a { color: inherit; }
 
       <section id="polar">
         <h3>Streckung oder Polarisation</h3>
-        <p>Eine Streckung hat keinen Richtungssinn. Anders eine Verschiebung von Atomen, durch die ein elektrisches Dipolmoment entsteht, eine <span class="term">Polarisation</span>: Sie ist ein Pfeil und unterscheidet „vorn“ von „hinten“. Bei ihr bleiben nur die Operationen erhalten, die den Pfeil in sich selbst überführen; alle, die ihn umkehren, gehen zusätzlich verloren, darunter das Inversionszentrum. Aus 4/<i>mmm</i> wird so 4<i>mm</i>, aus <i>mmm</i> wird <i>mm</i>2 und aus 3̄<i>m</i> wird 3<i>m</i>.</p>
-        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 8.5), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 3.2b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 2.2): Oben und unten sind verschieden.</p>
+        <p>Eine Streckung hat keinen Richtungssinn. Anders eine Verschiebung von Atomen, durch die ein elektrisches Dipolmoment entsteht, eine <span class="term">Polarisation</span>: Sie ist ein Pfeil und unterscheidet „vorn“ von „hinten“. Bei ihr bleiben nur die Operationen erhalten, die den Pfeil in sich selbst überführen; alle, die ihn umkehren, gehen zusätzlich verloren, darunter das Inversionszentrum. Aus 4/<i>mmm</i> wird so 4<i>mm</i>, aus <i>mmm</i> wird <i>mm</i>2 und aus 3̄<i>m</i> wird 3<i>m</i>. Abb. 8.5 zeigt den Unterschied an der Elementarzelle von Bariumtitanat (siehe unten): Wird die Zelle nur gestreckt, sitzt das Ti weiter in ihrer Mitte, und das Inversionszentrum bleibt. Rückt das Ti zusätzlich aus der Mitte, zeigt die Polarisation <i>P</i> nach oben, und oben und unten sind nicht mehr gleichwertig.</p>
+        <figure class="fig-card pvfig">
+          <div class="fig-art">
+            <svg viewBox="0 0 650 262" role="img" aria-label="Perowskitzelle von BaTiO₃: kubisch, entlang c gestreckt mit Ti in der Mitte, gestreckt mit nach oben verschobenem Ti und Polarisationspfeil">
+            <defs><marker id="pvarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="pv-strh" d="M0,0 L10,5 L0,10 z"/></marker><marker id="pvarr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path class="pv-polh" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+            <line class="pv-edge" x1="30.0" y1="178.0" x2="30.0" y2="82.0"/>
+            <line class="pv-edge" x1="30.0" y1="178.0" x2="63.0" y2="154.9"/>
+            <line class="pv-edge" x1="30.0" y1="178.0" x2="126.0" y2="178.0"/>
+            <line class="pv-edge" x1="30.0" y1="82.0" x2="63.0" y2="58.9"/>
+            <line class="pv-edge" x1="30.0" y1="82.0" x2="126.0" y2="82.0"/>
+            <line class="pv-edge" x1="63.0" y1="154.9" x2="63.0" y2="58.9"/>
+            <line class="pv-edge" x1="63.0" y1="154.9" x2="159.0" y2="154.9"/>
+            <line class="pv-edge" x1="63.0" y1="58.9" x2="159.0" y2="58.9"/>
+            <line class="pv-edge" x1="126.0" y1="178.0" x2="126.0" y2="82.0"/>
+            <line class="pv-edge" x1="126.0" y1="178.0" x2="159.0" y2="154.9"/>
+            <line class="pv-edge" x1="126.0" y1="82.0" x2="159.0" y2="58.9"/>
+            <line class="pv-edge" x1="159.0" y1="154.9" x2="159.0" y2="58.9"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="94.5" y2="166.4"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="94.5" y2="70.4"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="46.5" y2="118.4"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="142.5" y2="118.4"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="78.0" y2="130.0"/>
+            <line class="pv-bond" x1="94.5" y1="118.4" x2="111.0" y2="106.9"/>
+            <circle class="pv-ba" cx="63.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="63.0" cy="58.9" r="11"/>
+            <circle class="pv-ba" cx="159.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="159.0" cy="58.9" r="11"/>
+            <circle class="pv-o" cx="111.0" cy="106.9" r="6.5"/>
+            <circle class="pv-o" cx="94.5" cy="166.4" r="6.5"/>
+            <circle class="pv-o" cx="94.5" cy="70.4" r="6.5"/>
+            <circle class="pv-o" cx="46.5" cy="118.4" r="6.5"/>
+            <circle class="pv-o" cx="142.5" cy="118.4" r="6.5"/>
+            <circle class="pv-ti" cx="94.5" cy="118.4" r="8"/>
+            <circle class="pv-ba" cx="30.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="30.0" cy="82.0" r="11"/>
+            <circle class="pv-ba" cx="126.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="126.0" cy="82.0" r="11"/>
+            <circle class="pv-o" cx="78.0" cy="130.0" r="6.5"/>
+            <text class="pv-t" x="94.5" y="208.0" text-anchor="middle">kubisch</text>
+            <text class="pv-s" x="94.5" y="226.0" text-anchor="middle"><tspan font-style="italic">m</tspan>3̄<tspan font-style="italic">m</tspan></text>
+            <line class="pv-edge" x1="250.0" y1="178.0" x2="250.0" y2="53.2"/>
+            <line class="pv-edge" x1="250.0" y1="178.0" x2="283.0" y2="154.9"/>
+            <line class="pv-edge" x1="250.0" y1="178.0" x2="346.0" y2="178.0"/>
+            <line class="pv-edge" x1="250.0" y1="53.2" x2="283.0" y2="30.1"/>
+            <line class="pv-edge" x1="250.0" y1="53.2" x2="346.0" y2="53.2"/>
+            <line class="pv-edge" x1="283.0" y1="154.9" x2="283.0" y2="30.1"/>
+            <line class="pv-edge" x1="283.0" y1="154.9" x2="379.0" y2="154.9"/>
+            <line class="pv-edge" x1="283.0" y1="30.1" x2="379.0" y2="30.1"/>
+            <line class="pv-edge" x1="346.0" y1="178.0" x2="346.0" y2="53.2"/>
+            <line class="pv-edge" x1="346.0" y1="178.0" x2="379.0" y2="154.9"/>
+            <line class="pv-edge" x1="346.0" y1="53.2" x2="379.0" y2="30.1"/>
+            <line class="pv-edge" x1="379.0" y1="154.9" x2="379.0" y2="30.1"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="314.5" y2="166.4"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="314.5" y2="41.6"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="266.5" y2="104.0"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="362.5" y2="104.0"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="298.0" y2="115.6"/>
+            <line class="pv-bond" x1="314.5" y1="104.0" x2="331.0" y2="92.5"/>
+            <circle class="pv-ba" cx="283.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="283.0" cy="30.1" r="11"/>
+            <circle class="pv-ba" cx="379.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="379.0" cy="30.1" r="11"/>
+            <circle class="pv-o" cx="331.0" cy="92.5" r="6.5"/>
+            <circle class="pv-o" cx="314.5" cy="166.4" r="6.5"/>
+            <circle class="pv-o" cx="314.5" cy="41.6" r="6.5"/>
+            <circle class="pv-o" cx="266.5" cy="104.0" r="6.5"/>
+            <circle class="pv-o" cx="362.5" cy="104.0" r="6.5"/>
+            <circle class="pv-ti" cx="314.5" cy="104.0" r="8"/>
+            <circle class="pv-ba" cx="250.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="250.0" cy="53.2" r="11"/>
+            <circle class="pv-ba" cx="346.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="346.0" cy="53.2" r="11"/>
+            <circle class="pv-o" cx="298.0" cy="115.6" r="6.5"/>
+            <line class="pv-str" x1="397.0" y1="150.9" x2="397.0" y2="34.1" marker-start="url(#pvarr)" marker-end="url(#pvarr)"/>
+            <text class="pv-t" x="314.5" y="208.0" text-anchor="middle">gestreckt</text>
+            <text class="pv-s" x="314.5" y="226.0" text-anchor="middle">4/<tspan font-style="italic">mmm</tspan></text>
+            <line class="pv-edge" x1="470.0" y1="178.0" x2="470.0" y2="53.2"/>
+            <line class="pv-edge" x1="470.0" y1="178.0" x2="503.0" y2="154.9"/>
+            <line class="pv-edge" x1="470.0" y1="178.0" x2="566.0" y2="178.0"/>
+            <line class="pv-edge" x1="470.0" y1="53.2" x2="503.0" y2="30.1"/>
+            <line class="pv-edge" x1="470.0" y1="53.2" x2="566.0" y2="53.2"/>
+            <line class="pv-edge" x1="503.0" y1="154.9" x2="503.0" y2="30.1"/>
+            <line class="pv-edge" x1="503.0" y1="154.9" x2="599.0" y2="154.9"/>
+            <line class="pv-edge" x1="503.0" y1="30.1" x2="599.0" y2="30.1"/>
+            <line class="pv-edge" x1="566.0" y1="178.0" x2="566.0" y2="53.2"/>
+            <line class="pv-edge" x1="566.0" y1="178.0" x2="599.0" y2="154.9"/>
+            <line class="pv-edge" x1="566.0" y1="53.2" x2="599.0" y2="30.1"/>
+            <line class="pv-edge" x1="599.0" y1="154.9" x2="599.0" y2="30.1"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="534.5" y2="166.4"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="534.5" y2="41.6"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="486.5" y2="104.0"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="582.5" y2="104.0"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="518.0" y2="115.6"/>
+            <line class="pv-bond" x1="534.5" y1="90.0" x2="551.0" y2="92.5"/>
+            <circle class="pv-ba" cx="503.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="503.0" cy="30.1" r="11"/>
+            <circle class="pv-ba" cx="599.0" cy="154.9" r="11"/>
+            <circle class="pv-ba" cx="599.0" cy="30.1" r="11"/>
+            <circle class="pv-o" cx="551.0" cy="92.5" r="6.5"/>
+            <circle class="pv-o" cx="534.5" cy="166.4" r="6.5"/>
+            <circle class="pv-o" cx="534.5" cy="41.6" r="6.5"/>
+            <circle class="pv-o" cx="486.5" cy="104.0" r="6.5"/>
+            <circle class="pv-o" cx="582.5" cy="104.0" r="6.5"/>
+            <circle class="pv-ti" cx="534.5" cy="90.0" r="8"/>
+            <circle class="pv-ba" cx="470.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="470.0" cy="53.2" r="11"/>
+            <circle class="pv-ba" cx="566.0" cy="178.0" r="11"/>
+            <circle class="pv-ba" cx="566.0" cy="53.2" r="11"/>
+            <circle class="pv-o" cx="518.0" cy="115.6" r="6.5"/>
+            <line class="pv-pol" x1="617.0" y1="140.9" x2="617.0" y2="40.1" marker-end="url(#pvarr2)"/>
+            <text class="pv-p" x="626.0" y="97.5"><tspan font-style="italic">P</tspan></text>
+            <text class="pv-t" x="534.5" y="208.0" text-anchor="middle">polarisiert</text>
+            <text class="pv-s" x="534.5" y="226.0" text-anchor="middle">4<tspan font-style="italic">mm</tspan></text>
+            <g class="pv-leg"><circle class="pv-ba" cx="210" cy="246" r="7"/><text x="222" y="250">Ba</text><circle class="pv-ti" cx="275" cy="246" r="6"/><text x="286" y="250">Ti</text><circle class="pv-o" cx="333" cy="246" r="5"/><text x="343" y="250">O</text></g>
+            </svg>
+          </div>
+          <figcaption><b>Abb. 8.5</b> Elementarzelle von BaTiO₃ (Perowskitstruktur), Verzerrung und Verschiebung stark übertrieben. Links kubisch (<i>m</i>3̄<i>m</i>), Mitte entlang <i>c</i> gestreckt, Ti in der Mitte (4/<i>mmm</i>, Doppelpfeil: Streckung ohne Richtungssinn), rechts zusätzlich Ti nach oben verschoben (4<i>mm</i>, Pfeil: Polarisation <i>P</i>). Gestrichelt die Verbindungen vom Ti zu den sechs O des Oktaeders.</figcaption>
+        </figure>
+        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 8.6), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 3.2b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 2.2): Oben und unten sind verschieden.</p>
         <div class="fig-row fig-row3">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4mm" data-alt="Punktgruppe 4mm mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.5a</b> 4<i>mm</i></figcaption>
+            <figcaption><b>Abb. 8.6a</b> 4<i>mm</i></figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mm2" data-alt="Punktgruppe mm2 mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
@@ -1072,7 +1204,7 @@ footer a { color: inherit; }
             <figcaption><b>c</b> 3<i>m</i></figcaption>
           </figure>
         </div>
-        <p class="fig-note"><b>Abb. 8.5</b> Bahn eines allgemeinen Pols in den polaren Punktgruppen (a) 4<i>mm</i> (8 Pole), (b) <i>mm</i>2 (4 Pole) und (c) 3<i>m</i> (6 Pole), die polare Achse jeweils als Projektionsrichtung; bezogen auf den Würfel liegt sie entlang [001], [110] bzw. [111]. Alle Pole liegen auf derselben Halbkugel.</p>
+        <p class="fig-note"><b>Abb. 8.6</b> Bahn eines allgemeinen Pols in den polaren Punktgruppen (a) 4<i>mm</i> (8 Pole), (b) <i>mm</i>2 (4 Pole) und (c) 3<i>m</i> (6 Pole), die polare Achse jeweils als Projektionsrichtung; bezogen auf den Würfel liegt sie entlang [001], [110] bzw. [111]. Alle Pole liegen auf derselben Halbkugel.</p>
         <div class="box merke">
           <h4>Merke</h4>
           <p>Eine Streckung erhält die Operationen, die die Streckrichtung als Gerade in sich überführen; beim Würfel behält die Restgruppe ihr Inversionszentrum. Eine Polarisation erhält nur die Operationen, die den Pfeil in sich überführen; die Restgruppe ist polar.</p>
@@ -1081,8 +1213,8 @@ footer a { color: inherit; }
 
       <section id="batio3">
         <h3>Ein Beispiel aus der Natur</h3>
-        <p>Bariumtitanat BaTiO₃ hat oberhalb von etwa 120 °C (rund 395 K) die kubische Perowskitstruktur: Ba auf den Ecken der Elementarzelle, Ti in ihrer Mitte, umgeben von einem Oktaeder aus sechs O-Atomen auf den Flächenmitten; Punktgruppe <i>m</i>3̄<i>m</i>. Kühlt man den Kristall ab, rückt das Ti um etwa 0,1 Å aus der Mitte des Oktaeders heraus. Die Schwerpunkte der positiven und negativen Ladungen fallen dann nicht mehr zusammen: Jede Zelle trägt ein elektrisches Dipolmoment, der Kristall eine <span class="term">spontane Polarisation</span>. Zugleich verformt sich die Zelle mit der Symmetrie einer Streckung entlang dieser Richtung, allerdings nur sehr wenig: Die Winkel ändern sich um Bruchteile eines Grades, viel weniger als in den Abbildungen dieses Kapitels.</p>
-        <p>Je nach Temperatur liegt die Polarisation entlang einer der drei Blickrichtungen des Würfels, genau wie in den drei Fällen dieses Kapitels. Die Verformung allein ergäbe 4/<i>mmm</i>, <i>mmm</i> bzw. 3̄<i>m</i>; die Verschiebung des Ti nimmt zusätzlich alle Operationen weg, die die Polarisationsrichtung umkehren, und führt auf die polaren Punktgruppen (Abb. 8.5). Die Phasen eines BaTiO₃-Einkristalls beim Abkühlen:</p>
+        <p>Bariumtitanat BaTiO₃ hat oberhalb von etwa 120 °C (rund 395 K) die kubische Perowskitstruktur: Ba auf den Ecken der Elementarzelle, Ti in ihrer Mitte, umgeben von einem Oktaeder aus sechs O-Atomen auf den Flächenmitten; Punktgruppe <i>m</i>3̄<i>m</i>. Kühlt man den Kristall ab, rückt das Ti um etwa 0,1 Å aus der Mitte des Oktaeders heraus (Abb. 8.5). Die Schwerpunkte der positiven und negativen Ladungen fallen dann nicht mehr zusammen: Jede Zelle trägt ein elektrisches Dipolmoment, der Kristall eine <span class="term">spontane Polarisation</span>. Zugleich verformt sich die Zelle mit der Symmetrie einer Streckung entlang dieser Richtung, allerdings nur sehr wenig: Die Winkel ändern sich um Bruchteile eines Grades, viel weniger als in den Abbildungen dieses Kapitels.</p>
+        <p>Je nach Temperatur liegt die Polarisation entlang einer der drei Blickrichtungen des Würfels, genau wie in den drei Fällen dieses Kapitels. Die Verformung allein ergäbe 4/<i>mmm</i>, <i>mmm</i> bzw. 3̄<i>m</i>; die Verschiebung des Ti nimmt zusätzlich alle Operationen weg, die die Polarisationsrichtung umkehren, und führt auf die polaren Punktgruppen (Abb. 8.6). Die Phasen eines BaTiO₃-Einkristalls beim Abkühlen:</p>
         <div class="tabwrap">
           <table class="tab">
             <thead><tr><th>Phase</th><th>Temperatur</th><th>Polarisation entlang</th><th>Punktgruppe</th><th>Verformung wie</th></tr></thead>

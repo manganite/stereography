@@ -6,10 +6,18 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-20
+
+Streckung entlang einer Blickrichtung (Würfel → Rhomboeder) und Skript-Kapitel 8 „Symmetrieändernde Verzerrungen“.
+
 ### Hinzugefügt
 
 - **Skript, Kapitel 8 „Symmetrieändernde Verzerrungen“:** Streckung des Würfels entlang ⟨100⟩, ⟨111⟩ und ⟨110⟩ mit Restgruppen 4/*mmm*, 3̄*m*, *mmm* (je Körper und Stereogramm über dem verbleibenden Symmetriegerüst), Unterschied zwischen Streckung und Polarisation (polare Gruppen 4*mm*, *mm*2, 3*m*) und als Beispiel aus der Natur die drei ferroelektrischen Phasen von BaTiO₃ mit Eigenschaften und Domänen. Ein Ausblick über den Stoff der Vorlesung hinaus, als Motivation gedacht.
 - **Streckung entlang einer Blickrichtung** (unter „Gitter und Gestalt“): Richtung aus jeder Blickrichtung des Kristallsystems (kubisch [001], [111], [110]; tetragonal [001], [100], [110]; trigonal und hexagonal [001], [100], [210]; orthorhombisch a, b, c; monoklin b) und ein Faktor von 0,5 bis 2. Gitter und Kristall werden affin gestreckt oder gestaucht; die Infobox zeigt die verbleibende Punktgruppe und den Zerfall der Form, z. B. Würfel entlang [111]: m3̄m → 3̄m, Rhomboeder. Streckungen, die die Symmetrie erhalten (z. B. tetragonal entlang c), werden als solche benannt: Sie ändern nur Gitterparameter, die das System ohnehin freilässt. Ist die Restgruppe eines kubischen Kristalls trigonal, nennt die Infobox die hexagonalen Achsen (c ∥ [111], a₁ ∥ [11̄0], a₂ ∥ [011̄]), c/a und die Formen mit Namen und Indizes in hexagonalen Achsen (z. B. Würfel {100} → Rhomboeder {101} = {101̄1}; Oktaeder → Pinakoid {0001} + Rhomboeder {022̄1}). Die Streckung steht im Link (`str=111,1.3`); bei Beispielkristallen ist sie wie „Symmetrie brechen“ nicht verfügbar.
+
+### Behoben
+
+- „Flächensymmetrie zeigen“ bei erniedrigter Symmetrie: Zerfällt eine Form, erhält jetzt jede Teilform ihr Flächenmuster (bisher nur eine, auch bei „Symmetrie brechen“).
 
 ## [1.3.0] - 2026-10-19
 
@@ -90,7 +98,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/manganite/stereography/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/manganite/stereography/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/manganite/stereography/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/manganite/stereography/compare/v1.0.1...v1.1.0

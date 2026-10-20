@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { CATALOG } from '../js/forms.js';
 import { buildCrystal, LATTICE_DEFAULTS, SYSTEM_OF, STRETCH_DIRS, hexSettingOf } from '../js/polyhedra.js';
-import { createState, hashOf, applyHashTo, currentStretch } from '../js/scene.js';
+import { createState, hashOf, applyHashTo, currentStretch, breakModeOf, effectiveLat, freeLat, polyCrystal } from '../js/scene.js';
 
 const deg = Math.PI / 180;
 const build = (entryId, uvw, s, lat) => {
@@ -82,10 +82,9 @@ test('gestreckter Würfel = Rhomboeder {101̄1} in 3̄m1 mit c/a = s·√(3/2) (
 test('Restsymmetrie je Blickrichtung der Holoedrien', () => {
   const expect = {
     'm-3m:a34': { '001': '4/mmm', 111: '-3m', 110: 'mmm' },
-    '4/mmm:f14': { '001': null, 100: 'mmm', 110: 'mmm' },
-    '6/mmm:e31': { '001': null, 100: 'mmm', 210: 'mmm' },
-    '-3m1:c21': { '001': null, 100: '2/m', 210: '2/m' },
-    'mmm:g7': { 100: null, '010': null, '001': null },
+    '4/mmm:f14': { 100: 'mmm', 110: 'mmm' },
+    '6/mmm:e31': { 100: 'mmm', 210: 'mmm' },
+    '-3m1:c21': { 100: '2/m', 210: '2/m' },
   };
   for (const [id, m] of Object.entries(expect)) {
     const sys = SYSTEM_OF[CATALOG.find((e) => e.id === id).pg];
@@ -93,6 +92,13 @@ test('Restsymmetrie je Blickrichtung der Holoedrien', () => {
       const C = build(id, d.uvw, 1.3);
       assert.equal(C.reduced ? C.reduced.hm : null, m[d.id], `${id} entlang [${d.id}]`);
     }
+  }
+});
+
+test('angebotene Streckrichtungen ändern die Symmetrie jeder Form ihres Systems; ohne Richtung: orthorhombisch, monoklin, triklin', () => {
+  for (const sys of ['orthorhombisch', 'monoklin', 'triklin']) assert.equal(STRETCH_DIRS[sys].length, 0, sys);
+  for (const e of CATALOG) {
+    for (const d of STRETCH_DIRS[SYSTEM_OF[e.pg]]) assert.ok(build(e.id, d.uvw, 1.2).isReduced, `${e.id} entlang [${d.id}]`);
   }
 });
 
@@ -119,8 +125,15 @@ test('Link-Adresse: str=Richtung,Faktor hin und zurück; ungültige Werte werden
   const b = createState();
   applyHashTo(b, h, D);
   assert.equal(hashOf(b, D), h);
-  // Richtung eines anderen Systems, Faktor 1, Beispielkristall: keine Streckung
-  for (const bad of ['#m=form&sys=kubisch&f=m-3m:a34&str=210,1.3', '#m=form&sys=kubisch&f=m-3m:a34&str=111,1',
+  // str schaltet „Symmetrie brechen“ (Streckung) ein; Faktor 1 ist eine gültige Einstellung ohne Verzerrung
+  assert.equal(breakModeOf(a), 'stretch');
+  const one = createState();
+  applyHashTo(one, '#m=form&sys=kubisch&f=m-3m:a34&str=111,1', D);
+  assert.equal(breakModeOf(one), 'stretch');
+  assert.equal(currentStretch(one), null);
+  assert.match(hashOf(one, D), /br=1.*str=111,1(&|$)/);
+  // Richtung eines anderen Systems, symmetrieerhaltende Richtung, Beispielkristall, ungültiger Faktor: keine Streckung
+  for (const bad of ['#m=form&sys=kubisch&f=m-3m:a34&str=210,1.3', '#m=form&sys=tetragonal&f=4/mmm:f14&str=001,1.3',
     '#m=form&sys=kubisch&bsp=galenit&str=111,1.3', '#m=form&sys=kubisch&f=m-3m:a34&str=111,',
     '#m=form&sys=kubisch&f=m-3m:a34&str=111,-1', '#m=form&sys=kubisch&f=m-3m:a34&str=111,3', '#m=form&sys=kubisch&f=m-3m:a34&str=111,x']) {
     const c = createState();
@@ -139,4 +152,47 @@ test('Flächenmuster: jede Teilform erhält ein Muster, wenn die Form zerfällt'
   assert.equal(C.motifs.length, C.latOps.length * 2);
   const U = build('m-3m:b35', null, 1);
   assert.equal(U.motifs.length, U.latOps.length, 'ohne Verzerrung unverändert');
+});
+
+test('Symmetrie brechen: Streckung sperrt die Gitterregler und zeigt das gestreckte Gitter; „alle frei“ übernimmt es', () => {
+  const D = createState();
+  const st = createState();
+  applyHashTo(st, '#m=form&sys=tetragonal&f=4/mmm:f14&ca=1.5&str=110,1.2', D);
+  const eff = effectiveLat(st);
+  assert.ok(Math.abs(eff.ca - 1.5 / Math.sqrt((1.2 ** 2 + 1) / 2)) < 1e-9, 'c/a bezogen auf das gestreckte a');
+  assert.ok(Math.abs(eff.ga - 90) > 1, 'γ ≠ 90°');
+  assert.equal(st.poly.lats.tetragonal.ca, 1.5, 'unverzerrtes Gitter bleibt erhalten');
+  // Richtungswechsel: gleicher Faktor, gleiches unverzerrtes Gitter
+  st.poly.stretch.dir = '100';
+  const e100 = effectiveLat(st);
+  assert.ok(Math.abs(e100.ba - 1 / 1.2) < 1e-9 && Math.abs(e100.ga - 90) < 1e-9);
+  // Wechsel zu „alle frei“ (wie in main.js): freies Gitter = angezeigtes Gitter, Kristall unverändert
+  const before = polyCrystal(st, new Proxy({ form: [] }, { get: (o, k) => (k in o ? o[k] : '#000') })).faces.map((f) => f.normal.map((x) => x.toFixed(9)).join());
+  st.poly.freeLats.tetragonal = effectiveLat(st);
+  st.poly.breakMode = 'free';
+  assert.equal(breakModeOf(st), 'free');
+  const after = polyCrystal(st, new Proxy({ form: [] }, { get: (o, k) => (k in o ? o[k] : '#000') })).faces.map((f) => f.normal.map((x) => x.toFixed(9)).join());
+  assert.deepEqual(after, before);
+  // Link im Modus „alle frei“: Gitterparameter ohne str, br=1; zurückgelesen wieder „alle frei“
+  const h = hashOf(st, D);
+  assert.doesNotMatch(h, /str=/);
+  const back = createState();
+  applyHashTo(back, h, D);
+  assert.equal(breakModeOf(back), 'free');
+  assert.ok(Math.abs(freeLat(back).ba - 1 / 1.2) < 0.006);
+});
+
+test('Links und Zustand bis v1.4.0: br=1 bedeutet alle Gitterparameter frei; str ohne br schaltet die Streckung ein', () => {
+  const D = createState();
+  const a = createState();
+  applyHashTo(a, '#m=form&sys=kubisch&f=m-3m:a34&br=1&ba=1.2&ga=80', D);
+  assert.equal(breakModeOf(a), 'free');
+  assert.equal(freeLat(a).ba, 1.2);
+  assert.equal(effectiveLat(a).ga, 80);
+  assert.equal(a.poly.lats.kubisch.ba, 1, 'unverzerrtes Gitter kubisch');
+  const b = createState();
+  applyHashTo(b, '#m=form&sys=kubisch&f=m-3m:a34&str=001,1.3', D);
+  assert.ok(b.poly.broken);
+  assert.equal(breakModeOf(b), 'stretch');
+  assert.ok(Math.abs(effectiveLat(b).ca - 1.3) < 1e-9);
 });

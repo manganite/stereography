@@ -5,7 +5,7 @@
 import { POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, HEX_A, HEX_B } from './pointgroups.js';
 import {
   buildCrystal, zoneOf, zoneByUvw, zoneKey, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, SYSTEM_OF,
-  STRETCH_DIRS, stretchDir,
+  STRETCH_DIRS, stretchDir, constrainLattice, latticeFromParams, stretchLattice, paramsOfLattice,
 } from './polyhedra.js';
 import { CATALOG, formEig, entryById } from './forms.js';
 import { hklParts } from './format.js';
@@ -25,7 +25,10 @@ export function createState() {
       size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: false, tool: null,
       example: null, exScale: {}, // Beispielkristall und Faktoren der Formabstände
       zones: [], // gewählte Zonen (Werkzeug „Zone“) als 'u,v,w'
-      stretch: { dir: '', s: 1 }, // Streckung entlang einer Blickrichtung (Kennung aus STRETCH_DIRS, Faktor)
+      // Symmetrie brechen (broken): Art 'stretch' (Streckung entlang einer Blickrichtung, bezogen auf das
+      // unverzerrte Gitter lats) oder 'free' (alle Gitterparameter frei, eigenes Gitter freeLats)
+      breakMode: 'stretch', freeLats: {},
+      stretch: { dir: '', s: 1 }, // Streckung: Kennung aus STRETCH_DIRS, Faktor
     },
     view: { dirColors: true, wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
     selected: null,
@@ -122,14 +125,40 @@ export const exForms = (state, ex) => {
   return ex.forms.map((f, i) => (f.t != null ? { hkl: f.hkl, t: f.t * fs[i] } : { hkl: f.hkl, r: f.r * fs[i] }));
 };
 /**
- * Wirksame Streckung { id, uvw, cls, s } oder null (s = 1, Beispielkristall oder System ohne Blickrichtung).
- * Beispielkristalle werden nicht gestreckt (wie „Symmetrie brechen“).
+ * Art des Symmetriebruchs: null (Symmetrie bleibt), 'stretch' oder 'free'. Ohne Streckrichtung im System
+ * (orthorhombisch, monoklin, triklin) gibt es nur 'free'. Beispielkristalle: kein Symmetriebruch.
  */
+export function breakModeOf(state) {
+  if (!state.poly.broken || currentExample(state)) return null;
+  if (!STRETCH_DIRS[state.poly.system].length) return 'free';
+  return state.poly.breakMode === 'free' ? 'free' : 'stretch';
+}
+/** Eingestellte Streckung { id, uvw, cls, s } im Modus 'stretch' (auch bei s = 1), sonst null. */
+export function stretchSetting(state) {
+  if (breakModeOf(state) !== 'stretch') return null;
+  const d = stretchDir(state.poly.system, state.poly.stretch && state.poly.stretch.dir);
+  return d ? { ...d, s: state.poly.stretch.s } : null;
+}
+/** Wirksame Streckung (s ≠ 1) oder null. */
 export function currentStretch(state) {
-  const st = state.poly.stretch;
-  if (!st || currentExample(state) || !(Math.abs(st.s - 1) > 1e-9)) return null;
-  const d = stretchDir(state.poly.system, st.dir);
-  return d ? { ...d, s: st.s } : null;
+  const st = stretchSetting(state);
+  return st && Math.abs(st.s - 1) > 1e-9 ? st : null;
+}
+/** Gitter im Modus „alle frei“ (Startwert: unverzerrtes Gitter). */
+export const freeLat = (state) => {
+  const sys = state.poly.system;
+  if (!state.poly.freeLats || typeof state.poly.freeLats !== 'object') state.poly.freeLats = {};
+  if (!state.poly.freeLats[sys]) state.poly.freeLats[sys] = constrainLattice(currentLat(state), sys);
+  return state.poly.freeLats[sys];
+};
+/** Wirksame Gitterparameter (was die Gitterregler zeigen). */
+export function effectiveLat(state) {
+  const sys = state.poly.system;
+  const mode = breakModeOf(state);
+  if (mode === 'free') return { ...freeLat(state) };
+  const base = constrainLattice(currentLat(state), sys);
+  const st = currentStretch(state);
+  return st ? paramsOfLattice(stretchLattice(latticeFromParams(base), st.uvw, st.s)) : base;
 }
 export const currentLat = (state) => {
   const sys = state.poly.system;
@@ -176,10 +205,13 @@ export function hashOf(state, DEFAULTS) {
       if (fs.some((x) => Math.abs(x - 1) > 1e-6)) q.set('ab', fs.map((x) => String(Math.round(x * 100) / 100)).join(','));
     } else q.set('f', currentEntryId(state));
     if (state.poly.presetId !== orientationPresets(sys)[0].id) q.set('lage', state.poly.presetId);
-    const lat = currentLat(state), l0 = { ...LATTICE_DEFAULTS[sys], ...(ex ? ex.lat : {}) };
+    // Gitter: im Modus „alle frei“ das freie Gitter, sonst das unverzerrte (mit Streckung str=Richtung,Faktor)
+    const mode = breakModeOf(state);
+    const lat = mode === 'free' ? freeLat(state) : constrainLattice(currentLat(state), sys);
+    const l0 = { ...LATTICE_DEFAULTS[sys], ...(ex ? ex.lat : {}) };
     for (const k of LAT_KEYS) if (Math.abs(lat[k] - l0[k]) > 1e-6) q.set(k, String(Math.round(lat[k] * 100) / 100));
     bools(URL_FORM, state.poly, d.poly);
-    const st = currentStretch(state);
+    const st = stretchSetting(state);
     if (st) q.set('str', st.id + ',' + String(Math.round(st.s * 100) / 100));
     if (Math.abs(state.poly.auxDist - d.poly.auxDist) > 1e-6) q.set('abstand', String(state.poly.auxDist));
     if (Math.abs(state.poly.size - d.poly.size) > 1e-6) q.set('gr', String(state.poly.size));
@@ -219,15 +251,27 @@ export function applyHashTo(state, hash, DEFAULTS) {
       const v = k === 'ba' || k === 'ca' ? num(q.get(k), 0.25, 3) : num(q.get(k), 60, 150);
       if (v != null) lat[k] = v;
     }
-    state.poly.lats[state.poly.system] = lat;
     bools(URL_FORM, state.poly);
-    // str=<Richtung>,<Faktor>, z. B. str=111,1.3 (Richtung als Gitterrichtung ohne Klammern)
-    // nur ohne Beispielkristall; Faktor ausserhalb 0,5 … 2 oder leer: Link ohne Streckung
+    // str=<Richtung>,<Faktor>, z. B. str=111,1.3 (Richtung als Gitterrichtung ohne Klammern): Symmetrie
+    // brechen durch Streckung (auch ohne br=1, Links aus v1.4.0). Nur ohne Beispielkristall; ungültige
+    // Richtung oder Faktor ausserhalb 0,5 … 2: keine Streckung.
+    let stretched = false;
     if (q.has('str') && !state.poly.example) {
       const [id, f] = q.get('str').split(',');
       const s = f != null && f.trim() !== '' ? Number(f) : NaN;
-      if (STRETCH_DIRS[state.poly.system].some((x) => x.id === id) && s >= 0.5 && s <= 2) state.poly.stretch = { dir: id, s };
+      if (STRETCH_DIRS[state.poly.system].some((x) => x.id === id) && s >= 0.5 && s <= 2) {
+        state.poly.stretch = { dir: id, s };
+        state.poly.broken = true;
+        stretched = true;
+      }
     }
+    // br=1 ohne gültige Streckung: alle Gitterparameter frei (Links bis v1.4.0 meinen genau das)
+    const sysNow = state.poly.system;
+    if (state.poly.broken && !state.poly.example && !stretched) {
+      state.poly.breakMode = 'free';
+      state.poly.freeLats = { [sysNow]: lat };
+    } else state.poly.breakMode = 'stretch';
+    state.poly.lats[sysNow] = constrainLattice(lat, sysNow);
     if (q.has('abstand')) state.poly.auxDist = num(q.get('abstand'), 0.3, 3) ?? state.poly.auxDist;
     if (q.has('gr')) state.poly.size = num(q.get('gr'), 0.3, 1.2) ?? state.poly.size;
     state.poly.tool = TOOL_IDS[q.get('w')] || null;
@@ -324,7 +368,9 @@ export function polyCrystal(state, col) {
   const ex = currentExample(state);
   const C = buildCrystal(ex
     ? { groupId: ex.pg, forms: exForms(state, ex), lat: currentLat(state), broken: false, auxDist: state.poly.auxDist, presetId: state.poly.presetId }
-    : { entryId: currentEntryId(state), lat: currentLat(state), broken: state.poly.broken, auxDist: state.poly.auxDist, presetId: state.poly.presetId, stretch: currentStretch(state) });
+    : breakModeOf(state) === 'free'
+      ? { entryId: currentEntryId(state), lat: freeLat(state), broken: true, auxDist: state.poly.auxDist, presetId: state.poly.presetId }
+      : { entryId: currentEntryId(state), lat: currentLat(state), broken: false, auxDist: state.poly.auxDist, presetId: state.poly.presetId, stretch: currentStretch(state) });
   C.example = ex;
   const oc = ORBIT_COLORS(col);
   const multi = C.isReduced && C.orbitsMain.length > 1;

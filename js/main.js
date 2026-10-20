@@ -74,6 +74,19 @@ try {
     if (!Array.isArray(state.poly.zones)) state.poly.zones = [];
     const st = state.poly.stretch;
     if (!st || typeof st !== 'object' || typeof st.dir !== 'string' || !(st.s >= 0.5 && st.s <= 2)) state.poly.stretch = { dir: '', s: 1 };
+    if (!state.poly.freeLats || typeof state.poly.freeLats !== 'object') state.poly.freeLats = {};
+    if (saved.poly && !('breakMode' in saved.poly)) {
+      // Zustand bis v1.4.0: „Symmetrie brechen“ bedeutete alle Gitterparameter frei, im Gitter selbst gespeichert
+      state.poly.breakMode = state.poly.broken ? 'free' : 'stretch';
+      if (state.poly.broken) {
+        for (const [sys, lat] of Object.entries(state.poly.lats || {})) {
+          if (!LATTICE_DEFAULTS[sys]) continue;
+          state.poly.freeLats[sys] = { ...lat };
+          state.poly.lats[sys] = constrainLattice(lat, sys);
+        }
+      }
+    }
+    if (state.poly.breakMode !== 'free') state.poly.breakMode = 'stretch';
   }
 } catch { /* Speicher nicht verfügbar */ }
 if (location.hash.length > 1) applyHash(location.hash); // Link hat Vorrang
@@ -220,7 +233,7 @@ function setExample(id) {
     state.poly.lats[ex.sys] = { ...LATTICE_DEFAULTS[ex.sys], ...(ex.lat || {}) };
     delete state.poly.exScale[ex.id];
     state.poly.broken = false; state.poly.open = false;
-    state.poly.stretch = { dir: '', s: 1 };
+    state.poly.stretch = { dir: '', s: 1 }; state.poly.breakMode = 'stretch';
     state.poly.presetId = orientationPresets(ex.sys)[0].id;
     $('poly-broken').checked = false; $('poly-open').checked = false;
   }
@@ -291,16 +304,37 @@ function refreshPolyControls() {
   buildFormSelect();
   buildExDists();
   $('row-broken').hidden = !!currentExample();
-  buildStretch();
   syncFormHint();
   const presets = orientationPresets(sys);
   $('preset-select').innerHTML = presets.map((p) => `<option value="${p.id}">${p.name}</option>`).join('');
   if (!presets.some((p) => p.id === state.poly.presetId)) state.poly.presetId = presets[0].id;
   $('preset-select').value = state.poly.presetId;
-  const free = new Set(state.poly.broken ? ['ba', 'ca', 'al', 'be', 'ga'] : FREE_PARAMS[sys]);
-  for (const k of ['ba', 'ca', 'al', 'be', 'ga']) $('row-lat-' + k).hidden = !free.has(k);
-  $('lat-fixed').hidden = free.size > 0;
   $('row-bravais').hidden = !isHexSystem(sys);
+  syncLattice();
+}
+
+/**
+ * Box „Gitter“: ohne Symmetriebruch nur die freien Parameter des Systems; mit Symmetriebruch alle
+ * Parameter, bei „Streckung“ gesperrt (sie zeigen das gestreckte Gitter), bei „Alle Parameter frei“ bedienbar.
+ */
+function syncLattice() {
+  const sys = state.poly.system;
+  const mode = S.breakModeOf(state);
+  const hasDirs = STRETCH_DIRS[sys].length > 0;
+  $('poly-broken').checked = !!state.poly.broken;
+  $('ctl-break').hidden = !mode;
+  $('break-mode').hidden = !hasDirs;
+  for (const b of $('break-mode').querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
+  $('ctl-stretch').hidden = mode !== 'stretch';
+  if (mode === 'stretch') buildStretch();
+  const free = new Set(mode ? ['ba', 'ca', 'al', 'be', 'ga'] : FREE_PARAMS[sys]);
+  for (const k of ['ba', 'ca', 'al', 'be', 'ga']) {
+    $('row-lat-' + k).hidden = !free.has(k);
+    $('lat-' + k).disabled = mode === 'stretch';
+  }
+  $('lat-fixed').hidden = free.size > 0;
+  $('lat-locked').hidden = mode !== 'stretch';
+  $('lat-title').hidden = !mode;
   syncLatSliders();
 }
 
@@ -308,7 +342,6 @@ function refreshPolyControls() {
 const stretchLabel = (d) => `[${d.id}]` + (/^[abc]$/.test(d.cls) ? ` = ${d.cls}` : `, Blickrichtung ${d.cls}`);
 function buildStretch() {
   const dirs = STRETCH_DIRS[state.poly.system];
-  $('ctl-stretch').hidden = !!currentExample() || !dirs.length;
   if (!dirs.length) return;
   $('stretch-dir').innerHTML = dirs.map((d) => `<option value="${d.id}">${stretchLabel(d)}</option>`).join('');
   $('stretch-dir').value = stretchDir(state.poly.system, state.poly.stretch.dir).id;
@@ -320,7 +353,7 @@ function syncStretch() {
 }
 
 function syncLatSliders() {
-  const lat = state.poly.broken ? currentLat() : constrainLattice(currentLat(), state.poly.system);
+  const lat = S.effectiveLat(state);
   for (const k of ['ba', 'ca', 'al', 'be', 'ga']) {
     $('lat-' + k).value = lat[k];
     $('lat-' + k + '-out').textContent = k.length === 2 && k !== 'ba' && k !== 'ca' ? lat[k].toFixed(0) + '°' : lat[k].toFixed(2);
@@ -692,8 +725,8 @@ function updateInfoPoly(C, col) {
       broken = `<div class="warnbox"><strong>Symmetrie erniedrigt: ${hmHTML(g.hm)} → ${hmHTML(C.reduced.hm)}</strong>${ax}
         ${st ? `<p>${stText}.</p>` : ''}
         <p>${C.orbitsMain.length > 1 ? `Die Form ${brace(e.hkl)} zerfällt in ${C.orbitsMain.length} Formen:` : `Die Form ${brace(e.hkl)} bleibt eine Form der Restsymmetrie:`}</p><ul class="auxlist">${parts}</ul>${hexNote}</div>`;
-    } else if (st && !state.poly.broken) {
-      broken = `<div class="okbox">Die ${stText} erhält die Punktgruppe ${hmHTML(g.hm)}. Sie ändert nur Gitterparameter, die im ${SYSTEM_NAMES[C.sys].toLowerCase()}en System ohnehin frei sind (siehe Gitter).</div>`;
+    } else if (S.breakModeOf(state) === 'stretch' && !st) {
+      broken = `<div class="okbox">Faktor 1: Der Kristall ist unverzerrt, die Punktgruppe ${hmHTML(g.hm)} bleibt. Mit dem Faktor streckt oder staucht man ihn entlang der gewählten Richtung.</div>`;
     } else {
       broken = `<div class="okbox">Die Verzerrung erhält die Punktgruppe ${hmHTML(g.hm)}.</div>`;
     }
@@ -770,7 +803,7 @@ function updateInfoPoly(C, col) {
     ${ex.note ? `<p class="note">${ex.note.replace(/\{hkl:(-?\d+),(-?\d+),(-?\d+)\}/g, (_, h, k, l) => brace([+h, +k, +l]))}</p>` : ''}
     ${sel}
     ${aux}
-    <p class="note">Quelle: ${ex.src}. Die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt, nicht gemessen; sie lassen sich unter „Gitter und Gestalt“ ändern.</p>
+    <p class="note">Quelle: ${ex.src}. Die Abstände der Formen (und damit der Habitus) sind nach den Abbildungen gewählt, nicht gemessen; sie lassen sich unter „Gestalt“ ändern.</p>
     ${explain(`${state.poly.faceSym ? '<p class="note">Die dunklen Dreiecke zeigen auf jeder Form die Flächensymmetrie, die sie in dieser Punktgruppe hat.</p>' : ''}${habitNote}`)}`);
     return;
   }
@@ -1034,7 +1067,7 @@ function setMode(mode) {
   $('tab-pg').setAttribute('aria-selected', String(mode === 'pg'));
   $('tab-poly').setAttribute('aria-selected', String(mode === 'poly'));
   for (const id of ['ctl-pg', 'ctl-pg-opts']) $(id).hidden = mode !== 'pg';
-  for (const id of ['ctl-poly', 'ctl-poly-lat', 'row-normals', 'v3d-tools']) $(id).hidden = mode !== 'poly';
+  for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-shape', 'row-normals', 'v3d-tools']) $(id).hidden = mode !== 'poly';
   $('stereo-tools').hidden = false;
   syncToolBtns();
   if (mode !== 'poly') $('v3d-hint').textContent = '';
@@ -1067,7 +1100,7 @@ function init() {
   buildSystemSelect();
   $('sys-select').addEventListener('change', (e) => {
     state.poly.system = e.target.value; state.poly.example = null; state.selected = null; state.zoneSel = []; state.poly.zones = [];
-    state.poly.stretch = { dir: '', s: 1 };
+    state.poly.stretch = { dir: '', s: 1 }; state.poly.breakMode = 'stretch';
     refreshPolyControls(); render();
   });
   $('form-select').addEventListener('change', (e) => {
@@ -1080,8 +1113,10 @@ function init() {
   $('preset-select').addEventListener('change', (e) => { state.poly.presetId = e.target.value; render(); });
   for (const k of ['ba', 'ca', 'al', 'be', 'ga']) {
     $('lat-' + k).addEventListener('input', (ev) => {
-      const lat = currentLat();
-      if (!state.poly.broken) Object.assign(lat, constrainLattice(lat, state.poly.system));
+      const mode = S.breakModeOf(state);
+      if (mode === 'stretch') return; // gesperrt: das Gitter legt die Streckung fest
+      const lat = mode === 'free' ? S.freeLat(state) : currentLat();
+      if (!mode) Object.assign(lat, constrainLattice(lat, state.poly.system));
       lat[k] = Number(ev.target.value);
       syncLatSliders(); render();
     });
@@ -1089,23 +1124,37 @@ function init() {
   $('poly-broken').checked = state.poly.broken;
   $('poly-broken').addEventListener('change', (ev) => {
     state.poly.broken = ev.target.checked;
-    const sys = state.poly.system;
-    state.poly.lats[sys] = constrainLattice(currentLat(), sys);
-    refreshPolyControls(); render();
+    syncLattice(); render();
   });
-  $('stretch-dir').addEventListener('change', (ev) => { state.poly.stretch.dir = ev.target.value; render(); });
+  // Art des Symmetriebruchs: von „Streckung“ zu „Alle Parameter frei“ geht es mit dem gerade gezeigten Gitter weiter
+  for (const b of $('break-mode').querySelectorAll('button')) {
+    b.addEventListener('click', () => {
+      const to = b.dataset.mode;
+      if (to === S.breakModeOf(state)) return;
+      if (to === 'free') state.poly.freeLats[state.poly.system] = S.effectiveLat(state);
+      state.poly.breakMode = to;
+      syncLattice(); render();
+    });
+  }
+  $('stretch-dir').addEventListener('change', (ev) => { state.poly.stretch.dir = ev.target.value; syncLatSliders(); render(); });
   $('stretch-s').addEventListener('input', (ev) => {
     state.poly.stretch.dir = $('stretch-dir').value;
     state.poly.stretch.s = Number(ev.target.value);
-    syncStretch(); render();
+    syncStretch(); syncLatSliders(); render();
   });
-  $('poly-reset').addEventListener('click', () => {
+  $('lat-reset').addEventListener('click', () => {
     const ex = currentExample();
-    state.poly.lats[state.poly.system] = { ...LATTICE_DEFAULTS[state.poly.system], ...(ex ? ex.lat : {}) };
-    state.poly.stretch.s = 1; syncStretch();
+    const sys = state.poly.system;
+    state.poly.lats[sys] = { ...LATTICE_DEFAULTS[sys], ...(ex ? ex.lat : {}) };
+    delete state.poly.freeLats[sys];
+    state.poly.stretch.s = 1;
+    syncLattice(); render();
+  });
+  $('shape-reset').addEventListener('click', () => {
+    const ex = currentExample();
     if (ex) delete state.poly.exScale[ex.id];
     state.poly.auxDist = 1; state.poly.size = 0.75;
-    syncLatSliders(); syncSliders(); buildExDists(); render();
+    syncSliders(); buildExDists(); render();
   });
   bindCheck('poly-open', state.poly, 'open');
   bindRange('poly-aux', state.poly, 'auxDist', (v) => v.toFixed(2));

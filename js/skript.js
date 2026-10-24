@@ -84,7 +84,7 @@ async function render3d(fig, col) {
     v.showPointGroup(
       { ...info, orbit: st0.pg.showObject ? orb : null, p0, crystalAxes: crystalAxesFor(info.hex) },
       col,
-      { showElements: st0.pg.showElements, showObject: st0.pg.showObject, showRays: st0.view.rays, showSphere: st0.view.sphere, showPlane: st0.view.plane, showAxes: st0.view.axes,
+      { showElements: st0.pg.showElements, showObject: st0.pg.showObject, showPoles: st0.pg.showPoles, showRays: st0.view.rays, showSphere: st0.view.sphere, showGlobe: st0.view.globe, showPlane: st0.view.plane, showAxes: st0.view.axes,
         dirColors: st0.view.dirColors ? col.dir : null, hiddenDirs: new Set(st0.pg.hideDirs), arc: null },
     );
     return;
@@ -92,9 +92,9 @@ async function render3d(fig, col) {
   const { st, C, scene } = stereoFor(fig.dataset.app, col);
   v.setStereoTexture(buildSVG(scene, { standalone: true }).full);
   // data-labels="aus": Indizes nur in dieser Abbildung ausblenden (der Link in die App behält sie)
-  const labels = st.poly.labels && fig.dataset.labels !== 'aus' ? C.faces.map((f) => hklHTML(f.hkl, C.hex && st.poly.bravais)) : null;
+  const labels = st.poly.labels && st.poly.showPoles && fig.dataset.labels !== 'aus' ? C.faces.map((f) => hklHTML(f.hkl, C.hex && st.poly.bravais)) : null;
   v.showPolyhedron(C, col, {
-    showRays: st.view.rays, showSphere: st.view.sphere, showPlane: st.view.plane, showAxes: st.view.axes, showNormals: st.view.normals,
+    showPoles: st.poly.showPoles, showRays: st.view.rays, showSphere: st.view.sphere, showGlobe: st.view.globe, showPlane: st.view.plane, showAxes: st.view.axes, showNormals: st.view.normals,
     size: st.poly.size, planeOpacity: 0.55, motifs: null, zones: C.selZones, arc: null, picked: [],
   }, null, labels);
 }

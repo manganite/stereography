@@ -2,7 +2,7 @@
 // Szenen für das Stereogramm (buildSVG). Ohne Zugriff auf Bedienelemente; die App setzt die Auswahl,
 // das Skript erzeugt aus einer Link-Adresse dieselbe Abbildung wie die App.
 
-import { POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, HEX_A, HEX_B } from './pointgroups.js';
+import { POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart, HEX_A, HEX_B } from './pointgroups.js';
 import {
   buildCrystal, zoneOf, zoneByUvw, zoneKey, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, SYSTEM_OF,
   STRETCH_DIRS, stretchDir, constrainLattice, latticeFromParams, stretchLattice, paramsOfLattice,
@@ -19,10 +19,10 @@ const deg = Math.PI / 180;
 export function createState() {
   return {
     mode: 'pg',
-    pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, theta: 59, phi: 75.5, colorful: false, hideDirs: [], tool: null },
+    pg: { id: 'mm2', monoAxis: 'b', famPref: {}, showElements: true, showObject: true, showPoles: true, theta: 59, phi: 75.5, colorful: false, hideDirs: [], tool: null },
     poly: {
       system: 'kubisch', entryBySys: {}, presetId: '001', lats: {}, broken: false, open: false, auxDist: 1,
-      size: 0.75, labels: true, showLower: true, bravais: false, frame: false, faceSym: false, tool: null,
+      size: 0.75, labels: true, showPoles: true, showLower: true, bravais: false, frame: false, faceSym: false, tool: null,
       example: null, exScale: {}, // Beispielkristall und Faktoren der Formabstände
       zones: [], // gewählte Zonen (Werkzeug „Zone“) als 'u,v,w'
       // Symmetrie brechen (broken): Art 'stretch' (Streckung entlang einer Blickrichtung, bezogen auf das
@@ -30,7 +30,7 @@ export function createState() {
       breakMode: 'stretch', freeLats: {},
       stretch: { dir: '', s: 1 }, // Streckung: Kennung aus STRETCH_DIRS, Faktor
     },
-    view: { dirColors: true, wulff: false, wulffRot: 0, axes: false, sphere: true, plane: true, rays: true, normals: true },
+    view: { dirColors: true, wulff: false, wulffRot: 0, axes: false, sphere: true, globe: true, plane: true, rays: true, normals: true },
     selected: null,
     zoneSel: [],
     pgSel: [], // Punktgruppenmodus: gewählte Pole (Werkzeug Winkel)
@@ -171,10 +171,10 @@ export const B = (v) => (v ? '1' : '0');
 export const isOn = (s) => s === '1' || s === 'ja' || s === 'true';
 export const num = (s, lo, hi) => { const x = Number(s); return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : null; };
 export const URL_VIEW = [
-  ['farbe', 'dirColors'], ['wulff', 'wulff'], ['achsen', 'axes'], ['kugel', 'sphere'], ['ebene', 'plane'], ['strahlen', 'rays'], ['normalen', 'normals'],
+  ['farbe', 'dirColors'], ['wulff', 'wulff'], ['achsen', 'axes'], ['kugel', 'sphere'], ['ns', 'globe'], ['ebene', 'plane'], ['strahlen', 'rays'], ['normalen', 'normals'],
 ];
-export const URL_PG = [['el', 'showElements'], ['obj', 'showObject'], ['hand', 'colorful']];
-export const URL_FORM = [['br', 'broken'], ['offen', 'open'], ['idx', 'labels'], ['unten', 'showLower'], ['hkil', 'bravais'], ['geruest', 'frame'], ['muster', 'faceSym']];
+export const URL_PG = [['el', 'showElements'], ['obj', 'showObject'], ['pole', 'showPoles'], ['hand', 'colorful']];
+export const URL_FORM = [['br', 'broken'], ['offen', 'open'], ['pole', 'showPoles'], ['idx', 'labels'], ['unten', 'showLower'], ['hkil', 'bravais'], ['geruest', 'frame'], ['muster', 'faceSym']];
 export const LAT_KEYS = ['ba', 'ca', 'al', 'be', 'ga'];
 export const TOOL_NAMES = { zone: 'zone', angle: 'winkel' };
 export const TOOL_IDS = { zone: 'zone', winkel: 'angle' };
@@ -336,7 +336,8 @@ export function pgScene(state, col, env = {}) {
   const orb = orbit(info.ops, p0);
   const axisAlongZ = info.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
   const classes = symmetryDirections(info);
-  const sel = state.pg.tool && state.pg.showObject ? state.pgSel.filter((k) => k < orb.length) : [];
+  const polesOn = pgPolesOn(state);
+  const sel = state.pg.tool && polesOn ? state.pgSel.filter((k) => k < orb.length) : [];
   const pgAngle = sel.length === 2 ? angleOf(orb[sel[0]].p, orb[sel[1]].p) : null;
   // Farbe nach Blickrichtung (Position im vollen HM-Symbol) oder einheitlich schwarz wie in ITA
   const dcol = (k) => (state.view.dirColors && k >= 0 ? col.dir[k] : null);
@@ -350,7 +351,7 @@ export function pgScene(state, col, env = {}) {
     axes: state.pg.showElements ? info.axes.map((a) => ({ ...a, color: dcol(a.cls) })) : [],
     centreAtOrigin: state.pg.showElements && info.centro && !axisAlongZ,
     zones: state.pg.showElements && info.system === 'kubisch' ? CUBIC_ZONES : [],
-    poles: state.pg.showObject ? orb.map((o, i) => ({ p: o.p, det: o.det, idx: i, gen: i === 0, selected: sel.includes(i) })) : [],
+    poles: polesOn ? orb.map((o, i) => ({ p: o.p, det: o.det, idx: i, gen: i === 0, selected: sel.includes(i) })) : [],
     hitR: env.hitR ?? 13,
     arc: pgAngle ? { a: pgAngle.a, b: pgAngle.b, label: pgAngle.deg.toFixed(1) + '°' } : null,
     colorByDet: state.pg.colorful,
@@ -359,6 +360,11 @@ export function pgScene(state, col, env = {}) {
   };
   return { info, p0, orb, classes, sel, pgAngle, scene };
 }
+
+/** Punktgruppen: Pole sichtbar (Objekt in allgemeiner Lage und Flächenpole eingeschaltet). */
+export const pgPolesOn = (state) => !!(state.pg.showObject && state.pg.showPoles !== false);
+/** Kristallformen: Indizes sichtbar (nur mit Polen, Abschnitt „Kristallform“). */
+export const polyLabelsOn = (state) => !!(state.poly.labels && state.poly.showPoles !== false);
 
 /** Gespeicherte Zonenschlüssel lageunabhängig machen und Doppelte entfernen. */
 export const normalizeZones = (keys) => [...new Set(keys.map((k) => zoneKey(k.split(',').map(Number))))];
@@ -420,9 +426,9 @@ export function polyScene(state, C, col, env = {}) {
     zones: fw && C.sys === 'kubisch' && !C.isReduced ? C.zones : [],
     faint: true,
     centreAtOrigin: !!fw && fw.centro && !fw.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6),
-    poles: C.faces.map((f, i) => (f.hidden ? null : {
+    poles: !state.poly.showPoles ? [] : C.faces.map((f, i) => (f.hidden ? null : {
       p: f.normal, det: 1, idx: i, color: f.color2d, aux: f.role === 'aux',
-      label: state.poly.labels ? hklParts(f.hkl, hex4) : null, selected: state.selected === i || state.zoneSel.includes(i), zoneColors: zoneColorsOf(i),
+      label: polyLabelsOn(state) ? hklParts(f.hkl, hex4) : null, selected: state.selected === i || state.zoneSel.includes(i), zoneColors: zoneColorsOf(i),
     })).filter(Boolean),
     showLower: state.poly.showLower,
     hitR: env.hitR ?? 13,
@@ -433,3 +439,49 @@ export function polyScene(state, C, col, env = {}) {
   };
   return { scene, fwClasses, hex4 };
 }
+
+// ------------------------------------------------------------------ Ansichten der 3D-Konstruktion
+/**
+ * Ansichten entlang der Blickrichtungen des Kristallsystems (Positionen im vollen Hermann-Mauguin-Symbol),
+ * je Richtungsfamilie die Gitterrichtungen in bevorzugter Reihenfolge. Triklin hat keine Blickrichtung:
+ * dort die Kristallachsen a, b, c (pos −1).
+ */
+export const VIEW_FAMILIES = {
+  triklin: [{ pos: -1, uvw: [[1, 0, 0]] }, { pos: -1, uvw: [[0, 1, 0]] }, { pos: -1, uvw: [[0, 0, 1]] }],
+  monoklin: [{ pos: 0, uvw: [[1, 0, 0]] }, { pos: 1, uvw: [[0, 1, 0]] }, { pos: 2, uvw: [[0, 0, 1]] }],
+  orthorhombisch: [{ pos: 0, uvw: [[1, 0, 0]] }, { pos: 1, uvw: [[0, 1, 0]] }, { pos: 2, uvw: [[0, 0, 1]] }],
+  tetragonal: [{ pos: 0, fam: '[001]', uvw: [[0, 0, 1]] }, { pos: 1, fam: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0]] }, { pos: 2, fam: '⟨110⟩', uvw: [[1, 1, 0], [1, -1, 0]] }],
+  trigonal: [{ pos: 0, fam: '[001]', uvw: [[0, 0, 1]] }, { pos: 1, fam: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0], [1, 1, 0]] }, { pos: 2, fam: '⟨210⟩', uvw: [[2, 1, 0], [1, 2, 0], [1, -1, 0]] }],
+  kubisch: [
+    { pos: 0, fam: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] },
+    { pos: 1, fam: '⟨111⟩', uvw: [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1]] },
+    { pos: 2, fam: '⟨110⟩', uvw: [[1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]] },
+  ],
+};
+VIEW_FAMILIES.hexagonal = VIEW_FAMILIES.trigonal;
+
+/**
+ * Drei Ansichten für die 3D-Konstruktion: je Familie die Richtung parallel zur Projektionsrichtung
+ * (Blick wie im Stereogramm), sonst eine senkrecht dazu (seitlicher Blick, Äquatorebene von der Kante),
+ * sonst die erste. Der Betrachter sitzt auf der oberen Seite (Weltrichtung mit z ≥ 0).
+ * toWorld: Gitterrichtung → Weltrichtung. Rückgabe: [{ pos, fam, uvw, dir (Einheitsvektor), along }],
+ * along: 'proj' (∥ Projektionsrichtung), 'side' (⊥) oder null.
+ */
+export function viewDirections(system, toWorld) {
+  const fams = VIEW_FAMILIES[system] || VIEW_FAMILIES.triklin;
+  return fams.map((f) => {
+    const cands = f.uvw.map((u) => ({ u, w: normalize(toWorld(u)) }));
+    const pick = cands.find((c) => Math.abs(c.w[2]) > 1 - 1e-6) || cands.find((c) => Math.abs(c.w[2]) < 1e-6) || cands[0];
+    const flip = pick.w[2] < -1e-9;
+    const uvw = flip ? pick.u.map((x) => (x === 0 ? 0 : -x)) : pick.u;
+    const dir = flip ? pick.w.map((x) => -x) : pick.w;
+    const along = Math.abs(dir[2]) > 1 - 1e-6 ? 'proj' : Math.abs(dir[2]) < 1e-6 ? 'side' : null;
+    return { pos: f.pos, fam: f.fam || null, uvw, dir, along };
+  });
+}
+
+/** Ansichten im Punktgruppenmodus (Welt = kartesisches Kristallsystem, c ∥ z). */
+export const pgViewDirections = (state) => viewDirections(groupOf(state.pg.id).system, latticeToCart(groupOf(state.pg.id).system));
+
+/** Ansichten eines Kristalls (Welt = Bildschirmsystem der Lage: O·A). */
+export const polyViewDirections = (C) => viewDirections(C.sys, (u) => mulVec(C.O, mulVec(C.A, u)));

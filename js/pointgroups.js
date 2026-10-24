@@ -234,7 +234,7 @@ function directionPositions(system) {
   }
 }
 /** Gitterrichtung → kartesisch im Koordinatensystem dieser Datei (a ∥ x bzw. HEX_A, b ∥ y, c ∥ z). */
-function latticeToCart(system) {
+export function latticeToCart(system) {
   const hex = system === 'trigonal' || system === 'hexagonal';
   const a = hex ? HEX_A : X, b = hex ? HEX_B : Y;
   return (u) => add(add(scale(a, u[0]), scale(b, u[1])), scale(Z, u[2]));

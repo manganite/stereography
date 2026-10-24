@@ -311,6 +311,7 @@ function refreshPolyControls() {
   if (!presets.some((p) => p.id === state.poly.presetId)) state.poly.presetId = presets[0].id;
   $('preset-select').value = state.poly.presetId;
   $('row-bravais').hidden = !isHexSystem(sys);
+  $('sec-more').querySelector('.subhint').textContent = isHexSystem(sys) ? '(hkil), Flächensymmetrie' : 'Flächensymmetrie';
   syncLattice();
 }
 
@@ -448,11 +449,21 @@ function updateDirChips(classes, col) {
 /** Bedienelemente, die nur mit Polen wirken: gesperrt (nicht abgewählt), solange die Pole fehlen. */
 function syncDependentChecks() {
   const pg = state.mode === 'pg';
-  $('pg-poles').disabled = !state.pg.showObject;
-  $('pg-colorful').disabled = !pgPolesOn(state);
-  $('poly-labels').disabled = !state.poly.showPoles;
-  $('poly-lower').disabled = !state.poly.showPoles;
-  $('v-rays').disabled = pg ? !pgPolesOn(state) : !state.poly.showPoles;
+  const OBJ = 'nur mit „Objekt in allgemeiner Lage“', POLES = 'nur mit Flächenpolen';
+  const pgWhy = !state.pg.showObject ? OBJ : !state.pg.showPoles ? POLES : '';
+  // Grund einer Sperre sichtbar unter dem Schalter (er steht oft in einem anderen Abschnitt als die Ursache)
+  const set = (id, why) => {
+    const el = $(id);
+    el.disabled = !!why;
+    const w = el.closest('.check').querySelector('.why');
+    if (w) w.textContent = why;
+  };
+  set('pg-poles', state.pg.showObject ? '' : OBJ);
+  $('pg-theta').disabled = $('pg-phi').disabled = !state.pg.showObject; // ρ, φ gehören zum Objekt
+  set('pg-colorful', pgWhy);
+  set('poly-labels', state.poly.showPoles ? '' : POLES + ' (unter „Darstellung“)');
+  set('poly-lower', state.poly.showPoles ? '' : POLES);
+  set('v-rays', pg ? pgWhy : state.poly.showPoles ? '' : POLES);
 }
 
 // ------------------------------------------------------------------ Ansichten der 3D-Konstruktion
@@ -703,7 +714,7 @@ function updateLegendPoly(C, col, fwClasses) {
   }
   const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
   if (!state.poly.showPoles) {
-    items.push(`<span class="lg hint">Flächenpole ausgeblendet${state.poly.tool ? ` · ${tn}: zwei Flächen in der 3D-Ansicht antippen` : ' · Fläche in der 3D-Ansicht antippen zum Hervorheben'}</span>`);
+    items.push(`<span class="lg hint">Flächenpole ausgeblendet (einblenden unter „Darstellung“)${state.poly.tool ? ` · ${tn}: zwei Flächen in der 3D-Ansicht antippen` : ' · Fläche in der 3D-Ansicht antippen zum Hervorheben'}</span>`);
   } else items.push(state.poly.tool
     ? `<span class="lg hint">${tn}: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen („${tn}“ erneut drücken: beenden)</span>`
     : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter (mit Werkzeug auch auf beide) · Werkzeuge „Zone“ und „Winkel“</span>');
@@ -754,7 +765,7 @@ function describeOp(M, classes, col, axes) {
 function pgAngleBox(info, orb, col, classes, pgAngle) {
   if (!state.pg.tool) return '';
   if (!state.pg.showObject) return '<div class="zonebox">Winkel messen: „Objekt in allgemeiner Lage“ einschalten.</div>';
-  if (!pgPolesOn(state)) return '<div class="zonebox">Winkel messen: „Flächenpole“ einschalten.</div>';
+  if (!pgPolesOn(state)) return '<div class="zonebox">Winkel messen: „Flächenpole“ unter „Darstellung“ einschalten.</div>';
   if (!pgAngle) return `<div class="zonebox">Winkel messen: ${state.pgSel.length ? 'einen zweiten Pol' : 'zwei Pole'} im Stereogramm antippen.</div>`;
   const [i, j] = state.pgSel;
   const A = info.ops[orb[i].op], B = info.ops[orb[j].op];
@@ -814,7 +825,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
     <div class="dirlist">${rows.join('')}</div>
     ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
     ${pgPolesOn(state) ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>`
-    : state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Objekte (${info.order - lower} oben, ${lower} unten). Die Flächenpole sind ausgeblendet; ρ und φ des Ausgangspols lassen sich weiter mit den Reglern einstellen.</p>` : ''}`);
+    : state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Objekte (${info.order - lower} oben, ${lower} unten). Die Flächenpole sind ausgeblendet (einblenden unter „Darstellung“); ρ und φ des Ausgangspols lassen sich weiter mit den Reglern einstellen.</p>` : ''}`);
 }
 
 function poleAngles(n) {
@@ -1234,7 +1245,8 @@ function setMode(mode) {
   $('tab-pg').setAttribute('aria-selected', String(mode === 'pg'));
   $('tab-poly').setAttribute('aria-selected', String(mode === 'poly'));
   for (const id of ['ctl-pg', 'ctl-pg-opts']) $(id).hidden = mode !== 'pg';
-  for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-shape', 'row-normals', 'v3d-tools']) $(id).hidden = mode !== 'poly';
+  for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-shape', 'row-normals', 'row-poly-poles', 'row-poly-lower', 'v3d-tools']) $(id).hidden = mode !== 'poly';
+  for (const id of ['row-pg-poles', 'row-pg-colorful']) $(id).hidden = mode !== 'pg';
   $('stereo-tools').hidden = false;
   syncToolBtns();
   if (mode !== 'poly') $('v3d-hint').textContent = '';
@@ -1411,6 +1423,12 @@ function init() {
   }
   // „Weitere Optionen“ öffnen, wenn dort etwas eingeschaltet ist (z. B. über einen Link)
   if (state.poly.faceSym || state.poly.bravais) $('sec-more').open = true;
+  // „Darstellung“ öffnen, wenn dort etwas vom Standard abweicht (z. B. Pole über einen Link ausgeblendet):
+  // sonst fände man nicht, warum das Bild anders aussieht
+  const viewChanged = Object.keys(DEFAULTS.view).some((k) => k !== 'wulffRot' && state.view[k] !== DEFAULTS.view[k])
+    || state.pg.showPoles !== DEFAULTS.pg.showPoles || state.pg.colorful !== DEFAULTS.pg.colorful
+    || state.poly.showPoles !== DEFAULTS.poly.showPoles || state.poly.showLower !== DEFAULTS.poly.showLower;
+  if (viewChanged && !$('sec-view').open) { $('sec-view').dataset.quiet = '1'; $('sec-view').open = true; } // nicht als Wahl des Nutzers merken
 
   // Erste Schritte: beim ersten Besuch ohne Link sichtbar, wegklickbar, über „?“ wieder zu öffnen
   const INTRO_KEY = 'stereo-intro';

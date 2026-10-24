@@ -234,6 +234,13 @@ select {
 .viewbar button:hover { border-color: var(--muted); border-left-color: var(--dc, var(--muted)); }
 .viewbar button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); border-left-color: var(--dc, var(--ink)); }
 .check:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
+.check .why:not(:empty) { display: block; font-size: 0.78rem; color: var(--muted); }
+/* Hinweis unter der Überschrift eingeklappter Abschnitte: was man dort findet */
+.sumlabel { flex-wrap: wrap; }
+.sumhint { order: 2; flex-basis: 100%; display: block; text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 0.78rem; margin-top: 2px; }
+.sect[open] > summary .sumhint { display: none; }
+.subhint { color: var(--muted); font-size: 0.78rem; }
+.subsect[open] > summary .subhint { display: none; }
 .panel-foot { padding: 6px 12px 8px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); font-style: italic; }
 .only-coarse { display: none; }
 @media (pointer: coarse) { .only-coarse { display: inline; } .only-fine { display: none; } }
@@ -418,12 +425,11 @@ footer a { color: inherit; }
           <label for="preset-select">Lage</label>
           <select id="preset-select"></select>
         </div>
-        <label class="check"><input type="checkbox" id="poly-poles">Flächenpole</label>
-        <label class="check sub"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
-        <label class="check sub"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
-        <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
+        <p class="group-title">Anzeigen</p>
+        <label class="check"><input type="checkbox" id="poly-labels"><span>Indizes (hkl)<span class="why"></span></span></label>
+        <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe (im Stereogramm)</label>
         <details class="subsect" id="sec-more">
-          <summary>Weitere Optionen</summary>
+          <summary>Weitere Optionen <span class="subhint">(hkil), Flächensymmetrie</span></summary>
           <div class="stack">
             <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
             <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster, alle Formen)</label>
@@ -438,8 +444,6 @@ footer a { color: inherit; }
         <div class="stack">
           <label class="check"><input type="checkbox" id="pg-elements">Symmetriegerüst</label>
           <label class="check"><input type="checkbox" id="pg-object">Objekt in allgemeiner Lage</label>
-          <label class="check sub"><input type="checkbox" id="pg-poles">Flächenpole</label>
-          <label class="check sub"><input type="checkbox" id="pg-colorful">Pole nach Händigkeit färben</label>
           <div class="range">
             <label for="pg-theta">Poldistanz ρ</label><output id="pg-theta-out"></output>
             <input type="range" id="pg-theta" min="1" max="179" step="1">
@@ -454,7 +458,7 @@ footer a { color: inherit; }
       </details>
 
       <details class="sect" id="ctl-poly-lat" hidden>
-        <summary>Gitter</summary>
+        <summary>Gitter<span class="sumhint">Achsenverhältnisse, Winkel, Symmetrie brechen</span></summary>
         <div class="stack">
           <label class="check" id="row-broken"><input type="checkbox" id="poly-broken">Symmetrie brechen</label>
           <div class="stack" id="ctl-break" hidden>
@@ -491,7 +495,7 @@ footer a { color: inherit; }
       </details>
 
       <details class="sect" id="ctl-poly-shape" hidden>
-        <summary>Gestalt</summary>
+        <summary>Gestalt<span class="sumhint">Grösse, Abstände der Formen</span></summary>
         <div class="stack">
           <div class="range"><label for="poly-size">Grösse des Kristalls</label><output id="poly-size-out"></output>
             <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>
@@ -507,20 +511,26 @@ footer a { color: inherit; }
       </details>
 
       <details class="sect" id="sec-view">
-        <summary>Darstellung</summary>
+        <summary>Darstellung<span class="sumhint">Pole, Farben, Wulffsches Netz, Umkugel, Strahlen</span></summary>
         <div class="stack">
+          <p class="group-title">Stereogramm und 3D-Konstruktion</p>
+          <label class="check" id="row-pg-poles"><input type="checkbox" id="pg-poles"><span>Flächenpole<span class="why"></span></span></label>
+          <label class="check" id="row-poly-poles"><input type="checkbox" id="poly-poles">Flächenpole</label>
           <label class="check"><input type="checkbox" id="v-dircolors">Symmetrieelemente nach Blickrichtung färben</label>
+          <label class="check"><input type="checkbox" id="v-axes">Kristallachsen</label>
+          <p class="group-title">Stereogramm</p>
+          <label class="check" id="row-pg-colorful"><input type="checkbox" id="pg-colorful"><span>Pole nach Händigkeit färben<span class="why"></span></span></label>
+          <label class="check" id="row-poly-lower"><input type="checkbox" id="poly-lower"><span>Pole der unteren Halbkugel<span class="why"></span></span></label>
           <label class="check"><input type="checkbox" id="v-wulff">Wulffsches Netz</label>
           <div class="range" id="row-wulffrot">
             <label for="v-wulffrot">Netz drehen</label><output id="v-wulffrot-out"></output>
             <input type="range" id="v-wulffrot" min="0" max="180" step="1">
           </div>
-          <label class="check"><input type="checkbox" id="v-axes">Kristallachsen</label>
-          <p class="group-title">3D-Ansicht</p>
+          <p class="group-title">3D-Konstruktion</p>
           <label class="check"><input type="checkbox" id="v-sphere">Umkugel</label>
           <label class="check"><input type="checkbox" id="v-globe">Nord- und Südpol, Äquator der Umkugel</label>
           <label class="check"><input type="checkbox" id="v-plane">Stereogramm in der Äquatorebene</label>
-          <label class="check"><input type="checkbox" id="v-rays">Projektionsstrahlen (zum Süd- bzw. Nordpol)</label>
+          <label class="check"><input type="checkbox" id="v-rays"><span>Projektionsstrahlen (zum Süd- bzw. Nordpol)<span class="why"></span></span></label>
           <label class="check" id="row-normals"><input type="checkbox" id="v-normals">Flächennormalen</label>
         </div>
       </details>

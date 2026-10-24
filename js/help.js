@@ -26,7 +26,7 @@ export const TIPS = {
   'poly-bravais': 'Miller-Bravais-Indizes (hkil) mit i = −(h + k); sie zeigen die Gleichwertigkeit der drei a-Achsen.',
   'poly-lower': 'Pole von Flächen, die vom Betrachter wegzeigen, als Kreise. Ausgeschaltet nur die obere Halbkugel, wie in vielen Lehrbuchabbildungen.',
   'poly-facesym': 'Ein asymmetrisches Muster auf jeder Fläche; seine Wiederholung auf einer Fläche zeigt deren Flächensymmetrie, ähnlich wie Ätzfiguren. Die Formauswahl zeigt dann alle 115 Formen.',
-  'poly-frame': 'Legt die Symmetrieelemente der Punktgruppe unter die Pole. Liegt ein Pol auf einem Symmetrieelement, gehört er zu einer speziellen Form.',
+  'poly-frame': 'Legt die Symmetrieelemente der Punktgruppe im Stereogramm unter die Pole. Liegt ein Pol auf einem Symmetrieelement, gehört er zu einer speziellen Form.',
   // Gitter
   'lat-ba': 'Achsenverhältnis b/a. Es ändert die Winkel zwischen den Flächen und damit die Lage der Pole.',
   'lat-ca': 'Achsenverhältnis c/a. Es ändert die Winkel zwischen den Flächen und damit die Lage der Pole.',
@@ -75,11 +75,11 @@ export const SECTIONS = [
     intro: 'Punktgruppe antippen: Das Stereogramm zeigt ihr Symmetriegerüst. Gruppen mit zwei Aufstellungen (z. B. 32) bieten darunter die Wahl der Aufstellung an.',
     ids: [],
   },
-  { heading: '#ctl-pg-opts > summary', ids: ['pg-elements', 'pg-object', 'pg-poles', 'pg-colorful', 'pg-theta', 'pg-phi', 'angle-btn'] },
+  { heading: '#ctl-pg-opts > summary', ids: ['pg-elements', 'pg-object', 'pg-theta', 'pg-phi', 'angle-btn'] },
   {
     heading: '#ctl-poly > h2',
     intro: 'Pol oder Fläche antippen hebt beide hervor: Jede Fläche hat genau einen Pol.',
-    ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-poles', 'poly-labels', 'poly-bravais', 'poly-lower', 'poly-facesym', 'poly-frame'],
+    ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-labels', 'poly-frame', 'poly-bravais', 'poly-facesym'],
   },
   {
     heading: '#ctl-poly-lat > summary',
@@ -93,7 +93,8 @@ export const SECTIONS = [
   },
   {
     heading: '#sec-view > summary',
-    ids: ['v-dircolors', 'v-wulff', 'v-wulffrot', 'v-axes', 'v-sphere', 'v-globe', 'v-plane', 'v-rays', 'v-normals', 'zone-btn', 'angle-btn-3d', 'view-oblique'],
+    intro: 'Weitere Optionen, nach Tafel geordnet: was Stereogramm und 3D-Konstruktion gemeinsam betrifft, nur das Stereogramm oder nur die 3D-Konstruktion.',
+    ids: ['pg-poles', 'poly-poles', 'v-dircolors', 'v-axes', 'pg-colorful', 'poly-lower', 'v-wulff', 'v-wulffrot', 'v-sphere', 'v-globe', 'v-plane', 'v-rays', 'v-normals', 'zone-btn', 'angle-btn-3d', 'view-oblique'],
   },
 ];
 

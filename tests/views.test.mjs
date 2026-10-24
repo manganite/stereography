@@ -107,3 +107,19 @@ test('Oberfläche: jede Option hat ein Bedienelement und einen Tooltip', async (
   }
   assert.ok(!/data-view="(top|side)"/.test(html), 'alte Ansichtsknöpfe');
 });
+
+test('Seitenleiste: Zusatzoptionen der Anzeige unter „Darstellung“, nach Tafel gegliedert', () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  const block = (id) => { const i = html.indexOf(`id="${id}"`); const j = html.indexOf('</details>', i); return html.slice(i, j); };
+  const card = html.slice(html.indexOf('id="ctl-poly"'), html.indexOf('</section>', html.indexOf('id="ctl-poly"')));
+  const view = block('sec-view');
+  for (const id of ['pg-poles', 'poly-poles', 'pg-colorful', 'poly-lower', 'v-wulff', 'v-sphere', 'v-globe', 'v-rays']) {
+    assert.ok(view.includes(`id="${id}"`), `${id} unter Darstellung`);
+    assert.ok(!card.includes(`id="${id}"`), `${id} nicht in der Karte Kristallform`);
+  }
+  for (const id of ['poly-labels', 'poly-frame']) assert.ok(card.includes(`id="${id}"`), id);
+  const g = [...view.matchAll(/class="group-title">([^<]+)</g)].map((m) => m[1]);
+  assert.deepEqual(g, ['Stereogramm und 3D-Konstruktion', 'Stereogramm', '3D-Konstruktion']);
+  // eingeklappte Abschnitte sagen, was man in ihnen findet
+  for (const id of ['ctl-poly-lat', 'ctl-poly-shape', 'sec-view']) assert.ok(block(id).includes('class="sumhint"'), id);
+});

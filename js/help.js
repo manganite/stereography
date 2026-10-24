@@ -60,10 +60,11 @@ export const TIPS = {
   'zone-btn-3d': 'Zone: zwei Flächen oder Pole antippen. Zonenkreis, Zonenachse [uvw] und alle Flächen, die die Zonengleichung hu + kv + lw = 0 erfüllen. Die Infobox listet alle Zonen des Kristalls zum Auswählen, auch mehrere zugleich.',
   'angle-btn': 'Winkel: zwei Pole oder Flächen antippen. Normalenwinkel als Grosskreisbogen; bei Punktgruppen auch die Operation, die den einen Pol in den anderen überführt.',
   'angle-btn-3d': 'Winkel: zwei Pole oder Flächen antippen. Normalenwinkel als Grosskreisbogen und Flächenwinkel.',
-  'copy-svg': 'Stereogramm als SVG in die Zwischenablage kopieren.',
-  'save-svg': 'Stereogramm als SVG-Datei speichern.',
-  'copy-3d': '3D-Konstruktion in der gezeigten Ansicht als Bild (PNG) in die Zwischenablage kopieren, z. B. für Folien.',
-  'save-3d': '3D-Konstruktion in der gezeigten Ansicht als PNG-Datei speichern.',
+  'copy-stereo': 'Stereogramm als Bild (PNG) in die Zwischenablage kopieren, z. B. zum Einfügen in Folien. Immer in hellen Farben, Hintergrund ausserhalb des Grundkreises durchsichtig.',
+  'save-svg': 'Stereogramm als SVG-Datei speichern: Vektorgrafik, beliebig skalierbar und nachbearbeitbar. Immer in hellen Farben, ohne Hintergrund ausserhalb des Grundkreises.',
+  'save-stereo-png': 'Stereogramm als PNG-Datei speichern (2048 × 2048 Pixel). Immer in hellen Farben, Hintergrund ausserhalb des Grundkreises durchsichtig.',
+  'copy-3d': '3D-Konstruktion in der gezeigten Ansicht als Bild (PNG) in die Zwischenablage kopieren, z. B. für Folien. Immer in hellen Farben, Hintergrund durchsichtig.',
+  'save-3d': '3D-Konstruktion in der gezeigten Ansicht als PNG-Datei speichern (etwa 2000 Pixel breit). Immer in hellen Farben, Hintergrund durchsichtig.',
   'view-oblique': 'Schräger Blick auf Kugel, Kristall und Äquatorebene. Die Knöpfe daneben blicken entlang der drei Blickrichtungen des Kristallsystems (triklin: entlang a, b, c); liegt eine davon parallel zur Projektionsrichtung, zeigt sie das Bild wie im Stereogramm.',
 };
 

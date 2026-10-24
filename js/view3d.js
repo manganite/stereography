@@ -64,10 +64,12 @@ function drawLabels(ctx, root, sx, sy) {
 }
 
 export class View3D {
-  constructor(container, { onSelect } = {}) {
+  /** transparent: durchsichtiger Hintergrund (Bildexport). */
+  constructor(container, { onSelect, transparent = false } = {}) {
     this.container = container;
     this.onSelect = onSelect;
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.transparent = transparent;
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: transparent });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     container.appendChild(this.renderer.domElement);
     this.labelRenderer = new THREE.CSS2DRenderer();
@@ -241,24 +243,29 @@ export class View3D {
     group.clear();
   }
 
-  /** Aktualisiert die Stereogramm-Textur aus einem SVG-String. */
+  /** Aktualisiert die Stereogramm-Textur aus einem SVG-String; das Promise erfüllt sich, sobald sie gezeichnet ist. */
   setStereoTexture(svg) {
     const token = (this._texToken = (this._texToken || 0) + 1);
-    const img = new Image();
-    img.onload = () => {
-      if (token !== this._texToken) return;
-      const ctx = this.texCanvas.getContext('2d');
-      ctx.clearRect(0, 0, 1024, 1024);
-      ctx.drawImage(img, 0, 0, 1024, 1024);
-      this.texture.needsUpdate = true;
-      this.requestRender();
-    };
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        if (token === this._texToken) {
+          const ctx = this.texCanvas.getContext('2d');
+          ctx.clearRect(0, 0, 1024, 1024);
+          ctx.drawImage(img, 0, 0, 1024, 1024);
+          this.texture.needsUpdate = true;
+          this.requestRender();
+        }
+        resolve();
+      };
+      img.onerror = () => resolve();
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
   }
 
   _buildBase(col, opts) {
     this._dispose(this.base);
-    this.renderer.setClearColor(new THREE.Color(col.paper), 1);
+    this.renderer.setClearColor(new THREE.Color(col.paper), this.transparent ? 0 : 1);
     const c = (x) => new THREE.Color(x);
     // Kugel (sehr transparent) + Gradnetz
     const sph = new THREE.Mesh(

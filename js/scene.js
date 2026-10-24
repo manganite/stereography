@@ -49,8 +49,8 @@ export const thetaOf = (rho) => (rho < 0 ? 180 + rho : rho);
 export const rhoText = (theta, digits) => (theta > 90 + 1e-9 ? '−' : '') + Math.abs(rhoOf(theta)).toFixed(digits) + '°';
 
 // ------------------------------------------------------------------ Farben aus CSS-Tokens
-export function palette() {
-  const cs = getComputedStyle(document.documentElement);
+export function palette(el = document.documentElement) {
+  const cs = getComputedStyle(el);
   const g = (n) => cs.getPropertyValue('--' + n).trim();
   return {
     paper: g('paper'), ink: g('ink'), muted: g('muted'), net: g('net'),
@@ -61,6 +61,17 @@ export function palette() {
     ax2: g('ax2'), ax3: g('ax3'), ax4: g('ax4'), ax6: g('ax6'),
     form: [0, 1, 2, 3, 4, 5, 6, 7].map((i) => g('fc' + i)),
   };
+}
+let lightEl = null;
+/** Farben des hellen Modus, auch wenn die Seite dunkel ist (Bildexport immer hell). */
+export function lightPalette() {
+  if (!lightEl || !lightEl.isConnected) {
+    lightEl = document.createElement('span');
+    lightEl.className = 'theme-light';
+    lightEl.hidden = true;
+    document.body.appendChild(lightEl);
+  }
+  return palette(lightEl);
 }
 /** Farbe der i-ten Form eines Beispielkristalls (Pol) bzw. ihrer Flächen in 3D (aufgehellt). */
 export const formColor = (col, i) => col.form[i % col.form.length];

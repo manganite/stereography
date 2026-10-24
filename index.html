@@ -533,7 +533,7 @@ footer a { color: inherit; }
       <div class="panel-head">
         <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="stereo">Stereogramm</button><button type="button" data-fig="3d">3D</button></div>
         <span class="t">Stereogramm<small id="stereo-sub">Projektion ∥ c</small></span>
-        <div class="tools export"><button id="copy-svg" type="button" title="Stereogramm als SVG in die Zwischenablage kopieren">SVG kopieren</button><button id="save-svg" type="button" title="Stereogramm als SVG-Datei speichern">Speichern</button></div>
+        <div class="tools export" role="group" aria-label="Stereogramm exportieren"><button id="copy-stereo" type="button" title="Stereogramm als Bild in die Zwischenablage kopieren">Kopieren</button><button id="save-svg" type="button" title="Stereogramm als SVG-Datei speichern">SVG</button><button id="save-stereo-png" type="button" title="Stereogramm als PNG-Datei speichern">PNG</button></div>
       </div>
       <div class="stereo-wrap">
         <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
@@ -549,7 +549,7 @@ footer a { color: inherit; }
       <div class="panel-head">
         <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="stereo">Stereogramm</button><button type="button" data-fig="3d">3D</button></div>
         <span class="t">3D-Konstruktion</span>
-        <div class="tools export"><button id="copy-3d" type="button" title="3D-Konstruktion als Bild (PNG) in die Zwischenablage kopieren">Bild kopieren</button><button id="save-3d" type="button" title="3D-Konstruktion als PNG-Datei speichern">Speichern</button></div>
+        <div class="tools export" role="group" aria-label="3D-Konstruktion exportieren"><button id="copy-3d" type="button" title="3D-Konstruktion als Bild in die Zwischenablage kopieren">Kopieren</button><button id="save-3d" type="button" title="3D-Konstruktion als PNG-Datei speichern">PNG</button></div>
       </div>
       <div class="stereo-wrap">
         <div id="view3d"></div>

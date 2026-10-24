@@ -9,9 +9,15 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Hinzugefügt
 
 - **Ansichten der 3D-Konstruktion entlang der Blickrichtungen:** Unter der 3D-Ansicht stehen neben „Schräg“ drei Knöpfe, je einer für die drei Blickrichtungen des Kristallsystems (Positionen im vollen Hermann-Mauguin-Symbol), mit deren Farbe: kubisch [001], [111], [110]; tetragonal [001], [100], [110]; trigonal und hexagonal [001], [100], [210]; orthorhombisch und monoklin [100], [010], [001]. Triklin, ohne Blickrichtung im Symbol, blickt entlang der Kristallachsen *a*, *b*, *c*. Aus jeder Richtungsfamilie wird die Richtung parallel zur Projektionsrichtung gewählt (Bild wie im Stereogramm), sonst eine senkrecht dazu (seitlicher Blick, Äquatorebene von der Kante); bei Kristallformen folgt die Wahl der Lage, z. B. kubisch mit [111] ∥ Projektionsrichtung: [100], [111], [11̄0]. Die Knöpfe ersetzen „Von oben“ und „Seitlich“.
-- **3D-Konstruktion kopieren und speichern:** „Bild kopieren“ und „Speichern“ im Kopf der 3D-Ansicht liefern die gezeigte Ansicht als PNG (etwa 2000 Pixel breit) mit allen Beschriftungen (Indizes, N und S, Achsen, Winkel). Auf dem Telefon ausgeblendet wie der SVG-Export.
+- **3D-Konstruktion kopieren und speichern:** „Kopieren“ und „PNG“ im Kopf der 3D-Ansicht liefern die gezeigte Ansicht als PNG (etwa 2000 Pixel breit) mit allen Beschriftungen (Indizes, N und S, Achsen, Winkel).
+- **Stereogramm auch als PNG:** Im Kopf des Stereogramms „Kopieren“, „SVG“ und „PNG“ (2048 × 2048 Pixel).
 - **Flächenpole abschaltbar,** bei Punktgruppen (unter „Objekt in allgemeiner Lage“) und bei Kristallformen: Die Pole verschwinden aus Stereogramm und 3D-Konstruktion, die Objekte bzw. der Kristall bleiben. So lässt sich das Stereogramm zu einem Körper selbst vorhersagen oder als leere Vorlage exportieren. Ohne Pole entfallen auch Indizes, Projektionsstrahlen, Pole der unteren Halbkugel und die Färbung nach Händigkeit; ihre Schalter sind dann gesperrt und behalten ihre Einstellung. Im Link: `pole=0`.
 - **Nord- und Südpol und Äquator der Umkugel abschaltbar** (unter „Darstellung“). Im Link: `ns=0`.
+
+### Geändert
+
+- **Bildexport immer hell und mit durchsichtigem Hintergrund,** auch wenn die App im Dunkelmodus läuft; beim Stereogramm bleibt die Kreisfläche weiss. So passen die Bilder auf Folien mit beliebigem Hintergrund. Die 3D-Konstruktion wird dafür unsichtbar ein zweites Mal gezeichnet; die Anzeige ändert sich nicht. Die Exporte sind auf dem Telefon ausgeblendet.
+- **Kopieren legt beim Stereogramm ein Bild (PNG) in die Zwischenablage** statt des SVG-Quelltexts; es lässt sich so direkt in Folien und Dokumente einfügen. Das SVG gibt es weiterhin über „SVG“ als Datei.
 
 ## [1.5.0] - 2026-10-20
 

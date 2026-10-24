@@ -146,7 +146,7 @@ select {
 /* Touch: grössere Ziele (Richtwert 44 pt; hier mindestens 40 px) */
 @media (pointer: coarse) {
   .pgb { min-height: 40px; min-width: 44px; }
-  .tools button, .seg button, .linkbtn, .figswitch button, .tabs button, .stereo-tools button, .dir-tools button { min-height: 40px; }
+  .tools button, .seg button, .linkbtn, .figswitch button, .tabs button, .stereo-tools button, .dir-tools button, .viewbar button { min-height: 40px; }
   .check { min-height: 40px; }
   .check input { width: 20px; height: 20px; }
   select { min-height: 44px; }
@@ -222,6 +222,25 @@ select {
 .helpbox dt:first-child { margin-top: 0; }
 .helpbox dd { margin: 0; color: var(--muted); }
 #v3d-hint:not(:empty)::after { content: " · "; }
+/* Ansichten der 3D-Konstruktion: schräg und entlang der drei Blickrichtungen */
+.viewbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 12px; border-top: 1px solid var(--line); }
+.viewbar .cap { font-size: 0.8rem; color: var(--muted); margin-right: 2px; }
+.viewdirs { display: contents; }
+.viewbar button {
+  border: 1px solid var(--line); border-left: 4px solid var(--dc, var(--line)); background: var(--paper); color: var(--ink);
+  border-radius: 6px; padding: 4px 9px; font-size: 0.85rem; cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.viewbar button#view-oblique { border-left-width: 1px; }
+.viewbar button:hover { border-color: var(--muted); border-left-color: var(--dc, var(--muted)); }
+.viewbar button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); border-left-color: var(--dc, var(--ink)); }
+.check:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
+.check .why:not(:empty) { display: block; font-size: 0.78rem; color: var(--muted); }
+/* Hinweis unter der Überschrift eingeklappter Abschnitte: was man dort findet */
+.sumlabel { flex-wrap: wrap; }
+.sumhint { order: 2; flex-basis: 100%; display: block; text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 0.78rem; margin-top: 2px; }
+.sect[open] > summary .sumhint { display: none; }
+.subhint { color: var(--muted); font-size: 0.78rem; }
+.subsect[open] > summary .subhint { display: none; }
 .panel-foot { padding: 6px 12px 8px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); font-style: italic; }
 .only-coarse { display: none; }
 @media (pointer: coarse) { .only-coarse { display: inline; } .only-fine { display: none; } }
@@ -339,6 +358,8 @@ footer a { color: inherit; }
   .panel-foot { display: none; }
   .legend .lg.hint { display: none; }
   .dir-tools .cap { display: none; }
+  .viewbar { padding: 5px 6px; gap: 4px; justify-content: center; }
+  .viewbar .cap { display: none; }
   #copy-link { display: none; }
   .wide-only { display: none; }
   .panel-head { gap: 6px; }
@@ -404,11 +425,11 @@ footer a { color: inherit; }
           <label for="preset-select">Lage</label>
           <select id="preset-select"></select>
         </div>
-        <label class="check"><input type="checkbox" id="poly-labels">Indizes (hkl) anzeigen</label>
-        <label class="check"><input type="checkbox" id="poly-lower">Pole der unteren Halbkugel</label>
-        <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe</label>
+        <p class="group-title">Anzeigen</p>
+        <label class="check"><input type="checkbox" id="poly-labels"><span>Indizes (hkl)<span class="why"></span></span></label>
+        <label class="check"><input type="checkbox" id="poly-frame">Symmetriegerüst der Punktgruppe (im Stereogramm)</label>
         <details class="subsect" id="sec-more">
-          <summary>Weitere Optionen</summary>
+          <summary>Weitere Optionen <span class="subhint">(hkil), Flächensymmetrie</span></summary>
           <div class="stack">
             <label class="check" id="row-bravais" hidden><input type="checkbox" id="poly-bravais">Vier Indizes (hkil) bei hexagonalen Achsen</label>
             <label class="check"><input type="checkbox" id="poly-facesym">Flächensymmetrie zeigen (Muster, alle Formen)</label>
@@ -423,7 +444,6 @@ footer a { color: inherit; }
         <div class="stack">
           <label class="check"><input type="checkbox" id="pg-elements">Symmetriegerüst</label>
           <label class="check"><input type="checkbox" id="pg-object">Objekt in allgemeiner Lage</label>
-          <label class="check"><input type="checkbox" id="pg-colorful">Pole nach Händigkeit färben</label>
           <div class="range">
             <label for="pg-theta">Poldistanz ρ</label><output id="pg-theta-out"></output>
             <input type="range" id="pg-theta" min="1" max="179" step="1">
@@ -438,7 +458,7 @@ footer a { color: inherit; }
       </details>
 
       <details class="sect" id="ctl-poly-lat" hidden>
-        <summary>Gitter</summary>
+        <summary>Gitter<span class="sumhint">Achsenverhältnisse, Winkel, Symmetrie brechen</span></summary>
         <div class="stack">
           <label class="check" id="row-broken"><input type="checkbox" id="poly-broken">Symmetrie brechen</label>
           <div class="stack" id="ctl-break" hidden>
@@ -475,7 +495,7 @@ footer a { color: inherit; }
       </details>
 
       <details class="sect" id="ctl-poly-shape" hidden>
-        <summary>Gestalt</summary>
+        <summary>Gestalt<span class="sumhint">Grösse, Abstände der Formen</span></summary>
         <div class="stack">
           <div class="range"><label for="poly-size">Grösse des Kristalls</label><output id="poly-size-out"></output>
             <input type="range" id="poly-size" min="0.3" max="1.2" step="0.01"></div>
@@ -491,19 +511,26 @@ footer a { color: inherit; }
       </details>
 
       <details class="sect" id="sec-view">
-        <summary>Darstellung</summary>
+        <summary>Darstellung<span class="sumhint">Pole, Farben, Wulffsches Netz, Umkugel, Strahlen</span></summary>
         <div class="stack">
+          <p class="group-title">Stereogramm und 3D-Konstruktion</p>
+          <label class="check" id="row-pg-poles"><input type="checkbox" id="pg-poles"><span>Flächenpole<span class="why"></span></span></label>
+          <label class="check" id="row-poly-poles"><input type="checkbox" id="poly-poles">Flächenpole</label>
           <label class="check"><input type="checkbox" id="v-dircolors">Symmetrieelemente nach Blickrichtung färben</label>
+          <label class="check"><input type="checkbox" id="v-axes">Kristallachsen</label>
+          <p class="group-title">Stereogramm</p>
+          <label class="check" id="row-pg-colorful"><input type="checkbox" id="pg-colorful"><span>Pole nach Händigkeit färben<span class="why"></span></span></label>
+          <label class="check" id="row-poly-lower"><input type="checkbox" id="poly-lower"><span>Pole der unteren Halbkugel<span class="why"></span></span></label>
           <label class="check"><input type="checkbox" id="v-wulff">Wulffsches Netz</label>
           <div class="range" id="row-wulffrot">
             <label for="v-wulffrot">Netz drehen</label><output id="v-wulffrot-out"></output>
             <input type="range" id="v-wulffrot" min="0" max="180" step="1">
           </div>
-          <label class="check"><input type="checkbox" id="v-axes">Kristallachsen</label>
-          <p class="group-title">3D-Ansicht</p>
+          <p class="group-title">3D-Konstruktion</p>
           <label class="check"><input type="checkbox" id="v-sphere">Umkugel</label>
+          <label class="check"><input type="checkbox" id="v-globe">Nord- und Südpol, Äquator der Umkugel</label>
           <label class="check"><input type="checkbox" id="v-plane">Stereogramm in der Äquatorebene</label>
-          <label class="check"><input type="checkbox" id="v-rays">Projektionsstrahlen (zum Süd- bzw. Nordpol)</label>
+          <label class="check"><input type="checkbox" id="v-rays"><span>Projektionsstrahlen (zum Süd- bzw. Nordpol)<span class="why"></span></span></label>
           <label class="check" id="row-normals"><input type="checkbox" id="v-normals">Flächennormalen</label>
         </div>
       </details>
@@ -516,7 +543,7 @@ footer a { color: inherit; }
       <div class="panel-head">
         <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="stereo">Stereogramm</button><button type="button" data-fig="3d">3D</button></div>
         <span class="t">Stereogramm<small id="stereo-sub">Projektion ∥ c</small></span>
-        <div class="tools export"><button id="copy-svg" type="button" title="Stereogramm als SVG in die Zwischenablage kopieren">SVG kopieren</button><button id="save-svg" type="button" title="Stereogramm als SVG-Datei speichern">Speichern</button></div>
+        <div class="tools export" role="group" aria-label="Stereogramm exportieren"><button id="copy-stereo" type="button" title="Stereogramm als Bild in die Zwischenablage kopieren">Kopieren</button><button id="save-svg" type="button" title="Stereogramm als SVG-Datei speichern">SVG</button><button id="save-stereo-png" type="button" title="Stereogramm als PNG-Datei speichern">PNG</button></div>
       </div>
       <div class="stereo-wrap">
         <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
@@ -532,7 +559,7 @@ footer a { color: inherit; }
       <div class="panel-head">
         <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="stereo">Stereogramm</button><button type="button" data-fig="3d">3D</button></div>
         <span class="t">3D-Konstruktion</span>
-        <div class="tools"><button data-view="oblique" id="view-oblique" type="button">Schräg</button><button data-view="top" id="view-top" type="button"><span class="wide-only">Von o</span><span class="narrow-only">O</span>ben</button><button data-view="side" id="view-side" type="button">Seitlich</button></div>
+        <div class="tools export" role="group" aria-label="3D-Konstruktion exportieren"><button id="copy-3d" type="button" title="3D-Konstruktion als Bild in die Zwischenablage kopieren">Kopieren</button><button id="save-3d" type="button" title="3D-Konstruktion als PNG-Datei speichern">PNG</button></div>
       </div>
       <div class="stereo-wrap">
         <div id="view3d"></div>
@@ -542,6 +569,7 @@ footer a { color: inherit; }
           <button class="tool-toggle" data-tool="angle" id="angle-btn-3d" type="button" aria-pressed="false" title="Winkel messen: zwei Pole oder Flächen antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><path d="M-6 5 L6 5 M-6 5 L4 -6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M0 5 A 6 6 0 0 0 -2.2 0.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Winkel</button>
         </div>
       </div>
+      <div class="viewbar" role="group" aria-label="Ansicht der 3D-Konstruktion"><span class="cap">Blick</span><button data-view="oblique" id="view-oblique" type="button" aria-pressed="false">Schräg</button><span id="view-dirs" class="viewdirs"></span></div>
       <div class="panel-foot"><span id="v3d-hint"></span><span class="only-fine">Ziehen: drehen · Mausrad: zoomen</span><span class="only-coarse">Ein Finger: drehen · zwei Finger: zoomen</span></div>
     </figure>
   </div>

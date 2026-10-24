@@ -11,13 +11,14 @@ import { CATALOG, formName, formEig, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
 import { hmHTML, hmText, hklHTML, indices } from './format.js';
 import { normalize } from './linalg.js';
-import { View3D } from './view3d.js';
+import { View3D, OBLIQUE } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, setTip, showTipAt, hideTip } from './help.js';
 import * as S from './scene.js';
 import {
   createState, hashOf, applyHashTo, phiFromOld, rhoText, palette, formColor, groupOf, groupOrder, EIG_SAME, crystalAxesFor, ORBIT_COLORS, pgScene, polyCrystal, polyScene, normalizeZones,
+  pgPolesOn, polyLabelsOn, pgViewDirections, polyViewDirections, lightPalette,
 } from './scene.js';
 
 const $ = (id) => document.getElementById(id);
@@ -310,6 +311,7 @@ function refreshPolyControls() {
   if (!presets.some((p) => p.id === state.poly.presetId)) state.poly.presetId = presets[0].id;
   $('preset-select').value = state.poly.presetId;
   $('row-bravais').hidden = !isHexSystem(sys);
+  $('sec-more').querySelector('.subhint').textContent = isHexSystem(sys) ? '(hkil), Flächensymmetrie' : 'Flächensymmetrie';
   syncLattice();
 }
 
@@ -381,15 +383,33 @@ function renderPG() {
   updateLegendPG(info, col, classes);
   updateInfoPG(info, orb, col, classes, pgAngle);
   updateDirChips(classes, col);
-  const tex = buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, gen: false, selected: false })) }, { standalone: true }).full;
-  view3d.setStereoTexture(tex);
-  view3d.showPointGroup(
+  updateViews(pgViewDirections(state), col);
+  syncDependentChecks();
+  draw3dPG(view3d, col, { info, p0, orb, pgAngle, scene });
+}
+
+/** 3D-Konstruktion einer Punktgruppe in der Ansicht v zeichnen (Promise: Textur der Äquatorebene fertig). */
+function draw3dPG(v, col, { info, p0, orb, pgAngle, scene }) {
+  const tex = v.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, gen: false, selected: false })) }, { standalone: true }).full);
+  v.showPointGroup(
     { ...info, orbit: state.pg.showObject ? orb : null, p0, crystalAxes: crystalAxesFor(info.hex) },
     col,
-    { showElements: state.pg.showElements, showObject: state.pg.showObject, showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes,
+    { showElements: state.pg.showElements, showObject: state.pg.showObject, showPoles: state.pg.showPoles, showRays: state.view.rays, showSphere: state.view.sphere, showGlobe: state.view.globe, showPlane: state.view.plane, showAxes: state.view.axes,
       dirColors: state.view.dirColors ? col.dir : null, hiddenDirs: new Set(state.pg.hideDirs),
       arc: pgAngle ? { a: pgAngle.a, b: pgAngle.b, label: pgAngle.deg.toFixed(1) + '°' } : null },
   );
+  return tex;
+}
+
+/** 3D-Konstruktion eines Kristalls in der Ansicht v zeichnen (Promise: Textur der Äquatorebene fertig). */
+function draw3dPoly(v, col, C, scene, hex4) {
+  const tex = v.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
+  const angle = C.angle;
+  const labels3d = polyLabelsOn(state) ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
+  v.showPolyhedron(C, col,
+    { showPoles: state.poly.showPoles, showRays: state.view.rays, showSphere: state.view.sphere, showGlobe: state.view.globe, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zones: C.selZones, arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null, picked: state.poly.tool ? state.zoneSel : [] },
+    state.selected, labels3d);
+  return tex;
 }
 
 /** Schalter in der 3D-Ansicht: Symmetrieelemente einzelner Blickrichtungen ein-/ausblenden. */
@@ -426,6 +446,80 @@ function updateDirChips(classes, col) {
 }
 
 
+/** Bedienelemente, die nur mit Polen wirken: gesperrt (nicht abgewählt), solange die Pole fehlen. */
+function syncDependentChecks() {
+  const pg = state.mode === 'pg';
+  const OBJ = 'nur mit „Objekt in allgemeiner Lage“', POLES = 'nur mit Flächenpolen';
+  const pgWhy = !state.pg.showObject ? OBJ : !state.pg.showPoles ? POLES : '';
+  // Grund einer Sperre sichtbar unter dem Schalter (er steht oft in einem anderen Abschnitt als die Ursache)
+  const set = (id, why) => {
+    const el = $(id);
+    el.disabled = !!why;
+    const w = el.closest('.check').querySelector('.why');
+    if (w) w.textContent = why;
+  };
+  set('pg-poles', state.pg.showObject ? '' : OBJ);
+  $('pg-theta').disabled = $('pg-phi').disabled = !state.pg.showObject; // ρ, φ gehören zum Objekt
+  set('pg-colorful', pgWhy);
+  set('poly-labels', state.poly.showPoles ? '' : POLES + ' (unter „Darstellung“)');
+  set('poly-lower', state.poly.showPoles ? '' : POLES);
+  set('v-rays', pg ? pgWhy : state.poly.showPoles ? '' : POLES);
+}
+
+// ------------------------------------------------------------------ Ansichten der 3D-Konstruktion
+// „Schräg“ und je eine Ansicht entlang der drei Blickrichtungen des Kristallsystems (triklin: a, b, c).
+// Der gedrückte Knopf bleibt markiert, bis die Kamera gedreht wird oder sich die Richtung ändert.
+let viewList = [];
+let viewKey = 'oblique', viewVec = null;
+const AXIS_OF = { '1,0,0': 'a', '0,1,0': 'b', '0,0,1': 'c' };
+const angleBetween = (a, b) => {
+  const n = Math.hypot(...a) * Math.hypot(...b);
+  return Math.acos(Math.max(-1, Math.min(1, (a[0] * b[0] + a[1] * b[1] + a[2] * b[2]) / n))) / deg;
+};
+function viewTip(d) {
+  const lab = hklHTML(d.uvw, false, ['[', ']']);
+  const ax = AXIS_OF[d.uvw.join()];
+  const what = d.pos < 0
+    ? `Blick entlang der Kristallachse ${ax ? `<i>${ax}</i> = ` : ''}${lab} (triklin: keine Blickrichtung im Hermann-Mauguin-Symbol).`
+    : `Blick entlang ${lab}${ax ? ` = <i>${ax}</i>` : ''}, ${d.pos + 1}. Blickrichtung${d.fam ? ' ' + d.fam : ''} (${d.pos + 1}. Position im vollen Hermann-Mauguin-Symbol).`;
+  const where = d.along === 'proj' ? ' Parallel zur Projektionsrichtung: das Bild wie im Stereogramm.'
+    : d.along === 'side' ? ' Senkrecht zur Projektionsrichtung: Äquatorebene von der Kante, die Projektionsstrahlen werden sichtbar.' : '';
+  return attr(what + where);
+}
+function updateViews(dirs, col) {
+  viewList = dirs;
+  if (viewKey && viewKey !== 'oblique') {
+    const d = dirs[Number(viewKey.slice(1))];
+    if (!d || angleBetween(d.dir, viewVec) > 1e-4) viewKey = null; // andere Richtung: Kamera bleibt, Markierung weg
+  }
+  const box = $('view-dirs');
+  const html = dirs.map((d, k) => {
+    const dc = state.view.dirColors && d.pos >= 0 ? ` style="--dc:${col.dir[d.pos]}"` : '';
+    return `<button type="button" data-vdir="${k}" aria-pressed="false"${dc} data-tip="${viewTip(d)}">${hklHTML(d.uvw, false, ['[', ']'])}</button>`;
+  }).join('');
+  if (box.dataset.sig !== html) {
+    const focused = box.contains(document.activeElement) ? document.activeElement.dataset.vdir : null;
+    box.innerHTML = html;
+    box.dataset.sig = html;
+    if (focused != null) box.querySelector(`button[data-vdir="${focused}"]`)?.focus();
+  }
+  for (const b of box.querySelectorAll('button')) b.setAttribute('aria-pressed', String(viewKey === 'd' + b.dataset.vdir));
+  $('view-oblique').setAttribute('aria-pressed', String(viewKey === 'oblique'));
+}
+function selectView(key) {
+  if (key === 'oblique') { viewVec = OBLIQUE; view3d.setView('oblique'); }
+  else {
+    const d = viewList[Number(key.slice(1))];
+    if (!d) return;
+    viewVec = d.dir;
+    view3d.setViewDir(d.dir);
+  }
+  viewKey = key;
+  updateViews(viewList, palette());
+}
+/** Seitliche Ansicht (Richtung ⊥ Projektionsrichtung), sonst die erste Blickrichtung. */
+const sideViewKey = () => { const k = viewList.findIndex((d) => d.along === 'side'); return 'd' + Math.max(0, k); };
+
 function renderPoly() {
   const col = palette();
   const C = polyCrystal(state, col);
@@ -445,7 +539,6 @@ function renderPoly() {
   // gespeicherte Schlüssel lageunabhängig machen und Doppelte entfernen (ältere Zustände, Links)
   state.poly.zones = normalizeZones(state.poly.zones);
   const { scene, fwClasses, hex4 } = polyScene(state, C, col, { hitR: touchRadius(13, 22), labelSize: Math.max(14.5, 11 * svgUnit()) });
-  const angle = C.angle;
   const out = buildSVG(scene);
   svg.innerHTML = out.inner;
   current = { kind: 'poly', C, scene };
@@ -453,17 +546,85 @@ function renderPoly() {
   updateInfoPoly(C, col);
   $('ctl-poly-open').hidden = !C.auxForms.length;
   const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
+  const fp = state.poly.showPoles ? ' oder Pol' : '', fp2 = state.poly.showPoles ? ' oder zweiten Pol' : '';
   $('v3d-hint').textContent = state.poly.tool
-    ? [`${tn}: zwei Flächen oder Pole antippen`, `${tn}: zweite Fläche oder zweiten Pol antippen`, `${state.poly.tool === 'zone' ? 'Zone bestimmt' : 'Winkel gemessen'}; nächstes Antippen beginnt neu`][Math.min(state.zoneSel.length, 2)]
-    : 'Fläche oder Pol antippen zum Hervorheben';
+    ? [`${tn}: zwei Flächen${state.poly.showPoles ? ' oder Pole' : ''} antippen`, `${tn}: zweite Fläche${fp2} antippen`, `${state.poly.tool === 'zone' ? 'Zone bestimmt' : 'Winkel gemessen'}; nächstes Antippen beginnt neu`][Math.min(state.zoneSel.length, 2)]
+    : `Fläche${fp} antippen zum Hervorheben`;
   $('stereo-sub').textContent = 'Projektion ∥ ' + C.preset.name.replace(' ∥ Projektionsrichtung', '').replace(/ \(.*\)/, '');
-  view3d.setStereoTexture(buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, selected: false })) }, { standalone: true }).full);
-  const labels3d = state.poly.labels ? C.faces.map((f) => hklHTML(f.hkl, hex4)) : null;
-  view3d.showPolyhedron(C, col,
-    { showRays: state.view.rays, showSphere: state.view.sphere, showPlane: state.view.plane, showAxes: state.view.axes, showNormals: state.view.normals, size: state.poly.size, planeOpacity: 0.55, motifs: state.poly.faceSym ? C.motifs : null, zones: C.selZones, arc: angle ? { a: angle.a, b: angle.b, label: angle.deg.toFixed(1) + '°' } : null, picked: state.poly.tool ? state.zoneSel : [] },
-    state.selected, labels3d);
+  updateViews(polyViewDirections(C), col);
+  syncDependentChecks();
+  draw3dPoly(view3d, col, C, scene, hex4);
 }
 
+
+// ------------------------------------------------------------------ Bildexport (immer hell)
+/** Szene des aktuellen Zustands in den hellen Farben (Stereogramm unabhängig von der Bildschirmgrösse). */
+function lightScene() {
+  const col = lightPalette();
+  if (state.mode === 'pg') {
+    const parts = pgScene(state, col, { hitR: 13 });
+    return { col, kind: 'pg', parts, scene: parts.scene };
+  }
+  const C = polyCrystal(state, col);
+  const { scene, hex4 } = polyScene(state, C, col, { hitR: 13, labelSize: 14.5 });
+  return { col, kind: 'poly', C, scene, hex4 };
+}
+/** Stereogramm als SVG: helle Farben, ohne Hintergrund ausserhalb der Kreisfläche, ohne Hervorhebung. */
+function stereoSvg() {
+  const { scene } = lightScene();
+  return buildSVG({ ...scene, poles: scene.poles.map((p) => ({ ...p, gen: false, selected: false })) }, { standalone: true }).full;
+}
+/** Schriften der App als data:-URLs, damit sie im gerasterten SVG wirken (ein Bild lädt keine fremden Dateien). */
+let fontCss = null;
+function embeddedFonts() {
+  if (!fontCss) {
+    const faces = [['400', 'normal', 'latin-400-normal'], ['400', 'italic', 'latin-400-italic'], ['600', 'normal', 'latin-600-normal']];
+    fontCss = Promise.all(faces.map(async ([w, st, file]) => {
+      const blob = await (await fetch(`lib/fonts/ibm-plex-sans-${file}.woff2`)).blob();
+      const url = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob); });
+      return `@font-face{font-family:'IBM Plex Sans';font-style:${st};font-weight:${w};src:url(${url}) format('woff2');}`;
+    })).then((x) => x.join('')).catch(() => '');
+  }
+  return fontCss;
+}
+/** Stereogramm als PNG (2048 px, durchsichtiger Hintergrund ausserhalb der Kreisfläche). */
+async function stereoPng() {
+  const px = 2048;
+  const css = await embeddedFonts();
+  const svgText = stereoSvg().replace(/^<svg([^>]*)>/, (m, a) => `<svg${a.replace(/ width="[^"]*" height="[^"]*"/, ` width="${px}" height="${px}"`)}><style>${css}</style>`);
+  const img = new Image();
+  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText); });
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = px;
+  cv.getContext('2d').drawImage(img, 0, 0, px, px);
+  return new Promise((res, rej) => cv.toBlob((b) => (b ? res(b) : rej(new Error('PNG fehlgeschlagen'))), 'image/png'));
+}
+/**
+ * 3D-Konstruktion als PNG in den hellen Farben mit durchsichtigem Hintergrund: eine zweite, unsichtbare
+ * Ansicht gleicher Grösse und Kamera (die sichtbare Ansicht und die Seite wechseln die Farben nicht).
+ */
+async function snapshot3d() {
+  const src = $('view3d');
+  const w = src.clientWidth || 600, h = src.clientHeight || 600;
+  const box = document.createElement('div');
+  box.className = 'theme-light';
+  box.setAttribute('aria-hidden', 'true');
+  box.style.cssText = `position:fixed;left:-${w + 100}px;top:0;width:${w}px;height:${h}px;visibility:hidden;pointer-events:none;`;
+  document.body.appendChild(box);
+  const v = new View3D(box, { transparent: true });
+  try {
+    v.camera.position.copy(view3d.camera.position);
+    v.controls.target.copy(view3d.controls.target);
+    v.controls.update();
+    const ex = lightScene();
+    const ready = ex.kind === 'pg' ? draw3dPG(v, ex.col, ex.parts) : draw3dPoly(v, ex.col, ex.C, ex.scene, ex.hex4);
+    await ready;
+    return await v.snapshot();
+  } finally {
+    v.destroy();
+    box.remove();
+  }
+}
 
 let syncToolBtns = () => {};
 let syncFormHint = () => {};
@@ -488,7 +649,8 @@ function axisLegendText(symbol, centre) {
 
 function updateLegendPG(info, col, classes) {
   const items = [];
-  if (state.pg.showObject) {
+  const polesOn = pgPolesOn(state);
+  if (polesOn) {
     items.push(`<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="4" fill="${col.ink}"/></svg>Pol oben</span>`);
     items.push(`<span class="lg"><svg width="16" height="16" viewBox="-8 -8 16 16"><circle r="6" fill="none" stroke="${col.ink}" stroke-width="1.6"/></svg>Pol unten</span>`);
     items.push(`<span class="lg"><svg width="16" height="16" viewBox="-8 -8 16 16"><circle r="6" fill="none" stroke="${col.ink}" stroke-width="1.6"/><circle r="4" fill="${col.ink}"/></svg>beide</span>`);
@@ -515,22 +677,22 @@ function updateLegendPG(info, col, classes) {
       }
     }
   }
-  if (state.pg.colorful && state.pg.showObject) {
+  if (state.pg.colorful && polesOn) {
     items.push(`<span class="lg"><i class="sw" style="background:${col.upper}"></i>gleiche Händigkeit</span>`);
     items.push(`<span class="lg"><i class="sw" style="background:${col.accent2}"></i>Spiegelbild</span>`);
   }
-  if (state.pg.showObject && state.pg.tool) {
+  if (polesOn && state.pg.tool) {
     items.push(`<span class="lg hint">Winkel: zwei Pole antippen; liegen zwei übereinander, schaltet erneutes Antippen weiter („Winkel“ erneut drücken: beenden)</span>`);
-  } else if (state.pg.showObject) {
+  } else if (polesOn) {
     items.push(`<span class="lg hint"><span class="only-fine">Ausgangspol ziehen oder Stelle anklicken; Ausgangspol anklicken: Halbkugel wechseln</span><span class="only-coarse">Ausgangspol ziehen oder Stelle antippen; Ausgangspol antippen: Halbkugel wechseln</span></span>`);
   }
   $('legend').innerHTML = items.join('');
 }
 function updateLegendPoly(C, col, fwClasses) {
-  const items = [
+  const items = state.poly.showPoles ? [
     `<span class="lg"><svg width="14" height="14" viewBox="-7 -7 14 14"><circle r="4" fill="${col.ink}"/></svg>Flächenpol oben</span>`,
     `<span class="lg"><svg width="16" height="16" viewBox="-8 -8 16 16"><circle r="6" fill="none" stroke="${col.ink}" stroke-width="1.6"/></svg>Flächenpol unten</span>`,
-  ];
+  ] : [];
   if (C.example) {
     const hex4 = C.hex && state.poly.bravais;
     C.forms.forEach((F, i) => {
@@ -551,7 +713,9 @@ function updateLegendPoly(C, col, fwClasses) {
     items.push(`<span class="lg"><svg width="22" height="10" viewBox="0 0 22 10"><line x1="1" y1="5" x2="21" y2="5" stroke="${col.accent}" stroke-width="3"/></svg>Bogen (Grosskreis) zwischen den Polen</span>`);
   }
   const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
-  items.push(state.poly.tool
+  if (!state.poly.showPoles) {
+    items.push(`<span class="lg hint">Flächenpole ausgeblendet (einblenden unter „Darstellung“)${state.poly.tool ? ` · ${tn}: zwei Flächen in der 3D-Ansicht antippen` : ' · Fläche in der 3D-Ansicht antippen zum Hervorheben'}</span>`);
+  } else items.push(state.poly.tool
     ? `<span class="lg hint">${tn}: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen („${tn}“ erneut drücken: beenden)</span>`
     : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter (mit Werkzeug auch auf beide) · Werkzeuge „Zone“ und „Winkel“</span>');
   $('legend').innerHTML = items.join('');
@@ -601,6 +765,7 @@ function describeOp(M, classes, col, axes) {
 function pgAngleBox(info, orb, col, classes, pgAngle) {
   if (!state.pg.tool) return '';
   if (!state.pg.showObject) return '<div class="zonebox">Winkel messen: „Objekt in allgemeiner Lage“ einschalten.</div>';
+  if (!pgPolesOn(state)) return '<div class="zonebox">Winkel messen: „Flächenpole“ unter „Darstellung“ einschalten.</div>';
   if (!pgAngle) return `<div class="zonebox">Winkel messen: ${state.pgSel.length ? 'einen zweiten Pol' : 'zwei Pole'} im Stereogramm antippen.</div>`;
   const [i, j] = state.pgSel;
   const A = info.ops[orb[i].op], B = info.ops[orb[j].op];
@@ -659,7 +824,8 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
     ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
-    ${state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>` : ''}`);
+    ${pgPolesOn(state) ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>`
+    : state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Objekte (${info.order - lower} oben, ${lower} unten). Die Flächenpole sind ausgeblendet (einblenden unter „Darstellung“); ρ und φ des Ausgangspols lassen sich weiter mit den Reglern einstellen.</p>` : ''}`);
 }
 
 function poleAngles(n) {
@@ -901,7 +1067,7 @@ function setPoleFromScreen(x, y) {
   render();
 }
 function nearGenerator(e) {
-  if (!current || current.kind !== 'pg' || !state.pg.showObject) return false;
+  if (!current || current.kind !== 'pg' || !pgPolesOn(state)) return false;
   const q = project(generalPole());
   const s = svgPoint(e.touches ? e.touches[0] : e);
   return Math.hypot(s.x - q.x, s.y - q.y) < touchRadius(30, 28);
@@ -918,7 +1084,7 @@ let dragging = false, moved = false, onGen = false, downAt = null;
 svg.addEventListener('touchstart', (e) => { if (!state.pg.tool && nearGenerator(e)) e.preventDefault(); }, { passive: false });
 svg.addEventListener('pointerdown', (e) => {
   moved = false; onGen = false;
-  if (state.mode !== 'pg' || !state.pg.showObject || state.pg.tool) return;
+  if (state.mode !== 'pg' || !pgPolesOn(state) || state.pg.tool) return;
   downAt = [e.clientX, e.clientY];
   onGen = nearGenerator(e);
   if (e.pointerType === 'mouse' || onGen) {
@@ -943,7 +1109,7 @@ svg.addEventListener('pointercancel', () => { dragging = false; });
 svg.addEventListener('click', (e) => {
   const s = svgPoint(e);
   if (state.mode === 'pg' && !state.pg.tool) {
-    if (!state.pg.showObject || moved || onGen) return;
+    if (!pgPolesOn(state) || moved || onGen) return;
     if (Math.hypot(s.x - C, s.y - C) <= 212) setPoleFromScreen(s.x, s.y);
     return;
   }
@@ -1041,9 +1207,21 @@ const view3d = new View3D($('view3d'), {
     pickFace(idx);
   },
 });
-for (const b of document.querySelectorAll('[data-view]')) {
-  b.addEventListener('click', () => view3d.setView(b.dataset.view));
-}
+$('view-oblique').addEventListener('click', () => selectView('oblique'));
+$('view-dirs').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-vdir]');
+  if (b) selectView('d' + b.dataset.vdir);
+});
+viewVec = OBLIQUE;
+// Kamera gedreht (nicht nur gezoomt): Markierung der Ansicht aufheben
+view3d.controls.addEventListener('change', () => {
+  if (!viewKey || !viewVec) return;
+  const want = viewKey === 'oblique' ? OBLIQUE : viewVec;
+  if (angleBetween(view3d.viewDir(), want) > 0.5) {
+    viewKey = null;
+    for (const b of document.querySelectorAll('.viewbar button')) b.setAttribute('aria-pressed', 'false');
+  }
+});
 
 // ------------------------------------------------------------------ Bedienelemente verbinden
 function bindCheck(id, obj, key) {
@@ -1067,7 +1245,8 @@ function setMode(mode) {
   $('tab-pg').setAttribute('aria-selected', String(mode === 'pg'));
   $('tab-poly').setAttribute('aria-selected', String(mode === 'poly'));
   for (const id of ['ctl-pg', 'ctl-pg-opts']) $(id).hidden = mode !== 'pg';
-  for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-shape', 'row-normals', 'v3d-tools']) $(id).hidden = mode !== 'poly';
+  for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-shape', 'row-normals', 'row-poly-poles', 'row-poly-lower', 'v3d-tools']) $(id).hidden = mode !== 'poly';
+  for (const id of ['row-pg-poles', 'row-pg-colorful']) $(id).hidden = mode !== 'pg';
   $('stereo-tools').hidden = false;
   syncToolBtns();
   if (mode !== 'poly') $('v3d-hint').textContent = '';
@@ -1083,6 +1262,7 @@ function init() {
 
   bindCheck('pg-elements', state.pg, 'showElements');
   bindCheck('pg-object', state.pg, 'showObject');
+  bindCheck('pg-poles', state.pg, 'showPoles');
   bindCheck('pg-colorful', state.pg, 'colorful');
   bindCheck('v-dircolors', state.view, 'dirColors');
   $('v3d-dirs').addEventListener('click', (e) => {
@@ -1159,6 +1339,7 @@ function init() {
   bindCheck('poly-open', state.poly, 'open');
   bindRange('poly-aux', state.poly, 'auxDist', (v) => v.toFixed(2));
   bindRange('poly-size', state.poly, 'size', (v) => v.toFixed(2));
+  bindCheck('poly-poles', state.poly, 'showPoles');
   bindCheck('poly-labels', state.poly, 'labels');
   bindCheck('poly-bravais', state.poly, 'bravais');
   $('poly-bravais').addEventListener('change', () => { buildFormSelect(); buildExDists(); });
@@ -1190,6 +1371,7 @@ function init() {
   bindRange('v-wulffrot', state.view, 'wulffRot', (v) => v.toFixed(0) + '°');
   bindCheck('v-axes', state.view, 'axes');
   bindCheck('v-sphere', state.view, 'sphere');
+  bindCheck('v-globe', state.view, 'globe');
   bindCheck('v-plane', state.view, 'plane');
   bindCheck('v-rays', state.view, 'rays');
   bindCheck('v-normals', state.view, 'normals');
@@ -1241,6 +1423,12 @@ function init() {
   }
   // „Weitere Optionen“ öffnen, wenn dort etwas eingeschaltet ist (z. B. über einen Link)
   if (state.poly.faceSym || state.poly.bravais) $('sec-more').open = true;
+  // „Darstellung“ öffnen, wenn dort etwas vom Standard abweicht (z. B. Pole über einen Link ausgeblendet):
+  // sonst fände man nicht, warum das Bild anders aussieht
+  const viewChanged = Object.keys(DEFAULTS.view).some((k) => k !== 'wulffRot' && state.view[k] !== DEFAULTS.view[k])
+    || state.pg.showPoles !== DEFAULTS.pg.showPoles || state.pg.colorful !== DEFAULTS.pg.colorful
+    || state.poly.showPoles !== DEFAULTS.poly.showPoles || state.poly.showLower !== DEFAULTS.poly.showLower;
+  if (viewChanged && !$('sec-view').open) { $('sec-view').dataset.quiet = '1'; $('sec-view').open = true; } // nicht als Wahl des Nutzers merken
 
   // Erste Schritte: beim ersten Besuch ohne Link sichtbar, wegklickbar, über „?“ wieder zu öffnen
   const INTRO_KEY = 'stereo-intro';
@@ -1264,7 +1452,8 @@ function init() {
     setExample('galenit');
     state.poly.tool = null; state.zoneSel = []; state.poly.zones = [];
     state.poly.labels = true; $('poly-labels').checked = true;
-    for (const [id, key] of [['v-sphere', 'sphere'], ['v-plane', 'plane'], ['v-rays', 'rays'], ['v-normals', 'normals']]) {
+    state.poly.showPoles = true; $('poly-poles').checked = true;
+    for (const [id, key] of [['v-sphere', 'sphere'], ['v-globe', 'globe'], ['v-plane', 'plane'], ['v-rays', 'rays'], ['v-normals', 'normals']]) {
       state.view[key] = true; $(id).checked = true;
     }
     setMode('poly');
@@ -1275,12 +1464,12 @@ function init() {
     if (i >= 0) { state.selected = i; render(); }
   };
   const STEPS = {
-    1: () => { loadGalena(); view3d.setView('oblique'); if (isPhone()) setFig('3d'); },
+    1: () => { loadGalena(); selectView('oblique'); if (isPhone()) setFig('3d'); },
     2: () => { if (!galenaShown()) loadGalena(); afterRender(() => selectFace([0, 0, 1])); if (isPhone()) setFig('stereo'); },
     3: () => {
       if (!galenaShown()) loadGalena();
-      afterRender(() => selectFace([0, 0, 1]));
-      view3d.setView('side'); if (isPhone()) setFig('3d');
+      afterRender(() => { selectFace([0, 0, 1]); selectView(sideViewKey()); });
+      if (isPhone()) setFig('3d');
     },
     4: () => {
       if (!galenaShown()) loadGalena();
@@ -1322,27 +1511,36 @@ function init() {
   $('tab-pg').addEventListener('click', () => setMode('pg'));
   $('tab-poly').addEventListener('click', () => setMode('poly'));
 
-  // SVG-Export
-  const svgString = () => {
-    const sc = { ...current.scene, poles: current.scene.poles.map((p) => ({ ...p, gen: false, selected: false })), bg: current.scene.col.paper };
-    return buildSVG(sc, { standalone: true }).full;
+  // Bildexport: immer in den hellen Farben, mit durchsichtigem Hintergrund (ausser der Kreisfläche des
+  // Stereogramms). Kopieren legt ein PNG in die Zwischenablage (fügt sich in Folien als Bild ein).
+  const baseName = () => (state.mode === 'pg' ? state.pg.id.replace(/\//g, '_')
+    : (S.currentExample(state)?.id || currentEntryId()).replace(/[/:]/g, '_'));
+  const flash = (btn) => {
+    const back = btn.dataset.label || (btn.dataset.label = btn.textContent);
+    return (text) => { btn.textContent = text; setTimeout(() => { btn.textContent = back; }, 1600); };
   };
-  $('copy-svg').addEventListener('click', async () => {
-    const btn = $('copy-svg');
-    try { await navigator.clipboard.writeText(svgString()); btn.textContent = 'Kopiert'; }
-    catch { btn.textContent = 'Nicht möglich'; }
-    setTimeout(() => { btn.textContent = 'SVG kopieren'; }, 1600);
-  });
-  if (window.STEREO_PREVIEW) $('save-svg').hidden = true;
-  $('save-svg').addEventListener('click', () => {
-    const blob = new Blob([svgString()], { type: 'image/svg+xml' });
+  const download = (blob, name) => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    const name = state.mode === 'pg' ? 'stereogramm-' + state.pg.id.replace(/\//g, '_') : 'stereogramm-' + currentEntryId().replace(/[/:]/g, '_');
-    a.download = name + '.svg';
+    a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  });
+  };
+  /** Kopieren: Blob als Promise übergeben, Safari verlangt den Aufruf noch in der Klick-Behandlung. */
+  const copyPng = async (btn, makeBlob) => {
+    const say = flash(btn);
+    try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': makeBlob() })]); say('Kopiert'); }
+    catch { say('Nicht möglich'); }
+  };
+  const savePng = async (btn, makeBlob, name) => {
+    try { download(await makeBlob(), name); } catch { flash(btn)('Nicht möglich'); }
+  };
+  $('copy-stereo').addEventListener('click', () => copyPng($('copy-stereo'), stereoPng));
+  $('save-svg').addEventListener('click', () => download(new Blob([stereoSvg()], { type: 'image/svg+xml' }), 'stereogramm-' + baseName() + '.svg'));
+  $('save-stereo-png').addEventListener('click', () => savePng($('save-stereo-png'), stereoPng, 'stereogramm-' + baseName() + '.png'));
+  $('copy-3d').addEventListener('click', () => copyPng($('copy-3d'), snapshot3d));
+  $('save-3d').addEventListener('click', () => savePng($('save-3d'), snapshot3d, '3d-konstruktion-' + baseName() + '.png'));
+  if (window.STEREO_PREVIEW) for (const id of ['save-svg', 'save-stereo-png', 'save-3d']) $(id).hidden = true;
 
   // Farbwechsel des Systems (hell/dunkel) → neu zeichnen
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);

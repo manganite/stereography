@@ -1,6 +1,7 @@
 /* Gemeinsame Grundlage von App (index.html) und Skript (skript.html): Farben (hell/dunkel),
    Schriften, Grundtypografie und Kopfzeile. */
-:root {
+/* .theme-light: helle Farben auch im Dunkelmodus (Export als Bild, siehe lightPalette in scene.js) */
+:root, .theme-light {
   --bg: #eceff2;
   --surface: #f8f9fb;
   --paper: #ffffff;

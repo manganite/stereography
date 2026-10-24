@@ -6,12 +6,70 @@ import * as THREE from '../lib/three.bundle.js';
 import { SIZE, R, arcPoints } from './stereogram.js';
 
 const V = (p) => new THREE.Vector3(p[0], p[1], p[2]);
+/** Schräge Standardansicht (Richtung zur Kamera). */
+export const OBLIQUE = [3.4, 1.7, 2.9];
+
+/** CSS-Farbe für die Leinwand; nicht lesbare Werte (ältere Browser) durch fallback ersetzen. */
+function canvasColor(ctx, css, fallback) {
+  ctx.fillStyle = '#010203';
+  ctx.fillStyle = css;
+  return ctx.fillStyle === '#010203' && css !== '#010203' ? fallback : ctx.fillStyle;
+}
+const transparent = (css) => !css || css === 'transparent' || /^rgba\(.*,\s*0\)$/.test(css) || /\/\s*0\)$/.test(css);
+
+/**
+ * Zeichnet die HTML-Beschriftungen der 3D-Ansicht (CSS2D-Elemente in root) auf ctx, an ihrer
+ * angezeigten Stelle; sx, sy: Bildpunkte je CSS-Pixel. Überstriche (.ov) wie im CSS (base.css).
+ */
+function drawLabels(ctx, root, sx, sy) {
+  const r0 = root.getBoundingClientRect();
+  for (const el of root.querySelectorAll('.lbl3d')) {
+    if (el.style.display === 'none') continue;
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) continue;
+    const cs = getComputedStyle(el);
+    const x = (r.left - r0.left) * sx, y = (r.top - r0.top) * sy, w = r.width * sx, h = r.height * sy;
+    ctx.save();
+    ctx.globalAlpha = Number(cs.opacity) || 1;
+    if (!transparent(cs.backgroundColor)) {
+      ctx.fillStyle = canvasColor(ctx, cs.backgroundColor, 'rgba(255,255,255,0.8)');
+      const rad = Math.min(h / 2, (parseFloat(cs.borderTopLeftRadius) || 0) * sx);
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(x, y, w, h, rad); else ctx.rect(x, y, w, h);
+      ctx.fill();
+    }
+    const fs = (parseFloat(cs.fontSize) || 12) * sy;
+    ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${fs}px ${cs.fontFamily}`;
+    const color = canvasColor(ctx, cs.color, '#000');
+    const parts = [...el.childNodes].map((n) => ({ t: n.textContent, bar: !!(n.classList && n.classList.contains('ov')) })).filter((p) => p.t);
+    const widths = parts.map((p) => ctx.measureText(p.t).width);
+    const total = widths.reduce((a, b) => a + b, 0);
+    const m = ctx.measureText('(0)');
+    const asc = m.fontBoundingBoxAscent ?? fs * 0.8, desc = m.fontBoundingBoxDescent ?? fs * 0.2;
+    const base = y + h / 2 + (asc - desc) / 2;
+    let px = x + w / 2 - total / 2;
+    ctx.fillStyle = color;
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+    parts.forEach((p, i) => {
+      ctx.fillText(p.t, px, base);
+      if (p.bar) {
+        const th = Math.max(sy, 0.07 * fs);
+        ctx.fillRect(px + 0.06 * fs, base - asc + 0.17 * fs, widths[i] - 0.12 * fs, th);
+      }
+      px += widths[i];
+    });
+    ctx.restore();
+  }
+}
 
 export class View3D {
-  constructor(container, { onSelect } = {}) {
+  /** transparent: durchsichtiger Hintergrund (Bildexport). */
+  constructor(container, { onSelect, transparent = false } = {}) {
     this.container = container;
     this.onSelect = onSelect;
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.transparent = transparent;
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: transparent });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     container.appendChild(this.renderer.domElement);
     this.labelRenderer = new THREE.CSS2DRenderer();
@@ -56,16 +114,31 @@ export class View3D {
   }
 
   setView(kind) {
-    const d = 5.2;
-    if (kind === 'top') {
-      // Blick von +z; Bildschirm: x nach unten, y nach rechts (wie im Stereogramm)
-      const e = 1e-3;
-      this.camera.position.set(d * Math.sin(e), 0, d * Math.cos(e));
-    } else if (kind === 'side') {
-      this.camera.position.set(d, 0.0001, 0.35);
-    } else {
-      this.camera.position.set(3.4, 1.7, 2.9).normalize().multiplyScalar(d);
+    if (kind === 'top') this.setViewDir([0, 0, 1]);
+    else if (kind === 'side') this._placeCamera(new THREE.Vector3(1, 0.0001 / 5.2, 0.35 / 5.2));
+    else this._placeCamera(new THREE.Vector3(...OBLIQUE));
+  }
+
+  /**
+   * Blick entlang einer Weltrichtung (Betrachter auf der Seite von dir, Blick zum Zentrum), Abstand wie bisher.
+   * Fast ∥ z: Blick von oben mit x nach unten und y nach rechts wie im Stereogramm.
+   */
+  setViewDir(dir) {
+    const v = new THREE.Vector3(dir[0], dir[1], dir[2]).normalize();
+    if (Math.abs(v.z) > 0.999) {
+      const e = 1e-3; // OrbitControls: nicht genau entlang der Hochachse (up = z)
+      v.set(Math.sin(e), 0, Math.sign(v.z) * Math.cos(e));
     }
+    this._placeCamera(v);
+  }
+
+  /** Aktuelle Blickrichtung (Einheitsvektor vom Zentrum zur Kamera). */
+  viewDir() {
+    return this.camera.position.clone().sub(this.controls.target).normalize().toArray();
+  }
+
+  _placeCamera(v) {
+    this.camera.position.copy(v.normalize().multiplyScalar(5.2));
     this.camera.lookAt(0, 0, 0);
     this.controls.target.set(0, 0, 0);
     this.controls.update();
@@ -112,6 +185,35 @@ export class View3D {
     });
   }
 
+  /**
+   * Bild der Ansicht als PNG (Promise<Blob>), etwa `width` Pixel breit, mit den Beschriftungen
+   * (N, S, Indizes, Achsen, Winkel). Diese sind HTML-Elemente über dem WebGL-Bild und werden
+   * an ihrer angezeigten Stelle mit Schrift, Farbe und Hintergrund nachgezeichnet.
+   */
+  snapshot(width = 2048) {
+    const w = this.container.clientWidth, h = this.container.clientHeight;
+    if (!w || !h) return Promise.reject(new Error('Ansicht nicht sichtbar'));
+    const pr = Math.min(4, Math.max(1, width / w));
+    const oldPr = this.renderer.getPixelRatio();
+    if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
+    this.controls.update();
+    this.renderer.setPixelRatio(pr);
+    this.renderer.setSize(w, h, false);
+    this.renderer.render(this.scene, this.camera);
+    this.labelRenderer.render(this.scene, this.camera);
+    const out = document.createElement('canvas');
+    out.width = this.renderer.domElement.width;
+    out.height = this.renderer.domElement.height;
+    const ctx = out.getContext('2d');
+    ctx.drawImage(this.renderer.domElement, 0, 0); // im selben Durchlauf wie render(): Puffer noch gültig
+    this.renderer.setPixelRatio(oldPr);
+    this.renderer.setSize(w, h, false);
+    this.requestRender();
+    const sx = out.width / w, sy = out.height / h;
+    drawLabels(ctx, this.labelRenderer.domElement, sx, sy);
+    return new Promise((resolve, reject) => out.toBlob((b) => (b ? resolve(b) : reject(new Error('PNG fehlgeschlagen'))), 'image/png'));
+  }
+
   _setupPicking() {
     const el = this.renderer.domElement;
     let down = null;
@@ -141,24 +243,29 @@ export class View3D {
     group.clear();
   }
 
-  /** Aktualisiert die Stereogramm-Textur aus einem SVG-String. */
+  /** Aktualisiert die Stereogramm-Textur aus einem SVG-String; das Promise erfüllt sich, sobald sie gezeichnet ist. */
   setStereoTexture(svg) {
     const token = (this._texToken = (this._texToken || 0) + 1);
-    const img = new Image();
-    img.onload = () => {
-      if (token !== this._texToken) return;
-      const ctx = this.texCanvas.getContext('2d');
-      ctx.clearRect(0, 0, 1024, 1024);
-      ctx.drawImage(img, 0, 0, 1024, 1024);
-      this.texture.needsUpdate = true;
-      this.requestRender();
-    };
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        if (token === this._texToken) {
+          const ctx = this.texCanvas.getContext('2d');
+          ctx.clearRect(0, 0, 1024, 1024);
+          ctx.drawImage(img, 0, 0, 1024, 1024);
+          this.texture.needsUpdate = true;
+          this.requestRender();
+        }
+        resolve();
+      };
+      img.onerror = () => resolve();
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
   }
 
   _buildBase(col, opts) {
     this._dispose(this.base);
-    this.renderer.setClearColor(new THREE.Color(col.paper), 1);
+    this.renderer.setClearColor(new THREE.Color(col.paper), this.transparent ? 0 : 1);
     const c = (x) => new THREE.Color(x);
     // Kugel (sehr transparent) + Gradnetz
     const sph = new THREE.Mesh(
@@ -200,7 +307,8 @@ export class View3D {
       plane.renderOrder = 1;
       this.base.add(plane);
     }
-    // Grundkreis
+    if (opts.showGlobe === false) return;
+    // Grundkreis (Äquator der Umkugel)
     const eq = new THREE.Mesh(new THREE.TorusGeometry(1, 0.006, 6, 160), new THREE.MeshBasicMaterial({ color: c(col.ink) }));
     this.base.add(eq);
     // Nord- und Südpol (Projektionszentren)
@@ -342,11 +450,12 @@ export class View3D {
         const color = c(o.det > 0 ? col.upper : col.accent2);
         const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color, side: THREE.DoubleSide, roughness: 0.55, flatShading: true }));
         this.content.add(mesh);
+        if (opts.showPoles === false) return;
         const dot = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: i === 0 ? c(col.accent) : color }));
         dot.position.copy(V(o.p));
         this.content.add(dot);
       });
-      if (opts.showRays) this._rays(data.orbit.map((o) => o.p), col);
+      if (opts.showRays && opts.showPoles !== false) this._rays(data.orbit.map((o) => o.p), col);
     }
     if (opts.arc) this._arc(opts.arc, col);
     if (opts.showAxes) this._axisArrows(data.crystalAxes, col);
@@ -443,7 +552,7 @@ export class View3D {
       g.setAttribute('position', new THREE.Float32BufferAttribute(np, 3));
       this.content.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: c(col.normal) })));
     }
-    vis.forEach(({ f, i }) => {
+    if (opts.showPoles !== false) vis.forEach(({ f, i }) => {
       const isSel = hi.has(i), isZ = inZone.has(i);
       const pc = isSel ? col.accent : isZ ? zoneCol.get(i) : focus ? col.muted : f.role === 'aux' ? col.muted : f.color2d || col.normal;
       const m = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: c(pc) }));
@@ -490,7 +599,7 @@ export class View3D {
       });
     }
     if (opts.arc) this._arc(opts.arc, col);
-    if (opts.showRays) this._rays(vis.map(({ f }) => f.normal), col);
+    if (opts.showRays && opts.showPoles !== false) this._rays(vis.map(({ f }) => f.normal), col);
     if (opts.showAxes) this._axisArrows(poly.axes, col);
     this.requestRender();
   }

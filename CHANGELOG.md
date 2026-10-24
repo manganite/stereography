@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-24
+
+3D-Konstruktion: Ansichten entlang der Blickrichtungen, Bildexport immer hell und durchsichtig, Flächenpole abschaltbar; Seitenleiste nach dem Prinzip „weniger auf einmal“.
+
 ### Hinzugefügt
 
 - **Ansichten der 3D-Konstruktion entlang der Blickrichtungen:** Unter der 3D-Ansicht stehen neben „Schräg“ drei Knöpfe, je einer für die drei Blickrichtungen des Kristallsystems (Positionen im vollen Hermann-Mauguin-Symbol), mit deren Farbe: kubisch [001], [111], [110]; tetragonal [001], [100], [110]; trigonal und hexagonal [001], [100], [210]; orthorhombisch und monoklin [100], [010], [001]. Triklin, ohne Blickrichtung im Symbol, blickt entlang der Kristallachsen *a*, *b*, *c*. Aus jeder Richtungsfamilie wird die Richtung parallel zur Projektionsrichtung gewählt (Bild wie im Stereogramm), sonst eine senkrecht dazu (seitlicher Blick, Äquatorebene von der Kante); bei Kristallformen folgt die Wahl der Lage, z. B. kubisch mit [111] ∥ Projektionsrichtung: [100], [111], [11̄0]. Die Knöpfe ersetzen „Von oben“ und „Seitlich“.
@@ -123,7 +127,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/manganite/stereography/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/manganite/stereography/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/manganite/stereography/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/manganite/stereography/compare/v1.2.0...v1.3.0

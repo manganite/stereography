@@ -1386,7 +1386,7 @@ export const BANK = [
   {
     id: 'hab-2-01', stufe: 2, kapitel: 5, typ: 'einfach',
     lernziel: 'erklären, wie der Habitus beim Wachstum entsteht',
-    frage: 'An einem Galenit aus Würfel und Oktaeder wachsen die Oktaederflächen schneller als die Würfelflächen. Was geschieht beim weiteren Wachstum?',
+    frage: 'Ein Galenit aus Würfel und Oktaeder; Würfel- und Oktaederflächen sind gleich weit vom Mittelpunkt entfernt. Beim Wachstum verschieben sich die Oktaederflächen <b>doppelt so schnell</b> nach aussen wie die Würfelflächen. Was geschieht?',
     antworten: [
       'Die Oktaederflächen werden kleiner und können ganz verschwinden',
       'Die Oktaederflächen werden grösser, weil sie schneller wachsen',
@@ -1397,22 +1397,23 @@ export const BANK = [
     hinweise: [
       null,
       'Eine schnell wachsende Fläche schiebt sich schnell nach aussen und wird dabei von den langsameren Nachbarflächen eingeengt; sie wird kleiner.',
-      'Das Grössenverhältnis bliebe nur bei gleichen Wachstumsgeschwindigkeiten erhalten.',
+      'Das Grössenverhältnis bliebe nur erhalten, wenn die Abstände aller Flächen vom Mittelpunkt im gleichen Verhältnis wüchsen. Hier wächst der Abstand der Oktaederflächen doppelt so schnell, ihr Verhältnis zu dem der Würfelflächen steigt von 1 gegen 2.',
       'Die Flächen verschieben sich beim Wachstum nur parallel; ihre Normalen und damit ihre Pole bleiben, wo sie sind.',
     ],
-    erklaerung: 'Langsam wachsende Flächen werden grösser, schnell wachsende kleiner, bis sie ganz verschwinden können. Hier werden die Oktaederflächen kleiner, und der Kristall nähert sich dem Würfel. Solange Oktaederflächen vorhanden sind, bleibt das Stereogramm gleich; verschwinden sie, ändert sich die Tracht von {100}, {111} zu {100}, und ihre Pole fallen weg.',
+    erklaerung: 'Langsam wachsende Flächen werden grösser, schnell wachsende kleiner, bis sie ganz verschwinden können. Hier rücken die Oktaederflächen im Verhältnis immer weiter nach aussen; sie werden schmaler, und der Kristall nähert sich dem Würfel. Sobald der Abstand der Oktaederflächen das √3-Fache des Abstands der Würfelflächen erreicht, liegen die Würfelecken innerhalb der Oktaederflächen, und diese verschwinden. Solange Oktaederflächen vorhanden sind, bleibt das Stereogramm gleich; verschwinden sie, ändert sich die Tracht von {100}, {111} zu {100}, und ihre Pole fallen weg.',
     skript: 'wachstum', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folie 38; Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 36–39 (Abb. 5.6)',
+    pruefung: { art: 'wachstum', abstand: [1, 1], geschwindigkeit: [1, 2] },
     status: 'entwurf',
   },
   {
     id: 'hab-2-02', stufe: 2, kapitel: 5, typ: 'mehrfach',
     lernziel: 'Tracht und Habitus eines Kristalls unterscheiden und benennen',
-    frage: 'Ein <b>tafeliger</b> Kristall aus hexagonalem Prisma und Pinakoid. Welche Aussagen treffen zu?',
+    frage: 'Ein <b>tafeliger</b> Kristall aus dem hexagonalen Prisma {100} und dem Pinakoid {001}. Welche Aussagen treffen zu?',
     antworten: [
       'Die Pinakoidflächen sind grösser als die Prismenflächen',
-      'Das Pinakoid wächst langsamer als das Prisma',
-      'Seine Tracht ist {100}, {001}',
+      'Er entsteht, wenn das Pinakoid langsamer wächst als das Prisma',
+      'Ein nadeliger Kristall aus denselben Formen hat dieselbe Tracht',
       'Im Stereogramm (Projektion ∥ c) liegen die Prismenpole näher am Mittelpunkt als bei einem nadeligen Kristall',
       'Sein Habitus ist isometrisch',
     ],

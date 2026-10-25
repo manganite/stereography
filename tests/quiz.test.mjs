@@ -397,6 +397,16 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
     } else if (p.art === 'hexFamilieMehr') {
       const c = symmetryDirections(buildPointGroup(p.gruppe))[p.position - 1];
       q.antworten.forEach((a, i) => assert.equal(c.dirs.some((d) => parallelF(d, hex(idx(a)))), q.richtig.includes(i), `${q.id}: ${text(a)}`));
+    } else if (p.art === 'wachstum') {
+      // Würfel {100} im Abstand d₁, Oktaeder {111} im Abstand d₂: Oktaederflächen gibt es, solange d₂/d₁ < √3,
+      // Würfelflächen, solange d₂/d₁ > 1/√3 (Ecke (d₁, d₁, d₁) bzw. Spitze √3·d₂ auf der Achse)
+      const [d1, d2] = p.abstand, [v1, v2] = p.geschwindigkeit;
+      const r = (t) => (d2 + v2 * t) / (d1 + v1 * t);
+      assert.ok(r(0) > 1 / Math.sqrt(3) && r(0) < Math.sqrt(3), `${q.id}: anfangs beide Formen`);
+      assert.ok(v2 / v1 > Math.sqrt(3), `${q.id}: Oktaederflächen verschwinden nicht`);
+      const t = (Math.sqrt(3) * d1 - d2) / (v2 - Math.sqrt(3) * v1);
+      assert.ok(t > 0 && Math.abs(r(t) - Math.sqrt(3)) < 1e-9, q.id);
+      assert.match(text(q.antworten[q.richtig[0]]), /verschwinden/, q.id);
     } else if (p.art === 'hexWinkel') {
       const w = winkel(hex(p.a), hex(p.b));
       q.antworten.forEach((a, i) => assert.equal(Math.abs(zahl(text(a).replace('°', '')) - w) < 0.005, q.richtig.includes(i), `${q.id}: ${text(a)} (soll ${w})`));

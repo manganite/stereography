@@ -230,27 +230,27 @@ const GRAU = ' Grau: das Pinakoid, mit dem die App das offene Prisma schliesst.'
  */
 export const KOERPER = {
   wuerfel: { form: 'sys=kubisch&f=m-3m:a34', der: 'der Würfel {100}', des: 'des Würfels {100}', den: 'den Würfel {100}',
-    muster: 'ein Punkt im Kreis in der Mitte (Deck- und Grundfläche) und vier Pole auf dem Grundkreis', pole: { mitte: 1, rand: 4, doppelt: 0, einzeln: 0 } },
+    muster: 'ein Punkt im Kreis in der Mitte (Deck- und Grundfläche) und vier Pole auf dem Grundkreis im Abstand von 90°', pole: { mitte: 1, rand: 4, doppelt: 0, einzeln: 0 } },
   oktaeder: { form: 'sys=kubisch&f=m-3m:b35', der: 'das Oktaeder {111}', des: 'des Oktaeders {111}', den: 'das Oktaeder {111}',
     muster: 'vier Punkte im Kreis auf den Diagonalen, bei ρ = 54,7°', pole: { mitte: 0, rand: 0, doppelt: 4, einzeln: 0 }, rho: [54.7] },
   rhombendodekaeder: { form: 'sys=kubisch&f=m-3m:c40', der: 'das Rhombendodekaeder {110}', des: 'des Rhombendodekaeders {110}', den: 'das Rhombendodekaeder {110}',
-    muster: 'vier Pole auf dem Grundkreis auf den Diagonalen und vier Punkte im Kreis oben, unten, links und rechts, bei ρ = 45°', pole: { mitte: 0, rand: 4, doppelt: 4, einzeln: 0 }, rho: [45] },
+    muster: 'vier Pole auf dem Grundkreis (auf den Diagonalen) und vier Punkte im Kreis bei ρ = 45° (oben, unten, links, rechts)', pole: { mitte: 0, rand: 4, doppelt: 4, einzeln: 0 }, rho: [45] },
   tetraeder: { form: 'sys=kubisch&f=-43m:a33', der: 'das Tetraeder {111}', des: 'des Tetraeders {111}', den: 'das Tetraeder {111}',
     muster: 'vier Pole auf den Diagonalen, abwechselnd ● (obere Halbkugel) und ○ (untere Halbkugel)', pole: { mitte: 0, rand: 0, doppelt: 0, einzeln: 4 } },
   tetrPrisma: { form: 'sys=tetragonal&f=4/mmm:c10', der: 'das tetragonale Prisma {100} mit Pinakoid {001}', des: 'des tetragonalen Prismas {100} mit Pinakoid {001}', grau: true,
     muster: 'vier Pole auf dem Grundkreis im Abstand von 90° und der graue Punkt im Kreis des Pinakoids in der Mitte', pole: { mitte: 1, rand: 4, doppelt: 0, einzeln: 0 } },
   hexPrisma: { form: 'sys=hexagonal&f=6/mmm:c25', der: 'das hexagonale Prisma {100} mit Pinakoid {001}', des: 'des hexagonalen Prismas {100} mit Pinakoid {001}', grau: true,
     muster: 'sechs Pole auf dem Grundkreis im Abstand von 60° und der graue Punkt im Kreis des Pinakoids in der Mitte', pole: { mitte: 1, rand: 6, doppelt: 0, einzeln: 0 } },
-  tetrDipyr: { form: 'sys=tetragonal&f=4/mmm:e14', der: 'die tetragonale Dipyramide {111}', des: 'der tetragonalen Dipyramide {111}',
-    muster: 'vier Punkte im Kreis auf den Diagonalen, bei ρ = 61,5° (c/a = 1,3)', pole: { mitte: 0, rand: 0, doppelt: 4, einzeln: 0 }, rho: [61.5] },
+  tetrDipyr: { form: 'sys=tetragonal&f=4/mmm:e14&ca=1.8', der: 'die tetragonale Dipyramide {111}', des: 'der tetragonalen Dipyramide {111}',
+    muster: 'vier Punkte im Kreis auf den Diagonalen, bei ρ = 68,6° (spitze Dipyramide, c/a = 1,8)', pole: { mitte: 0, rand: 0, doppelt: 4, einzeln: 0 }, rho: [68.6] },
   hexDipyr: { form: 'sys=hexagonal&f=6/mmm:e31', der: 'die hexagonale Dipyramide {101}', des: 'der hexagonalen Dipyramide {101}',
-    muster: 'sechs Punkte im Kreis im Abstand von 60°', pole: { mitte: 0, rand: 0, doppelt: 6, einzeln: 0 } },
+    muster: 'sechs Punkte im Kreis im Abstand von 60°, bei ρ = 51,8° (c/a = 1,1)', pole: { mitte: 0, rand: 0, doppelt: 6, einzeln: 0 } },
   rhomboeder: { form: 'sys=trigonal&f=-3m1:c21', der: 'das Rhomboeder {101}', des: 'des Rhomboeders {101}',
-    muster: 'sechs Pole im Abstand von 60°, abwechselnd ● und ○', pole: { mitte: 0, rand: 0, doppelt: 0, einzeln: 6 } },
+    muster: 'sechs Pole im Abstand von 60°, abwechselnd ● und ○, bei ρ = 51,8° (c/a = 1,1)', pole: { mitte: 0, rand: 0, doppelt: 0, einzeln: 6 } },
   trigPrisma: { form: 'sys=hexagonal&f=-6m2:b18', der: 'das trigonale Prisma {100} mit Pinakoid {001}', des: 'des trigonalen Prismas {100} mit Pinakoid {001}', grau: true,
     muster: 'drei Pole auf dem Grundkreis im Abstand von 120° und der graue Punkt im Kreis des Pinakoids in der Mitte', pole: { mitte: 1, rand: 3, doppelt: 0, einzeln: 0 } },
-  rhombDipyr: { form: 'sys=orthorhombisch&f=mmm:g7', der: 'die rhombische Dipyramide {111}', des: 'der rhombischen Dipyramide {111}',
-    muster: 'vier Punkte im Kreis, nicht auf den Diagonalen, weil a ≠ b', pole: { mitte: 0, rand: 0, doppelt: 4, einzeln: 0 } },
+  rhombDipyr: { form: 'sys=orthorhombisch&f=mmm:g7&ba=1.4&ca=0.6', der: 'die rhombische Dipyramide {111}', des: 'der rhombischen Dipyramide {111}',
+    muster: 'vier Punkte im Kreis bei ρ = 36,4° (flache Dipyramide, c/a = 0,6), als Rechteck statt Quadrat angeordnet, weil a ≠ b: Die Pole liegen näher bei der kürzeren Achse a (oben und unten)', pole: { mitte: 0, rand: 0, doppelt: 4, einzeln: 0 } },
 };
 /** Aufgaben: Kristall, Stufe, drei Ablenker (Kristalle mit ähnlichem, aber unterscheidbarem Stereogramm). */
 const KOERPER_AUFGABEN = [
@@ -331,14 +331,14 @@ export const LAGE_MUSTER = {
   rhombendodekaeder: {
     '001': [KOERPER.rhombendodekaeder.muster, KOERPER.rhombendodekaeder.pole, KOERPER.rhombendodekaeder.rho],
     111: ['sechs Pole auf dem Grundkreis und sechs Pole im Abstand von 60°, abwechselnd ● und ○, bei ρ = 35,3°', { mitte: 0, rand: 6, doppelt: 0, einzeln: 6 }, [35.3]],
-    110: ['ein Punkt im Kreis in der Mitte, zwei Pole auf dem Grundkreis (links und rechts) und vier Punkte im Kreis bei ρ = 60°', { mitte: 1, rand: 2, doppelt: 4, einzeln: 0 }, [0, 60]],
+    110: ['ein Punkt im Kreis in der Mitte, zwei Pole auf dem Grundkreis (links und rechts) und vier Punkte im Kreis, bei ρ = 60°', { mitte: 1, rand: 2, doppelt: 4, einzeln: 0 }, [0, 60]],
   },
 };
 const LAGE_ANDERER = { wuerfel: 'oktaeder', oktaeder: 'wuerfel', rhombendodekaeder: 'wuerfel' };
 const LAGEN = ['001', '111', '110'];
 const lageText = (l) => `[${l}]`;
 /** Was die Lage sichtbar macht (Skript Kap. 2, „Andere Projektionsrichtung, gleicher Kristall“). */
-const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: 'die dreizählige Symmetrie', 110: 'die zweizählige Symmetrie' };
+const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${ov(3)}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
 
 export const LAGE = {
   id: 'gen-lage', kapitel: 2, stufen: [2], status: 'entwurf',
@@ -375,7 +375,7 @@ export const LAGE = {
       bild: stereo(k, lage).app,
       bildAlt: 'Stereogramm der Flächenpole eines Kristalls',
       antworten: [zeichnung(k, lage), ...andere.map((l) => zeichnung(k, l)), zeichnung(x, lage)],
-      hinweise: [null, ...andere.map((l) => `Das ist ${e.der} mit ${lageText(l)} senkrecht. Stereogramm dazu: ${muster(k, l)}.`),
+      hinweise: [null, ...andere.map((l) => `Das ist ${e.der} mit ${lageText(l)} als Projektionsrichtung (in der Zeichnung senkrecht). Stereogramm dazu: ${muster(k, l)}.`),
         `Das ist ${KOERPER[x].der} in derselben Lage. Stereogramm dazu: ${muster(x, lage)}.`],
     };
   },
@@ -389,6 +389,73 @@ const geruest2d = (id) => ({ app: `#m=pg&g=${encodeURIComponent(id)}&obj=0&farbe
 
 /** Ablenker wie bei gen-geruest, ohne die unlesbaren kubischen Gerüste (23 hat damit keine). */
 const abl3d = (id) => geruestAblenker(id).filter((x) => !GERUEST3D_OHNE.includes(x.id));
+/** Abstand zweier Gerüste: Zahl der Elemente, in denen sie sich unterscheiden (Achsen je Symbol, Spiegelebenen, 1̄). */
+function abstand(a, b) {
+  const p = zaehle(a), q = zaehle(b);
+  return Object.keys({ ...p, ...q }).reduce((n, k) => n + Math.abs((p[k] || 0) - (q[k] || 0)), 0);
+}
+/** Die drei ähnlichsten Ablenker (bei gleichem Abstand in der Reihenfolge von geruestAblenker), damit keiner auf einen Blick falsch ist. */
+function wahl3d(id) {
+  const info = buildPointGroup(id);
+  return abl3d(id).map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).slice(0, 3).map((u) => u.x);
+}
+
+const ACHSE_DAT = (sym, n) => (n === 1 ? `der ${ACHSE[sym].replace('zählige', 'zähligen')}` : `den ${ACHSEN[sym].replace('zählige', 'zähligen')}`);
+const und = (l) => (l.length === 1 ? l[0] : `${l.slice(0, -1).join(', ')} und ${l[l.length - 1]}`);
+const nennen = (sym, n) => `${n === 1 ? 'eine' : ZAHL[n]} ${n === 1 ? ACHSE[sym] : ACHSEN[sym]}`;
+/**
+ * Hinweis zu einem Ablenker mit Achsen nach Richtung: Liegt im Ablenker an derselben Stelle eine Achse anderen Charakters
+ * (z. B. 3 statt 3̄ ∥ c), heisst es „statt“, nicht „zusätzlich … fehlt“.
+ */
+export function unterschiedAchsen(gezeigt, x) {
+  const andere = buildPointGroup(x.id);
+  const richtung = (d) => { const l = Math.hypot(...d); const v = d.map((c) => c / l); const s = v.find((c) => Math.abs(c) > 1e-6) < 0 ? -1 : 1; return v.map((c) => (Math.abs(c) < 5e-5 ? 0 : c * s).toFixed(4)).join(','); };
+  const achsen = (info) => new Map(info.axes.filter((a) => ACHSE[a.symbol]).map((a) => [richtung(a.dir), a.symbol]));
+  const A = achsen(gezeigt), B = achsen(andere);
+  const statt = new Map(), mehr = {}, weniger = {};
+  for (const [k, sym] of B) {
+    if (!A.has(k)) mehr[sym] = (mehr[sym] || 0) + 1;
+    else if (A.get(k) !== sym) { const key = `${sym}|${A.get(k)}`; statt.set(key, (statt.get(key) || 0) + 1); }
+  }
+  for (const [k, sym] of A) if (!B.has(k)) weniger[sym] = (weniger[sym] || 0) + 1;
+  const zm = andere.mirrors.length - gezeigt.mirrors.length;
+  const plus = [], minus = [], anders = [];
+  for (const sym of ['6', '-6', '4', '-4', '3', '-3', '2']) {
+    // gleiche Achse in anderer Richtung (z. B. 2 ∥ b statt 2 ∥ c) nicht als „zusätzlich“ und „fehlt“ zählen
+    const n = Math.min(mehr[sym] || 0, weniger[sym] || 0);
+    if (n) anders.push(nennen(sym, n));
+    if ((mehr[sym] || 0) > n) plus.push(nennen(sym, mehr[sym] - n));
+    if ((weniger[sym] || 0) > n) minus.push(nennen(sym, weniger[sym] - n));
+  }
+  if (zm > 0) plus.push(`${zm === 1 ? 'eine' : ZAHL[zm]} ${zm === 1 ? 'Spiegelebene' : 'Spiegelebenen'}`);
+  if (zm < 0) minus.push(`${-zm === 1 ? 'eine' : ZAHL[-zm]} ${-zm === 1 ? 'Spiegelebene' : 'Spiegelebenen'}`);
+  if (andere.centro && !gezeigt.centro) plus.push('ein Inversionszentrum');
+  if (!andere.centro && gezeigt.centro) minus.push('ein Inversionszentrum');
+  const teile = [...statt].map(([key, n]) => { const [neu, alt] = key.split('|'); return `an ${n === 1 ? 'derselben Stelle' : 'denselben Stellen'} ${nennen(neu, n)} statt ${ACHSE_DAT(alt, n)}`; });
+  if (anders.length) teile.push(`${und(anders)} in anderer Richtung`);
+  if (plus.length) teile.push(`zusätzlich ${und(plus)}`);
+  const name = hmHTML(x.system === 'trigonal' && x.setting ? x.setting : x.hm);
+  const verb = minus.length === 1 && /^(ein|eine) /.test(minus[0]) ? 'fehlt' : 'fehlen';
+  if (!teile.length && !minus.length) return `Das Gerüst von ${name} hat dieselben Elemente in anderer Anordnung.`;
+  if (!teile.length) return `Dem Gerüst von ${name} ${verb} ${und(minus)}.`;
+  return `Das Gerüst von ${name} hat ${teile.join('; ')}${minus.length ? `; dafür ${verb} ihm ${und(minus)}` : ''}.`;
+}
+
+/** Wie die Elemente im Stereogramm erscheinen, nur für die Elemente dieses Gerüsts (Skript Kap. 3). */
+function darstellungText(info) {
+  const t = [];
+  const zAchse = info.axes.find((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
+  const ebene = info.axes.filter((a) => Math.abs(a.dir[2]) < 1e-6);
+  if (zAchse) t.push(`die Achse ∥ c als Symbol in der Mitte`);
+  if (ebene.length) t.push(`${ebene.length === 1 ? 'die Achse' : 'die Achsen'} in der Projektionsebene als Symbole an beiden Enden auf dem Grundkreis`);
+  const zm = info.mirrors.some((n) => Math.abs(n[2]) > 1 - 1e-6);
+  const schief = info.mirrors.length - (zm ? 1 : 0);
+  if (schief) t.push(`${schief === 1 ? 'die Spiegelebene' : 'die Spiegelebenen'} ∥ c als ${schief === 1 ? 'Durchmesser' : 'Durchmesser (Grosskreise)'}`);
+  if (zm) t.push('die Spiegelebene ⊥ c als kräftiger Grundkreis');
+  if (info.centro) t.push(zAchse ? 'das Inversionszentrum als Punkt im Achsensymbol' : 'das Inversionszentrum als kleiner Kreis in der Mitte');
+  if (!t.length) return 'Ohne Symmetrieelemente bleibt im Stereogramm nur der Grundkreis.';
+  return `Im Stereogramm erscheinen ${und(t)}.`;
+}
 
 export const GERUEST3D = {
   id: 'gen-geruest3d', kapitel: 3, stufen: [1, 2], status: 'entwurf',
@@ -398,15 +465,12 @@ export const GERUEST3D = {
     const [richtung, id] = param.split(':');
     const g = groupById(id);
     const info = buildPointGroup(id);
-    const abl = abl3d(id);
-    const step = Math.max(1, Math.floor(abl.length / 3));
-    const wahl = [0, 1, 2].map((k) => abl[(k * step) % abl.length]).filter((x, i, a) => a.indexOf(x) === i);
-    for (const x of abl) if (wahl.length < 3 && !wahl.includes(x)) wahl.push(x);
+    const wahl = wahl3d(id);
     const gemeinsam = {
       typ: 'bild-bild',
       richtig: [0],
-      hinweise: [null, ...wahl.map((x) => unterschied(info, x))],
-      erklaerung: `Das ist das Symmetriegerüst von ${hmHTML(g.hm)}: ${elementeText(info)}. Im Stereogramm erscheinen die Drehachsen als Durchstosspunkte mit ihrem Symbol und die Spiegelebenen als Grosskreise.`,
+      hinweise: [null, ...wahl.map((x) => unterschiedAchsen(info, x))],
+      erklaerung: `Das ist das Symmetriegerüst von ${gruppenSymbol(g)}: ${elementeText(info)}. ${darstellungText(info)}`,
       skript: 'elemente',
       app: `#m=pg&g=${encodeURIComponent(id)}&obj=0`,
       quelle: 'Folien 89–91; nach Borchardt-Ott & Sowa (2018), Abschn. 5.4 (S. 43) und Abb. 7.8–7.13',
@@ -415,7 +479,7 @@ export const GERUEST3D = {
       return {
         ...gemeinsam,
         lernziel: 'die Symmetrieelemente einer Punktgruppe ins Stereogramm einzeichnen',
-        frage: 'Welches Stereogramm zeigt dieses Symmetriegerüst? Die c-Achse zeigt in Projektionsrichtung, im Bild senkrecht (Pfeil).',
+        frage: 'Welches Stereogramm zeigt dieses Symmetriegerüst? Die c-Achse liegt in Projektionsrichtung und steht im Bild senkrecht (Pfeil).',
         bild: geruest3d(id).app,
         bildAlt: 'Räumliche Zeichnung eines Symmetriegerüsts',
         antworten: [geruest2d(id), ...wahl.map((x) => geruest2d(x.id))],
@@ -424,7 +488,7 @@ export const GERUEST3D = {
     return {
       ...gemeinsam,
       lernziel: 'ein Stereogramm einer Symmetrie zuordnen',
-      frage: 'Welche räumliche Zeichnung zeigt das Symmetriegerüst zu diesem Stereogramm? Die c-Achse zeigt in Projektionsrichtung, in den Zeichnungen senkrecht (Pfeil).',
+      frage: 'Welche räumliche Zeichnung zeigt das Symmetriegerüst zu diesem Stereogramm? Die c-Achse liegt in Projektionsrichtung und steht in den Zeichnungen senkrecht (Pfeil).',
       bild: geruest2d(id).app,
       bildAlt: 'Stereogramm eines Symmetriegerüsts',
       antworten: [geruest3d(id), ...wahl.map((x) => geruest3d(x.id))],

@@ -1,7 +1,8 @@
 // Feste räumliche Zeichnungen für Quiz und Moodle-Export: Kristall (Polyeder) und Symmetriegerüst einer
 // Punktgruppe als SVG, ohne WebGL. Parallelprojektion aus einer festen Richtung wie in Lehrbuchzeichnungen:
-// a zeigt zum Betrachter, b nach rechts, leicht von oben. Die Projektionsrichtung des Stereogramms (z)
-// steht im Bild senkrecht.
+// x zeigt zum Betrachter, y nach rechts, leicht von oben (x, y, z wie im Stereogramm: x nach unten, y nach rechts).
+// In der Grundlage rechtwinkliger Systeme ist x ∥ a, hexagonal x ∥ a* (a₁ liegt 30° daneben); in anderen Lagen
+// zeigt die Richtung, die im Stereogramm unten liegt, zum Betrachter. Die Projektionsrichtung (z) steht senkrecht.
 //
 // Bildangabe im Quiz: "3d" + Link-Adresse der App, z. B. "3d#m=form&sys=kubisch&f=m-3m:a34&lage=111".
 
@@ -164,8 +165,9 @@ export function geruestSVG(hash, col, opt = {}) {
   for (const ax of info.axes) out.push(achse(ax, ende(ax, true)));
   if (info.centro) out.push(`<circle cx="${M}" cy="${M}" r="${opt.klein ? 9 : 6}" fill="${col.paper}" stroke="${col.ink}" stroke-width="1.8"/>`);
   for (const ax of info.axes) out.push(sym(ax, ende(ax, true)));
-  // Blickpfeil neben der Kugel (über der Kugel verdeckte er das Symbol der Achse ∥ c)
-  if (opt.ebene !== false) out.push(pfeil({ x: M - RS - 34, y: M - RS - 10 }, { x: M - RS - 34, y: M - RS * 0.35 }, col));
+  // Blickpfeil in der Ecke oben links, frei von den Achsensymbolen (über der Kugel verdeckte er das Symbol der
+  // Achse ∥ c, neben der Kugel wirkte er wie ein Teil einer liegenden Achse)
+  if (opt.ebene !== false) out.push(pfeil({ x: 40, y: 22 }, { x: 40, y: 96 }, col));
   return out.join('');
 }
 

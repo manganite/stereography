@@ -371,7 +371,7 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
         assert.ok(Math.abs(winkel(a, r) - w0) < 1e-9, q.id);
       }
       assert.ok(Math.abs(w0 - 90) > 1, `${q.id}: Grosskreis`);
-      assert.ok(text(q.antworten[q.richtig[0]]).includes(`${w0.toFixed(2).replace('.', ',')}°`), `${q.id}: ${w0}`);
+      assert.ok(text(q.erklaerung).includes(`${w0.toFixed(2).replace('.', ',')}°`), `${q.id}: ${w0}`);
     } else if (p.art === 'bahnStellen') {
       const orb = orbit(buildPointGroup(p.gruppe).ops, P0).map((o) => o.p ?? o);
       const stellen = new Set(orb.map((x) => { const b = project(x); return `${b.x.toFixed(6)},${b.y.toFixed(6)}`; }));

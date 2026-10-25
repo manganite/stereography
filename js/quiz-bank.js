@@ -1094,7 +1094,7 @@ export const BANK = [
   {
     id: 'hex-1-05', stufe: 1, kapitel: 7, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
-    frage: 'Welche Richtung liegt genau <b>in der Mitte zwischen <i>a</i>₁ und <i>a</i>₂</b>?',
+    frage: 'Welche Richtung liegt im hexagonalen Achsensystem genau <b>in der Mitte zwischen <i>a</i>₁ und <i>a</i>₂</b>?',
     antworten: ['[110]', '[210]', '[120]', `[${o(1)}${o(1)}0]`],
     richtig: [0],
     hinweise: [

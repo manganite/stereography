@@ -8,7 +8,7 @@ import {
   KAPITEL, kandidaten, zaehlen, ziehen, stellen, pruefen, rng, GEN_ANTEIL,
   leererFortschritt, fortschrittAus, vermerken, stand,
 } from '../js/quiz-core.js';
-import { createState, applyHashTo, stereoForHash, stateForHash } from '../js/scene.js';
+import { createState, applyHashTo, stereoForHash, stateForHash, currentEntryId } from '../js/scene.js';
 import { buildSVG } from '../js/stereogram.js';
 import { groupById, POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart } from '../js/pointgroups.js';
 import { CATALOG } from '../js/forms.js';
@@ -39,7 +39,7 @@ const parallelF = (a, b) => Math.abs(Math.abs(dot(norm(a), norm(b))) - 1) < 1e-9
 const richtungen = (h) => [...h.replace(/<span class="ov">(\d)<\/span>/g, '-$1').matchAll(/\[(-?\d)(-?\d)(-?\d)\]/g)].map((m) => [1, 2, 3].map((k) => Number(m[k])));
 const hex = latticeToCart('hexagonal');
 // Bild eines Pols unter einer Abbildung (Beschreibung wie in quiz-bank.js)
-const BILD = { z: ([x, y, z]) => [x, y, -z], xyz: ([x, y, z]) => [-x, -y, -z], xy: ([x, y, z]) => [-x, -y, z] };
+const BILD = { z: ([x, y, z]) => [x, y, -z], xyz: ([x, y, z]) => [-x, -y, -z], xy: ([x, y, z]) => [-x, -y, z], y: ([x, y, z]) => [-x, y, -z] };
 const P0 = norm([0.31, 0.52, 0.79]);
 const nah = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
 
@@ -132,6 +132,9 @@ test('Fragen: Ansichten der App sind gültig und ergeben Stereogramme', () => {
     const hashes = [q.app, q.bild, ...(q.typ === 'text-bild' ? q.antworten.map((a) => a.app) : [])].filter(Boolean);
     for (const h of hashes) {
       assert.ok(applyHashTo(createState(), h, createState()), `${q.id}: kein gültiger Link ${h}`);
+      // eine verlinkte Form wird ohne Ersatz gezeigt (sonst zeigte das Bild eine andere Form als die Frage meint)
+      const f = new URLSearchParams(h.slice(1)).get('f');
+      if (f) assert.equal(currentEntryId(stateForHash(h)), f, `${q.id}: ${h} zeigt eine andere Form`);
       assert.match(svg(h), /<circle/, `${q.id}: ${h}`);
     }
     if (q.typ === 'text-bild') {
@@ -222,6 +225,9 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
     } else if (p.art === 'hexPol') {
       assert.ok(parallelF(poleOfHKL('hexagonal', p.hkl), hex(p.richtung)), q.id);
       assert.ok(Math.abs(poleOfHKL('hexagonal', p.hkl)[2]) < 1e-9, `${q.id}: Pol nicht auf dem Grundkreis`);
+    } else if (p.art === 'hexFamilie') {
+      const c = symmetryDirections(buildPointGroup(p.gruppe))[p.position - 1];
+      assert.ok(c.dirs.some((d) => parallelF(d, hex(p.richtung))), `${q.id}: ${p.richtung} nicht in ${c.label}`);
     } else assert.fail(`${q.id}: unbekannte Prüfung ${p.art}`);
   }
   assert.ok(n >= 15);

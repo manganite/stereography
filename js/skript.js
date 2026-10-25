@@ -217,6 +217,8 @@ function initToc() {
   // Vertiefungen im Inhaltsverzeichnis kennzeichnen; die Einstufung steht nur am Abschnitt (data-level)
   for (const s of secs) {
     if (s.dataset.level !== 'vertiefung') continue;
+    // ganze Kapitel: Randlinie am Eintrag (unter der Zwischenüberschrift „Vertiefungen“)
+    if (s.parentElement.tagName === 'ARTICLE') { byId.get(s.id).parentElement.classList.add('vertiefung'); continue; }
     const tag = document.createElement('span');
     tag.className = 'etikett';
     tag.textContent = 'Vertiefung';

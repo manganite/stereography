@@ -80,6 +80,24 @@ section[data-level="vertiefung"] > :is(h2, h3)::after { content: 'Vertiefung'; }
 [data-level="vertiefung"] .box.merke > h4::after { content: ' · Vertiefung'; }
 .box.bezug { border-left-color: var(--ax3); }
 .toc .etikett { margin-left: 0.4em; padding: 0 5px; font-size: 0.56rem; vertical-align: 0.15em; }
+/* Ganze Abschnitte als Vertiefung: abgesetzt wie ein Vertiefungskasten */
+section > section[data-level="vertiefung"] {
+  border: 1px solid var(--line); border-left: 4px solid var(--ax3); border-radius: 8px;
+  background: color-mix(in srgb, var(--ax3) 7%, var(--surface)); padding: 2px 16px 14px; margin: 30px 0;
+}
+section > section[data-level="vertiefung"] > h3 { margin-top: 14px; }
+/* Vertiefungskapitel: Trenner davor und durchgehende Randlinie */
+.teil {
+  margin: 56px 0 32px; padding: 16px 20px; border-radius: 8px; border: 1px solid var(--ax3);
+  background: color-mix(in srgb, var(--ax3) 13%, var(--surface));
+}
+.teil .teil-titel { margin: 0 0 4px; font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; }
+.teil p:last-child { margin-bottom: 0; }
+article > section[data-level="vertiefung"] { border-left: 4px solid var(--ax3); padding-left: 20px; padding-bottom: 8px; }
+article > section[data-level="vertiefung"] + section[data-level="vertiefung"] { margin-top: 0; padding-top: 40px; }
+.toc .toc-teil { margin-top: 8px; padding: 10px 8px 2px; border-top: 1px solid var(--line); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.09em; font-weight: 600; color: var(--muted); }
+.toc li.vertiefung { border-left: 3px solid var(--ax3); border-radius: 2px; }
+@media (max-width: 719px) { article > section[data-level="vertiefung"] { padding-left: 12px; } }
 .term { font-weight: 600; }
 .sym { font-family: var(--font-ui); white-space: nowrap; }
 .quellen { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
@@ -267,6 +285,7 @@ footer a { color: inherit; }
               <li><a href="#hkil">Vier Indizes für Flächen</a></li>
             </ol>
           </li>
+          <li class="toc-teil">Vertiefungen</li>
           <li><a href="#lagen"><span class="nr">8</span>Lagen, Flächensymmetrie und Multiplizität</a>
             <ol>
               <li><a href="#lage-pol">Die Lage eines Pols</a></li>
@@ -1127,6 +1146,11 @@ footer a { color: inherit; }
         </ul>
       </div>
     </section>
+
+    <div class="teil">
+      <p class="teil-titel">Vertiefungen</p>
+      <p>Die Kapitel 8 und 9 gehen über die Vorlesung hinaus. Sie bauen auf den Kapiteln 1–7 auf und zeigen, wie deren Inhalte weitergehen; der Kasten „Bezug zur Vorlesung“ am Anfang jedes Kapitels nennt die Anknüpfungspunkte. Die Randlinie links markiert den ganzen Teil.</p>
+    </div>
 
     <section id="lagen" data-level="vertiefung">
       <h2><span class="nr">8</span>Lagen, Flächensymmetrie und Multiplizität</h2>

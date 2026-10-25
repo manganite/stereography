@@ -65,6 +65,11 @@ test('Lernziele und Zusammenfassungen: „Zur Vertiefung“ nur nach dem Vorlesu
   }
 });
 
+test('Vertiefungskapitel: Trenner „Vertiefungen“ vor Kapitel 8, auch im Inhaltsverzeichnis', () => {
+  assert.match(html, /<div class="teil">\s*<p class="teil-titel">Vertiefungen<\/p>[\s\S]*?<\/div>\s*<section id="lagen" data-level="vertiefung">/);
+  assert.match(html, /<li class="toc-teil">Vertiefungen<\/li>\s*<li><a href="#lagen">/);
+});
+
 test('Einleitung erklärt die Kennzeichnung', () => {
   const [a] = boxes('aufbau');
   assert.ok(a && a.includes('Vertiefung') && a.includes('In der App'));

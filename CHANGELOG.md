@@ -15,6 +15,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Geändert
 
 - **„Lage“ heisst jetzt „Projektionsrichtung“:** Die Auswahl in der Karte „Kristallform“ und die Zeile in der Infobox heissen „Projektionsrichtung“, wie seit 1.3.0 im Skript und in den Erklärtexten. Die Auswahlpunkte nennen nur noch die Richtung ([001], [111], [110] bzw. c, a, b). So bleibt „Lage“ frei für die allgemeine und spezielle Lage von Flächen und Richtungen (Wyckoff-Lage in der Infobox).
+- **Skript: Vorlesungsstoff und Vertiefung unterscheidbar.** Der Text ohne Kennzeichnung behandelt, was in Vorlesung und Übungen vorkommt. Was darüber hinausgeht, steht in Kästen „Vertiefung“ mit Thema und einem ersten Satz dazu, woran die Vertiefung anknüpft und wozu man sie braucht; ganze Abschnitte und Kapitel (vierstellige Indizes, Kap. 8 und 9) tragen das Etikett „Vertiefung“, auch im Inhaltsverzeichnis. Kap. 8 und 9 beginnen mit einem Kasten „Bezug zur Vorlesung“. Bedienhinweise stehen in Kästen „In der App“. Lernziele und Zusammenfassungen nennen zuerst den Vorlesungsstoff, darunter „Zur Vertiefung“; Merke-Kästen in Vertiefungen sind gekennzeichnet. Eine kurze Einleitung vor Kapitel 1 erklärt die Kennzeichnung. Kein Inhalt ist weggefallen; Absätze wurden nur innerhalb ihres Abschnitts umgestellt.
 - **Wyckoff-Lage mit Multiplizität:** Die Infobox schreibt die Wyckoff-Lage wie die International Tables, mit der Multiplizität vor dem Buchstaben, z. B. „6*a*, 4*m*.*m*“ für den Würfel in *m*3̄*m* (vorher „a“).
 
 ## [1.6.0] - 2026-10-24

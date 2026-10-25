@@ -10,7 +10,9 @@ import {
 } from '../js/quiz-core.js';
 import { createState, applyHashTo, stereoForHash, stateForHash } from '../js/scene.js';
 import { buildSVG } from '../js/stereogram.js';
-import { groupById } from '../js/pointgroups.js';
+import { groupById, POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart } from '../js/pointgroups.js';
+import { CATALOG } from '../js/forms.js';
+import { poleOfHKL } from '../js/sitesym.js';
 import { hmHTML } from '../js/format.js';
 import { moodleXML } from '../tools/moodle-export.mjs';
 
@@ -30,6 +32,16 @@ function idx(h) {
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const parallel = (a, b) => cross(a, b).every((x) => x === 0) && a.some((x) => x !== 0);
+const norm = (a) => { const l = Math.hypot(...a); return a.map((x) => x / l); };
+const winkel = (a, b) => (Math.acos(Math.max(-1, Math.min(1, dot(norm(a), norm(b))))) * 180) / Math.PI;
+const parallelF = (a, b) => Math.abs(Math.abs(dot(norm(a), norm(b))) - 1) < 1e-9;
+/** Alle Richtungen [uvw] in einem Antworttext. */
+const richtungen = (h) => [...h.replace(/<span class="ov">(\d)<\/span>/g, '-$1').matchAll(/\[(-?\d)(-?\d)(-?\d)\]/g)].map((m) => [1, 2, 3].map((k) => Number(m[k])));
+const hex = latticeToCart('hexagonal');
+// Bild eines Pols unter einer Abbildung (Beschreibung wie in quiz-bank.js)
+const BILD = { z: ([x, y, z]) => [x, y, -z], xyz: ([x, y, z]) => [-x, -y, -z], xy: ([x, y, z]) => [-x, -y, z] };
+const P0 = norm([0.31, 0.52, 0.79]);
+const nah = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
 
 /** Abschnitt des Skripts zu einem Anker: Kapitel (Nummer) und ob er (oder ein umgebender) eine Vertiefung ist. */
 function abschnitt(anker) {
@@ -161,9 +173,58 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
         const s2 = stateForHash(a.app);
         assert.ok(s2.pg.theta !== st.pg.theta || s2.pg.phi !== st.pg.phi, q.id);
       }
+    } else if (p.art === 'flaechenzahl') {
+      const f = CATALOG.find((e) => e.id === p.form);
+      assert.ok(f, `${q.id}: Form ${p.form} fehlt`);
+      assert.equal(f.mult, p.anzahl, q.id);
+      assert.equal(buildPointGroup(f.pg).ops.length, p.ordnung, q.id);
+      if (/^\d+$/.test(text(q.antworten[q.richtig[0]]))) assert.equal(text(q.antworten[q.richtig[0]]), String(p.anzahl), q.id);
+    } else if (p.art === 'abbildung') {
+      const orb = orbit(buildPointGroup(p.gruppe).ops, P0).map((o) => o.p ?? o);
+      assert.equal(orb.length, 2, q.id);
+      assert.ok(orb.some((x) => nah(x, BILD[p.bild](P0))), `${q.id}: Bild nicht in der Bahn`);
+    } else if (p.art === 'erzeugt') {
+      const info = buildPointGroup(p.gruppe);
+      assert.ok(info.axes.some((a) => a.symbol === p.achse && info.mirrors.filter((m) => Math.abs(dot(m, a.dir)) < 1e-9).length >= 2), q.id);
+    } else if (p.art === 'bahn') {
+      for (const [g, [oben, unten]] of Object.entries(p.gruppen)) {
+        const orb = orbit(buildPointGroup(g).ops, P0).map((o) => o.p ?? o);
+        assert.deepEqual([orb.filter((x) => x[2] > 0).length, orb.filter((x) => x[2] < 0).length], [oben, unten], `${q.id}: ${g}`);
+      }
+    } else if (p.art === 'lage') {
+      const pol = poleOfHKL(p.system, p.hkl);
+      assert.ok(buildPointGroup(p.gruppe).axes.some((a) => a.symbol === p.achse && parallelF(a.dir, pol)), q.id);
+    } else if (p.art === 'gleichesBild') {
+      assert.equal(svg(p.hashes[0]), svg(p.hashes[1]), q.id);
+    } else if (p.art === 'blickrichtungen') {
+      const labels = symmetryDirections(buildPointGroup(p.gruppe)).filter((c) => c.hm && c.hm !== '1').map((c) => c.label);
+      const r0 = text(q.antworten[q.richtig[0]]);
+      let pos = -1;
+      for (const l of labels) { const k = r0.indexOf(l, pos + 1); assert.ok(k > pos, `${q.id}: ${l} fehlt oder steht falsch in „${r0}“`); pos = k; }
+      q.antworten.forEach((a, i) => { if (!q.richtig.includes(i)) assert.notEqual(text(a), labels.join(', '), q.id); });
+    } else if (p.art === 'position') {
+      const c = symmetryDirections(buildPointGroup(p.gruppe))[p.nr - 1];
+      assert.deepEqual([c.label, c.hm], [p.richtung, p.symbol], q.id);
+    } else if (p.art === 'symbol') {
+      const g = groupById(p.gruppe);
+      assert.equal(g.full, p.voll, q.id);
+      assert.equal(text(q.antworten[q.richtig[0]]), g.hm, q.id);
+    } else if (p.art === 'kubischesSymbol') {
+      for (const g of POINT_GROUPS) assert.equal(g.system === 'kubisch', ['3', '-3'].includes(g.full.split(' ')[1]), g.id);
+    } else if (p.art === 'hexAchsen') {
+      const ist120 = (ds) => ds.length === 3 && [[0, 1], [0, 2], [1, 2]].every(([i, j]) => Math.abs(winkel(hex(ds[i]), hex(ds[j])) - 120) < 1e-9);
+      q.antworten.forEach((a, i) => assert.equal(ist120(richtungen(a)), q.richtig.includes(i), `${q.id}: ${text(a)}`));
+    } else if (p.art === 'hexSenkrecht') {
+      q.antworten.forEach((a, i) => assert.equal(Math.abs(dot(hex(idx(a)), hex(p.zu))) < 1e-9, q.richtig.includes(i), `${q.id}: ${text(a)}`));
+    } else if (p.art === 'hexMitte') {
+      const mitte = (d) => Math.abs(winkel(hex(d), hex(p.a)) - 60) < 1e-9 && Math.abs(winkel(hex(d), hex(p.b)) - 60) < 1e-9;
+      q.antworten.forEach((a, i) => assert.equal(mitte(idx(a)), q.richtig.includes(i), `${q.id}: ${text(a)}`));
+    } else if (p.art === 'hexPol') {
+      assert.ok(parallelF(poleOfHKL('hexagonal', p.hkl), hex(p.richtung)), q.id);
+      assert.ok(Math.abs(poleOfHKL('hexagonal', p.hkl)[2]) < 1e-9, `${q.id}: Pol nicht auf dem Grundkreis`);
     } else assert.fail(`${q.id}: unbekannte Prüfung ${p.art}`);
   }
-  assert.ok(n >= 5);
+  assert.ok(n >= 15);
 });
 
 test('Generator Symmetriegerüst: alle 32 Punktgruppen, Ablenker mit anderem Symbol und anderem Gerüst', () => {
@@ -189,7 +250,8 @@ test('Generator Symmetriegerüst: alle 32 Punktgruppen, Ablenker mit anderem Sym
 test('Ablauf: Stufe, Kapitel, Anzahl und Höchstanteil eines Generators', () => {
   const kands = kandidaten(BANK, GENERATOREN, { entwurf: true });
   const n = zaehlen(kands);
-  assert.ok(n[1][1] >= 8 && n[4][1] >= 8 && n[3][1] === GERUEST_STUFE1.length);
+  assert.ok(n[1][1] >= 8 && n[4][1] >= 8);
+  assert.equal(n[3][1], GERUEST_STUFE1.length + BANK.filter((q) => q.kapitel === 3 && q.stufe === 1).length);
   for (let seed = 1; seed <= 30; seed++) {
     const r = rng(seed);
     const z = ziehen(kands, { stufe: 1, n: 10, rand: r });

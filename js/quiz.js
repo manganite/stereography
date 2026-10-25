@@ -91,6 +91,25 @@ function zeigeStand() {
   $('stand-card').hidden = !ul.children.length;
 }
 
+// ------------------------------------------------------------------ Laufendes Quiz (nur dieser Tab)
+// Das laufende Quiz übersteht so ein Neuladen, den Zurück-Knopf und einen Abstecher in App oder Skript im selben
+// Tab (z. B. über die Links im Kopf). Es gilt nur für diesen Tab und endet mit der Auswertung.
+const LAUF = 'stereo-quiz-lauf';
+function laufSichern() {
+  try { sessionStorage.setItem(LAUF, JSON.stringify({ v: 1, runde, gewaehlt: [...gewaehlt], beantwortet })); } catch { /* ohne Speicher weiter */ }
+}
+function laufLoeschen() {
+  try { sessionStorage.removeItem(LAUF); } catch { /* ohne Speicher weiter */ }
+}
+function laufLaden() {
+  try {
+    const l = JSON.parse(sessionStorage.getItem(LAUF));
+    const r = l?.runde;
+    if (l?.v !== 1 || !Array.isArray(r?.fragen) || !Array.isArray(r.antworten) || !(r.i >= 0 && r.i < r.fragen.length)) return null;
+    return l;
+  } catch { return null; }
+}
+
 // ------------------------------------------------------------------ Ablauf
 let runde = null; // { fragen: [Frage], i, antworten: [{ key, ok, gewaehlt }] }
 
@@ -101,6 +120,7 @@ function starten(nur = null) {
   runde = { fragen: auswahl.map((k) => stellen(k)), i: 0, antworten: [] };
   ansicht('frage-view');
   zeigeFrage();
+  laufSichern();
 }
 
 function ansicht(id) {
@@ -169,6 +189,7 @@ function waehle(i) {
   if (gewaehlt.has(i)) gewaehlt.delete(i); else gewaehlt.add(i);
   for (const b of $('antworten').querySelectorAll('.antwort')) b.setAttribute('aria-pressed', String(gewaehlt.has(Number(b.dataset.i))));
   $('pruefen').disabled = !gewaehlt.size;
+  laufSichern();
 }
 
 function auswerten() {
@@ -178,6 +199,14 @@ function auswerten() {
   runde.antworten.push({ key: q.key, ok, frage: q });
   vermerken(fortschritt, q.key, ok);
   sichern(fortschritt);
+  zeigeRueckmeldung(q, ok);
+  laufSichern();
+  $('weiter').focus({ preventScroll: true });
+  $('rueck').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+/** Markierung der Antworten und Rückmeldung (auch beim Wiederherstellen eines laufenden Quiz). */
+function zeigeRueckmeldung(q, ok) {
   for (const b of $('antworten').querySelectorAll('.antwort')) {
     const i = Number(b.dataset.i);
     const r = q.richtig.includes(i);
@@ -201,18 +230,16 @@ function auswerten() {
   $('warum').innerHTML = warum.join('');
   $('erklaerung').innerHTML = q.erklaerung;
   const kap = KAPITEL.find((k) => k.nr === q.kapitel);
-  const links = [`<a href="skript.html#${q.skript || kap.anker}">Im Skript nachlesen</a>`];
-  if (q.app) links.push(`<a href="index.html${q.app}">In der App öffnen</a>`);
+  const links = [`<a href="skript.html#${q.skript || kap.anker}" target="_blank" rel="noopener" title="Öffnet in einem neuen Tab; das Quiz bleibt hier offen">Im Skript nachlesen</a>`];
+  if (q.app) links.push(`<a href="index.html${q.app}" target="_blank" rel="noopener" title="Öffnet in einem neuen Tab; das Quiz bleibt hier offen">In der App öffnen</a>`);
   $('links').innerHTML = links.join('');
   $('quelle').textContent = `Quelle: ${q.quelle}`;
   $('rueck').hidden = false;
   $('fort').style.width = `${(100 * (runde.i + 1)) / runde.fragen.length}%`;
-  $('weiter').focus({ preventScroll: true });
-  $('rueck').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
 function weiter() {
-  if (runde.i + 1 < runde.fragen.length) { runde.i += 1; zeigeFrage(); ansicht('frage-view'); return; }
+  if (runde.i + 1 < runde.fragen.length) { runde.i += 1; zeigeFrage(); ansicht('frage-view'); laufSichern(); return; }
   zeigeEnde();
 }
 
@@ -236,13 +263,33 @@ function zeigeEnde() {
   for (const x of falsch) {
     const kap = KAPITEL.find((k) => k.nr === x.frage.kapitel);
     const li = document.createElement('li');
-    li.innerHTML = `${x.frage.frage} <a href="skript.html#${x.frage.skript || kap.anker}">Skript →</a>`;
+    li.innerHTML = `${x.frage.frage} <a href="skript.html#${x.frage.skript || kap.anker}" target="_blank" rel="noopener" title="Öffnet in einem neuen Tab; das Quiz bleibt hier offen">Skript →</a>`;
     ol.append(li);
   }
   $('falsch-card').hidden = !falsch.length;
   $('wiederholen').hidden = !falsch.length;
+  laufLoeschen();
   ansicht('ende');
   zeigeStand();
+}
+
+/** Ein laufendes Quiz dieses Tabs fortsetzen, an derselben Frage und mit der gegebenen Antwort. */
+function wiederherstellen() {
+  const l = laufLaden();
+  if (!l) return;
+  runde = l.runde;
+  ansicht('frage-view');
+  zeigeFrage();
+  gewaehlt = new Set(l.gewaehlt);
+  const q = runde.fragen[runde.i];
+  const letzte = runde.antworten[runde.antworten.length - 1];
+  if (l.beantwortet && letzte?.key === q.key) {
+    beantwortet = true;
+    zeigeRueckmeldung(q, letzte.ok);
+  } else {
+    for (const b of $('antworten').querySelectorAll('.antwort')) b.setAttribute('aria-pressed', String(gewaehlt.has(Number(b.dataset.i))));
+    $('pruefen').disabled = !gewaehlt.size;
+  }
 }
 
 // ------------------------------------------------------------------ Start
@@ -259,9 +306,10 @@ function init() {
   $('auswahl').addEventListener('submit', (e) => { e.preventDefault(); starten(); });
   $('pruefen').addEventListener('click', auswerten);
   $('weiter').addEventListener('click', weiter);
-  $('abbrechen').addEventListener('click', () => { if (runde?.antworten.length) zeigeEnde(); else { ansicht('start'); zeigeStand(); } });
+  $('abbrechen').addEventListener('click', () => { if (runde?.antworten.length) zeigeEnde(); else { laufLoeschen(); ansicht('start'); zeigeStand(); } });
   $('neu').addEventListener('click', () => { ansicht('start'); zeigeStand(); });
   $('wiederholen').addEventListener('click', () => starten(runde.antworten.filter((x) => !x.ok).map((x) => x.key)));
+  wiederherstellen();
   $('reset').addEventListener('click', () => {
     if (!confirm('Den gespeicherten Stand für alle Fragen löschen?')) return;
     fortschritt = leererFortschritt();

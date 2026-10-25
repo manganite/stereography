@@ -255,3 +255,13 @@ test('Moodle-Export: Kategorien, Bruchteile, eingebettete Bilder, nur geprüfte 
   // wohlgeformt genug: Tags ausgeglichen
   for (const t of ['question', 'answer', 'text', 'file']) assert.equal((xml.match(new RegExp(`<${t}[ >]`, 'g')) || []).length, (xml.match(new RegExp(`</${t}>`, 'g')) || []).length, t);
 });
+
+test('Seite: Links aus dem Quiz ins Skript und in die App öffnen einen neuen Tab', () => {
+  const js = readFileSync(new URL('../js/quiz.js', import.meta.url), 'utf8');
+  const links = [...js.matchAll(/<a href="(?:skript|index)\.html[^>]*>/g)].map((m) => m[0]);
+  assert.ok(links.length >= 3);
+  for (const a of links) assert.match(a, /target="_blank" rel="noopener"/, a);
+  // laufendes Quiz: gesichert nach Start, Auswahl, Antwort und Weiter; gelöscht mit der Auswertung
+  assert.ok((js.match(/laufSichern\(\);/g) || []).length >= 4);
+  assert.match(js, /laufLoeschen\(\);\s*ansicht\('ende'\)/);
+});

@@ -44,7 +44,7 @@ function symbolText(g, cls) {
   const echt = cls.filter((c) => c.hm !== '1');
   if (!echt.length) return '';
   const blick = ` Blickrichtung${echt.length > 1 ? 'en' : ''}: ${echt.map((c) => `${c.label}: ${hmHTML(c.hm)}`).join(' · ')}.`;
-  if (g.system === 'monoklin') return `${blick} Symbol ${hmHTML(g.hm)} (Standardaufstellung mit b als ausgezeichneter Achse; gebräuchlich ist auch c).`;
+  if (g.system === 'monoklin') return `${blick} Symbol ${hmHTML(g.hm)} (Standardaufstellung mit b als eindeutiger Achse; gebräuchlich ist auch c).`;
   const kurz = g.system === 'trigonal' && g.setting ? `${hmHTML(g.setting)} (Punktgruppe ${hmHTML(g.hm)})` : hmHTML(g.hm);
   return g.full.replace(/ /g, '') === g.hm ? `${blick} Symbol ${kurz}.` : `${blick} Volles Symbol ${hmHTML(g.full)}, gekürzt ${kurz}.`;
 }

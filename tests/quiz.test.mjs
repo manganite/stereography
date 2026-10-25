@@ -628,6 +628,27 @@ test('Moodle-Export: Kategorien, Bruchteile, eingebettete Bilder, nur geprüfte 
   for (const t of ['question', 'answer', 'text', 'file']) assert.equal((xml.match(new RegExp(`<${t}[ >]`, 'g')) || []).length, (xml.match(new RegExp(`</${t}>`, 'g')) || []).length, t);
 });
 
+test('Skript: „Lernziele prüfen“ am Ende jedes Kapitels führt ins Quiz mit Kapitel und Stufe', () => {
+  const n = zaehlen(kandidaten(BANK, GENERATOREN, { entwurf: true }));
+  const links = [...skript.matchAll(/<p class="quizlink">([\s\S]*?)<\/p>/g)].map((m) => m[1]);
+  assert.equal(links.length, KAPITEL.length);
+  links.forEach((l, i) => {
+    const nr = KAPITEL[i].nr;
+    const ziele = [...l.matchAll(/href="quiz\.html\?kap=(\d+)&amp;stufe=(\d)"/g)].map((m) => [Number(m[1]), Number(m[2])]);
+    assert.ok(ziele.length >= 1, `Kap. ${nr}`);
+    for (const [k, st] of ziele) {
+      assert.equal(k, nr, `Kap. ${nr}: Link auf Kap. ${k}`);
+      assert.ok(n[nr]?.[st] > 0, `Kap. ${nr}, Stufe ${st}: keine Fragen`);
+    }
+    // jede Stufe mit eigenen Fragen hat einen Link
+    for (const st of [1, 2, 3]) if (n[nr]?.[st]) assert.ok(ziele.some(([, s0]) => s0 === st), `Kap. ${nr}: Link Stufe ${st} fehlt`);
+    assert.ok(!/<a (?![^>]*target="_blank")/.test(l), `Kap. ${nr}: neuer Tab`);
+  });
+  const js = readFileSync(new URL('../js/quiz.js', import.meta.url), 'utf8');
+  assert.match(js, /START\.get\('kap'\)/);
+  assert.match(js, /START\.get\('stufe'\)/);
+});
+
 test('Seite: Links aus dem Quiz ins Skript und in die App öffnen einen neuen Tab', () => {
   const js = readFileSync(new URL('../js/quiz.js', import.meta.url), 'utf8');
   const links = [...js.matchAll(/<a href="(?:skript|index)\.html[^>]*>/g)].map((m) => m[0]);

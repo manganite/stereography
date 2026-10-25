@@ -15,6 +15,9 @@ import { CATALOG } from '../js/forms.js';
 import { poleOfHKL } from '../js/sitesym.js';
 import { hmHTML } from '../js/format.js';
 import { moodleXML } from '../tools/moodle-export.mjs';
+import { project, C as SC, R as SR } from '../js/stereogram.js';
+import { latticeFromParams, LATTICE_DEFAULTS, orientationPresets, orientationMatrix } from '../js/polyhedra.js';
+import { inverse, transpose, mulVec } from '../js/linalg.js';
 
 const skript = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
 const K = '#336699';
@@ -42,6 +45,32 @@ const hex = latticeToCart('hexagonal');
 const BILD = { z: ([x, y, z]) => [x, y, -z], xyz: ([x, y, z]) => [-x, -y, -z], xy: ([x, y, z]) => [-x, -y, z], y: ([x, y, z]) => [-x, y, -z] };
 const P0 = norm([0.31, 0.52, 0.79]);
 const nah = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
+// Metrik der App (Startwerte je System): Richtung [uvw] und Flächennormale (hkl) kartesisch
+const gitter = (sys) => latticeFromParams(LATTICE_DEFAULTS[sys]);
+const richtungK = (sys, uvw) => norm(mulVec(gitter(sys), uvw));
+const normaleK = (sys, hkl) => norm(mulVec(transpose(inverse(gitter(sys))), hkl));
+/** φ und ρ eines Einheitsvektors, abgelesen am Bildpunkt der App (φ ab rechts im Uhrzeigersinn, ρ < 0 unten). */
+function phiRho(p) {
+  const b = project(norm(p));
+  const dx = (b.x - SC) / SR, dy = (b.y - SC) / SR;
+  const phi = (((Math.atan2(dy, dx) * 180) / Math.PI) % 360 + 360) % 360;
+  return { phi, rho: ((2 * Math.atan(Math.hypot(dx, dy)) * 180) / Math.PI) * (b.upper ? 1 : -1), b };
+}
+/** Einheitsvektor aus φ und ρ (Konventionen wie oben). */
+function ausPhiRho(phi, rho) {
+  const t = ((rho >= 0 ? rho : 180 + rho) * Math.PI) / 180, f = (phi * Math.PI) / 180;
+  return [Math.sin(t) * Math.sin(f), Math.sin(t) * Math.cos(f), Math.cos(t)];
+}
+const zahl = (s) => Number(s.replace('−', '-').replace(',', '.'));
+/** „φ = 210°, ρ = −40°“ → { phi, rho } */
+function phiRhoText(h) {
+  const m = text(h).match(/φ = (−?[\d,]+)°, ρ = (−?[\d,]+)°/);
+  assert.ok(m, `keine Winkelkoordinaten: ${text(h)}`);
+  return { phi: zahl(m[1]), rho: zahl(m[2]) };
+}
+/** Alle Flächen (hkl) in einem Antworttext. */
+const flaechenIn = (h) => [...h.replace(/<span class="ov">(\d)<\/span>/g, '-$1').matchAll(/\((-?\d)(-?\d)(-?\d)\)/g)].map((m) => [1, 2, 3].map((k) => Number(m[k])));
+const gleich = (a, b) => a.every((x, i) => x === b[i]);
 
 /** Abschnitt des Skripts zu einem Anker: Kapitel (Nummer) und ob er (oder ein umgebender) eine Vertiefung ist. */
 function abschnitt(anker) {
@@ -161,6 +190,8 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       if (q.bild) assert.ok(stateForHash(q.bild).poly.zones.some((z) => parallel(z.split(',').map(Number), c)), q.id);
     } else if (p.art === 'zonengleichung') {
       assert.equal(dot(p.flaeche, p.achse) === 0, p.gehoert, q.id);
+      // mit Metrik: Die Richtung liegt in der Fläche (steht senkrecht auf ihrer Normalen)
+      if (p.system) assert.equal(Math.abs(dot(richtungK(p.system, p.achse), normaleK(p.system, p.flaeche))) < 1e-9, p.gehoert, q.id);
       assert.ok(text(q.antworten[q.richtig[0]]).startsWith(p.gehoert ? 'Ja' : 'Nein'), q.id);
     } else if (p.art === 'inZone') {
       const soll = p.achsen.map((a, i) => (dot(p.flaeche, a) === 0 ? i : -1)).filter((i) => i >= 0);
@@ -228,6 +259,81 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
     } else if (p.art === 'hexFamilie') {
       const c = symmetryDirections(buildPointGroup(p.gruppe))[p.position - 1];
       assert.ok(c.dirs.some((d) => parallelF(d, hex(p.richtung))), `${q.id}: ${p.richtung} nicht in ${c.label}`);
+    } else if (p.art === 'zoneUndFlaeche') {
+      const c = cross(...p.flaechen);
+      assert.ok(parallel(c, p.achse), q.id);
+      const gehoert = dot(p.flaeche, c) === 0;
+      q.antworten.forEach((a, i) => {
+        const r = parallel(richtungen(a)[0], c) && /gehört nicht/.test(text(a)) !== gehoert;
+        assert.equal(r, q.richtig.includes(i), `${q.id}: ${text(a)}`);
+      });
+    } else if (p.art === 'schnitt') {
+      const f = cross(...p.zonen);
+      assert.ok(parallel(f, p.flaeche), q.id);
+      q.antworten.forEach((a, i) => {
+        const fl = flaechenIn(a);
+        const r = fl.length === 2 && fl.some((x) => gleich(x, p.flaeche)) && fl.some((x) => gleich(x, p.flaeche.map((y) => -y)));
+        assert.equal(r, q.richtig.includes(i), `${q.id}: ${text(a)}`);
+      });
+    } else if (p.art === 'zonenpol') {
+      const soll = p.faelle.map(([sys, u], i) => (parallelF(richtungK(sys, u), normaleK(sys, u)) ? i : -1)).filter((i) => i >= 0);
+      assert.deepEqual(q.richtig, soll, q.id);
+      p.faelle.forEach(([sys, u], i) => assert.ok(text(q.antworten[i]).startsWith(`${sys}: [${u.join('')}] und (${u.join('')})`), q.id));
+    } else if (p.art === 'zonenzahl') {
+      const n = p.achsen.filter((a) => dot(a, p.flaeche) === 0).length;
+      assert.equal(text(q.antworten[q.richtig[0]]), String(n), q.id);
+    } else if (p.art === 'zonenbild') {
+      q.antworten.forEach((a, i) => {
+        const z = stateForHash(a.app).poly.zones.map((k) => k.split(',').map(Number));
+        assert.equal(z.length, 1, q.id);
+        assert.equal(parallel(z[0], p.achse), q.richtig.includes(i), `${q.id}: ${a.app}`);
+      });
+    } else if (p.art === 'phirho') {
+      const v = p.hkl ? normaleK('kubisch', p.hkl) : ausPhiRho(p.gegen.phi, p.gegen.rho).map((x) => -x);
+      if (p.gegen) { const g = phiRho(ausPhiRho(p.gegen.phi, p.gegen.rho)); assert.ok(Math.abs(g.phi - p.gegen.phi) < 1e-6 && Math.abs(g.rho - p.gegen.rho) < 1e-6, q.id); }
+      const soll = phiRho(v);
+      q.antworten.forEach((a, i) => {
+        const t = phiRhoText(a);
+        const r = Math.abs(t.phi - soll.phi) < 0.01 && Math.abs(t.rho - soll.rho) < 0.01;
+        assert.equal(r, q.richtig.includes(i), `${q.id}: ${text(a)} (soll φ = ${soll.phi}, ρ = ${soll.rho})`);
+      });
+    } else if (p.art === 'polHKL') {
+      const soll = phiRho(normaleK('kubisch', p.hkl));
+      q.antworten.forEach((a, i) => {
+        const st = stateForHash(a.app);
+        const rho = st.pg.theta > 90 ? st.pg.theta - 180 : st.pg.theta;
+        const r = Math.abs(rho - soll.rho) < 0.01 && Math.abs(st.pg.phi - soll.phi) < 0.01;
+        assert.equal(r, q.richtig.includes(i), `${q.id}: ${a.app} (soll φ = ${soll.phi}, ρ = ${soll.rho})`);
+      });
+    } else if (p.art === 'radius') {
+      const rho = (2 * Math.atan(p.r) * 180) / Math.PI;
+      const b = phiRho(ausPhiRho(0, rho)).b;
+      assert.ok(Math.abs(Math.hypot(b.x - SC, b.y - SC) / SR - p.r) < 1e-9, q.id);
+      assert.ok(text(q.antworten[q.richtig[0]]).includes(`${Math.round(rho)}°`), q.id);
+    } else if (p.art === 'deckung') {
+      // Pol (hkl) und Pol (hkl̄) am selben Ort, nicht auf dem Grundkreis; (hkl̄) ist am Galenit eine Fläche
+      const galenit = ['001', '011', '111'];
+      const soll = p.flaechen.map((f, i) => {
+        const g = [f[0], f[1], -f[2]];
+        const a = project(norm(f)), b = project(norm(g));
+        const deckt = !a.onPrimitive && Math.abs(a.x - b.x) < 1e-9 && Math.abs(a.y - b.y) < 1e-9 && a.upper !== b.upper;
+        return deckt && galenit.includes(g.map(Math.abs).sort().join('')) ? i : -1;
+      }).filter((i) => i >= 0);
+      assert.deepEqual(q.richtig, soll, q.id);
+      p.flaechen.forEach((f, i) => assert.deepEqual(flaechenIn(q.antworten[i])[0], f, q.id));
+    } else if (p.art === 'grundkreis') {
+      const O = orientationMatrix(gitter('kubisch'), orientationPresets('kubisch').find((x) => x.id === p.lage));
+      const soll = p.flaechen.map((f, i) => (Math.abs(mulVec(O, normaleK('kubisch', f))[2]) < 1e-9 ? i : -1)).filter((i) => i >= 0);
+      assert.deepEqual(q.richtig, soll, q.id);
+      p.flaechen.forEach((f, i) => assert.deepEqual(flaechenIn(q.antworten[i])[0], f, q.id));
+      assert.equal(stateForHash(q.app).poly.presetId, p.lage, q.id);
+    } else if (p.art === 'winkel') {
+      const w = winkel(normaleK('kubisch', p.a), normaleK('kubisch', p.b));
+      q.antworten.forEach((a, i) => assert.equal(Math.abs(zahl(text(a).replace('°', '')) - w) < 0.005, q.richtig.includes(i), `${q.id}: ${text(a)} (soll ${w})`));
+    } else if (p.art === 'gleicherOrt') {
+      const [a, b] = p.rhos.map((r) => phiRho(ausPhiRho(p.phi, r)).b);
+      assert.ok(Math.abs(a.x - b.x) < 1e-9 && Math.abs(a.y - b.y) < 1e-9 && a.upper !== b.upper, q.id);
+      assert.ok(a.x > SC && Math.abs(a.y - SC) < 1e-9, `${q.id}: φ = 0° liegt rechts`);
     } else assert.fail(`${q.id}: unbekannte Prüfung ${p.art}`);
   }
   assert.ok(n >= 15);

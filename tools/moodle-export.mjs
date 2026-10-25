@@ -85,7 +85,7 @@ export function frageXML(q, col) {
     const fb = q.hinweise?.[i] ? `<feedback format="html"><text>${cdata(html(q.hinweise[i]))}</text></feedback>` : '';
     if (q.typ === 'text-bild') {
       const name = `antwort${i + 1}.svg`;
-      return `<answer fraction="${frac}" format="html"><text>${cdata(`<img src="@@PLUGINFILE@@/${name}" alt="${xmlEsc(a.alt)}" width="200" height="200">`)}</text>${datei(name, svgFor(a.app, col, { klein: true }))}${fb}</answer>`;
+      return `<answer fraction="${frac}" format="html"><text>${cdata(`<img src="@@PLUGINFILE@@/${name}" alt="${xmlEsc(a.alt)}" width="200" height="200">`)}</text>${datei(name, svgFor(a.app, col, { ...q.bildOpt, klein: true }))}${fb}</answer>`;
     }
     return `<answer fraction="${frac}" format="html"><text>${cdata(html(a))}</text>${fb}</answer>`;
   });

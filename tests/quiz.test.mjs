@@ -814,3 +814,14 @@ test('Seite: Schalter „Auch ungeprüfte Fragen zeigen“ für alle, im Browser
   assert.ok(ohne.every((k) => (k.frage ? k.frage.status : k.gen.status) === 'geprüft'));
   assert.ok(mit.length > ohne.length);
 });
+
+test('Seite: Kapitel mit Namen, Schalter unter der Auswahl, Stand für die gewählte Stufe', () => {
+  const html = readFileSync(new URL('../quiz.html', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../js/quiz.js', import.meta.url), 'utf8');
+  for (const k of KAPITEL) assert.ok(typeof k.kurz === 'string' && k.kurz.length > 3 && k.kurz.length <= 25, `Kap. ${k.nr}`);
+  assert.match(js, /\$\{k\.nr\} \$\{k\.kurz\}/);
+  // Schalter nach der Auswahl und ausserhalb des Formulars (bleibt erreichbar, wenn noch keine Frage geprüft ist)
+  assert.ok(html.indexOf('id="entwurf-schalter"') > html.indexOf('</form>'));
+  assert.match(js, /stand\(KANDS\.filter\(\(k\) => k\.stufe <= wahl\.stufe\)/);
+  assert.match(html, /Ihr Stand · <span id="stand-stufe">/);
+});

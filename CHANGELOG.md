@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Quiz, Startseite:** Die Kapitelknöpfe nennen das Thema (z. B. „3 Symmetriegerüste“ statt „Kap. 3“). Der Schalter „Auch ungeprüfte Fragen zeigen“ steht schlicht unter der Auswahl statt als Karte ganz oben. „Ihr Stand“ zählt jetzt wie die Auswahl darüber nur die Fragen der gewählten Stufe und der Stufen darunter; die Überschrift nennt die Stufe (bisher zählte er alle Stufen, und die Zahlen passten nicht zur Auswahl).
+
 ## [1.8.0] - 2026-10-26
 
 Quiz zu den Lernzielen des Skripts: Multiple-Choice-Fragen in drei Stufen mit sofortiger Rückmeldung, darunter Bildfragen mit räumlichen Zeichnungen und Stereogrammen; ungeprüfte Fragen lassen sich auf der Startseite zuschalten. Dazu Moodle-Export und Links „Lernziele prüfen“ im Skript.

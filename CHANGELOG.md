@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.8.1] - 2026-10-26
+
+Quiz-Startseite übersichtlicher: Kapitel mit Namen, Schalter für ungeprüfte Fragen unter der Auswahl, Stand passend zur gewählten Stufe.
+
 ### Geändert
 
 - **Quiz, Startseite:** Die Kapitelknöpfe nennen das Thema (z. B. „3 Symmetriegerüste“ statt „Kap. 3“). Der Schalter „Auch ungeprüfte Fragen zeigen“ steht schlicht unter der Auswahl statt als Karte ganz oben. „Ihr Stand“ zählt jetzt wie die Auswahl darüber nur die Fragen der gewählten Stufe und der Stufen darunter; die Überschrift nennt die Stufe (bisher zählte er alle Stufen, und die Zahlen passten nicht zur Auswahl).
@@ -169,7 +173,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.8.1...HEAD
+[1.8.1]: https://github.com/manganite/stereography/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/manganite/stereography/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/manganite/stereography/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/manganite/stereography/compare/v1.5.0...v1.6.0

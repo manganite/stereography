@@ -20,6 +20,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Geändert
 
 - **Monokline Aufstellung einheitlich in App, Skript und Quiz:** Standard ist *b* als eindeutige Achse (*unique axis* der International Tables), gebräuchlich ist auch *c*. Der Begriff „eindeutige Achse“ der App gilt jetzt auch in Skript und Quiz. Das Skript (Kap. 6, Blickrichtungen) nennt beide Aufstellungen statt nur *b* und warnt vor den mehrdeutigen Bezeichnungen „1./2. Aufstellung“; die Quizfrage zur monoklinen Blickrichtung und die Erklärungen der erzeugten Fragen „Symmetriegerüst → Punktgruppe“ sagen dasselbe.
+- **Hinweise der Fragen „Symmetriegerüst → Punktgruppe“:** Achsen werden nach ihrer Richtung verglichen. Liegt im Ablenker an derselben Stelle eine Achse anderen Charakters, heisst es jetzt „an derselben Stelle eine 3-zählige Drehachse statt der 3-zähligen Drehinversionsachse“ statt „zusätzlich eine 3-zählige Drehachse; dafür fehlt ihm eine 3-zählige Drehinversionsachse“; dieselbe Achse in anderer Richtung heisst „in anderer Richtung“.
 - **Abbildungen aus Link-Adressen** werden jetzt in `js/scene.js` erzeugt (`stereoForHash`), gemeinsam für Skript und Quiz. Das Stereogramm kennt zwei neue Optionen: grössere Polsymbole (für kleine Bilder) und Zonen ohne Markierung der Zonenachse.
 
 ## [1.7.0] - 2026-10-25

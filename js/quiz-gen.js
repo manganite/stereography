@@ -62,23 +62,6 @@ function zaehle(info) {
   if (s.centre) n.c = 1;
   return n;
 }
-const NAME = { ...ACHSEN, m: 'Spiegelebenen', c: 'Inversionszentrum' };
-const NAME1 = { ...ACHSE, m: 'Spiegelebene', c: 'Inversionszentrum' };
-/** Hinweis zu einem Ablenker: was sein Gerüst gegenüber dem Bild zusätzlich hat bzw. was ihm fehlt. */
-export function unterschied(gezeigt, x) {
-  const a = zaehle(gezeigt), b = zaehle(buildPointGroup(x.id));
-  const und = (l) => (l.length === 1 ? l[0] : `${l.slice(0, -1).join(', ')} und ${l[l.length - 1]}`);
-  const teil = (p, q) => Object.keys({ ...p, ...q }).filter((k) => (p[k] || 0) > (q[k] || 0))
-    .map((k) => { const d = (p[k] || 0) - (q[k] || 0); return `${k === 'c' ? 'ein' : ZAHL[d]} ${d === 1 ? NAME1[k] : NAME[k]}`; });
-  const mehr = teil(b, a), weniger = teil(a, b);
-  const verb = (l) => (l.length === 1 && /^(ein|eine) /.test(l[0]) ? 'fehlt' : 'fehlen');
-  const name = hmHTML(x.hm);
-  if (mehr.length && weniger.length) return `Das Gerüst von ${name} hat zusätzlich ${und(mehr)}; dafür ${verb(weniger)} ihm ${und(weniger)}.`;
-  if (mehr.length) return `Das Gerüst von ${name} hat zusätzlich ${und(mehr)}.`;
-  if (weniger.length) return `Dem Gerüst von ${name} ${verb(weniger)} ${und(weniger)}.`;
-  return `Das Gerüst von ${name} hat dieselben Elemente in anderer Anordnung.`;
-}
-
 /** Bis zu drei Ablenker (verschiedene HM-Symbole), zuerst aus demselben Kristallsystem. */
 export function geruestAblenker(id) {
   const g = groupById(id);
@@ -110,7 +93,8 @@ export const GERUEST = {
       bildAlt: 'Stereogramm eines Symmetriegerüsts',
       antworten: [hmHTML(g.hm), ...wahl.map((x) => hmHTML(x.hm))],
       richtig: [0],
-      hinweise: [null, ...wahl.map((x) => unterschied(info, x))],
+      // Name wie auf der Antwort (gekürztes HM-Symbol)
+      hinweise: [null, ...wahl.map((x) => unterschied(info, x, hmHTML(x.hm)))],
       erklaerung: `Das Gerüst enthält ${elementeText(info)} (Kristallsystem ${g.system}).${blick}`,
       skript: 'elemente',
       app: `#m=pg&g=${encodeURIComponent(id)}&obj=0`,
@@ -400,14 +384,16 @@ function wahl3d(id) {
   return abl3d(id).map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).slice(0, 3).map((u) => u.x);
 }
 
-const ACHSE_DAT = (sym, n) => (n === 1 ? `der ${ACHSE[sym].replace('zählige', 'zähligen')}` : `den ${ACHSEN[sym].replace('zählige', 'zähligen')}`);
+/** Nach „statt“ (Genitiv): „der 3-zähligen Drehachse“, „der 4-zähligen Drehachsen“. */
+const ACHSE_GEN = (sym, n) => `der ${(n === 1 ? ACHSE : ACHSEN)[sym].replace('zählige', 'zähligen')}`;
 const und = (l) => (l.length === 1 ? l[0] : `${l.slice(0, -1).join(', ')} und ${l[l.length - 1]}`);
 const nennen = (sym, n) => `${n === 1 ? 'eine' : ZAHL[n]} ${n === 1 ? ACHSE[sym] : ACHSEN[sym]}`;
 /**
- * Hinweis zu einem Ablenker mit Achsen nach Richtung: Liegt im Ablenker an derselben Stelle eine Achse anderen Charakters
- * (z. B. 3 statt 3̄ ∥ c), heisst es „statt“, nicht „zusätzlich … fehlt“.
+ * Hinweis zu einem Ablenker: was sein Gerüst gegenüber dem gezeigten zusätzlich hat bzw. was ihm fehlt. Achsen werden
+ * nach Richtung verglichen: Liegt im Ablenker an derselben Stelle eine Achse anderen Charakters (z. B. 3 statt 3̄ ∥ c),
+ * heisst es „statt“; dieselbe Achse in anderer Richtung heisst „in anderer Richtung“, nicht „zusätzlich … fehlt“.
  */
-export function unterschiedAchsen(gezeigt, x) {
+export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' && x.setting ? x.setting : x.hm)) {
   const andere = buildPointGroup(x.id);
   const richtung = (d) => { const l = Math.hypot(...d); const v = d.map((c) => c / l); const s = v.find((c) => Math.abs(c) > 1e-6) < 0 ? -1 : 1; return v.map((c) => (Math.abs(c) < 5e-5 ? 0 : c * s).toFixed(4)).join(','); };
   const achsen = (info) => new Map(info.axes.filter((a) => ACHSE[a.symbol]).map((a) => [richtung(a.dir), a.symbol]));
@@ -431,14 +417,15 @@ export function unterschiedAchsen(gezeigt, x) {
   if (zm < 0) minus.push(`${-zm === 1 ? 'eine' : ZAHL[-zm]} ${-zm === 1 ? 'Spiegelebene' : 'Spiegelebenen'}`);
   if (andere.centro && !gezeigt.centro) plus.push('ein Inversionszentrum');
   if (!andere.centro && gezeigt.centro) minus.push('ein Inversionszentrum');
-  const teile = [...statt].map(([key, n]) => { const [neu, alt] = key.split('|'); return `an ${n === 1 ? 'derselben Stelle' : 'denselben Stellen'} ${nennen(neu, n)} statt ${ACHSE_DAT(alt, n)}`; });
+  const ersetzt = [...statt].map(([key, n]) => { const [neu, alt] = key.split('|'); return `${nennen(neu, n)} statt ${ACHSE_GEN(alt, n)}`; });
+  const stellen = [...statt.values()].reduce((a, b) => a + b, 0);
+  const teile = ersetzt.length ? [`an ${stellen === 1 ? 'derselben Stelle' : 'denselben Stellen'} ${und(ersetzt)}`] : [];
   if (anders.length) teile.push(`${und(anders)} in anderer Richtung`);
   if (plus.length) teile.push(`zusätzlich ${und(plus)}`);
-  const name = hmHTML(x.system === 'trigonal' && x.setting ? x.setting : x.hm);
   const verb = minus.length === 1 && /^(ein|eine) /.test(minus[0]) ? 'fehlt' : 'fehlen';
   if (!teile.length && !minus.length) return `Das Gerüst von ${name} hat dieselben Elemente in anderer Anordnung.`;
   if (!teile.length) return `Dem Gerüst von ${name} ${verb} ${und(minus)}.`;
-  return `Das Gerüst von ${name} hat ${teile.join('; ')}${minus.length ? `; dafür ${verb} ihm ${und(minus)}` : ''}.`;
+  return `Das Gerüst von ${name} hat ${teile.join(' und ')}${minus.length ? `; dafür ${verb} ihm ${und(minus)}` : ''}.`;
 }
 
 /** Wie die Elemente im Stereogramm erscheinen, nur für die Elemente dieses Gerüsts (Skript Kap. 3). */
@@ -469,7 +456,7 @@ export const GERUEST3D = {
     const gemeinsam = {
       typ: 'bild-bild',
       richtig: [0],
-      hinweise: [null, ...wahl.map((x) => unterschiedAchsen(info, x))],
+      hinweise: [null, ...wahl.map((x) => unterschied(info, x))],
       erklaerung: `Das ist das Symmetriegerüst von ${gruppenSymbol(g)}: ${elementeText(info)}. ${darstellungText(info)}`,
       skript: 'elemente',
       app: `#m=pg&g=${encodeURIComponent(id)}&obj=0`,

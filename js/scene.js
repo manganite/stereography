@@ -503,3 +503,36 @@ export const pgViewDirections = (state) => viewDirections(groupOf(state.pg.id).s
 
 /** Ansichten eines Kristalls (Welt = Bildschirmsystem der Lage: O·A). */
 export const polyViewDirections = (C) => viewDirections(C.sys, (u) => mulVec(C.O, mulVec(C.A, u)));
+
+// ------------------------------------------------------------------ Abbildungen aus Link-Adressen
+// Skript und Quiz beschreiben eine Abbildung durch die Link-Adresse der App (z. B. "#m=form&…");
+// daraus entsteht hier genau das Stereogramm, das die App für diese Adresse zeigt.
+
+/** Zustand der App für eine Link-Adresse. */
+export function stateForHash(hash) {
+  const st = createState();
+  applyHashTo(st, hash, createState());
+  st.poly.zones = normalizeZones(st.poly.zones);
+  return st;
+}
+
+/** Szene des Stereogramms (für buildSVG) zu einer Link-Adresse. dirs = [1, 3]: im Punktgruppenmodus nur die
+ *  Symmetrieelemente dieser Blickrichtungen (1. bis 3. Position im HM-Symbol). */
+export function stereoForHash(hash, col, dirs = null) {
+  const st = stateForHash(hash);
+  if (st.mode === 'pg') {
+    const { info, scene } = pgScene(st, col);
+    if (dirs) {
+      const keep = (k) => dirs.includes(k + 1);
+      scene.axes = scene.axes.filter((a) => keep(a.cls));
+      scene.mirrors = scene.mirrors.filter((m, i) => keep(info.mirrorCls[i]));
+      const zm = info.mirrors.findIndex((n) => Math.abs(n[2]) > 1 - 1e-6);
+      if (zm >= 0 && !keep(info.mirrorCls[zm])) scene.primitiveBold = false;
+      scene.centreAtOrigin = false;
+      scene.zones = [];
+    }
+    return { st, scene };
+  }
+  const C = polyCrystal(st, col);
+  return { st, C, scene: polyScene(st, C, col).scene };
+}

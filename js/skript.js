@@ -3,40 +3,11 @@
 // mit scene.js genau das Stereogramm, das die App für diese Adresse zeigt.
 
 import { buildSVG } from './stereogram.js';
-import { createState, applyHashTo, palette, pgScene, polyCrystal, polyScene, normalizeZones, crystalAxesFor } from './scene.js';
+import { palette, pgScene, crystalAxesFor, stateForHash as stateFor, stereoForHash as stereoFor } from './scene.js';
 import { hklHTML } from './format.js';
 import { VERSION } from './version.js';
 
 const deg = Math.PI / 180;
-
-/** Zustand der App für eine Link-Adresse. */
-function stateFor(hash) {
-  const st = createState();
-  applyHashTo(st, hash, createState());
-  st.poly.zones = normalizeZones(st.poly.zones);
-  return st;
-}
-
-/** Stereogramm (SVG-Inhalt) für eine Link-Adresse der App. */
-function stereoFor(hash, col, dirs = null) {
-  const st = stateFor(hash);
-  if (st.mode === 'pg') {
-    const { info, scene } = pgScene(st, col);
-    // data-dirs="1,3": nur die Symmetrieelemente dieser Blickrichtungen (1. bis 3. Position im HM-Symbol)
-    if (dirs) {
-      const keep = (k) => dirs.includes(k + 1);
-      scene.axes = scene.axes.filter((a) => keep(a.cls));
-      scene.mirrors = scene.mirrors.filter((m, i) => keep(info.mirrorCls[i]));
-      const zm = info.mirrors.findIndex((n) => Math.abs(n[2]) > 1 - 1e-6);
-      if (zm >= 0 && !keep(info.mirrorCls[zm])) scene.primitiveBold = false;
-      scene.centreAtOrigin = false;
-      scene.zones = [];
-    }
-    return { st, scene };
-  }
-  const C = polyCrystal(st, col);
-  return { st, C, scene: polyScene(st, C, col).scene };
-}
 
 const appLink = (hash) => 'index.html' + hash;
 

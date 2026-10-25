@@ -801,3 +801,16 @@ test('Seite: Links aus dem Quiz ins Skript und in die App öffnen einen neuen Ta
   assert.ok((js.match(/laufSichern\(\);/g) || []).length >= 4);
   assert.match(js, /laufLoeschen\(\);\s*ansicht\('ende'\)/);
 });
+
+test('Seite: Schalter „Auch ungeprüfte Fragen zeigen“ für alle, im Browser gemerkt, ?entwurf schaltet ein', () => {
+  const html = readFileSync(new URL('../quiz.html', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../js/quiz.js', import.meta.url), 'utf8');
+  assert.match(html, /<input type="checkbox" id="entwurf-schalter">/);
+  assert.match(js, /let entwurf = START\.has\('entwurf'\);/);
+  assert.match(js, /localStorage\.getItem\(ENTWURF\) === '1'/);
+  assert.match(js, /localStorage\.setItem\(ENTWURF/);
+  // ohne Schalter nur geprüfte Fragen, mit Schalter alle
+  const ohne = kandidaten(BANK, GENERATOREN, {}), mit = kandidaten(BANK, GENERATOREN, { entwurf: true });
+  assert.ok(ohne.every((k) => (k.frage ? k.frage.status : k.gen.status) === 'geprüft'));
+  assert.ok(mit.length > ohne.length);
+});

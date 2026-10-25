@@ -14,12 +14,17 @@ import {
 
 const $ = (id) => document.getElementById(id);
 const START = new URLSearchParams(location.search);
-const entwurf = START.has('entwurf');
+// Ungeprüfte Fragen (Entwürfe): Schalter auf der Startseite, im Browser gemerkt; quiz.html?entwurf schaltet ihn ein
+const ENTWURF = 'stereo-quiz-entwurf';
+let entwurf = START.has('entwurf');
+try { entwurf = entwurf || localStorage.getItem(ENTWURF) === '1'; } catch { /* ohne Speicher weiter */ }
 // Links aus dem Skript („Lernziele prüfen“): quiz.html?kap=4&stufe=1 wählt Kapitel und Stufe vor
 const startKap = (START.get('kap') || '').split(',').map(Number).filter((n) => KAPITEL.some((k) => k.nr === n));
 const startStufe = Number(START.get('stufe'));
-const KANDS = kandidaten(BANK, GENERATOREN, { entwurf });
-const ANZ = zaehlen(KANDS);
+const GEPRUEFT = kandidaten(BANK, GENERATOREN, {});
+const ALLE = kandidaten(BANK, GENERATOREN, { entwurf: true });
+let KANDS = entwurf ? ALLE : GEPRUEFT;
+let ANZ = zaehlen(KANDS);
 const BU = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 // ------------------------------------------------------------------ Fortschritt (localStorage, abgesichert)
@@ -54,7 +59,20 @@ function zeigeStufen() {
   }
   if (!KAPITEL.some((k) => ANZ[k.nr]?.[wahl.stufe])) wahl.stufe = [1, 2, 3].find((s) => KAPITEL.some((k) => ANZ[k.nr]?.[s])) || 1;
   box.querySelector(`input[value="${wahl.stufe}"]`).checked = true;
-  box.addEventListener('change', (e) => { wahl.stufe = Number(e.target.value); zeigeKapitel(); });
+}
+
+/** Schalter „Auch ungeprüfte Fragen zeigen“: Kandidaten, Zählungen und Auswahl neu. */
+function zeigeEntwurf() {
+  const n = ALLE.length - GEPRUEFT.length;
+  $('vorschau').hidden = n === 0;
+  $('entwurf-schalter').checked = entwurf;
+  $('entwurf-hinweis').textContent = `${n} ${n === 1 ? 'Frage ist' : 'Fragen sind'} noch nicht fachlich durchgesehen. Eingeschaltet erscheinen sie im Quiz, gekennzeichnet mit „Entwurf“.`;
+  KANDS = entwurf ? ALLE : GEPRUEFT;
+  ANZ = zaehlen(KANDS);
+  $('leer').hidden = KANDS.length > 0;
+  $('auswahl').hidden = !KANDS.length;
+  if (KANDS.length) { zeigeStufen(); zeigeKapitel(); }
+  zeigeStand();
 }
 
 function zeigeKapitel() {
@@ -308,12 +326,13 @@ function wiederherstellen() {
 // ------------------------------------------------------------------ Start
 function init() {
   document.querySelectorAll('[data-version]').forEach((el) => { el.textContent = VERSION; });
-  $('vorschau').hidden = !entwurf;
-  $('leer').hidden = KANDS.length > 0;
-  $('auswahl').hidden = !KANDS.length;
-  zeigeStufen();
-  zeigeKapitel();
-  zeigeStand();
+  zeigeEntwurf();
+  $('entwurf-schalter').addEventListener('change', (e) => {
+    entwurf = e.target.checked;
+    try { localStorage.setItem(ENTWURF, entwurf ? '1' : '0'); } catch { /* ohne Speicher weiter */ }
+    zeigeEntwurf();
+  });
+  $('stufen').addEventListener('change', (e) => { wahl.stufe = Number(e.target.value); zeigeKapitel(); });
   $('kapitel').addEventListener('change', aktualisiereStart);
   $('auswahl').addEventListener('change', (e) => { if (e.target.name === 'anzahl') wahl.n = Number(e.target.value); });
   $('auswahl').addEventListener('submit', (e) => { e.preventDefault(); starten(); });

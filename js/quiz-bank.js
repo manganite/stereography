@@ -33,7 +33,7 @@ export const BANK = [
     erklaerung: 'Man denkt sich den Kristall im Mittelpunkt der Umkugel und zieht vom Mittelpunkt aus die Normale jeder Fläche. Ihr Durchstosspunkt durch die Kugel ist der Flächenpol. Erst dieser Pol wird anschliessend in die Äquatorebene projiziert.',
     skript: 'umkugel', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folie 81; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 40–41 (Abb. 5.9)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-1-02', stufe: 1, kapitel: 1, typ: 'einfach',
@@ -55,7 +55,7 @@ export const BANK = [
     erklaerung: 'Der Flächenpol hängt nur von der Orientierung der Fläche ab. Eine parallel verschobene Fläche hat dieselbe Normale und damit denselben Pol. Beim Wachstum verschieben sich die Flächen parallel; deshalb gilt das Gesetz der Winkelkonstanz, und verzerrtes Wachstum ändert das Stereogramm nicht.',
     skript: 'umkugel', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folien 33, 39; Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 38–40 (Abb. 5.7)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-1-03', stufe: 1, kapitel: 1, typ: 'einfach',
@@ -77,7 +77,7 @@ export const BANK = [
     erklaerung: 'Pole der oberen Halbkugel werden zum Südpol hin auf die Äquatorebene projiziert und als Punkt ● gezeichnet, Pole der unteren Halbkugel zum Nordpol hin und als Kreis ○. So liegen alle Bildpunkte innerhalb des Grundkreises oder auf ihm.',
     skript: 'projizieren', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folien 80, 91; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 42 (Abb. 5.10), Abschn. 5.8.2, S. 57',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-1-04', stufe: 1, kapitel: 1, typ: 'bild-text',
@@ -100,7 +100,7 @@ export const BANK = [
     erklaerung: `Punkt ● steht für die obere, Kreis ○ für die untere Halbkugel. Liegt eine Fläche oben genau über einer Fläche unten, fallen beide Bildpunkte zusammen; beim Galenit etwa (111) und (11${o(1)}).`,
     skript: 'projizieren', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folie 91; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 42; Skript Abb. 1.3',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-1-05', stufe: 1, kapitel: 1, typ: 'einfach',
@@ -122,7 +122,7 @@ export const BANK = [
     erklaerung: 'Die Normale einer Fläche senkrecht zur Projektionsebene liegt in der Äquatorebene. Ihr Pol liegt auf dem Äquator der Umkugel, sein Bild also auf dem Grundkreis; die Poldistanz ist ρ = 90°.',
     skript: 'koordinaten', app: '#m=form&sys=tetragonal&bsp=rutil',
     quelle: 'Folie 81; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 42–43 (Abb. 5.13a)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-1-06', stufe: 1, kapitel: 1, typ: 'text-bild',
@@ -145,7 +145,7 @@ export const BANK = [
     skript: 'koordinaten', app: '#m=pg&g=1&rho=-30&az=90',
     quelle: 'Folie 81; Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 45–46 (Abb. 5.16)',
     pruefung: { art: 'pol', phi: 90, rho: -30 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-1-07', stufe: 1, kapitel: 1, typ: 'mehrfach',
@@ -167,7 +167,7 @@ export const BANK = [
     erklaerung: 'Die stereographische Projektion ist winkeltreu und kreistreu, aber nicht längentreu. Abstände im Stereogramm sind deshalb kein direktes Mass für Winkel.',
     skript: 'kreise', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,${-1},1`,
     quelle: 'Folien 81–82; Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 46',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-1-08', stufe: 1, kapitel: 1, typ: 'einfach',
@@ -189,7 +189,7 @@ export const BANK = [
     erklaerung: 'Ein Grosskreis hat seinen Mittelpunkt im Kugelmittelpunkt und schneidet den Äquator deshalb in zwei gegenüberliegenden Punkten. Seine obere Hälfte erscheint als Kreisbogen durch diese beiden Randpunkte; Grosskreise durch Nord- und Südpol werden zu Durchmessern.',
     skript: 'kreise', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,${-1},1`,
     quelle: 'Folie 82; Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 46; Skript Kap. 1 (Kreistreue)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 4: Zonen
@@ -213,7 +213,7 @@ export const BANK = [
     erklaerung: 'Eine Zone ist eine Schar von Flächen mit parallelen Schnittkanten; die Flächen heissen tautozonal. Die gemeinsame Kantenrichtung ist die Zonenachse [uvw].',
     skript: 'zone', app: '#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,0,1',
     quelle: 'Folie 84; Borchardt-Ott & Sowa (2018), Abschn. 5.2, S. 35',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-1-02', stufe: 1, kapitel: 4, typ: 'einfach',
@@ -235,7 +235,7 @@ export const BANK = [
     erklaerung: 'Jede Fläche der Zone enthält die Zonenachse. Ihre Normale steht deshalb senkrecht auf der Zonenachse, und alle diese Normalen liegen in einer Ebene senkrecht zur Zonenachse.',
     skript: 'zone', app: '#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,0,1',
     quelle: 'nach Borchardt-Ott & Sowa (2018), Aufg. 5.10 (S. 61) mit Lösung (S. 376); Folie 84',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-1-03', stufe: 1, kapitel: 4, typ: 'einfach',
@@ -257,7 +257,7 @@ export const BANK = [
     erklaerung: 'Die Normalen einer Zone liegen in einer Ebene durch den Kugelmittelpunkt. Ihre Pole liegen deshalb auf einem Grosskreis, dem Zonenkreis. Im Stereogramm erscheint er als Kreisbogen durch zwei gegenüberliegende Punkte des Grundkreises oder als Durchmesser.',
     skript: 'zonenkreis', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,${-1},1`,
     quelle: 'Folie 86; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 42 (Abb. 5.12)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-1-04', stufe: 1, kapitel: 4, typ: 'bild-text',
@@ -277,7 +277,7 @@ export const BANK = [
     skript: 'zonengleichung', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=${-1},0,1`,
     quelle: 'Folien 85–87; Borchardt-Ott & Sowa (2018), Abschn. 3.5.1.2, S. 21',
     pruefung: { art: 'zonenachse', flaechen: [[0, 1, 0], [1, 0, 1]], achse: [-1, 0, 1] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-1-05', stufe: 1, kapitel: 4, typ: 'einfach',
@@ -300,7 +300,7 @@ export const BANK = [
     skript: 'zonengleichung', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=1,${-1},0`,
     quelle: 'Folie 85; Borchardt-Ott & Sowa (2018), Abschn. 3.5, S. 19 (Gl. 3.4)',
     pruefung: { art: 'zonengleichung', flaeche: [1, 1, 2], achse: [1, -1, 0], gehoert: true },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-1-06', stufe: 1, kapitel: 4, typ: 'einfach',
@@ -318,7 +318,7 @@ export const BANK = [
     skript: 'zonengleichung', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,${-1},1`,
     quelle: 'Folie 85; Borchardt-Ott & Sowa (2018), Abschn. 3.5.1.2, S. 21 (Gl. 3.13)',
     pruefung: { art: 'zonenachse', flaechen: [[1, 0, 0], [0, 1, 1]], achse: [0, -1, 1] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-1-07', stufe: 1, kapitel: 4, typ: 'mehrfach',
@@ -336,7 +336,7 @@ export const BANK = [
     skript: 'zone', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,1,0;0,0,1;0,1,1;0,${-1},1`,
     quelle: 'Folie 87; Borchardt-Ott & Sowa (2018), Abschn. 3.5, S. 19 (Gl. 3.4)',
     pruefung: { art: 'inZone', flaeche: [1, 0, 0], achsen: [[0, 0, 1], [0, -1, 1], [1, 0, 0], [1, 1, 0]] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-1-08', stufe: 1, kapitel: 4, typ: 'einfach',
@@ -358,6 +358,6 @@ export const BANK = [
     erklaerung: `Vertauscht man die Faktoren, wechselt das Kreuzprodukt das Vorzeichen: Man erhält [${o('u')}${o('v')}${o('w')}]. Das ist die Gegenrichtung auf derselben Geraden, also dieselbe Zonenachse; z. B. (100) × (010) = [001], (010) × (100) = [00${o(1)}].`,
     skript: 'zonengleichung', app: '#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,0,1',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 3.5.1.2, S. 21 (mit Fussnote 5)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
 ];

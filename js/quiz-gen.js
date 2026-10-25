@@ -85,7 +85,7 @@ export function geruestAblenker(id) {
 }
 
 export const GERUEST = {
-  id: 'gen-geruest', kapitel: 3, stufen: [1, 2], status: 'entwurf',
+  id: 'gen-geruest', kapitel: 3, stufen: [1, 2], status: 'geprüft',
   params: (stufe) => (stufe === 1 ? GERUEST_STUFE1 : GERUEST_ALLE.filter((id) => !GERUEST_STUFE1.includes(id))),
   /** Ablenker deterministisch aus dem Parameter (die Reihenfolge mischt quiz-core.js). */
   make(id) {

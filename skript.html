@@ -300,7 +300,7 @@ footer a { color: inherit; }
       <h4>So ist das Skript aufgebaut</h4>
       <p>Der Text ohne Kennzeichnung behandelt, was in der Vorlesung und in den Übungen vorkommt. Vertiefungen zeigen, wie diese Inhalte weitergehen; beim ersten Lesen kann man sie überspringen.</p>
       <dl>
-        <dt><span class="swatch v"></span>Vertiefung</dt><dd>Kasten oder Abschnitt, der über die Vorlesung hinausführt. Der erste Satz sagt, woran er anknüpft und wozu man ihn braucht.</dd>
+        <dt><span class="swatch v"></span>Vertiefung</dt><dd>Kasten oder Abschnitt, der über die Vorlesung hinausführt. Der erste Satz sagt, woran er anknüpft und wozu man ihn braucht; bei ganzen Kapiteln steht das im Kasten „Bezug zur Vorlesung“.</dd>
         <dt><span class="swatch"></span>In der App</dt><dd>Hinweis zur Bedienung der App.</dd>
       </dl>
     </div>
@@ -399,12 +399,12 @@ footer a { color: inherit; }
         <p>Die stereographische Projektion hat zwei Eigenschaften, die sie für die Kristallographie so nützlich machen:</p>
         <ul>
           <li><span class="term">Kreistreue:</span> Jeder Kreis auf der Kugel wird wieder als Kreis oder Kreisbogen abgebildet. Grosskreise, also Kreise, deren Mittelpunkt der Kugelmittelpunkt ist, werden zu Kreisbögen, die den Grundkreis in zwei gegenüberliegenden Punkten treffen. Grosskreise durch Nord- und Südpol werden zu Geraden durch den Mittelpunkt. Auch ein Kleinkreis wird ein Kreis. Streng gilt die Kreistreue für jede Halbkugel für sich: Die untere Hälfte eines geneigten Grosskreises wird zum Nordpol hin projiziert und erscheint als zweiter Bogen durch dieselben Randpunkte, zur anderen Seite gekrümmt. Bei Zonenkreisen und Winkelbögen zeichnet die App diese untere Hälfte gestrichelt.</li>
-          <li><span class="term">Winkeltreue:</span> Die Winkel, unter denen sich zwei Kreise auf der Kugel schneiden, bleiben in der Projektion erhalten. So schneiden sich Längen- und Breitenkreise im Wulffschen Netz (Abb. 1.4) wie auf dem Globus rechtwinklig.</li>
+          <li><span class="term">Winkeltreue:</span> Die Winkel, unter denen sich zwei Kreise auf der Kugel schneiden, bleiben in der Projektion erhalten. So schneiden sich Längen- und Breitenkreise im Wulffschen Netz (Abb. 1.4, Vertiefung unten) wie auf dem Globus rechtwinklig.</li>
         </ul>
-        <p>Die Projektion ist nicht längentreu (Regler in Abb. 1.1). Grosskreise sind trotzdem besonders wichtig: Die Pole vieler Flächen eines Kristalls liegen auf wenigen Grosskreisen. Solche Flächen bilden eine Zone (Kapitel 4).</p>
+        <p>Die Projektion ist nicht längentreu (Regler in Abb. 1.1). Grosskreise sind besonders wichtig: Die Pole vieler Flächen eines Kristalls liegen auf wenigen Grosskreisen. Solche Flächen bilden eine Zone (Kapitel 4).</p>
         <div class="box vertiefung">
-          <h4>Vertiefung · <b>Winkel ablesen mit dem Wulffschen Netz</b></h4>
-          <p>Kreis- und Winkeltreue helfen, ein Stereogramm zu lesen. Wer Winkel selbst ablesen oder ein Stereogramm von Hand konstruieren will, muss wissen, auf welchen Kreisen Winkel stimmen, und braucht eine Winkelskala.</p>
+          <h4>Vertiefung · <b>Kleinkreise, Winkel und das Wulffsche Netz</b></h4>
+          <p>Kreis- und Winkeltreue helfen, ein Stereogramm zu lesen. Wer Winkel selbst ablesen oder ein Stereogramm von Hand konstruieren will, muss wissen, wo das Bild eines Kreises liegt und auf welchen Kreisen Winkel stimmen, und braucht eine Winkelskala.</p>
           <p>Der Mittelpunkt eines Kleinkreises im Stereogramm ist im Allgemeinen nicht das Bild seines Mittelpunkts auf der Kugel (eine Ausnahme sind Kleinkreise um den Nordpol).</p>
           <p>Die Normalen zweier Flächen spannen die Ebene eines Grosskreises auf. Nur dessen Bogen zwischen den beiden Polen ist der Normalenwinkel, ein Bogen auf einem Kleinkreis durch dieselben Pole ist es nicht. Deshalb dürfen Winkel nur auf Grosskreisen abgetragen oder abgelesen werden. Weil die Projektion zudem nicht längentreu ist, braucht man dafür eine Winkelskala, das Wulffsche Netz, und kein Lineal.</p>
           <p>Zum Zeichnen von Hand benutzt man das <span class="term">Wulffsche Netz</span> (Abb. 1.4). Es ist die stereographische Projektion des Gradnetzes eines Globus, dessen Achse in der Projektionsebene liegt: Die Längenkreise sind Grosskreise, die Breitenkreise (ausser dem Äquator des Globus) Kleinkreise. Man zeichnet auf Transparentpapier, das über dem Netz um den Mittelpunkt drehbar ist, und dreht zwei Pole auf denselben Längenkreis, um ihren Winkel abzulesen.</p>
@@ -527,7 +527,7 @@ footer a { color: inherit; }
         </div>
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Flächensymmetrie, Freiheitsgrade und Grenzformen</b></h4>
-          <p>Warum hat eine spezielle Form weniger Flächen, und warum sehen Formen derselben Flächenzahl manchmal ganz verschieden aus? Die Antwort liefert ein Begriff, den Kapitel 8 ausbaut.</p>
+          <p>Warum hat eine spezielle Form weniger Flächen, und wie können Formen mit derselben Flächenzahl verschieden angeordnet sein? Dafür braucht man die Flächensymmetrie, die Kapitel 8 ausbaut, und den Begriff der Grenzform.</p>
           <p>Entscheidend ist die <span class="term">Flächensymmetrie</span>: die Symmetrie, die eine einzelne Fläche innerhalb der Punktgruppe noch besitzt. Die Flächen einer allgemeinen Form haben die Flächensymmetrie 1, die einer speziellen Form eine höhere. Die Pole einer allgemeinen Form lassen sich in zwei Richtungen verschieben, ohne dass die Form verloren geht (zwei Freiheitsgrade).</p>
           <p>Eine <span class="term">Grenzform</span> ist ein Spezialfall einer allgemeinen oder speziellen Form, mit gleicher Flächenzahl und Flächensymmetrie, aber anderer Anordnung der Flächen. Wandern in der Punktgruppe 4 die Pole der tetragonalen Pyramide {<i>hkl</i>} auf den Grundkreis, so entsteht das tetragonale Prisma {<i>hk</i>0}.</p>
           <p>Wie gross der Teil der Kugel ist, der für eine Punktgruppe „zählt“, sagt die <span class="term">asymmetrische Flächeneinheit</span>: der kleinste Teil der Kugeloberfläche, der unter den Symmetrieoperationen die ganze Kugel ergibt. Bei 4/<i>mmm</i> ist sie ein sphärisches Dreieck zwischen den Polen von (001), (100) und (110), also ein Sechzehntel der Kugel. Bei 4/<i>mmm</i> sind alle Seiten dieses Dreiecks Spiegelebenen: Ein Pol im Inneren ergibt die allgemeine Form, ein Pol auf einer Seite oder Ecke eine spezielle Form.</p>
@@ -675,13 +675,13 @@ footer a { color: inherit; }
         </div>
         <div class="box app">
           <h4>In der App</h4>
-          <p>Im Tab „Punktgruppen“ ist die Bahn das Objekt in allgemeiner Lage; man kann den Ausgangspol ziehen und durch Antippen auf die andere Halbkugel bringen. Nahe an einer Achse oder Spiegelebene rastet er ein; dann fallen Bilder zusammen, und es entstehen weniger Pole (Kapitel 8).</p>
+          <p>Im Tab „Punktgruppen“ erzeugt das Objekt in allgemeiner Lage diese Bahn; man kann den Ausgangspol ziehen und durch Antippen auf die andere Halbkugel bringen. Nahe an einer Achse oder Spiegelebene rastet er ein; dann fallen Bilder zusammen, und es entstehen weniger Pole (Kapitel 8).</p>
         </div>
       </section>
 
       <section id="speziell">
         <h3>Pole auf Symmetrieelementen</h3>
-        <p>Die Pole spezieller Formen liegen auf Symmetrieelementen. Am Galenit sieht man das, wenn man das Symmetriegerüst von <i>m</i>3̄<i>m</i> unter die Pole legt (Abb. 3.5 und 3.6): Die Pole des Würfels {100} liegen auf den 4-zähligen Achsen, die des Oktaeders {111} auf den 3̄-Achsen und die des Rhombendodekaeders {110} auf den 2-zähligen Achsen. Umgekehrt kann man aus einem Stereogramm von Flächenpolen auf die Symmetrie schliessen, indem man die Drehungen und Spiegelungen sucht, die das Muster der Pole in sich überführen.</p>
+        <p>Die Pole spezieller Formen liegen auf Symmetrieelementen. Am Galenit sieht man das, wenn man das Symmetriegerüst von <i>m</i>3̄<i>m</i> unter die Pole legt (Abb. 3.5 und 3.6): Die Pole des Würfels {100} liegen auf den 4-zähligen Achsen, die des Oktaeders {111} auf den 3̄-Achsen und die des Rhombendodekaeders {110} auf den 2-zähligen Achsen. Umgekehrt kann man aus einem Stereogramm von Flächenpolen auf die Symmetrie schliessen, indem man die Drehungen und Spiegelungen sucht, die das Muster der Pole in sich überführen. Eindeutig ist dieser Schluss aber nicht immer (Vertiefung am Ende des Abschnitts).</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=m-3m&amp;obj=0" data-alt="Symmetriegerüst der Punktgruppe m3̄m">
             <div class="fig-art"></div>
@@ -695,7 +695,7 @@ footer a { color: inherit; }
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Grenzen des Schlusses vom Polmuster auf die Punktgruppe</b></h4>
           <p>Wer aus einem Stereogramm die Punktgruppe bestimmt, sollte wissen, wann dieser Schluss nicht eindeutig ist.</p>
-          <p>Das Absuchen ergibt die Symmetrie des Polmusters, und die kann höher sein als die Punktgruppe des Kristalls: Die Pole eines Würfels in 23 liegen genau wie in <i>m</i>3̄<i>m</i> (Kapitel 2), und selbst die allgemeine Form der Punktgruppe 4, die tetragonale Pyramide, hat ein Polmuster mit Spiegelebenen (Abb. 3.3). Sicher wird die Zuordnung erst, wenn mehrere Formen zusammen oder die Symmetrie der Flächen selbst die höhere Symmetrie ausschliessen; die App zeigt Letztere mit „Flächensymmetrie zeigen“.</p>
+          <p>Sucht man die Symmetrie auf diese Weise, erhält man die Symmetrie des Polmusters, und die kann höher sein als die Punktgruppe des Kristalls: Die Pole eines Würfels in 23 liegen genau wie in <i>m</i>3̄<i>m</i> (Kapitel 2), und selbst die allgemeine Form der Punktgruppe 4, die tetragonale Pyramide, hat ein Polmuster mit Spiegelebenen (Abb. 3.3). Sicher wird die Zuordnung erst, wenn mehrere Formen zusammen oder die Symmetrie der Flächen selbst die höhere Symmetrie ausschliessen; die App zeigt Letztere mit „Flächensymmetrie zeigen“.</p>
         </div>
       </section>
 
@@ -1365,7 +1365,7 @@ footer a { color: inherit; }
 
       <div class="box bezug">
         <h4>Bezug zur Vorlesung</h4>
-        <p>In der Vorlesung wird der Würfel entlang [111] zum Rhomboeder mit der Symmetrie 3̄<i>m</i>, beschrieben mit hexagonalen Achsen. Dieses Kapitel macht daraus ein allgemeines Verfahren für alle drei Blickrichtungen des Würfels. Es nutzt Untergruppen und die Blickrichtungen aus Kapitel 6 und führt zu Phasenumwandlungen und zu Eigenschaften wie Piezo- und Ferroelektrizität.</p>
+        <p>In der Vorlesung wird der Würfel entlang [111] zum Rhomboeder mit der Symmetrie 3̄<i>m</i>, beschrieben mit hexagonalen Achsen. Dieser Fall steht im Abschnitt „Streckung entlang ⟨111⟩“. Das Kapitel macht daraus ein allgemeines Verfahren für alle drei Blickrichtungen des Würfels. Es nutzt Untergruppen und die Blickrichtungen aus Kapitel 6 und führt zu Phasenumwandlungen und zu Eigenschaften wie Piezo- und Ferroelektrizität.</p>
       </div>
 
       <div class="box ziele">

@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-10-25
+
+Lagen und Multiplizität: Ausgangspol rastet in spezieller Lage ein, Wyckoff-Lage mit Multiplizität in der Infobox, neues Skriptkapitel 8; im Skript sind Vertiefungen jetzt vom Vorlesungsstoff unterschieden.
+
 ### Hinzugefügt
 
 - **Ausgangspol in spezieller Lage (Punktgruppen):** Nahe an einer Achse (4°) oder Spiegelebene (3°) rastet der Ausgangspol beim Ziehen ein; weiter weg bleibt er frei. Die Infobox zeigt unter „Lage des Ausgangspols“, ob die Lage allgemein oder speziell ist, mit Wyckoff-Lage und Lagesymmetrie nach ITA Tab. 10.1.2.2 (z. B. „speziell (24*e*, Lagesymmetrie ..*m*)“ in *m*3̄*m*), und erklärt die Polzahl: Ordnung der Gruppe geteilt durch die Zahl der Operationen, die den Pol festhalten. Zusammenfallende Pole werden einmal gezeichnet; fallen Bild und Spiegelbild zusammen, ist der Pol bei „Pole nach Händigkeit färben“ grau, in der 3D-Konstruktion liegen die Objekte übereinander. Auch Werte von ρ und φ aus Reglern oder Links, die auf einem Symmetrieelement liegen, gelten als spezielle Lage. Die Wyckoff-Lagen der Aufstellungen ohne eigenen Formkatalog (monoklin Achse *c*, 312, 31*m*, 3̄1*m*, 4̄*m*2, 6̄2*m*) stammen aus ITA Tab. 10.1.2.2.
@@ -139,7 +143,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/manganite/stereography/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/manganite/stereography/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/manganite/stereography/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/manganite/stereography/compare/v1.3.0...v1.4.0

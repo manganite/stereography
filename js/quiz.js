@@ -171,7 +171,7 @@ function zeigeFrage() {
     b.dataset.i = i;
     b.setAttribute('aria-pressed', 'false');
     b.innerHTML = q.typ === 'text-bild'
-      ? `<span class="bu">${BU[i]}</span><div class="fig-art">${stereoSVG(a.app, a.alt, { klein: true })}</div>`
+      ? `<span class="bu">${BU[i]}</span><div class="fig-art">${stereoSVG(a.app, a.alt, { ...q.bildOpt, klein: true })}</div>`
       : `<span class="bu">${BU[i]}</span><span>${a}</span>`;
     b.addEventListener('click', () => waehle(i));
     li.append(b);
@@ -334,7 +334,7 @@ function init() {
     if ($('frage-view').hidden || !runde) return;
     const q = runde.fragen[runde.i];
     if (q.bild) $('bild').querySelector('.fig-art').innerHTML = stereoSVG(q.bild, q.bildAlt, q.bildOpt);
-    if (q.typ === 'text-bild') $('antworten').querySelectorAll('.antwort .fig-art').forEach((el, i) => { el.innerHTML = stereoSVG(q.antworten[i].app, q.antworten[i].alt, { klein: true }); });
+    if (q.typ === 'text-bild') $('antworten').querySelectorAll('.antwort .fig-art').forEach((el, i) => { el.innerHTML = stereoSVG(q.antworten[i].app, q.antworten[i].alt, { ...q.bildOpt, klein: true }); });
   });
 }
 init();

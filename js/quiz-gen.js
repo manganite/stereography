@@ -37,14 +37,14 @@ function elementeText(info) {
 
 /**
  * Satz zu Blickrichtungen und Symbol. Positionen ohne Symmetrieelement (Platzhalter 1) werden nicht genannt; sie
- * sind im Skript Vertiefung. Monoklin nennt nur die Richtung b (Skript Kap. 6). Trigonale Gruppen mit zwei
+ * sind im Skript Vertiefung. Monoklin nennt die Richtung b der Standardaufstellung (Skript Kap. 6). Trigonale Gruppen mit zwei
  * Aufstellungen behalten im gekürzten Symbol die Ziffer 1 (3m1, nicht 3m), wie in ITA.
  */
 function symbolText(g, cls) {
   const echt = cls.filter((c) => c.hm !== '1');
   if (!echt.length) return '';
   const blick = ` Blickrichtung${echt.length > 1 ? 'en' : ''}: ${echt.map((c) => `${c.label}: ${hmHTML(c.hm)}`).join(' · ')}.`;
-  if (g.system === 'monoklin') return `${blick} Symbol ${hmHTML(g.hm)}.`;
+  if (g.system === 'monoklin') return `${blick} Symbol ${hmHTML(g.hm)} (Standardaufstellung mit b als eindeutiger Achse; gebräuchlich ist auch c).`;
   const kurz = g.system === 'trigonal' && g.setting ? `${hmHTML(g.setting)} (Punktgruppe ${hmHTML(g.hm)})` : hmHTML(g.hm);
   return g.full.replace(/ /g, '') === g.hm ? `${blick} Symbol ${kurz}.` : `${blick} Volles Symbol ${hmHTML(g.full)}, gekürzt ${kurz}.`;
 }

@@ -91,7 +91,9 @@ export function ziehen(kands, { stufe, kapitel = null, n = 10, progress = null, 
   let pool = kands.filter((k) => k.stufe <= stufe && (!kapitel || kapitel.includes(k.kapitel)));
   if (nur) pool = pool.filter((k) => nur.includes(k.key));
   const genMax = Math.max(1, Math.round(n * GEN_ANTEIL));
-  const genGesamt = Math.floor(n * GEN_GESAMT);
+  // auch wenn das Quiz mangels handgeschriebener Fragen kürzer wird: g ≤ (h + g) · GEN_GESAMT, also g ≤ h · GEN_GESAMT / (1 − GEN_GESAMT)
+  const hand = pool.filter((k) => !k.gen).length;
+  const genGesamt = Math.min(Math.floor(n * GEN_GESAMT), Math.floor((hand * GEN_GESAMT) / (1 - GEN_GESAMT)));
   const genZahl = {};
   let genSumme = 0;
   const gewaehlt = [];

@@ -671,6 +671,9 @@ test('Generatoren mit Bildantworten: gültige Fragen, richtige Antwort passt zum
       // Bild und Antworten in verschiedener Darstellung (Zeichnung ↔ Stereogramm), Antworten alle gleich
       assert.ok(q.antworten.every((x) => istRaum(x.app) === istRaum(q.antworten[0].app)), q.id);
       assert.notEqual(istRaum(q.bild), istRaum(q.antworten[0].app), q.id);
+      // Alternativtexte beschreiben das jeweilige Bild: verschieden je Antwort, Fragebild wie die richtige Antwort beschrieben
+      assert.equal(new Set(q.antworten.map((x) => x.alt)).size, 4, `${q.id}: gleiche Alternativtexte`);
+      assert.ok(!/"/.test(q.bildAlt + q.antworten.map((x) => x.alt).join('')), q.id);
       // richtige Antwort: derselbe Kristall bzw. dieselbe Punktgruppe in derselben Lage wie das Bild
       const ohne = (h) => appHash(h).replace('&idx=0', '').replace('&obj=0&farbe=0', '');
       assert.equal(ohne(q.antworten[0].app), ohne(q.bild), q.id);
@@ -706,7 +709,8 @@ test('Ablauf: Stufe, Kapitel, Anzahl und Höchstanteil eines Generators', () => 
     // alle erzeugten Fragen zusammen höchstens die Hälfte, auch in Kapiteln mit vielen erzeugten Fragen
     for (const [kap, st, n] of [[null, 1, 10], [[3], 2, 10], [[2], 2, 5], [[8], 3, 20], [[2, 3], 1, 20]]) {
       const zz = ziehen(kands, { stufe: st, kapitel: kap, n, rand: r });
-      assert.ok(zz.filter((k) => k.gen).length <= Math.floor(n * GEN_GESAMT), `Kap. ${kap}, Stufe ${st}, n = ${n}`);
+      const g = zz.filter((k) => k.gen).length;
+      assert.ok(g <= Math.floor(n * GEN_GESAMT) && g <= zz.length * GEN_GESAMT, `Kap. ${kap}, Stufe ${st}, n = ${n}: ${g} von ${zz.length}`);
     }
     const z4 = ziehen(kands, { stufe: 1, kapitel: [4], n: 20, rand: r });
     assert.ok(z4.length === n[4][1] && z4.every((k) => k.kapitel === 4));

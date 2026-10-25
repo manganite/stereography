@@ -254,8 +254,11 @@ const KOERPER_AUFGABEN = [
 ].map(([k, stufe, abl]) => ({ id: stufe === 1 ? k : `${k}-2`, k, stufe, abl }));
 
 const formHash = (k, lage) => `#m=form&${KOERPER[k].form}${lage && lage !== '001' ? `&lage=${lage}` : ''}`;
-const stereo = (k, lage) => ({ app: `${formHash(k, lage)}&idx=0`, alt: 'Stereogramm' });
-const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}`, alt: 'Räumliche Zeichnung eines Kristalls' });
+// Alternativtexte beschreiben, was das Bild zeigt (Bildschirmleser, Moodle): Stereogramm in Worten bzw. Kristall und Lage
+const ohneArtikel = (t) => t.replace(/^(der|die|das) /, '');
+const musterVon = (k, lage) => (lage ? LAGE_MUSTER[k][lage][0] : KOERPER[k].muster);
+const stereo = (k, lage) => ({ app: `${formHash(k, lage)}&idx=0`, alt: `Stereogramm: ${musterVon(k, lage)}` });
+const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}`, alt: `Räumliche Zeichnung: ${ohneArtikel(KOERPER[k].der)}${lage ? `, [${lage}] senkrecht` : ''}` });
 const QUELLE_FORM = 'Folie 91 (Lernziel); Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
 
 export const KOERPER_STEREO = {
@@ -282,7 +285,7 @@ export const KOERPER_STEREO = {
         typ: 'bild-bild',
         frage: `Welches Stereogramm zeigt die Flächenpole dieses Kristalls? ${PFEIL.replace('in den Zeichnungen', 'im Bild')}`,
         bild: zeichnung(a.k).app,
-        bildAlt: 'Räumliche Zeichnung eines Kristalls',
+        bildAlt: zeichnung(a.k).alt,
         antworten: alle.map((k) => stereo(k)),
         hinweise: [null, ...a.abl.map((k) => `Das ist das Stereogramm ${KOERPER[k].des}: ${KOERPER[k].muster}.`)],
       };
@@ -292,7 +295,7 @@ export const KOERPER_STEREO = {
       typ: 'bild-bild',
       frage: `Zu welchem Kristall gehört dieses Stereogramm? ${PFEIL}`,
       bild: stereo(a.k).app,
-      bildAlt: 'Stereogramm der Flächenpole eines Kristalls',
+      bildAlt: stereo(a.k).alt,
       antworten: alle.map((k) => zeichnung(k)),
       hinweise: [null, ...a.abl.map((k) => `Das ist ${KOERPER[k].der}. Stereogramm dazu: ${KOERPER[k].muster}.`)],
     };
@@ -347,7 +350,7 @@ export const LAGE = {
         ...gemeinsam,
         frage: `Welches Stereogramm zeigt die Flächenpole dieses Kristalls in der gezeichneten Lage? ${PFEIL.replace('in den Zeichnungen', 'im Bild')}`,
         bild: zeichnung(k, lage).app,
-        bildAlt: 'Räumliche Zeichnung eines gedrehten Kristalls',
+        bildAlt: zeichnung(k, lage).alt,
         antworten: [stereo(k, lage), ...andere.map((l) => stereo(k, l)), stereo(x, lage)],
         hinweise: [null, ...andere.map((l) => `Das ist das Stereogramm ${e.des} mit ${lageText(l)} als Projektionsrichtung: ${muster(k, l)}.`),
           `Das ist das Stereogramm ${KOERPER[x].des} in derselben Lage: ${muster(x, lage)}.`],
@@ -357,7 +360,7 @@ export const LAGE = {
       ...gemeinsam,
       frage: `Welche Zeichnung zeigt den Kristall in der Lage, zu der dieses Stereogramm gehört? ${PFEIL}`,
       bild: stereo(k, lage).app,
-      bildAlt: 'Stereogramm der Flächenpole eines Kristalls',
+      bildAlt: stereo(k, lage).alt,
       antworten: [zeichnung(k, lage), ...andere.map((l) => zeichnung(k, l)), zeichnung(x, lage)],
       hinweise: [null, ...andere.map((l) => `Das ist ${e.der} mit ${lageText(l)} als Projektionsrichtung (in der Zeichnung senkrecht). Stereogramm dazu: ${muster(k, l)}.`),
         `Das ist ${KOERPER[x].der} in derselben Lage. Stereogramm dazu: ${muster(x, lage)}.`],
@@ -368,8 +371,23 @@ export const LAGE = {
 // ------------------------------------------------------------------ Räumliches Symmetriegerüst ↔ Stereogramm
 /** Kubische Gerüste mit vielen Elementen sind als feste Zeichnung nicht lesbar; sie bleiben bei gen-geruest. */
 export const GERUEST3D_OHNE = ['m-3m', '432', '-43m', 'm-3'];
-const geruest3d = (id) => ({ app: `3d#m=pg&g=${encodeURIComponent(id)}`, alt: 'Räumliche Zeichnung eines Symmetriegerüsts' });
-const geruest2d = (id) => ({ app: `#m=pg&g=${encodeURIComponent(id)}&obj=0&farbe=0`, alt: 'Stereogramm eines Symmetriegerüsts' });
+/** Elemente mit Richtung, z. B. „eine 4-zählige Drehachse ∥ c, vier 2-zählige Drehachsen ⊥ c, … und ein Inversionszentrum“. */
+function elementeRichtung(info) {
+  const t = [];
+  for (const sym of ['6', '-6', '4', '-4', '3', '-3', '2']) {
+    for (const [lage, test] of [['∥ c', (d) => Math.abs(d[2]) > 1 - 1e-6], ['⊥ c', (d) => Math.abs(d[2]) < 1e-6]]) {
+      const n = info.axes.filter((a) => a.symbol === sym && test(a.dir)).length;
+      if (n) t.push(`${nennen(sym, n)} ${lage}`);
+    }
+  }
+  const zm = info.mirrors.filter((n) => Math.abs(n[2]) > 1 - 1e-6).length, pm = info.mirrors.length - zm;
+  if (pm) t.push(`${pm === 1 ? 'eine Spiegelebene' : `${ZAHL[pm]} Spiegelebenen`} ∥ c`);
+  if (zm) t.push('eine Spiegelebene ⊥ c');
+  if (info.centro) t.push('ein Inversionszentrum');
+  return t.length ? und(t) : 'keine Symmetrieelemente';
+}
+const geruest3d = (id) => ({ app: `3d#m=pg&g=${encodeURIComponent(id)}`, alt: `Räumliche Zeichnung eines Symmetriegerüsts: ${elementeRichtung(buildPointGroup(id))}` });
+const geruest2d = (id) => ({ app: `#m=pg&g=${encodeURIComponent(id)}&obj=0&farbe=0`, alt: `Stereogramm eines Symmetriegerüsts: ${elementeRichtung(buildPointGroup(id))}` });
 
 /** Ablenker wie bei gen-geruest, ohne die unlesbaren kubischen Gerüste (23 hat damit keine). */
 const abl3d = (id) => geruestAblenker(id).filter((x) => !GERUEST3D_OHNE.includes(x.id));
@@ -468,7 +486,7 @@ export const GERUEST3D = {
         lernziel: 'die Symmetrieelemente einer Punktgruppe ins Stereogramm einzeichnen',
         frage: 'Welches Stereogramm zeigt dieses Symmetriegerüst? Die c-Achse liegt in Projektionsrichtung und steht im Bild senkrecht (Pfeil).',
         bild: geruest3d(id).app,
-        bildAlt: 'Räumliche Zeichnung eines Symmetriegerüsts',
+        bildAlt: geruest3d(id).alt,
         antworten: [geruest2d(id), ...wahl.map((x) => geruest2d(x.id))],
       };
     }
@@ -477,7 +495,7 @@ export const GERUEST3D = {
       lernziel: 'ein Stereogramm einer Symmetrie zuordnen',
       frage: 'Welche räumliche Zeichnung zeigt das Symmetriegerüst zu diesem Stereogramm? Die c-Achse liegt in Projektionsrichtung und steht in den Zeichnungen senkrecht (Pfeil).',
       bild: geruest2d(id).app,
-      bildAlt: 'Stereogramm eines Symmetriegerüsts',
+      bildAlt: geruest2d(id).alt,
       antworten: [geruest3d(id), ...wahl.map((x) => geruest3d(x.id))],
     };
   },

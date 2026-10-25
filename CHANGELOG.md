@@ -14,6 +14,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
+- **Monokline Aufstellung einheitlich in App, Skript und Quiz:** Standard ist *b* als ausgezeichnete Achse (in der App „eindeutige Achse“), gebräuchlich ist auch *c*. Das Skript (Kap. 6, Blickrichtungen) nennt jetzt beide Aufstellungen statt nur *b*; die Quizfrage zur monoklinen Blickrichtung und die Erklärungen der erzeugten Fragen „Symmetriegerüst → Punktgruppe“ sagen dasselbe.
 - **Abbildungen aus Link-Adressen** werden jetzt in `js/scene.js` erzeugt (`stereoForHash`), gemeinsam für Skript und Quiz. Das Stereogramm kennt zwei neue Optionen: grössere Polsymbole (für kleine Bilder) und Zonen ohne Markierung der Zonenachse.
 
 ## [1.7.0] - 2026-10-25

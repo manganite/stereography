@@ -2,6 +2,7 @@
 // Die Logik steht in quiz-core.js, die Fragen in quiz-bank.js und quiz-gen.js.
 
 import { buildSVG } from './stereogram.js';
+import { istRaum, raumInner } from './bild3d.js';
 import { palette, stereoForHash } from './scene.js';
 import { VERSION } from './version.js';
 import { BANK } from './quiz-bank.js';
@@ -138,13 +139,18 @@ function ansicht(id) {
 /** Stereogramm zu einer Link-Adresse; ohne Markierung des Ausgangspols (sie sähe aus wie ein zweites Polsymbol).
  *  opt.zonenachse = false: Zonenachse weder beschriften noch markieren (sie wäre die Antwort);
  *  opt.klein: grössere Polsymbole für kleine Bilder (Antworten als Stereogramme). */
+/** Abbildung einer Bildangabe: räumliche Zeichnung ("3d#…") oder Stereogramm (Link-Adresse der App). */
 function stereoSVG(hash, alt, opt = {}) {
+  if (istRaum(hash)) return `<svg viewBox="0 0 520 520" role="img" aria-label="${alt || 'Räumliche Zeichnung'}">${raumInner(hash, palette(), opt)}</svg>`;
   const { scene } = stereoForHash(hash, palette());
   scene.poles = (scene.poles || []).map((p) => ({ ...p, gen: false, selected: false }));
   if (opt.zonenachse === false && scene.zoneList) scene.zoneList = scene.zoneList.map((z) => ({ ...z, label: null, axisMark: false }));
   if (opt.klein) scene.poleScale = 2.2;
   return `<svg viewBox="0 0 520 520" role="img" aria-label="${alt || 'Stereogramm'}">${buildSVG(scene).inner}</svg>`;
 }
+
+/** Antworten sind Bilder (Fragetypen „text-bild“ und „bild-bild“). */
+const bildAntworten = (q) => q.typ === 'text-bild' || q.typ === 'bild-bild';
 
 let gewaehlt = new Set();
 let beantwortet = false;
@@ -168,7 +174,7 @@ function zeigeFrage() {
   fig.hidden = !q.bild;
   if (q.bild) fig.querySelector('.fig-art').innerHTML = stereoSVG(q.bild, q.bildAlt, q.bildOpt);
   const ul = $('antworten');
-  ul.className = `antworten${mehr ? ' mehrfach' : ''}${q.typ === 'text-bild' ? ' bilder' : ''}`;
+  ul.className = `antworten${mehr ? ' mehrfach' : ''}${bildAntworten(q) ? ' bilder' : ''}`;
   ul.innerHTML = '';
   q.antworten.forEach((a, i) => {
     const li = document.createElement('li');
@@ -177,7 +183,7 @@ function zeigeFrage() {
     b.className = 'antwort';
     b.dataset.i = i;
     b.setAttribute('aria-pressed', 'false');
-    b.innerHTML = q.typ === 'text-bild'
+    b.innerHTML = bildAntworten(q)
       ? `<span class="bu">${BU[i]}</span><div class="fig-art">${stereoSVG(a.app, a.alt, { ...q.bildOpt, klein: true })}</div>`
       : `<span class="bu">${BU[i]}</span><span>${a}</span>`;
     b.addEventListener('click', () => waehle(i));
@@ -341,7 +347,7 @@ function init() {
     if ($('frage-view').hidden || !runde) return;
     const q = runde.fragen[runde.i];
     if (q.bild) $('bild').querySelector('.fig-art').innerHTML = stereoSVG(q.bild, q.bildAlt, q.bildOpt);
-    if (q.typ === 'text-bild') $('antworten').querySelectorAll('.antwort .fig-art').forEach((el, i) => { el.innerHTML = stereoSVG(q.antworten[i].app, q.antworten[i].alt, { ...q.bildOpt, klein: true }); });
+    if (bildAntworten(q)) $('antworten').querySelectorAll('.antwort .fig-art').forEach((el, i) => { el.innerHTML = stereoSVG(q.antworten[i].app, q.antworten[i].alt, { ...q.bildOpt, klein: true }); });
   });
 }
 init();

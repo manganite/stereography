@@ -1,10 +1,12 @@
 // Fragen des Quiz (handgeschrieben). Aufbau je Frage siehe Konzept „Quiz“, Abschnitt 7:
 //   id, stufe (1–3), kapitel (Skript), lernziel (wörtlich aus Lernzielen oder Zusammenfassung des Skripts),
-//   typ: 'einfach' | 'mehrfach' | 'bild-text' (Frage mit Stereogramm) | 'text-bild' (Antworten sind Stereogramme),
-//   frage (HTML), bild (Link-Adresse der App, wird als Stereogramm gezeichnet), antworten (HTML bzw. bei
-//   'text-bild' { app, alt }), richtig (Indizes), hinweise (je Antwort: warum falsch; null bei richtigen),
+//   typ: 'einfach' | 'mehrfach' | 'bild-text' (Frage mit Bild) | 'text-bild' (Antworten sind Bilder)
+//   | 'bild-bild' (Frage mit Bild, Antworten sind Bilder),
+//   frage (HTML), bild (Bildangabe), antworten (HTML bzw. bei 'text-bild' und 'bild-bild' { app: Bildangabe, alt }),
+//   richtig (Indizes), hinweise (je Antwort: warum falsch; null bei richtigen),
+//   Bildangabe: Link-Adresse der App (Stereogramm) oder "3d" + Link-Adresse (räumliche Zeichnung, js/bild3d.js),
 //   bildOpt (optional): { zonenachse: false } zeigt die Zonenachse weder beschriftet noch markiert (im Bild der
-//   Frage und bei 'text-bild' in den Antwortbildern),
+//   Frage und in den Antwortbildern),
 //   erklaerung, skript (Anker in skript.html), app (Ansicht in der App), quelle, status ('entwurf' | 'geprüft').
 //   pruefung (optional): Angaben, die tests/quiz.test.mjs nachrechnet.
 // Nur Fragen mit status 'geprüft' erscheinen im Quiz; Entwürfe zeigt quiz.html?entwurf.

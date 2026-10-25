@@ -6,6 +6,8 @@ import { POINT_GROUPS, groupById, buildPointGroup, symmetryDirections, elementSu
 import { hmHTML } from './format.js';
 import { CATALOG, entryById } from './forms.js';
 import { SYSTEM_OF } from './polyhedra.js';
+import { poleOfHKL, stabilizer } from './sitesym.js';
+import { mulVec } from './linalg.js';
 
 // ------------------------------------------------------------------ Symmetriegerüst → Punktgruppe
 // Je Punktgruppe eine Aufstellung wie im Formenkatalog (monoklin Achse b, 321, 3m1, 3̄m1, 4̄2m, 6̄m2),
@@ -122,29 +124,50 @@ export const GERUEST = {
 // Flächenzahl und Flächensymmetrie aus den Gruppenoperationen nach.
 const indizes = (hkl) => `{${hkl.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join('')}}`;
 const ORDNUNG = (id) => buildPointGroup(id).ops.length;
+/** Symbol der Punktgruppe; trigonal mit Aufstellung (3m1, 31m), damit die Positionen der Flächensymmetrie lesbar sind. */
+const gruppenSymbol = (g) => hmHTML(g.system === 'trigonal' && g.setting ? g.setting : g.hm);
 /** Formen mit spezieller Lage (Flächensymmetrie ≠ 1) in Gruppen mit mindestens 8 Operationen. */
 const SPEZIELL = CATALOG.filter((e) => e.fs !== '1' && e.mult > 1 && ORDNUNG(e.pg) >= 8);
+/** Varianten, die eine handgeschriebene Frage schon stellt (lag-3-01, lag-3-03). */
+const SCHON_GEFRAGT = { 'gen-flaechenzahl': ['-43m:a33'], 'gen-flaechensym': ['4/mmm:a2'] };
+
+/** Operationen (Indizes), die den Pol einer Form festhalten. */
+function stab(e) {
+  const info = buildPointGroup(e.pg);
+  return { info, s: new Set(stabilizer(info.ops, poleOfHKL(groupById(e.pg).system, e.hkl))) };
+}
+/** Liegt ein Pol der Form x auch auf allen Elementen, die durch den Pol von e gehen, aber nicht umgekehrt? */
+function enthalten(e, x) {
+  const { info, s } = stab(e);
+  const p = poleOfHKL(groupById(x.pg).system, x.hkl);
+  return info.ops.some((W) => { const t = new Set(stabilizer(info.ops, mulVec(W, p))); return [...t].every((i) => s.has(i)) && t.size < s.size; });
+}
 
 export const FLAECHENZAHL = {
   id: 'gen-flaechenzahl', kapitel: 8, stufen: [3], status: 'entwurf',
-  params: () => SPEZIELL.map((e) => e.id),
+  params: () => SPEZIELL.map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechenzahl'].includes(id)),
   make(id) {
     const e = entryById(id);
     const g = groupById(e.pg);
     const n = ORDNUNG(e.pg), k = n / e.mult;
     const fs = hmHTML(e.fs);
-    // typische Fehler: Flächensymmetrie vergessen, Ordnung der Flächensymmetrie, mal statt geteilt
+    // typische Fehler: Flächensymmetrie vergessen, Ordnung der Flächensymmetrie, Flächenzahl einer anderen Form
     const kand = [[n, `So viele Flächen hat nur die allgemeine Form mit der Flächensymmetrie 1. Hier halten die ${k} Operationen von ${fs} jeden Pol fest; je ${k} Bilder fallen zusammen.`],
-      [k, `${k} ist die Ordnung der Flächensymmetrie ${fs}, nicht die Flächenzahl.`],
-      [e.mult * 2, `So viele Flächen hätte die Form bei einer halb so grossen Flächensymmetrie. Hier: ${n}/${k} = ${e.mult}.`],
-      [n * k, `Die Ordnungen werden nicht multipliziert, sondern geteilt: ${n}/${k}.`]];
+      [k, `${k} ist die Ordnung der Flächensymmetrie ${fs}, nicht die Flächenzahl.`]];
+    for (const x of SPEZIELL.filter((y) => y.pg === e.pg && y.fs !== e.fs)) {
+      kand.push([x.mult, `So viele Flächen hat die Form ${indizes(x.hkl)} mit der Flächensymmetrie ${hmHTML(x.fs)} (${n}/${n / x.mult}). Hier: ${n}/${k} = ${e.mult}.`]);
+    }
+    if (k % 2 === 0) kand.push([e.mult * 2, `So viele Flächen hätte die Form bei einer halb so grossen Flächensymmetrie. Hier: ${n}/${k} = ${e.mult}.`]);
+    if (e.mult % 2 === 0) kand.push([e.mult / 2, `So viele Flächen hätte die Form bei einer doppelt so grossen Flächensymmetrie. Hier: ${n}/${k} = ${e.mult}.`]);
+    kand.push([1, `Eine einzige Fläche bliebe nur, wenn alle ${n} Operationen den Pol festhielten. Hier sind es ${k}: ${n}/${k} = ${e.mult}.`]);
+    kand.push([n / 2, `Das ist die halbe Ordnung der Punktgruppe; geteilt wird aber durch die Ordnung der Flächensymmetrie: ${n}/${k} = ${e.mult}.`]);
     const abl = [];
-    for (const [x, h] of kand) if (x !== e.mult && Number.isInteger(x) && x > 0 && !abl.some(([y]) => y === x) && abl.length < 3) abl.push([x, h]);
+    for (const [x, h] of kand) if (x !== e.mult && Number.isInteger(x) && x > 0 && x <= n && !abl.some(([y]) => y === x) && abl.length < 3) abl.push([x, h]);
     const sys = SYSTEM_OF[e.pg];
     return {
       typ: 'einfach',
       lernziel: 'die Flächenzahl einer Form aus der Ordnung der Punktgruppe und der Flächensymmetrie berechnen',
-      frage: `Wie viele Flächen hat die Form ${indizes(e.hkl)} in der Punktgruppe ${hmHTML(g.hm)} (${n} Operationen), wenn ihre Flächensymmetrie <b>${fs}</b> ist?`,
+      frage: `Wie viele Flächen hat die Form ${indizes(e.hkl)} in der Punktgruppe ${gruppenSymbol(g)} (${n} Operationen), wenn ihre Flächensymmetrie <b>${fs}</b> ist?`,
       antworten: [String(e.mult), ...abl.map(([x]) => String(x))],
       richtig: [0],
       hinweise: [null, ...abl.map(([, h]) => h)],
@@ -160,26 +183,31 @@ export const FLAECHENZAHL = {
 const FS_GRUPPEN = [...new Set(SPEZIELL.map((e) => e.pg))].filter((pg) => new Set(SPEZIELL.filter((e) => e.pg === pg).map((e) => e.fs)).size >= 4);
 export const FLAECHENSYM = {
   id: 'gen-flaechensym', kapitel: 8, stufen: [3], status: 'entwurf',
-  params: () => SPEZIELL.filter((e) => FS_GRUPPEN.includes(e.pg)).map((e) => e.id),
+  params: () => SPEZIELL.filter((e) => FS_GRUPPEN.includes(e.pg)).map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechensym'].includes(id)),
   make(id) {
     const e = entryById(id);
     const g = groupById(e.pg);
-    const n = ORDNUNG(e.pg);
+    const n = ORDNUNG(e.pg), k = n / e.mult;
+    // Ablenker: andere Flächensymmetrien derselben Gruppe, zuerst gleicher Ordnung, dann nach Abstand der Ordnung
     const andere = [];
     for (const x of SPEZIELL.filter((y) => y.pg === e.pg && y.fs !== e.fs)) if (!andere.some((y) => y.fs === x.fs)) andere.push(x);
-    const abl = andere.slice(0, 3);
+    const abstand = (x) => Math.abs(Math.log((n / x.mult) / k));
+    const abl = andere.map((x, i) => [x, i]).sort((a, b) => abstand(a[0]) - abstand(b[0]) || a[1] - b[1]).slice(0, 3).map(([x]) => x);
     const labels = symmetryDirections(buildPointGroup(e.pg)).map((c) => c.label).join(', ');
     const sys = SYSTEM_OF[e.pg];
+    const hinweis = (x) => (enthalten(e, x)
+      ? `${hmHTML(x.fs)} ist die Flächensymmetrie der Form ${indizes(x.hkl)} (${x.mult} Flächen). Die Pole von ${indizes(e.hkl)} liegen auch auf diesen Elementen, aber zusätzlich auf weiteren; das Symbol nennt alle Elemente durch die Fläche.`
+      : `${hmHTML(x.fs)} ist die Flächensymmetrie der Form ${indizes(x.hkl)} (${x.mult} Flächen). Die Pole von ${indizes(e.hkl)} liegen auf anderen Symmetrieelementen.`);
     return {
       typ: 'bild-text',
       lernziel: 'ein orientiertes Symbol der Flächensymmetrie lesen, z. B. 4m.m oder ..m',
-      frage: `Das Stereogramm zeigt die Form ${indizes(e.hkl)} der Punktgruppe ${hmHTML(g.hm)} über ihrem Symmetriegerüst. Welche Flächensymmetrie haben ihre Flächen?`,
+      frage: `Das Stereogramm zeigt die Form ${indizes(e.hkl)} der Punktgruppe ${gruppenSymbol(g)} über ihrem Symmetriegerüst. Welche Flächensymmetrie haben ihre Flächen?`,
       bild: `#m=form&sys=${sys}&f=${encodeURIComponent(e.id)}&geruest=1&idx=0&muster=1`,
       bildAlt: `Stereogramm einer Form der Punktgruppe ${g.hm} über dem Symmetriegerüst`,
       antworten: [hmHTML(e.fs), ...abl.map((x) => hmHTML(x.fs))],
       richtig: [0],
-      hinweise: [null, ...abl.map((x) => `${hmHTML(x.fs)} ist die Flächensymmetrie der Form ${indizes(x.hkl)} (${x.mult} Flächen). Die Pole von ${indizes(e.hkl)} liegen auf anderen Symmetrieelementen.`)],
-      erklaerung: `Das orientierte Symbol nennt je Blickrichtung (${labels}) die Symmetrieelemente, die durch die Fläche gehen; ein Punkt steht für keines. Für ${indizes(e.hkl)} ergibt das ${hmHTML(e.fs)} mit ${n / e.mult} Operationen, also ${n}/${n / e.mult} = ${e.mult} Flächen (Wyckoff-Lage ${e.mult}<i>${e.wy}</i>).`,
+      hinweise: [null, ...abl.map(hinweis)],
+      erklaerung: `Das orientierte Symbol nennt je Blickrichtung (${labels}) die Symmetrieelemente, die durch die Fläche gehen; ein Punkt steht für keines. Für ${indizes(e.hkl)} ergibt das ${hmHTML(e.fs)} mit ${k} Operationen, also ${n}/${k} = ${e.mult} Flächen (Wyckoff-Lage ${e.mult}<i>${e.wy}</i>).`,
       skript: 'lagesymbol',
       app: `#m=form&sys=${sys}&f=${encodeURIComponent(e.id)}&geruest=1&muster=1`,
       quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150, Tab. 9.5–9.8 (S. 152–157); International Tables Vol. A (2006), Tab. 10.1.2.2',

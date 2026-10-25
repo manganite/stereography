@@ -532,6 +532,14 @@ test('Generatoren Flächenzahl und Flächensymmetrie: Werte aus den Gruppenopera
         // Ablenker: Flächensymmetrien anderer Formen derselben Gruppe
         const fsGruppe = CATALOG.filter((x) => x.pg === e.pg).map((x) => text(hmHTML(x.fs)));
         assert.ok(q.antworten.every((a) => fsGruppe.includes(text(a))), `${g.id}:${id}`);
+        // Hinweis: „auch auf diesen Elementen“ genau dann, wenn ein Pol der Ablenkerform nur Elemente durch den Pol von e hat
+        const se = new Set(st);
+        q.antworten.slice(1).forEach((a, i) => {
+          const x = CATALOG.find((y) => y.pg === e.pg && tq(hmHTML(y.fs)) === tq(a));
+          const px = poleOfHKL(groupById(e.pg).system, x.hkl);
+          const drin = info.ops.some((W) => stabilizer(info.ops, mulVec(W, px)).every((j) => se.has(j)));
+          assert.equal(q.hinweise[i + 1].includes('auch auf diesen'), drin, `${g.id}:${id}: Hinweis zu ${text(a)}`);
+        });
       }
     }
   }

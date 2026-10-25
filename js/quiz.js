@@ -12,7 +12,11 @@ import {
 } from './quiz-core.js';
 
 const $ = (id) => document.getElementById(id);
-const entwurf = new URLSearchParams(location.search).has('entwurf');
+const START = new URLSearchParams(location.search);
+const entwurf = START.has('entwurf');
+// Links aus dem Skript („Lernziele prüfen“): quiz.html?kap=4&stufe=1 wählt Kapitel und Stufe vor
+const startKap = (START.get('kap') || '').split(',').map(Number).filter((n) => KAPITEL.some((k) => k.nr === n));
+const startStufe = Number(START.get('stufe'));
 const KANDS = kandidaten(BANK, GENERATOREN, { entwurf });
 const ANZ = zaehlen(KANDS);
 const BU = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -27,7 +31,7 @@ function sichern(p) {
 let fortschritt = laden();
 
 // ------------------------------------------------------------------ Auswahl
-const wahl = { stufe: 1, kapitel: null, n: 10 };
+const wahl = { stufe: [1, 2, 3].includes(startStufe) ? startStufe : 1, kapitel: null, n: 10 };
 
 function anzahl(stufe, kap) {
   let n = 0;
@@ -55,6 +59,7 @@ function zeigeStufen() {
 function zeigeKapitel() {
   const box = $('kapitel');
   const vorher = new Set([...box.querySelectorAll('input:checked')].map((i) => Number(i.value)));
+  if (!box.children.length) startKap.forEach((n) => vorher.add(n));
   box.innerHTML = '';
   for (const k of KAPITEL) {
     const n = anzahl(wahl.stufe, [k.nr]);
@@ -65,6 +70,8 @@ function zeigeKapitel() {
     lab.innerHTML = `<input type="checkbox" value="${k.nr}"${n ? '' : ' disabled'}${an ? ' checked' : ''}> Kap. ${k.nr} <small>${n ? n : 'folgt'}</small>`;
     box.append(lab);
   }
+  // Vorgewähltes Kapitel ohne Fragen in dieser Stufe: alle Kapitel mit Fragen wählen
+  if (!box.querySelector('input:checked')) box.querySelectorAll('input:not(:disabled)').forEach((i) => { i.checked = true; });
   aktualisiereStart();
 }
 

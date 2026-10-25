@@ -4,6 +4,8 @@
 
 import { POINT_GROUPS, groupById, buildPointGroup, symmetryDirections, elementSummary } from './pointgroups.js';
 import { hmHTML } from './format.js';
+import { CATALOG, entryById } from './forms.js';
+import { SYSTEM_OF } from './polyhedra.js';
 
 // ------------------------------------------------------------------ Symmetriegerüst → Punktgruppe
 // Je Punktgruppe eine Aufstellung wie im Formenkatalog (monoklin Achse b, 321, 3m1, 3̄m1, 4̄2m, 6̄m2),
@@ -115,5 +117,75 @@ export const GERUEST = {
   },
 };
 
-export const GENERATOREN = [GERUEST];
-export { GERUEST_ALLE, GERUEST_STUFE1, POINT_GROUPS };
+// ------------------------------------------------------------------ Flächenzahl und Flächensymmetrie (Kap. 8, Stufe 3)
+// Daten aus dem Formenkatalog (js/forms.js): Wyckoff-Lage, Flächensymmetrie, Flächenzahl je Form; die Tests rechnen
+// Flächenzahl und Flächensymmetrie aus den Gruppenoperationen nach.
+const indizes = (hkl) => `{${hkl.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join('')}}`;
+const ORDNUNG = (id) => buildPointGroup(id).ops.length;
+/** Formen mit spezieller Lage (Flächensymmetrie ≠ 1) in Gruppen mit mindestens 8 Operationen. */
+const SPEZIELL = CATALOG.filter((e) => e.fs !== '1' && e.mult > 1 && ORDNUNG(e.pg) >= 8);
+
+export const FLAECHENZAHL = {
+  id: 'gen-flaechenzahl', kapitel: 8, stufen: [3], status: 'entwurf',
+  params: () => SPEZIELL.map((e) => e.id),
+  make(id) {
+    const e = entryById(id);
+    const g = groupById(e.pg);
+    const n = ORDNUNG(e.pg), k = n / e.mult;
+    const fs = hmHTML(e.fs);
+    // typische Fehler: Flächensymmetrie vergessen, Ordnung der Flächensymmetrie, mal statt geteilt
+    const kand = [[n, `So viele Flächen hat nur die allgemeine Form mit der Flächensymmetrie 1. Hier halten die ${k} Operationen von ${fs} jeden Pol fest; je ${k} Bilder fallen zusammen.`],
+      [k, `${k} ist die Ordnung der Flächensymmetrie ${fs}, nicht die Flächenzahl.`],
+      [e.mult * 2, `So viele Flächen hätte die Form bei einer halb so grossen Flächensymmetrie. Hier: ${n}/${k} = ${e.mult}.`],
+      [n * k, `Die Ordnungen werden nicht multipliziert, sondern geteilt: ${n}/${k}.`]];
+    const abl = [];
+    for (const [x, h] of kand) if (x !== e.mult && Number.isInteger(x) && x > 0 && !abl.some(([y]) => y === x) && abl.length < 3) abl.push([x, h]);
+    const sys = SYSTEM_OF[e.pg];
+    return {
+      typ: 'einfach',
+      lernziel: 'die Flächenzahl einer Form aus der Ordnung der Punktgruppe und der Flächensymmetrie berechnen',
+      frage: `Wie viele Flächen hat die Form ${indizes(e.hkl)} in der Punktgruppe ${hmHTML(g.hm)} (${n} Operationen), wenn ihre Flächensymmetrie <b>${fs}</b> ist?`,
+      antworten: [String(e.mult), ...abl.map(([x]) => String(x))],
+      richtig: [0],
+      hinweise: [null, ...abl.map(([, h]) => h)],
+      erklaerung: `Die Flächensymmetrie ${fs} hat ${k} Operationen. Flächenzahl = Ordnung der Punktgruppe / Ordnung der Flächensymmetrie = ${n}/${k} = ${e.mult}. Die Form gehört zur Wyckoff-Lage ${e.mult}<i>${e.wy}</i>.`,
+      skript: 'multiplizitaet',
+      app: `#m=form&sys=${sys}&f=${encodeURIComponent(e.id)}&muster=1`,
+      quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150, Tab. 9.5–9.8 (S. 152–157); International Tables Vol. A (2006), Tab. 10.1.2.2',
+    };
+  },
+};
+
+/** Flächensymmetrie wählen: Gruppen mit mindestens vier verschiedenen speziellen Flächensymmetrien. */
+const FS_GRUPPEN = [...new Set(SPEZIELL.map((e) => e.pg))].filter((pg) => new Set(SPEZIELL.filter((e) => e.pg === pg).map((e) => e.fs)).size >= 4);
+export const FLAECHENSYM = {
+  id: 'gen-flaechensym', kapitel: 8, stufen: [3], status: 'entwurf',
+  params: () => SPEZIELL.filter((e) => FS_GRUPPEN.includes(e.pg)).map((e) => e.id),
+  make(id) {
+    const e = entryById(id);
+    const g = groupById(e.pg);
+    const n = ORDNUNG(e.pg);
+    const andere = [];
+    for (const x of SPEZIELL.filter((y) => y.pg === e.pg && y.fs !== e.fs)) if (!andere.some((y) => y.fs === x.fs)) andere.push(x);
+    const abl = andere.slice(0, 3);
+    const labels = symmetryDirections(buildPointGroup(e.pg)).map((c) => c.label).join(', ');
+    const sys = SYSTEM_OF[e.pg];
+    return {
+      typ: 'bild-text',
+      lernziel: 'ein orientiertes Symbol der Flächensymmetrie lesen, z. B. 4m.m oder ..m',
+      frage: `Das Stereogramm zeigt die Form ${indizes(e.hkl)} der Punktgruppe ${hmHTML(g.hm)} über ihrem Symmetriegerüst. Welche Flächensymmetrie haben ihre Flächen?`,
+      bild: `#m=form&sys=${sys}&f=${encodeURIComponent(e.id)}&geruest=1&idx=0&muster=1`,
+      bildAlt: `Stereogramm einer Form der Punktgruppe ${g.hm} über dem Symmetriegerüst`,
+      antworten: [hmHTML(e.fs), ...abl.map((x) => hmHTML(x.fs))],
+      richtig: [0],
+      hinweise: [null, ...abl.map((x) => `${hmHTML(x.fs)} ist die Flächensymmetrie der Form ${indizes(x.hkl)} (${x.mult} Flächen). Die Pole von ${indizes(e.hkl)} liegen auf anderen Symmetrieelementen.`)],
+      erklaerung: `Das orientierte Symbol nennt je Blickrichtung (${labels}) die Symmetrieelemente, die durch die Fläche gehen; ein Punkt steht für keines. Für ${indizes(e.hkl)} ergibt das ${hmHTML(e.fs)} mit ${n / e.mult} Operationen, also ${n}/${n / e.mult} = ${e.mult} Flächen (Wyckoff-Lage ${e.mult}<i>${e.wy}</i>).`,
+      skript: 'lagesymbol',
+      app: `#m=form&sys=${sys}&f=${encodeURIComponent(e.id)}&geruest=1&muster=1`,
+      quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150, Tab. 9.5–9.8 (S. 152–157); International Tables Vol. A (2006), Tab. 10.1.2.2',
+    };
+  },
+};
+
+export const GENERATOREN = [GERUEST, FLAECHENZAHL, FLAECHENSYM];
+export { GERUEST_ALLE, GERUEST_STUFE1, POINT_GROUPS, SPEZIELL };

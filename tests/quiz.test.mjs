@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { BANK } from '../js/quiz-bank.js';
-import { GENERATOREN, GERUEST, GERUEST_ALLE, GERUEST_STUFE1 } from '../js/quiz-gen.js';
+import { GENERATOREN, GERUEST, GERUEST_ALLE, GERUEST_STUFE1, FLAECHENZAHL, FLAECHENSYM } from '../js/quiz-gen.js';
 import {
   KAPITEL, kandidaten, zaehlen, ziehen, stellen, pruefen, rng, GEN_ANTEIL,
   leererFortschritt, fortschrittAus, vermerken, stand,
@@ -11,13 +11,13 @@ import {
 import { createState, applyHashTo, stereoForHash, stateForHash, currentEntryId } from '../js/scene.js';
 import { buildSVG } from '../js/stereogram.js';
 import { groupById, POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart } from '../js/pointgroups.js';
-import { CATALOG } from '../js/forms.js';
+import { CATALOG, formEig } from '../js/forms.js';
 import { poleOfHKL, stabilizer } from '../js/sitesym.js';
 import { hmHTML } from '../js/format.js';
 import { moodleXML } from '../tools/moodle-export.mjs';
 import { project, C as SC, R as SR } from '../js/stereogram.js';
-import { latticeFromParams, LATTICE_DEFAULTS, orientationPresets, orientationMatrix } from '../js/polyhedra.js';
-import { inverse, transpose, mulVec, mul, matEq, neg, I3 } from '../js/linalg.js';
+import { latticeFromParams, LATTICE_DEFAULTS, orientationPresets, orientationMatrix, identifyGroup } from '../js/polyhedra.js';
+import { inverse, transpose, mulVec, mul, matEq, neg, I3, vecEq } from '../js/linalg.js';
 
 const skript = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
 const K = '#336699';
@@ -71,6 +71,26 @@ function phiRhoText(h) {
 /** Alle Flächen (hkl) in einem Antworttext. */
 const flaechenIn = (h) => [...h.replace(/<span class="ov">(\d)<\/span>/g, '-$1').matchAll(/\((-?\d)(-?\d)(-?\d)\)/g)].map((m) => [1, 2, 3].map((k) => Number(m[k])));
 const gleich = (a, b) => a.every((x, i) => x === b[i]);
+/** Operationen von m3̄m, die eine Richtung als Gerade (pfeil = false) bzw. als Pfeil (pfeil = true) erhalten. */
+function rest(richtung, pfeil) {
+  const n = norm(richtung);
+  return buildPointGroup('m-3m').ops.filter((W) => { const v = mulVec(W, n); return vecEq(v, n) || (!pfeil && vecEq(v, n.map((x) => -x))); });
+}
+/** Bahnen einer Menge von Einheitsvektoren unter Operationen (Grössen, sortiert). */
+function bahnen(punkte, ops) {
+  const rest0 = [...punkte], gr = [];
+  while (rest0.length) {
+    const p = rest0.shift();
+    const bild = ops.map((W) => mulVec(W, p));
+    const n0 = rest0.length;
+    for (let i = rest0.length - 1; i >= 0; i--) if (bild.some((b) => vecEq(b, rest0[i]))) rest0.splice(i, 1);
+    gr.push(1 + n0 - rest0.length);
+  }
+  return gr.sort((a, b) => a - b);
+}
+/** Text mit Querstrichen (‾3 statt 3), damit 3̄m und 3m verschieden bleiben. */
+const tq = (h) => text(h.replace(/<span class="ov">/g, '‾'));
+const eindeutig = (vs) => vs.filter((v, i) => vs.findIndex((w) => vecEq(v, w)) === i);
 
 /** Abschnitt des Skripts zu einem Anker: Kapitel (Nummer) und ob er (oder ein umgebender) eine Vertiefung ist. */
 function abschnitt(anker) {
@@ -356,6 +376,8 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       if (zahl0) assert.equal(Number(zahl0[0]), p.anzahl, `${q.id}: Zahl in der richtigen Antwort`);
       const t0 = text(q.antworten[q.richtig[0]]);
       if (/allgemein|speziell/i.test(t0)) assert.equal(/allgemein/i.test(t0), p.allgemein, `${q.id}: ${t0}`);
+    } else if (p.art === 'ordnungen' && p.nurOrdnung) {
+      assert.equal(buildPointGroup(p.gruppen[0]).ops.length, p.anzahl, q.id);
     } else if (p.art === 'ordnungen') {
       const soll = p.gruppen.map((g, i) => (buildPointGroup(g).ops.length === p.anzahl ? i : -1)).filter((i) => i >= 0);
       assert.deepEqual(q.richtig, soll, q.id);
@@ -407,12 +429,112 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       const t = (Math.sqrt(3) * d1 - d2) / (v2 - Math.sqrt(3) * v1);
       assert.ok(t > 0 && Math.abs(r(t) - Math.sqrt(3)) < 1e-9, q.id);
       assert.match(text(q.antworten[q.richtig[0]]), /verschwinden/, q.id);
+    } else if (p.art === 'lagesym') {
+      const info = buildPointGroup(p.gruppe);
+      const v = norm(latticeToCart(p.system)(p.richtung));
+      const st = stabilizer(info.ops, v).map((i) => info.ops[i]);
+      assert.equal(identifyGroup(st).hm, p.symbol, q.id);
+      assert.equal(tq(q.antworten[q.richtig[0]]), tq(hmHTML(p.symbol)), q.id);
+    } else if (p.art === 'katalog') {
+      const e = CATALOG.find((x) => x.id === p.form);
+      assert.equal(e.fs, p.fs, q.id);
+      const info = buildPointGroup(e.pg);
+      assert.equal(info.ops.length / stabilizer(info.ops, poleOfHKL(groupById(e.pg).system, e.hkl)).length, e.mult, q.id);
+      assert.equal(tq(q.antworten[q.richtig[0]]), tq(hmHTML(p.fs)), q.id);
+    } else if (p.art === 'richtungszahl') {
+      const ops = buildPointGroup(p.gruppe).ops, n = norm(p.richtung);
+      const st = ops.filter((W) => { const v = mulVec(W, n); return vecEq(v, n) || (p.gerade && vecEq(v, n.map((x) => -x))); });
+      assert.equal(ops.length / st.length, p.anzahl, q.id);
+      assert.equal(tq(q.antworten[q.richtig[0]]), String(p.anzahl), q.id);
+    } else if (p.art === 'wyckoff') {
+      p.formen.forEach((id, i) => { const e = CATALOG.find((x) => x.id === id); assert.equal(e.wy, p.lagen[i], `${q.id}: ${id}`); assert.equal(e.mult, p.anzahl, q.id); });
+    } else if (p.art === 'eigen') {
+      assert.equal(formEig(CATALOG.find((x) => x.id === p.form)), p.eig, q.id);
+      assert.ok(tq(q.antworten[q.richtig[0]]).endsWith(tq(hmHTML(p.eig))), q.id);
+    } else if (p.art === 'restgruppe') {
+      assert.equal(identifyGroup(rest(p.richtung, p.pfeil)).hm, groupById(p.gruppe).hm, q.id);
+      assert.equal(tq(q.antworten[q.richtig[0]]), tq(hmHTML(groupById(p.gruppe).hm)), q.id);
+    } else if (p.art === 'zerfall') {
+      const pole = eindeutig(buildPointGroup('m-3m').ops.map((W) => mulVec(W, norm(p.hkl))));
+      assert.deepEqual(bahnen(pole, rest(p.richtung, false)), p.teile, q.id);
+    } else if (p.art === 'polar') {
+      // polar: eine Richtung bleibt unter allen Operationen fest (Mittel der Matrizen ≠ 0)
+      const polar = (g) => { const ops = buildPointGroup(g).ops; const m = ops.reduce((a, W) => a.map((r, i) => r.map((x, j) => x + W[i][j])), [[0, 0, 0], [0, 0, 0], [0, 0, 0]]); return m.flat().some((x) => Math.abs(x) > 1e-9); };
+      assert.deepEqual(q.richtig, p.gruppen.map((g, i) => (polar(g) ? i : -1)).filter((i) => i >= 0), q.id);
+      p.gruppen.forEach((g, i) => assert.equal(tq(q.antworten[i]), tq(hmHTML(groupById(g).hm)), q.id));
+    } else if (p.art === 'domaenen') {
+      assert.equal(48 / rest(p.richtung, p.pfeil).length, p.anzahl, q.id);
+      assert.equal(tq(q.antworten[q.richtig[0]]), String(p.anzahl), q.id);
+    } else if (p.art === 'zonenpol90') {
+      // kubisch: Zonenpol = Richtung der Zonenachse; jeder Pol der Zone 90° davon entfernt
+      for (const f of p.flaechen) { assert.equal(dot(f, p.achse), 0, q.id); assert.ok(Math.abs(winkel(f, p.achse) - 90) < 1e-9, q.id); }
+      assert.equal(text(q.antworten[q.richtig[0]]), '90°', q.id);
+    } else if (p.art === 'komplikation') {
+      const [a, b] = p.aus;
+      for (const f of p.aus) assert.equal(dot(f, p.achse), 0, q.id);
+      const summe = a.map((x, i) => x + b[i]);
+      q.antworten.forEach((h, i) => {
+        const f = flaechenIn(h)[0];
+        assert.equal(dot(f, p.achse) === 0, q.richtig.includes(i), `${q.id}: ${text(h)}`);
+      });
+      assert.deepEqual(flaechenIn(q.antworten[q.richtig[0]])[0], summe, q.id);
+    } else if (p.art === 'musterSpiegel') {
+      // Bahn eines allgemeinen Pols: invariant unter den Spiegelungen an den Ebenen durch c und einen Pol
+      const orb = orbit(buildPointGroup(p.gruppe).ops, P0).map((o) => o.p ?? o);
+      for (const x of orb) {
+        const nrm = norm(cross([0, 0, 1], x));
+        const sp = (v) => { const d = dot(v, nrm); return v.map((c, i) => c - 2 * d * nrm[i]); };
+        assert.ok(orb.every((y) => orb.some((z) => vecEq(sp(y), z))), q.id);
+      }
+      assert.ok(orb.every((x) => x[2] > 0), `${q.id}: alle Pole oben`);
+    } else if (p.art === 'hkil') {
+      const [h, k, l] = p.hkl;
+      const vier = (s0) => { const t = s0.replace(/<span class="ov">(\d)<\/span>/g, '-$1').replace(/[()]/g, ''); return [...t.matchAll(/-?\d/g)].map((m) => Number(m[0])); };
+      q.antworten.forEach((a, i) => assert.equal(gleich(vier(a), [h, k, -(h + k), l]), q.richtig.includes(i), `${q.id}: ${text(a)}`));
     } else if (p.art === 'hexWinkel') {
       const w = winkel(hex(p.a), hex(p.b));
       q.antworten.forEach((a, i) => assert.equal(Math.abs(zahl(text(a).replace('°', '')) - w) < 0.005, q.richtig.includes(i), `${q.id}: ${text(a)} (soll ${w})`));
     } else assert.fail(`${q.id}: unbekannte Prüfung ${p.art}`);
   }
   assert.ok(n >= 15);
+});
+
+test('Generatoren Flächenzahl und Flächensymmetrie: Werte aus den Gruppenoperationen, gültige Fragen', () => {
+  for (const g of [FLAECHENZAHL, FLAECHENSYM]) {
+    assert.deepEqual(g.stufen, [3]);
+    const ps = g.params(3);
+    assert.ok(ps.length >= 20, g.id);
+    for (const id of ps) {
+      const q = g.make(id);
+      const e = CATALOG.find((x) => x.id === id);
+      const info = buildPointGroup(e.pg);
+      const pol = poleOfHKL(groupById(e.pg).system, e.hkl);
+      const st = stabilizer(info.ops, pol);
+      // Flächenzahl = Ordnung / Ordnung der Flächensymmetrie; die Flächensymmetrie hat die Ordnung des Stabilisators
+      assert.equal(info.ops.length / st.length, e.mult, `${g.id}:${id}`);
+      assert.ok(st.length > 1, `${g.id}:${id} speziell`);
+      assert.equal(q.antworten.length, 4, `${g.id}:${id}`);
+      const keys = q.antworten.map((a) => text(a.replace(/<span class="ov">/g, '‾')));
+      assert.equal(new Set(keys).size, 4, `${g.id}:${id}: doppelte Antwort`);
+      assert.equal(q.hinweise.length, 4);
+      q.hinweise.slice(1).forEach((h) => assert.ok(h.length > 10));
+      assert.ok(zieleUndZusammenfassung(g.kapitel).includes(q.lernziel), q.lernziel);
+      assert.equal(abschnitt(q.skript).kapitel, g.kapitel);
+      for (const h of [q.app, q.bild].filter(Boolean)) {
+        assert.equal(currentEntryId(stateForHash(h)), id, `${g.id}: ${h}`);
+        assert.match(svg(h), /<circle/);
+      }
+      if (g === FLAECHENZAHL) {
+        assert.equal(q.antworten[0], String(e.mult));
+        assert.ok(q.antworten.slice(1).every((a) => Number(a) !== e.mult && Number(a) > 0));
+      } else {
+        assert.equal(text(q.antworten[0]), text(hmHTML(e.fs)));
+        // Ablenker: Flächensymmetrien anderer Formen derselben Gruppe
+        const fsGruppe = CATALOG.filter((x) => x.pg === e.pg).map((x) => text(hmHTML(x.fs)));
+        assert.ok(q.antworten.every((a) => fsGruppe.includes(text(a))), `${g.id}:${id}`);
+      }
+    }
+  }
 });
 
 test('Generator Symmetriegerüst: alle 32 Punktgruppen, Ablenker mit anderem Symbol und anderem Gerüst', () => {
@@ -460,7 +582,7 @@ test('Ablauf: Stufe, Kapitel, Anzahl und Höchstanteil eines Generators', () => 
 test('Ablauf: gemischte Antworten behalten die richtige Lösung; Auswertung', () => {
   const kands = kandidaten(BANK, GENERATOREN, { entwurf: true });
   for (const [s, k] of kands.entries()) {
-    const q0 = k.frage || GERUEST.make(k.param);
+    const q0 = k.frage || k.gen.make(k.param, k.stufe);
     const q = stellen(k, rng(s + 1));
     const richtig0 = q0.richtig.map((i) => JSON.stringify(q0.antworten[i])).sort();
     assert.deepEqual(q.richtig.map((i) => JSON.stringify(q.antworten[i])).sort(), richtig0, k.key);
@@ -489,10 +611,10 @@ test('Fortschritt: vermerken, Stand je Kapitel, unbrauchbarer Speicher', () => {
 });
 
 test('Moodle-Export: Kategorien, Bruchteile, eingebettete Bilder, nur geprüfte Fragen', () => {
-  assert.equal(moodleXML().anzahl, BANK.filter((q) => q.status === 'geprüft').length
-    + (GERUEST.status === 'geprüft' ? 32 : 0));
+  const genZahl = (alle) => GENERATOREN.filter((g) => alle || g.status === 'geprüft').reduce((n, g) => n + g.stufen.reduce((m, st) => m + g.params(st).length, 0), 0);
+  assert.equal(moodleXML().anzahl, BANK.filter((q) => q.status === 'geprüft').length + genZahl(false));
   const { xml, anzahl } = moodleXML({ entwurf: true });
-  assert.equal(anzahl, BANK.length + 32);
+  assert.equal(anzahl, BANK.length + genZahl(true));
   const qs = xml.split('<question type="multichoice">').slice(1);
   assert.equal(qs.length, anzahl);
   for (const q of qs) {

@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **„Lage“ heisst jetzt „Projektionsrichtung“:** Die Auswahl in der Karte „Kristallform“ und die Zeile in der Infobox heissen „Projektionsrichtung“, wie seit 1.3.0 im Skript und in den Erklärtexten. Die Auswahlpunkte nennen nur noch die Richtung ([001], [111], [110] bzw. c, a, b). So bleibt „Lage“ frei für die allgemeine und spezielle Lage von Flächen und Richtungen (Wyckoff-Lage in der Infobox).
+
 ## [1.6.0] - 2026-10-24
 
 3D-Konstruktion: Ansichten entlang der Blickrichtungen, Bildexport immer hell und durchsichtig, Flächenpole abschaltbar; Seitenleiste nach dem Prinzip „weniger auf einmal“.

@@ -550,7 +550,7 @@ function renderPoly() {
   $('v3d-hint').textContent = state.poly.tool
     ? [`${tn}: zwei Flächen${state.poly.showPoles ? ' oder Pole' : ''} antippen`, `${tn}: zweite Fläche${fp2} antippen`, `${state.poly.tool === 'zone' ? 'Zone bestimmt' : 'Winkel gemessen'}; nächstes Antippen beginnt neu`][Math.min(state.zoneSel.length, 2)]
     : `Fläche${fp} antippen zum Hervorheben`;
-  $('stereo-sub').textContent = 'Projektion ∥ ' + C.preset.name.replace(' ∥ Projektionsrichtung', '').replace(/ \(.*\)/, '');
+  $('stereo-sub').textContent = 'Projektion ∥ ' + C.preset.name.replace(/ \(.*\)/, '');
   updateViews(polyViewDirections(C), col);
   syncDependentChecks();
   draw3dPoly(view3d, col, C, scene, hex4);
@@ -886,7 +886,7 @@ function updateInfoPoly(C, col) {
       };
       const parts = C.orbitsMain.map((o, i) => `<li><i class="sw" style="background:${C.orbitsMain.length > 1 ? oc[i % oc.length] : col.crystal}"></i>${brace(o.rep)}, ${o.hkls.length} Fläche${o.hkls.length > 1 ? 'n' : ''}${hexPart(i)}</li>`).join('');
       const hexNote = hs
-        ? `<p>Die Restgruppe ist trigonal. In hexagonalen Achsen gilt c ∥ ${dirHTML(hs.c, false)}, a₁ ∥ ${dirHTML(hs.a1, false)}, a₂ ∥ ${dirHTML(hs.a2, false)} (Richtungen im kubischen Gitter), c/a = ${hs.ca.toFixed(2).replace('.', ',')}; die Formen dort stehen hinter dem Pfeil.${hs.c.join('') === '111' && state.poly.presetId !== '111' ? ' Die Lage „[111] ∥ Projektionsrichtung“ zeigt den Kristall entlang der neuen c-Achse.' : ''}</p>`
+        ? `<p>Die Restgruppe ist trigonal. In hexagonalen Achsen gilt c ∥ ${dirHTML(hs.c, false)}, a₁ ∥ ${dirHTML(hs.a1, false)}, a₂ ∥ ${dirHTML(hs.a2, false)} (Richtungen im kubischen Gitter), c/a = ${hs.ca.toFixed(2).replace('.', ',')}; die Formen dort stehen hinter dem Pfeil.${hs.c.join('') === '111' && state.poly.presetId !== '111' ? ' Mit der Projektionsrichtung [111] blickt man entlang der neuen c-Achse.' : ''}</p>`
         : '';
       broken = `<div class="warnbox"><strong>Symmetrie erniedrigt: ${hmHTML(g.hm)} → ${hmHTML(C.reduced.hm)}</strong>${ax}
         ${st ? `<p>${stText}.</p>` : ''}
@@ -964,7 +964,7 @@ function updateInfoPoly(C, col) {
       <div><dt>Habitus</dt><dd>${habitHTML}</dd></div>
       <div><dt>Flächen insgesamt</dt><dd class="num">${C.faces.filter((f) => !f.hidden).length}</dd></div>
       <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, false)}</dd></div>
-      <div><dt>Lage</dt><dd>${C.preset.name}</dd></div>
+      <div><dt>Projektionsrichtung</dt><dd>${C.preset.name}</dd></div>
     </dl>
     ${ex.note ? `<p class="note">${ex.note.replace(/\{hkl:(-?\d+),(-?\d+),(-?\d+)\}/g, (_, h, k, l) => brace([+h, +k, +l]))}</p>` : ''}
     ${sel}
@@ -1005,7 +1005,7 @@ function updateInfoPoly(C, col) {
       <div><dt>Wyckoff-Lage, Flächensymmetrie</dt><dd>${e.wy}, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
       <div><dt>Eigensymmetrie der Form${C.isReduced ? ' (unverzerrt)' : ''}</dt><dd>${hmHTML(formEig(e))}</dd></div>
       <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken || !!st)}</dd></div>
-      <div><dt>Lage</dt><dd>${C.preset.name}</dd></div>
+      <div><dt>Projektionsrichtung</dt><dd>${C.preset.name}</dd></div>
     </dl>
     ${twinNote}
     ${sel}

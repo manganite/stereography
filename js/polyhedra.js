@@ -250,19 +250,20 @@ export function identifyGroup(cartOps) {
   return { hm: '?', id: null, info };
 }
 
-/** Orientierungsvorgaben ("Lagen"). z: Projektionsrichtung [uvw], x: Richtung nach unten (oder null: ⊥ b). */
+/** Orientierungsvorgaben (Projektionsrichtungen). name: Richtung ∥ Projektionsrichtung (Anzeige unter „Projektionsrichtung“);
+ *  z: Projektionsrichtung [uvw], x: Richtung nach unten (oder null: ⊥ b). */
 export function orientationPresets(sys) {
   if (sys === 'kubisch') {
     return [
-      { id: '001', name: '[001] ∥ Projektionsrichtung', z: [0, 0, 1], x: [1, 0, 0] },
-      { id: '111', name: '[111] ∥ Projektionsrichtung', z: [1, 1, 1], x: [1, 1, -2] },
-      { id: '110', name: '[110] ∥ Projektionsrichtung', z: [1, 1, 0], x: [0, 0, -1] },
+      { id: '001', name: '[001]', z: [0, 0, 1], x: [1, 0, 0] },
+      { id: '111', name: '[111]', z: [1, 1, 1], x: [1, 1, -2] },
+      { id: '110', name: '[110]', z: [1, 1, 0], x: [0, 0, -1] },
     ];
   }
   return [
-    { id: 'c', name: 'c ∥ Projektionsrichtung', z: [0, 0, 1], x: null },
-    { id: 'a', name: 'a ∥ Projektionsrichtung (c liegt)', z: [1, 0, 0], x: [0, 0, -1] },
-    { id: 'b', name: 'b ∥ Projektionsrichtung (c liegt)', z: [0, 1, 0], x: [0, 0, -1] },
+    { id: 'c', name: 'c', z: [0, 0, 1], x: null },
+    { id: 'a', name: 'a (c liegt)', z: [1, 0, 0], x: [0, 0, -1] },
+    { id: 'b', name: 'b (c liegt)', z: [0, 1, 0], x: [0, 0, -1] },
   ];
 }
 

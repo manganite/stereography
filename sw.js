@@ -7,6 +7,7 @@ const FILES = [
   './',
   'index.html',
   'skript.html',
+  'quiz.html',
   'css/base.css',
   'manifest.webmanifest',
   'icons/apple-touch-icon.png',
@@ -25,6 +26,10 @@ const FILES = [
   'js/sitesym.js',
   'js/skript.js',
   'js/pointgroups.js',
+  'js/quiz.js',
+  'js/quiz-bank.js',
+  'js/quiz-core.js',
+  'js/quiz-gen.js',
   'js/polyhedra.js',
   'js/stereogram.js',
   'js/version.js',
@@ -46,7 +51,7 @@ const FILES = [
 ];
 
 /** Eigenständige Seiten; jeder andere Seitenaufruf (z. B. ./ oder ?sw) führt zur App. */
-const PAGES = ['index.html', 'skript.html'];
+const PAGES = ['index.html', 'skript.html', 'quiz.html'];
 
 self.addEventListener('install', (event) => {
   // cache: 'reload' umgeht den HTTP-Cache des Browsers, damit keine Dateien der Vorversion übernommen werden

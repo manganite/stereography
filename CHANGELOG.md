@@ -6,6 +6,15 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Quiz (`quiz.html`, erste Fragen):** Multiple-Choice-Fragen zu den Lernzielen des Skripts in drei Stufen (Grundlagen, Anwendung, Vertiefung), nach Kapitel und Anzahl wählbar. Nach jeder Antwort: richtig oder falsch, ein Hinweis, warum die gewählte Antwort falsch ist, die Erklärung mit Quelle, „Im Skript nachlesen“ und „In der App öffnen“. Fragetypen: Einfach- und Mehrfachauswahl, Frage mit Stereogramm, Stereogramme als Antworten. Zuerst kommen Fragen, die noch nie oder zuletzt falsch beantwortet wurden; der Stand je Kapitel wird nur lokal im Browser gespeichert. Die Links ins Skript und in die App öffnen einen neuen Tab, damit das Quiz offen bleibt; ein laufendes Quiz übersteht ausserdem Neuladen und den Zurück-Knopf. Erste Fragen: Stufe 1 zu Kapitel 1 (Projektion) und Kapitel 4 (Zonen), dazu erzeugte Fragen „Symmetriegerüst → Punktgruppe“ für alle 32 Punktgruppen (Stufe 1: Gerüste aus Vorlesung und Skript, Stufe 2: die übrigen). Alle Fragen sind fachlich durchgesehen und freigegeben; neue Fragen erscheinen erst nach der Durchsicht (Vorschau mit `quiz.html?entwurf`). Link „Quiz“ im Kopf von App und Skript.
+- **Moodle-Export der Quizfragen:** `node tools/moodle-export.mjs quiz.xml` schreibt die geprüften Fragen als Moodle-XML (Multiple Choice, Kategorien nach Kapitel und Stufe, Stereogramme als eingebettete SVG mit eingebetteter Schrift, damit die Querstriche über negativen Indizes stimmen).
+
+### Geändert
+
+- **Abbildungen aus Link-Adressen** werden jetzt in `js/scene.js` erzeugt (`stereoForHash`), gemeinsam für Skript und Quiz. Das Stereogramm kennt zwei neue Optionen: grössere Polsymbole (für kleine Bilder) und Zonen ohne Markierung der Zonenachse.
+
 ## [1.7.0] - 2026-10-25
 
 Lagen und Multiplizität: Ausgangspol rastet in spezieller Lage ein, Wyckoff-Lage mit Multiplizität in der Infobox, neues Skriptkapitel 8; im Skript sind Vertiefungen jetzt vom Vorlesungsstoff unterschieden.

@@ -216,7 +216,9 @@ function textWithBars(parts, x, y, attrs, o) {
  *   col: Farben {paper, ink, muted, net, mirror, axis, upper, lower, accent, accent2},
  *   wulff: {on, rot}, primitiveBold, mirrors:[n], axes:[{dir, symbol, centre}], centreAtOrigin,
  *   poles:[{p, label(parts)|null, det, idx, gen, selected, faint}], colorByDet, showLower,
- *   axisLabels:[{name, dir}], fontFamily
+ *   axisLabels:[{name, dir}], fontFamily,
+ *   poleScale (Grösse der Polsymbole, Standard 1; das Quiz vergrössert sie in kleinen Bildern),
+ *   zoneList:[{axis, color, label, axisMark}] (axisMark: false ohne × am Zonenpol)
  * }
  */
 export function buildSVG(scene, { standalone = false } = {}) {
@@ -306,7 +308,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
     else out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${zcol}" stroke-width="2.6"/>`);
     const q = project(z.axis);
     const s = 6;
-    out.push(`<g stroke="${zcol}" stroke-width="2.2" stroke-linecap="round"><line x1="${f(q.x - s)}" y1="${f(q.y - s)}" x2="${f(q.x + s)}" y2="${f(q.y + s)}"/><line x1="${f(q.x - s)}" y1="${f(q.y + s)}" x2="${f(q.x + s)}" y2="${f(q.y - s)}"/></g>`);
+    if (z.axisMark !== false) out.push(`<g stroke="${zcol}" stroke-width="2.2" stroke-linecap="round"><line x1="${f(q.x - s)}" y1="${f(q.y - s)}" x2="${f(q.x + s)}" y2="${f(q.y + s)}"/><line x1="${f(q.x - s)}" y1="${f(q.y + s)}" x2="${f(q.x + s)}" y2="${f(q.y - s)}"/></g>`);
     if (z.label) out.push(textWithBars(z.label, q.x + 10, q.y + 18, `font-family="${font}" font-size="13.5" font-weight="600" fill="${zcol}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"`, { fs: 13.5, anchor: 'start', fill: zcol }));
   }
 
@@ -343,8 +345,9 @@ export function buildSVG(scene, { standalone = false } = {}) {
     if (!P.q.upper && !scene.showLower) continue;
     const cU = P.selected ? col.accent : P.color || (scene.colorByDet ? (P.det > 0 ? col.upper : col.accent2) : col.ink);
     const op = P.faint ? ' opacity="0.45"' : '';
-    if (P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="4.2" fill="${cU}"${op}/>`);
-    else out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="6.2" fill="none" stroke="${cU}" stroke-width="1.6"${op}/>`);
+    const ps = scene.poleScale || 1;
+    if (P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(4.2 * ps)}" fill="${cU}"${op}/>`);
+    else out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(6.2 * ps)}" fill="none" stroke="${cU}" stroke-width="${f(1.6 * ps)}"${op}/>`);
     drawn.push(P);
   }
   // Markierungen (Auswahl, Ausgangspunkt)

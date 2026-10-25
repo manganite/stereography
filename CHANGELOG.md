@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-10-26
+
+Quiz zu den Lernzielen des Skripts: Multiple-Choice-Fragen in drei Stufen mit sofortiger Rückmeldung, darunter Bildfragen mit räumlichen Zeichnungen und Stereogrammen; ungeprüfte Fragen lassen sich auf der Startseite zuschalten. Dazu Moodle-Export und Links „Lernziele prüfen“ im Skript.
+
 ### Hinzugefügt
 
 - **Quiz (`quiz.html`, erste Fragen):** Multiple-Choice-Fragen zu den Lernzielen des Skripts in drei Stufen (Grundlagen, Anwendung, Vertiefung), nach Kapitel und Anzahl wählbar. Nach jeder Antwort: richtig oder falsch, ein Hinweis, warum die gewählte Antwort falsch ist, die Erklärung mit Quelle, „Im Skript nachlesen“ und „In der App öffnen“. Fragetypen: Einfach- und Mehrfachauswahl, Frage mit Stereogramm, Stereogramme als Antworten, Bild mit Bildern als Antworten. Höchstens die Hälfte eines Quiz sind erzeugte Fragen, aus demselben Generator höchstens 30 %; reichen die handgeschriebenen Fragen nicht, wird das Quiz kürzer. Zuerst kommen Fragen, die noch nie oder zuletzt falsch beantwortet wurden; der Stand je Kapitel wird nur lokal im Browser gespeichert. Die Links ins Skript und in die App öffnen einen neuen Tab, damit das Quiz offen bleibt; ein laufendes Quiz übersteht ausserdem Neuladen und den Zurück-Knopf. Erste Fragen: Stufe 1 zu Kapitel 1 (Projektion) und Kapitel 4 (Zonen), dazu erzeugte Fragen „Symmetriegerüst → Punktgruppe“ für alle 32 Punktgruppen (Stufe 1: Gerüste aus Vorlesung und Skript, Stufe 2: die übrigen). Alle Fragen sind fachlich durchgesehen und freigegeben; neue Fragen erscheinen erst nach der Durchsicht (Vorschau mit `quiz.html?entwurf`). Link „Quiz“ im Kopf von App und Skript.
@@ -161,7 +165,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/manganite/stereography/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/manganite/stereography/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/manganite/stereography/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/manganite/stereography/compare/v1.4.0...v1.5.0

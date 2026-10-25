@@ -57,6 +57,25 @@ article li { margin-bottom: 4px; }
 .box.merke { border-left-color: var(--accent); }
 .box.merke p { font-weight: 500; }
 .box.zusammen { border-left-color: var(--ax4); }
+/* Vorlesungsstoff ist unmarkiert. Gekennzeichnet werden Vertiefungen (bernsteinfarben) und
+   Bedienhinweise zur App (grau, kleiner). */
+.box > h5 { margin: 12px 0 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
+.box.vertiefung { border-left-color: var(--ax3); background: color-mix(in srgb, var(--ax3) 7%, var(--surface)); }
+.box.vertiefung > h4 b { color: var(--ink); font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 0.86rem; }
+.box.vertiefung figure { margin-block: 12px; }
+.box.app { border-left-color: var(--line); background: transparent; font-size: 0.9rem; padding: 8px 14px; }
+.box.app > h4 { margin-bottom: 2px; }
+.box.aufbau dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; margin: 8px 0 0; font-size: 0.92rem; }
+.box.aufbau dd { margin: 0; }
+.box.aufbau dt .swatch { display: inline-block; width: 4px; height: 1.1em; vertical-align: -0.2em; margin-right: 6px; border-radius: 2px; background: var(--line); }
+.box.aufbau dt .swatch.v { background: var(--ax3); }
+.etikett, section[data-level="vertiefung"] > :is(h2, h3)::after {
+  display: inline-block; margin-left: 0.6em; padding: 2px 7px; vertical-align: 0.25em;
+  font: 600 0.62rem/1.3 var(--font-ui); text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); border: 1px solid var(--ax3); border-radius: 999px;
+}
+section[data-level="vertiefung"] > :is(h2, h3)::after { content: 'Vertiefung'; }
+.toc .etikett { margin-left: 0.4em; padding: 0 5px; font-size: 0.56rem; vertical-align: 0.15em; }
 .term { font-weight: 600; }
 .sym { font-family: var(--font-ui); white-space: nowrap; }
 .quellen { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
@@ -273,6 +292,15 @@ footer a { color: inherit; }
 
   <main>
   <article>
+    <div class="box aufbau">
+      <h4>So ist das Skript aufgebaut</h4>
+      <p>Der Text ohne Kennzeichnung behandelt, was in der Vorlesung und in den Übungen vorkommt. Vertiefungen zeigen, wie diese Inhalte weitergehen; beim ersten Lesen kann man sie überspringen.</p>
+      <dl>
+        <dt><span class="swatch v"></span>Vertiefung</dt><dd>Kasten oder Abschnitt, der über die Vorlesung hinausführt. Der erste Satz sagt, woran er anknüpft und wozu man ihn braucht.</dd>
+        <dt><span class="swatch"></span>In der App</dt><dd>Hinweis zur Bedienung der App.</dd>
+      </dl>
+    </div>
+
     <section id="projektion">
       <h2><span class="nr">1</span>Die stereographische Projektion</h2>
       <p class="lead">Kristalle sind dreidimensionale Körper. Die stereographische Projektion stellt die Orientierung aller ihrer Flächen eindeutig und übersichtlich in einer Ebene dar.</p>
@@ -283,6 +311,10 @@ footer a { color: inherit; }
           <li>den Flächenpol einer Kristallfläche konstruieren und in die Projektionsebene projizieren</li>
           <li>Pole der oberen und der unteren Halbkugel unterscheiden</li>
           <li>die Lage eines Pols mit den Winkeln φ und ρ angeben</li>
+        </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
+          <li>Normalenwinkel und Flächenwinkel unterscheiden</li>
           <li>begründen, warum Winkel im Stereogramm nur auf Grosskreisen abgelesen werden dürfen</li>
         </ul>
       </div>
@@ -293,10 +325,15 @@ footer a { color: inherit; }
         <h3>Umkugel und Flächenpole</h3>
         <p>Man denkt sich den Kristall im Mittelpunkt einer Kugel, der <span class="term">Umkugel</span>. Vom Mittelpunkt aus zieht man zu jeder Fläche die <span class="term">Flächennormale</span>, also die Gerade senkrecht zur Fläche. Wo sie die Kugeloberfläche durchstösst, liegt der <span class="term">Flächenpol</span> der Fläche.</p>
         <p>Der Flächenpol hängt nur davon ab, wie die Fläche orientiert ist. Ob die Fläche gross oder klein ist und wie weit sie vom Mittelpunkt entfernt liegt, spielt keine Rolle. Parallele Gegenflächen, etwa (100) und (1̄00), haben Pole an gegenüberliegenden Stellen der Kugel.</p>
-        <p>Der Bogen zwischen zwei Flächenpolen auf der Kugel ist der Winkel zwischen den Flächennormalen, der <span class="term">Normalenwinkel</span> <i>n</i>. Er ist nicht der Winkel, den die beiden Flächen an ihrer gemeinsamen Kante bilden, der <span class="term">Flächenwinkel</span> <i>f</i>. Beide ergänzen sich zu 180°: <i>n</i> = 180° − <i>f</i>. Am Würfel stehen benachbarte Flächen senkrecht aufeinander, beide Winkel sind 90°. Am Oktaeder bilden benachbarte Flächen an ihrer Kante den Flächenwinkel 109,47°; ihre Pole liegen 70,53° auseinander.</p>
+        <p>Der Bogen zwischen zwei Flächenpolen auf der Kugel ist der Winkel zwischen den Flächennormalen.</p>
         <div class="box merke">
           <h4>Merke</h4>
-          <p>Jede Kristallfläche wird durch ihren Flächenpol vertreten: den Durchstosspunkt ihrer Normalen durch die Umkugel. Der Winkel zwischen zwei Polen ist der Normalenwinkel <i>n</i> = 180° − <i>f</i>.</p>
+          <p>Jede Kristallfläche wird durch ihren Flächenpol vertreten: den Durchstosspunkt ihrer Normalen durch die Umkugel. Der Winkel zwischen zwei Polen ist der Winkel zwischen den Flächennormalen.</p>
+        </div>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Normalenwinkel und Flächenwinkel</b></h4>
+          <p>Im Stereogramm stehen die Pole für die Normalen. Wer Winkel am Kristall selbst misst oder Literaturwerte vergleicht, muss wissen, welcher Winkel gemeint ist.</p>
+          <p>Der Winkel zwischen den Flächennormalen heisst <span class="term">Normalenwinkel</span> <i>n</i>. Er ist nicht der Winkel, den die beiden Flächen an ihrer gemeinsamen Kante bilden, der <span class="term">Flächenwinkel</span> <i>f</i>. Beide ergänzen sich zu 180°: <i>n</i> = 180° − <i>f</i>. Am Würfel stehen benachbarte Flächen senkrecht aufeinander, beide Winkel sind 90°. Am Oktaeder bilden benachbarte Flächen an ihrer Kante den Flächenwinkel 109,47°; ihre Pole liegen 70,53° auseinander.</p>
         </div>
       </section>
 
@@ -342,23 +379,36 @@ footer a { color: inherit; }
           <li>Der <span class="term">Azimut</span> φ ist der Drehwinkel um die Projektionsrichtung, von 0° bis 360°. Er wird vom rechten Rand des Grundkreises aus im Uhrzeigersinn gezählt. Bei rechtwinkligen Achsen liegt (010) also bei φ = 0° und die nach vorn weisende Fläche (100) unten bei φ = 90°.</li>
         </ul>
         <p>Am Galenit liegt der Pol von (111) bei φ = 45° und ρ = 54,74°, der Pol der Gegenfläche (1̄1̄1̄) bei φ = 225° und ρ = −54,74°. Würfel- und Rhombendodekaederflächen, die senkrecht auf der Projektionsebene stehen, haben ρ = 90°.</p>
-        <p>Gemessen werden solche Winkel mit dem Reflexionsgoniometer. Es misst, wie oben beschrieben, Normalenwinkel. Das zweikreisige Reflexionsgoniometer dreht den Kristall um zwei zueinander senkrechte Achsen, bis eine Fläche das Licht reflektiert, und zeigt bei justiertem Kristall auf seinen beiden Kreisen direkt φ und ρ an. Die Werte lassen sich unmittelbar ins Stereogramm eintragen.</p>
-        <p>In der App erscheinen φ und ρ als Tooltip über jedem Pol und in der Infobox, sobald man eine Fläche oder einen Pol antippt.</p>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Das Reflexionsgoniometer</b></h4>
+          <p>Woher kommen die Winkel φ und ρ eines echten Kristalls? Sie werden gemessen, und das Messgerät liefert sie gleich in der Form, die das Stereogramm braucht.</p>
+          <p>Gemessen werden solche Winkel mit dem Reflexionsgoniometer. Es misst Normalenwinkel. Das zweikreisige Reflexionsgoniometer dreht den Kristall um zwei zueinander senkrechte Achsen, bis eine Fläche das Licht reflektiert, und zeigt bei justiertem Kristall auf seinen beiden Kreisen direkt φ und ρ an. Die Werte lassen sich unmittelbar ins Stereogramm eintragen.</p>
+        </div>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>φ und ρ erscheinen als Tooltip über jedem Pol und in der Infobox, sobald man eine Fläche oder einen Pol antippt.</p>
+        </div>
       </section>
 
       <section id="kreise">
         <h3>Kreise, Winkel und das Wulffsche Netz</h3>
         <p>Die stereographische Projektion hat zwei Eigenschaften, die sie für die Kristallographie so nützlich machen:</p>
         <ul>
-          <li><span class="term">Kreistreue:</span> Jeder Kreis auf der Kugel wird wieder als Kreis oder Kreisbogen abgebildet. Grosskreise, also Kreise, deren Mittelpunkt der Kugelmittelpunkt ist, werden zu Kreisbögen, die den Grundkreis in zwei gegenüberliegenden Punkten treffen. Grosskreise durch Nord- und Südpol werden zu Geraden durch den Mittelpunkt. Auch ein Kleinkreis wird ein Kreis, sein Mittelpunkt im Stereogramm ist aber im Allgemeinen nicht das Bild seines Mittelpunkts auf der Kugel (eine Ausnahme sind Kleinkreise um den Nordpol). Streng gilt die Kreistreue für jede Halbkugel für sich: Die untere Hälfte eines geneigten Grosskreises wird zum Nordpol hin projiziert und erscheint als zweiter Bogen durch dieselben Randpunkte, zur anderen Seite gekrümmt. Bei Zonenkreisen und Winkelbögen zeichnet die App diese untere Hälfte gestrichelt.</li>
+          <li><span class="term">Kreistreue:</span> Jeder Kreis auf der Kugel wird wieder als Kreis oder Kreisbogen abgebildet. Grosskreise, also Kreise, deren Mittelpunkt der Kugelmittelpunkt ist, werden zu Kreisbögen, die den Grundkreis in zwei gegenüberliegenden Punkten treffen. Grosskreise durch Nord- und Südpol werden zu Geraden durch den Mittelpunkt. Auch ein Kleinkreis wird ein Kreis. Streng gilt die Kreistreue für jede Halbkugel für sich: Die untere Hälfte eines geneigten Grosskreises wird zum Nordpol hin projiziert und erscheint als zweiter Bogen durch dieselben Randpunkte, zur anderen Seite gekrümmt. Bei Zonenkreisen und Winkelbögen zeichnet die App diese untere Hälfte gestrichelt.</li>
           <li><span class="term">Winkeltreue:</span> Die Winkel, unter denen sich zwei Kreise auf der Kugel schneiden, bleiben in der Projektion erhalten. So schneiden sich Längen- und Breitenkreise im Wulffschen Netz (Abb. 1.4) wie auf dem Globus rechtwinklig.</li>
         </ul>
-        <p>Die Normalen zweier Flächen spannen die Ebene eines Grosskreises auf. Nur dessen Bogen zwischen den beiden Polen ist der Normalenwinkel, ein Bogen auf einem Kleinkreis durch dieselben Pole ist es nicht. Deshalb dürfen Winkel nur auf Grosskreisen abgetragen oder abgelesen werden. Weil die Projektion zudem nicht längentreu ist (Regler in Abb. 1.1), braucht man dafür eine Winkelskala, das Wulffsche Netz, und kein Lineal. Dass Grosskreise wichtig sind, hat noch einen zweiten Grund: Die Pole vieler Flächen eines Kristalls liegen auf wenigen Grosskreisen. Solche Flächen bilden eine Zone (Kapitel 4).</p>
-        <p>Zum Zeichnen von Hand benutzt man das <span class="term">Wulffsche Netz</span> (Abb. 1.4). Es ist die stereographische Projektion des Gradnetzes eines Globus, dessen Achse in der Projektionsebene liegt: Die Längenkreise sind Grosskreise, die Breitenkreise (ausser dem Äquator des Globus) Kleinkreise. Man zeichnet auf Transparentpapier, das über dem Netz um den Mittelpunkt drehbar ist, und dreht zwei Pole auf denselben Längenkreis, um ihren Winkel abzulesen.</p>
+        <p>Die Projektion ist nicht längentreu (Regler in Abb. 1.1). Grosskreise sind trotzdem besonders wichtig: Die Pole vieler Flächen eines Kristalls liegen auf wenigen Grosskreisen. Solche Flächen bilden eine Zone (Kapitel 4).</p>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Winkel ablesen mit dem Wulffschen Netz</b></h4>
+          <p>Kreis- und Winkeltreue helfen, ein Stereogramm zu lesen. Wer Winkel selbst ablesen oder ein Stereogramm von Hand konstruieren will, muss wissen, auf welchen Kreisen Winkel stimmen, und braucht eine Winkelskala.</p>
+          <p>Der Mittelpunkt eines Kleinkreises im Stereogramm ist im Allgemeinen nicht das Bild seines Mittelpunkts auf der Kugel (eine Ausnahme sind Kleinkreise um den Nordpol).</p>
+          <p>Die Normalen zweier Flächen spannen die Ebene eines Grosskreises auf. Nur dessen Bogen zwischen den beiden Polen ist der Normalenwinkel, ein Bogen auf einem Kleinkreis durch dieselben Pole ist es nicht. Deshalb dürfen Winkel nur auf Grosskreisen abgetragen oder abgelesen werden. Weil die Projektion zudem nicht längentreu ist, braucht man dafür eine Winkelskala, das Wulffsche Netz, und kein Lineal.</p>
+          <p>Zum Zeichnen von Hand benutzt man das <span class="term">Wulffsche Netz</span> (Abb. 1.4). Es ist die stereographische Projektion des Gradnetzes eines Globus, dessen Achse in der Projektionsebene liegt: Die Längenkreise sind Grosskreise, die Breitenkreise (ausser dem Äquator des Globus) Kleinkreise. Man zeichnet auf Transparentpapier, das über dem Netz um den Mittelpunkt drehbar ist, und dreht zwei Pole auf denselben Längenkreis, um ihren Winkel abzulesen.</p>
         <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=1&amp;obj=0&amp;wulff=1" data-alt="Wulffsches Netz" style="max-width: 380px; margin-inline: auto;">
           <div class="fig-art"></div>
           <figcaption><b>Abb. 1.4</b> Wulffsches Netz mit Linien im Abstand von 2°, kräftig alle 10°. Die App blendet es unter „Darstellung“ ein und kann es drehen.</figcaption>
         </figure>
+        </div>
       </section>
 
       <div class="box zusammen">
@@ -367,7 +417,12 @@ footer a { color: inherit; }
           <li>Jede Fläche wird durch ihren Flächenpol auf der Umkugel vertreten. Er hängt nur von der Orientierung der Fläche ab.</li>
           <li>Pole der oberen Halbkugel werden zum Südpol hin auf die Äquatorebene projiziert (●), Pole der unteren Halbkugel zum Nordpol hin (○).</li>
           <li>Die Lage eines Pols beschreiben der Azimut φ und die Poldistanz ρ.</li>
-          <li>Die Projektion ist kreistreu und winkeltreu, aber nicht längentreu. Der Winkel zwischen zwei Polen ist der Bogen auf dem Grosskreis durch beide Pole; von Hand misst man ihn mit dem Wulffschen Netz.</li>
+          <li>Die Projektion ist kreistreu und winkeltreu, aber nicht längentreu.</li>
+        </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
+          <li>Der Normalenwinkel ergänzt den Flächenwinkel an der Kante zu 180°: <i>n</i> = 180° − <i>f</i>.</li>
+          <li>Der Winkel zwischen zwei Polen ist der Bogen auf dem Grosskreis durch beide Pole; von Hand misst man ihn mit dem Wulffschen Netz.</li>
         </ul>
       </div>
 
@@ -426,7 +481,7 @@ footer a { color: inherit; }
         <p>Prisma, Pyramide, Pinakoid und Pedion sind <span class="term">offene Formen</span>: Allein umschliessen sie keinen Raum. Am Kristall treten sie immer zusammen mit anderen Formen auf, so wie in Abb. 2.1 und 2.2. Die App ergänzt offene Formen deshalb grau durch Formen derselben Punktgruppe; unter „Gestalt“ lassen sie sich auch offen zeigen. Würfel, Oktaeder oder Dipyramiden sind dagegen <span class="term">geschlossene Formen</span>.</p>
       </section>
 
-      <section id="allgemein">
+      <section id="allgemein" data-level="vertiefung">
         <h3>Allgemeine Form, spezielle Form, Grenzform</h3>
         <p>Ob eine Form viele oder wenige Flächen hat, hängt davon ab, wo ihr Pol relativ zu den Symmetrieelementen liegt (Kapitel 3). Entscheidend ist die <span class="term">Flächensymmetrie</span>: die Symmetrie, die eine einzelne Fläche innerhalb der Punktgruppe noch besitzt.</p>
         <ul>
@@ -643,7 +698,11 @@ footer a { color: inherit; }
           <li>die Zonenachse zweier Flächen bestimmen</li>
           <li>mit der Zonengleichung prüfen, ob eine Fläche zu einer Zone gehört</li>
           <li>eine Fläche als Schnittpunkt zweier Zonenkreise indizieren</li>
+        </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
           <li>Zonenkreis und Zonenpol einander zuordnen</li>
+          <li>mit der Komplikationsregel weitere mögliche Flächen einer Zone finden</li>
         </ul>
       </div>
 
@@ -665,8 +724,12 @@ footer a { color: inherit; }
 
       <section id="zonenkreis">
         <h3>Zonenkreis und Zonenpol</h3>
-        <p>Weil die Normalen einer Zone in einer Ebene durch den Kugelmittelpunkt liegen, liegen ihre Pole auf einem Grosskreis, dem <span class="term">Zonenkreis</span>. Die Zonenachse steht senkrecht auf seiner Ebene; ihr Durchstosspunkt durch die Umkugel ist der <span class="term">Zonenpol</span>. Er ist von jedem Punkt des Zonenkreises 90° entfernt. Mit dem Wulffschen Netz findet man deshalb zu jedem Zonenkreis den Zonenpol und umgekehrt, indem man 90° abträgt.</p>
-        <p>Der Winkel zwischen den Ebenen zweier Zonenkreise ist gleich dem Winkel zwischen ihren Zonenpolen. Wie jeder geneigte Grosskreis erscheint ein Zonenkreis im Stereogramm als zwei Bögen; die App zeichnet die untere Hälfte gestrichelt.</p>
+        <p>Weil die Normalen einer Zone in einer Ebene durch den Kugelmittelpunkt liegen, liegen ihre Pole auf einem Grosskreis, dem <span class="term">Zonenkreis</span>. Die Zonenachse steht senkrecht auf seiner Ebene; ihr Durchstosspunkt durch die Umkugel ist der <span class="term">Zonenpol</span>. Wie jeder geneigte Grosskreis erscheint ein Zonenkreis im Stereogramm als zwei Bögen; die App zeichnet die untere Hälfte gestrichelt.</p>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Zonenpol und Zonenkreis konstruieren</b></h4>
+          <p>Zonenkreis und Zonenpol gehören zusammen: Kennt man das eine, findet man das andere. Damit konstruiert man Zonen von Hand und bestimmt Winkel zwischen Zonen.</p>
+          <p>Der Zonenpol ist von jedem Punkt des Zonenkreises 90° entfernt. Mit dem Wulffschen Netz findet man deshalb zu jedem Zonenkreis den Zonenpol und umgekehrt, indem man 90° abträgt. Der Winkel zwischen den Ebenen zweier Zonenkreise ist gleich dem Winkel zwischen ihren Zonenpolen.</p>
+        </div>
       </section>
 
       <section id="zonengleichung">
@@ -686,7 +749,6 @@ footer a { color: inherit; }
         <h3>Flächen im Schnittpunkt zweier Zonen</h3>
         <p>Genauso bestimmt man die Fläche, die zwei Zonen gemeinsam ist: (<i>hkl</i>) = [<i>u</i>₁<i>v</i>₁<i>w</i>₁] × [<i>u</i>₂<i>v</i>₂<i>w</i>₂]. Im Stereogramm liegt ihr Pol im Schnittpunkt der beiden Zonenkreise. Zwei Grosskreise schneiden sich in zwei gegenüberliegenden Punkten; sie gehören zu einer Fläche und ihrer Gegenfläche (<i>hkl</i>) und (<i>h̄k̄l̄</i>).</p>
         <p>Am Galenit schneiden sich die Zonen [1̄10] und [01̄1] im Pol von (111): (1·1 − 0·(−1), 0·0 − (−1)·1, (−1)·(−1) − 1·0) = (111). Auch die Zone [1̄01] geht durch diesen Pol (Abb. 4.3). So lassen sich die Flächen eines Kristalls Schritt für Schritt über ihre Zonen indizieren.</p>
-        <p>Nach Borchardt-Ott treten an einem Kristall nur Flächen auf, die miteinander in Zonenbeziehung stehen. Die Komplikationsregel von Goldschmidt macht das handlich: Addiert oder subtrahiert man die Indizes zweier Flächen einer Zone, so erhält man die Indizes einer weiteren möglichen Fläche derselben Zone. Aus (100) und (010) folgt (110), daraus weiter (210) und (120) usw., alle in der Zone [001].</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;w=zone&amp;zonen=1,-1,0;0,1,-1;1,0,-1" data-alt="Galenit mit drei Zonen durch (111)">
             <div class="fig-art"></div>
@@ -697,11 +759,20 @@ footer a { color: inherit; }
             <figcaption><b>Abb. 4.4</b> Galenit mit einer Auswahl seiner Zonen, den 3 Zonen ⟨100⟩ und den 6 Zonen ⟨110⟩: Jede Fläche liegt auf mehreren Zonenkreisen.</figcaption>
           </figure>
         </div>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Die Komplikationsregel</b></h4>
+          <p>Die Zonen helfen nicht nur, vorhandene Flächen zu indizieren. Mit ihnen lässt sich auch vorhersagen, welche weiteren Flächen an einem Kristall auftreten können.</p>
+          <p>Nach Borchardt-Ott treten an einem Kristall nur Flächen auf, die miteinander in Zonenbeziehung stehen. Die Komplikationsregel von Goldschmidt macht das handlich: Addiert oder subtrahiert man die Indizes zweier Flächen einer Zone, so erhält man die Indizes einer weiteren möglichen Fläche derselben Zone. Aus (100) und (010) folgt (110), daraus weiter (210) und (120) usw., alle in der Zone [001].</p>
+        </div>
       </section>
 
       <section id="nichtkubisch">
         <h3>Zonenachse und Flächennormale</h3>
-        <p>Die Zonenachse [<i>uvw</i>] ist eine Richtung im Gitter, keine Flächennormale. Nur im kubischen System liegt der Zonenpol [<i>uvw</i>] für alle <i>uvw</i> an derselben Stelle wie der Pol der Fläche (<i>uvw</i>). In anderen Kristallsystemen fallen beide im Allgemeinen auseinander, weil die Achsen verschieden lang sind oder schiefe Winkel bilden; zusammen fallen sie nur in Sonderfällen, etwa für [001] und (001) im tetragonalen System. Abb. 4.5 und 4.6 vergleichen die Zone [101] am Galenit und am Topas (orthorhombisch, <i>a</i> : <i>b</i> : <i>c</i> ≈ 0,53 : 1 : 0,95): Beim Galenit liegt die Zonenachse (×) genau auf dem Pol von (101), beim Topas daneben.</p>
+        <p>Die Zonenachse [<i>uvw</i>] ist eine Richtung im Gitter, keine Flächennormale. Nur im kubischen System liegt der Zonenpol [<i>uvw</i>] für alle <i>uvw</i> an derselben Stelle wie der Pol der Fläche (<i>uvw</i>). In anderen Kristallsystemen fallen beide im Allgemeinen auseinander, weil die Achsen verschieden lang sind oder schiefe Winkel bilden; zusammen fallen sie nur in Sonderfällen, etwa für [001] und (001) im tetragonalen System.</p>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Ein Beispiel: Topas</b></h4>
+          <p>Wie gross der Unterschied ausserhalb des kubischen Systems ist, zeigt ein orthorhombischer Kristall. Wer nichtkubische Kristalle über Zonen indiziert, darf Zonenachse und Flächenpol nicht verwechseln.</p>
+          <p>Abb. 4.5 und 4.6 vergleichen die Zone [101] am Galenit und am Topas (orthorhombisch, <i>a</i> : <i>b</i> : <i>c</i> ≈ 0,53 : 1 : 0,95): Beim Galenit liegt die Zonenachse (×) genau auf dem Pol von (101), beim Topas daneben.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;w=zone&amp;zonen=1,0,1" data-alt="Galenit mit Zone [101]">
             <div class="fig-art"></div>
@@ -712,16 +783,25 @@ footer a { color: inherit; }
             <figcaption><b>Abb. 4.6</b> Topas (orthorhombisch): Die Zonenachse [101] liegt nicht auf dem Pol von (101).</figcaption>
           </figure>
         </div>
-        <p>In der App zeigt das Werkzeug „Zone“ alle Zonen des dargestellten Kristalls mit mindestens drei Flächen, gruppiert nach gleichwertigen Zonenachsen ⟨<i>uvw</i>⟩. Zwei angetippte Flächen oder Pole legen jede Zone fest; weicht die Richtung [<i>uvw</i>] von der Normalen auf (<i>uvw</i>) ab, gibt die Infobox den Winkel an.</p>
+        </div>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>Das Werkzeug „Zone“ zeigt alle Zonen des dargestellten Kristalls mit mindestens drei Flächen, gruppiert nach gleichwertigen Zonenachsen ⟨<i>uvw</i>⟩. Zwei angetippte Flächen oder Pole legen jede Zone fest; weicht die Richtung [<i>uvw</i>] von der Normalen auf (<i>uvw</i>) ab, gibt die Infobox den Winkel an.</p>
+        </div>
       </section>
 
       <div class="box zusammen">
         <h4>Zusammenfassung</h4>
         <ul>
           <li>Flächen mit parallelen Kanten bilden eine Zone; die Kantenrichtung ist die Zonenachse [<i>uvw</i>].</li>
-          <li>Die Pole einer Zone liegen auf einem Grosskreis, dem Zonenkreis; der Zonenpol ist von ihm 90° entfernt.</li>
+          <li>Die Pole einer Zone liegen auf einem Grosskreis, dem Zonenkreis.</li>
           <li>(<i>hkl</i>) gehört zur Zone [<i>uvw</i>], wenn <i>hu</i> + <i>kv</i> + <i>lw</i> = 0. Zonenachse zweier Flächen und Fläche zweier Zonen erhält man über das Kreuzschema.</li>
           <li>Nur im kubischen System fallen Zonenpol [<i>uvw</i>] und Flächenpol (<i>uvw</i>) für alle <i>uvw</i> zusammen; sonst nur in Sonderfällen wie [001] und (001).</li>
+        </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
+          <li>Der Zonenpol ist von jedem Punkt seines Zonenkreises 90° entfernt.</li>
+          <li>Mit der Komplikationsregel findet man aus zwei Flächen einer Zone weitere mögliche Flächen derselben Zone.</li>
         </ul>
       </div>
 
@@ -947,7 +1027,7 @@ footer a { color: inherit; }
         </figure>
       </section>
 
-      <section id="hkil">
+      <section id="hkil" data-level="vertiefung">
         <h3>Vier Indizes für Flächen</h3>
         <p>Mit drei Indizes sieht man gleichwertigen Flächen ihre Gleichwertigkeit nicht an. Die sechs Flächen des hexagonalen Prismas {100} heissen (100), (010), (1̄10), (1̄00), (01̄0) und (11̄0): Mal steht die 1 vorn, mal in der Mitte, und (1̄10) und (11̄0) fallen aus dem Muster.</p>
         <p>Deshalb nimmt man die dritte Achse <i>a</i>₃ hinzu und bildet die <span class="term">Miller-Bravais-Indizes</span> (<i>hkil</i>), bei Borchardt-Ott Bravais-Miller-Indizes. Der zusätzliche Index <i>i</i> bezieht sich auf <i>a</i>₃ und ist durch die beiden anderen festgelegt:</p>
@@ -983,7 +1063,7 @@ footer a { color: inherit; }
       </div>
     </section>
 
-    <section id="lagen">
+    <section id="lagen" data-level="vertiefung">
       <h2><span class="nr">8</span>Lagen, Flächensymmetrie und Multiplizität</h2>
       <p class="lead">Der Würfel hat 6 Flächen, das Oktaeder 8, das Hexakisoktaeder 48, alle in derselben Punktgruppe <i>m</i>3̄<i>m</i>. Wie viele Flächen eine Form hat, hängt davon ab, wo ihre Pole relativ zu den Symmetrieelementen liegen. Dieses Kapitel bündelt, was dazu in Kapitel 2 und 3 verstreut steht, und bereitet die Punktlagen der Raumgruppen vor.</p>
 
@@ -1206,7 +1286,7 @@ footer a { color: inherit; }
       </div>
     </section>
 
-    <section id="verzerrung">
+    <section id="verzerrung" data-level="vertiefung">
       <h2><span class="nr">9</span>Symmetrieändernde Verzerrungen</h2>
       <p class="lead">Verzerrt man einen Kristall, bleibt nur ein Teil seiner Symmetrie erhalten. Am gestreckten Würfel lässt sich im Stereogramm ablesen, welcher Teil das ist. Das Kapitel ist ein Ausblick über den Stoff der Vorlesung hinaus: Am Bariumtitanat zeigt es, dass solche Verzerrungen in realen Kristallen vorkommen und ihnen neue Eigenschaften geben.</p>
 

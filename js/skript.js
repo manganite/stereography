@@ -214,6 +214,14 @@ function initToc() {
   const byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
   const secs = [...document.querySelectorAll('main section[id]')].filter((s) => byId.has(s.id));
   if (!secs.length) return;
+  // Vertiefungen im Inhaltsverzeichnis kennzeichnen; die Einstufung steht nur am Abschnitt (data-level)
+  for (const s of secs) {
+    if (s.dataset.level !== 'vertiefung') continue;
+    const tag = document.createElement('span');
+    tag.className = 'etikett';
+    tag.textContent = 'Vertiefung';
+    byId.get(s.id).append(tag);
+  }
   const io = new IntersectionObserver(() => {
     // aktueller Abschnitt: der letzte, dessen Anfang oberhalb der Bildschirmmitte liegt
     let cur = secs[0];

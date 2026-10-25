@@ -25,6 +25,9 @@ export const KAPITEL = [
 export const ANTEILE = { 1: { 1: 1 }, 2: { 2: 0.7, 1: 0.3 }, 3: { 3: 0.5, 2: 0.3, 1: 0.2 } };
 /** Höchstens dieser Anteil eines Quiz stammt aus demselben Generator. */
 export const GEN_ANTEIL = 0.3;
+/** Höchstens dieser Anteil eines Quiz sind erzeugte Fragen, alle Generatoren zusammen (Vorgabe Thomas 25.10.2026).
+ *  Reichen die handgeschriebenen Fragen nicht, wird das Quiz kürzer. */
+export const GEN_GESAMT = 0.5;
 
 /** Reproduzierbarer Zufall (mulberry32), für Tests mit festem Startwert. */
 export function rng(seed = Date.now()) {
@@ -88,13 +91,18 @@ export function ziehen(kands, { stufe, kapitel = null, n = 10, progress = null, 
   let pool = kands.filter((k) => k.stufe <= stufe && (!kapitel || kapitel.includes(k.kapitel)));
   if (nur) pool = pool.filter((k) => nur.includes(k.key));
   const genMax = Math.max(1, Math.round(n * GEN_ANTEIL));
+  // auch wenn das Quiz mangels handgeschriebener Fragen kürzer wird: g ≤ (h + g) · GEN_GESAMT, also g ≤ h · GEN_GESAMT / (1 − GEN_GESAMT)
+  const hand = pool.filter((k) => !k.gen).length;
+  const genGesamt = Math.min(Math.floor(n * GEN_GESAMT), Math.floor((hand * GEN_GESAMT) / (1 - GEN_GESAMT)));
   const genZahl = {};
+  let genSumme = 0;
   const gewaehlt = [];
   const nimm = (k) => {
     if (gewaehlt.length >= n || gewaehlt.includes(k)) return false;
     if (k.gen && !nur) {
-      if ((genZahl[k.gen.id] || 0) >= genMax) return false;
+      if ((genZahl[k.gen.id] || 0) >= genMax || genSumme >= genGesamt) return false;
       genZahl[k.gen.id] = (genZahl[k.gen.id] || 0) + 1;
+      genSumme += 1;
     }
     gewaehlt.push(k);
     return true;

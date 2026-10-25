@@ -56,7 +56,7 @@ const lensPath = (s, ratio = 0.62) => {
  * centre: Punkt für Inversionszentrum (nur bei Achse ⊥ Projektionsebene, 2/m, 4/m, 6/m).
  * halo: weisser Unterleger, der Linien um das Symbol herum aussetzt (wie in ITA).
  */
-function axisSymbolSVG(symbol, centre, col, halo = false) {
+export function axisSymbolSVG(symbol, centre, col, halo = false) {
   const ink = col.axis, paper = col.paper;
   const filled = halo ? `fill="${paper}" stroke="${paper}" stroke-width="7" stroke-linejoin="round"` : `fill="${ink}" stroke="${ink}" stroke-width="0.8"`;
   const open = halo ? filled : `fill="${paper}" stroke="${ink}" stroke-width="1.6"`;

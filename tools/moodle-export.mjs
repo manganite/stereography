@@ -13,6 +13,7 @@ import { GENERATOREN } from '../js/quiz-gen.js';
 import { KAPITEL } from '../js/quiz-core.js';
 import { stereoForHash } from '../js/scene.js';
 import { buildSVG } from '../js/stereogram.js';
+import { istRaum, raumSVG } from '../js/bild3d.js';
 
 /** Farben des hellen Modus aus css/base.css (wie palette() in scene.js, ohne Browser). */
 export function hellePalette() {
@@ -39,6 +40,7 @@ const cdata = (s) => `<![CDATA[${String(s).replace(/]]>/g, ']]]]><![CDATA[>')}]]
 
 /** SVG einer Abbildung (Link-Adresse der App), wie im Quiz: ohne Ausgangspol-Markierung. */
 function svgFor(hash, col, opt = {}) {
+  if (istRaum(hash)) return raumSVG(hash, col, opt);
   const { scene } = stereoForHash(hash, col);
   scene.poles = (scene.poles || []).map((p) => ({ ...p, gen: false, selected: false }));
   if (opt.zonenachse === false && scene.zoneList) scene.zoneList = scene.zoneList.map((z) => ({ ...z, label: null, axisMark: false }));
@@ -83,7 +85,7 @@ export function frageXML(q, col) {
     const ok = q.richtig.includes(i);
     const frac = ok ? anteil(q.richtig.length) : einfach ? '0' : `-${anteil(nFalsch)}`;
     const fb = q.hinweise?.[i] ? `<feedback format="html"><text>${cdata(html(q.hinweise[i]))}</text></feedback>` : '';
-    if (q.typ === 'text-bild') {
+    if (q.typ === 'text-bild' || q.typ === 'bild-bild') {
       const name = `antwort${i + 1}.svg`;
       return `<answer fraction="${frac}" format="html"><text>${cdata(`<img src="@@PLUGINFILE@@/${name}" alt="${xmlEsc(a.alt)}" width="200" height="200">`)}</text>${datei(name, svgFor(a.app, col, { ...q.bildOpt, klein: true }))}${fb}</answer>`;
     }

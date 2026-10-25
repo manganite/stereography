@@ -27,7 +27,7 @@ const ACHSEN = { 6: '6-zählige Drehachsen', '-6': '6-zählige Drehinversionsach
   3: '3-zählige Drehachsen', '-3': '3-zählige Drehinversionsachsen', 2: '2-zählige Drehachsen' };
 
 /** Symmetrieelemente als Satzteil, z. B. „eine 4-zählige Drehachse, vier 2-zählige Drehachsen, fünf Spiegelebenen und ein Inversionszentrum“. */
-function elementeText(info) {
+export function elementeText(info) {
   const s = elementSummary(info);
   const teile = [];
   const n = {};
@@ -62,23 +62,6 @@ function zaehle(info) {
   if (s.centre) n.c = 1;
   return n;
 }
-const NAME = { ...ACHSEN, m: 'Spiegelebenen', c: 'Inversionszentrum' };
-const NAME1 = { ...ACHSE, m: 'Spiegelebene', c: 'Inversionszentrum' };
-/** Hinweis zu einem Ablenker: was sein Gerüst gegenüber dem Bild zusätzlich hat bzw. was ihm fehlt. */
-function unterschied(gezeigt, x) {
-  const a = zaehle(gezeigt), b = zaehle(buildPointGroup(x.id));
-  const und = (l) => (l.length === 1 ? l[0] : `${l.slice(0, -1).join(', ')} und ${l[l.length - 1]}`);
-  const teil = (p, q) => Object.keys({ ...p, ...q }).filter((k) => (p[k] || 0) > (q[k] || 0))
-    .map((k) => { const d = (p[k] || 0) - (q[k] || 0); return `${k === 'c' ? 'ein' : ZAHL[d]} ${d === 1 ? NAME1[k] : NAME[k]}`; });
-  const mehr = teil(b, a), weniger = teil(a, b);
-  const verb = (l) => (l.length === 1 && /^(ein|eine) /.test(l[0]) ? 'fehlt' : 'fehlen');
-  const name = hmHTML(x.hm);
-  if (mehr.length && weniger.length) return `Das Gerüst von ${name} hat zusätzlich ${und(mehr)}; dafür ${verb(weniger)} ihm ${und(weniger)}.`;
-  if (mehr.length) return `Das Gerüst von ${name} hat zusätzlich ${und(mehr)}.`;
-  if (weniger.length) return `Dem Gerüst von ${name} ${verb(weniger)} ${und(weniger)}.`;
-  return `Das Gerüst von ${name} hat dieselben Elemente in anderer Anordnung.`;
-}
-
 /** Bis zu drei Ablenker (verschiedene HM-Symbole), zuerst aus demselben Kristallsystem. */
 export function geruestAblenker(id) {
   const g = groupById(id);
@@ -110,7 +93,8 @@ export const GERUEST = {
       bildAlt: 'Stereogramm eines Symmetriegerüsts',
       antworten: [hmHTML(g.hm), ...wahl.map((x) => hmHTML(x.hm))],
       richtig: [0],
-      hinweise: [null, ...wahl.map((x) => unterschied(info, x))],
+      // Name wie auf der Antwort (gekürztes HM-Symbol)
+      hinweise: [null, ...wahl.map((x) => unterschied(info, x, hmHTML(x.hm)))],
       erklaerung: `Das Gerüst enthält ${elementeText(info)} (Kristallsystem ${g.system}).${blick}`,
       skript: 'elemente',
       app: `#m=pg&g=${encodeURIComponent(id)}&obj=0`,
@@ -215,5 +199,307 @@ export const FLAECHENSYM = {
   },
 };
 
-export const GENERATOREN = [GERUEST, FLAECHENZAHL, FLAECHENSYM];
+// ------------------------------------------------------------------ Räumliche Zeichnungen (js/bild3d.js)
+// Bildangabe "3d#…": feste Zeichnung des Kristalls bzw. Symmetriegerüsts; die Projektionsrichtung ist darin senkrecht.
+const ov = (d) => `<span class="ov">${d}</span>`;
+const PFEIL = 'Die Projektionsrichtung ist in den Zeichnungen senkrecht (Pfeil).';
+/** Regel aus der Zusammenfassung von Kap. 2. */
+const REGEL = 'Flächen parallel zur Projektionsrichtung haben ihre Pole auf dem Grundkreis, Flächen senkrecht dazu im Mittelpunkt.';
+const GRAU = ' Grau: das Pinakoid, mit dem die App das offene Prisma schliesst.';
+
+/**
+ * Kristalle für Körper ↔ Stereogramm. form: Link-Adresse ohne "#m=form&"; der, des, den: Name mit Artikel;
+ * muster: Stereogramm in Worten; pole: Zählung, die der Test aus dem Stereogramm nachrechnet
+ * (mitte: Pol im Mittelpunkt, rand: Pole auf dem Grundkreis, doppelt: Punkt im Kreis, einzeln: nur ● oder ○).
+ */
+export const KOERPER = {
+  wuerfel: { form: 'sys=kubisch&f=m-3m:a34', der: 'der Würfel {100}', des: 'des Würfels {100}', den: 'den Würfel {100}',
+    muster: 'ein Punkt im Kreis in der Mitte (Deck- und Grundfläche) und vier Pole auf dem Grundkreis im Abstand von 90°', pole: { mitte: 1, rand: 4, doppelt: 0, einzeln: 0 } },
+  oktaeder: { form: 'sys=kubisch&f=m-3m:b35', der: 'das Oktaeder {111}', des: 'des Oktaeders {111}', den: 'das Oktaeder {111}',
+    muster: 'vier Punkte im Kreis auf den Diagonalen, bei ρ = 54,7°', pole: { mitte: 0, rand: 0, doppelt: 4, einzeln: 0 }, rho: [54.7] },
+  rhombendodekaeder: { form: 'sys=kubisch&f=m-3m:c40', der: 'das Rhombendodekaeder {110}', des: 'des Rhombendodekaeders {110}', den: 'das Rhombendodekaeder {110}',
+    muster: 'vier Pole auf dem Grundkreis (auf den Diagonalen) und vier Punkte im Kreis bei ρ = 45° (oben, unten, links, rechts)', pole: { mitte: 0, rand: 4, doppelt: 4, einzeln: 0 }, rho: [45] },
+  tetraeder: { form: 'sys=kubisch&f=-43m:a33', der: 'das Tetraeder {111}', des: 'des Tetraeders {111}', den: 'das Tetraeder {111}',
+    muster: 'vier Pole auf den Diagonalen, abwechselnd ● (obere Halbkugel) und ○ (untere Halbkugel)', pole: { mitte: 0, rand: 0, doppelt: 0, einzeln: 4 } },
+  tetrPrisma: { form: 'sys=tetragonal&f=4/mmm:c10', der: 'das tetragonale Prisma {100} mit Pinakoid {001}', des: 'des tetragonalen Prismas {100} mit Pinakoid {001}', grau: true,
+    muster: 'vier Pole auf dem Grundkreis im Abstand von 90° und der graue Punkt im Kreis des Pinakoids in der Mitte', pole: { mitte: 1, rand: 4, doppelt: 0, einzeln: 0 } },
+  hexPrisma: { form: 'sys=hexagonal&f=6/mmm:c25', der: 'das hexagonale Prisma {100} mit Pinakoid {001}', des: 'des hexagonalen Prismas {100} mit Pinakoid {001}', grau: true,
+    muster: 'sechs Pole auf dem Grundkreis im Abstand von 60° und der graue Punkt im Kreis des Pinakoids in der Mitte', pole: { mitte: 1, rand: 6, doppelt: 0, einzeln: 0 } },
+  tetrDipyr: { form: 'sys=tetragonal&f=4/mmm:e14&ca=1.8', der: 'die tetragonale Dipyramide {111}', des: 'der tetragonalen Dipyramide {111}',
+    muster: 'vier Punkte im Kreis auf den Diagonalen, bei ρ = 68,6° (spitze Dipyramide, c/a = 1,8)', pole: { mitte: 0, rand: 0, doppelt: 4, einzeln: 0 }, rho: [68.6] },
+  hexDipyr: { form: 'sys=hexagonal&f=6/mmm:e31', der: 'die hexagonale Dipyramide {101}', des: 'der hexagonalen Dipyramide {101}',
+    muster: 'sechs Punkte im Kreis im Abstand von 60°, bei ρ = 51,8° (c/a = 1,1)', pole: { mitte: 0, rand: 0, doppelt: 6, einzeln: 0 } },
+  rhomboeder: { form: 'sys=trigonal&f=-3m1:c21', der: 'das Rhomboeder {101}', des: 'des Rhomboeders {101}',
+    muster: 'sechs Pole im Abstand von 60°, abwechselnd ● und ○, bei ρ = 51,8° (c/a = 1,1)', pole: { mitte: 0, rand: 0, doppelt: 0, einzeln: 6 } },
+  trigPrisma: { form: 'sys=hexagonal&f=-6m2:b18', der: 'das trigonale Prisma {100} mit Pinakoid {001}', des: 'des trigonalen Prismas {100} mit Pinakoid {001}', grau: true,
+    muster: 'drei Pole auf dem Grundkreis im Abstand von 120° und der graue Punkt im Kreis des Pinakoids in der Mitte', pole: { mitte: 1, rand: 3, doppelt: 0, einzeln: 0 } },
+  rhombDipyr: { form: 'sys=orthorhombisch&f=mmm:g7&ba=1.4&ca=0.6', der: 'die rhombische Dipyramide {111}', des: 'der rhombischen Dipyramide {111}',
+    muster: 'vier Punkte im Kreis bei ρ = 36,4° (flache Dipyramide, c/a = 0,6), als Rechteck statt Quadrat angeordnet, weil a ≠ b: Die Pole liegen näher bei der kürzeren Achse a (oben und unten)', pole: { mitte: 0, rand: 0, doppelt: 4, einzeln: 0 } },
+};
+/** Aufgaben: Kristall, Stufe, drei Ablenker (Kristalle mit ähnlichem, aber unterscheidbarem Stereogramm). */
+const KOERPER_AUFGABEN = [
+  ['wuerfel', 1, ['oktaeder', 'rhombendodekaeder', 'hexPrisma']],
+  ['oktaeder', 1, ['wuerfel', 'tetraeder', 'rhombendodekaeder']],
+  ['rhombendodekaeder', 1, ['wuerfel', 'oktaeder', 'tetraeder']],
+  ['tetraeder', 1, ['oktaeder', 'wuerfel', 'rhombendodekaeder']],
+  ['tetrPrisma', 1, ['hexPrisma', 'tetrDipyr', 'hexDipyr']],
+  ['hexPrisma', 1, ['tetrPrisma', 'hexDipyr', 'trigPrisma']],
+  ['tetrDipyr', 1, ['hexDipyr', 'tetrPrisma', 'rhombendodekaeder']],
+  ['hexDipyr', 1, ['tetrDipyr', 'hexPrisma', 'rhombendodekaeder']],
+  // Stufe 2: Ablenker, die sich nur in einer Einzelheit unterscheiden (●/○, Abstand vom Mittelpunkt, Azimut)
+  ['rhomboeder', 2, ['hexDipyr', 'trigPrisma', 'tetraeder']],
+  ['trigPrisma', 2, ['hexPrisma', 'tetrPrisma', 'rhomboeder']],
+  ['rhombDipyr', 2, ['tetrDipyr', 'oktaeder', 'hexDipyr']],
+  ['oktaeder', 2, ['tetrDipyr', 'rhombDipyr', 'tetraeder']],
+].map(([k, stufe, abl]) => ({ id: stufe === 1 ? k : `${k}-2`, k, stufe, abl }));
+
+const formHash = (k, lage) => `#m=form&${KOERPER[k].form}${lage && lage !== '001' ? `&lage=${lage}` : ''}`;
+// Alternativtexte beschreiben, was das Bild zeigt (Bildschirmleser, Moodle): Stereogramm in Worten bzw. Kristall und Lage
+const ohneArtikel = (t) => t.replace(/^(der|die|das) /, '');
+const musterVon = (k, lage) => (lage ? LAGE_MUSTER[k][lage][0] : KOERPER[k].muster);
+const stereo = (k, lage) => ({ app: `${formHash(k, lage)}&idx=0`, alt: `Stereogramm: ${musterVon(k, lage)}` });
+const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}`, alt: `Räumliche Zeichnung: ${ohneArtikel(KOERPER[k].der)}${lage ? `, [${lage}] senkrecht` : ''}` });
+const QUELLE_FORM = 'Folie 91 (Lernziel); Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
+
+export const KOERPER_STEREO = {
+  id: 'gen-koerper', kapitel: 2, stufen: [1, 2], status: 'entwurf',
+  /** k:… Kristall → Stereogramm, s:… Stereogramm → Kristall */
+  params: (stufe) => KOERPER_AUFGABEN.filter((a) => a.stufe === stufe).flatMap((a) => [`k:${a.id}`, `s:${a.id}`]),
+  make(param) {
+    const [richtung, id] = param.split(':');
+    const a = KOERPER_AUFGABEN.find((x) => x.id === id);
+    const e = KOERPER[a.k];
+    const alle = [a.k, ...a.abl];
+    const grau = e.grau ? GRAU : '';
+    const gemeinsam = {
+      lernziel: 'das Stereogramm einfacher Kristallformen zeichnen und ein Stereogramm einem Körper zuordnen',
+      richtig: [0],
+      erklaerung: `Der Kristall ist ${e.der}. Stereogramm dazu: ${e.muster}.${/Grundkreis|Mitte/.test(e.muster) ? ` ${REGEL}` : ''}${grau}`,
+      skript: 'form',
+      app: formHash(a.k),
+      quelle: QUELLE_FORM,
+    };
+    if (richtung === 'k') {
+      return {
+        ...gemeinsam,
+        typ: 'bild-bild',
+        frage: `Welches Stereogramm zeigt die Flächenpole dieses Kristalls? ${PFEIL.replace('in den Zeichnungen', 'im Bild')}`,
+        bild: zeichnung(a.k).app,
+        bildAlt: zeichnung(a.k).alt,
+        antworten: alle.map((k) => stereo(k)),
+        hinweise: [null, ...a.abl.map((k) => `Das ist das Stereogramm ${KOERPER[k].des}: ${KOERPER[k].muster}.`)],
+      };
+    }
+    return {
+      ...gemeinsam,
+      typ: 'bild-bild',
+      frage: `Zu welchem Kristall gehört dieses Stereogramm? ${PFEIL}`,
+      bild: stereo(a.k).app,
+      bildAlt: stereo(a.k).alt,
+      antworten: alle.map((k) => zeichnung(k)),
+      hinweise: [null, ...a.abl.map((k) => `Das ist ${KOERPER[k].der}. Stereogramm dazu: ${KOERPER[k].muster}.`)],
+    };
+  },
+};
+
+// ------------------------------------------------------------------ Lage: Kristall in drei Projektionsrichtungen
+/** Stereogramm je Lage in Worten (kubisch: [001], [111], [110] ∥ Projektionsrichtung) und Zählung für den Test. */
+export const LAGE_MUSTER = {
+  wuerfel: {
+    '001': [KOERPER.wuerfel.muster, KOERPER.wuerfel.pole],
+    111: ['sechs Pole im Abstand von 60°, abwechselnd ● und ○, bei ρ = 54,7°; in der Mitte liegt eine Ecke, kein Pol', { mitte: 0, rand: 0, doppelt: 0, einzeln: 6 }, [54.7]],
+    110: ['zwei Pole auf dem Grundkreis (oben und unten) und zwei Punkte im Kreis (links und rechts), bei ρ = 45°', { mitte: 0, rand: 2, doppelt: 2, einzeln: 0 }, [45]],
+  },
+  oktaeder: {
+    '001': [KOERPER.oktaeder.muster, KOERPER.oktaeder.pole, KOERPER.oktaeder.rho],
+    111: ['ein Punkt im Kreis in der Mitte und sechs Pole im Abstand von 60°, abwechselnd ● und ○, bei ρ = 70,5°', { mitte: 1, rand: 0, doppelt: 0, einzeln: 6 }, [0, 70.5]],
+    110: ['vier Pole auf dem Grundkreis und zwei Punkte im Kreis (oben und unten), bei ρ = 35,3°', { mitte: 0, rand: 4, doppelt: 2, einzeln: 0 }, [35.3]],
+  },
+  rhombendodekaeder: {
+    '001': [KOERPER.rhombendodekaeder.muster, KOERPER.rhombendodekaeder.pole, KOERPER.rhombendodekaeder.rho],
+    111: ['sechs Pole auf dem Grundkreis und sechs Pole im Abstand von 60°, abwechselnd ● und ○, bei ρ = 35,3°', { mitte: 0, rand: 6, doppelt: 0, einzeln: 6 }, [35.3]],
+    110: ['ein Punkt im Kreis in der Mitte, zwei Pole auf dem Grundkreis (links und rechts) und vier Punkte im Kreis, bei ρ = 60°', { mitte: 1, rand: 2, doppelt: 4, einzeln: 0 }, [0, 60]],
+  },
+};
+const LAGE_ANDERER = { wuerfel: 'oktaeder', oktaeder: 'wuerfel', rhombendodekaeder: 'wuerfel' };
+const LAGEN = ['001', '111', '110'];
+const lageText = (l) => `[${l}]`;
+/** Was die Lage sichtbar macht (Skript Kap. 2, „Andere Projektionsrichtung, gleicher Kristall“). */
+const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${ov(3)}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
+
+export const LAGE = {
+  id: 'gen-lage', kapitel: 2, stufen: [2], status: 'entwurf',
+  params: () => Object.keys(LAGE_MUSTER).flatMap((k) => LAGEN.flatMap((l) => [`k:${k}:${l}`, `s:${k}:${l}`])),
+  make(param) {
+    const [richtung, k, lage] = param.split(':');
+    const e = KOERPER[k], x = LAGE_ANDERER[k];
+    const andere = LAGEN.filter((l) => l !== lage);
+    const muster = (kk, l) => LAGE_MUSTER[kk][l][0];
+    const gemeinsam = {
+      typ: 'bild-bild',
+      lernziel: 'erklären, was sich bei einer anderen Projektionsrichtung am Stereogramm ändert und was gleich bleibt',
+      richtig: [0],
+      erklaerung: `Hier ist ${lageText(lage)} die Projektionsrichtung; man sieht ${LAGE_SYMMETRIE[lage]} um diese Richtung. Stereogramm ${e.des}: ${muster(k, lage)}. `
+        + 'Eine andere Projektionsrichtung dreht den Kristall auf der Umkugel: Das Stereogramm sieht anders aus, die Winkel zwischen den Flächennormalen bleiben gleich.',
+      skript: 'lage',
+      app: formHash(k, lage),
+      quelle: 'Folie 91 (Lernziel); Borchardt-Ott & Sowa (2018), Abschn. 5.6 (Drehung eines Oktaeders, Abb. 5.23, S. 49)',
+    };
+    if (richtung === 'k') {
+      return {
+        ...gemeinsam,
+        frage: `Welches Stereogramm zeigt die Flächenpole dieses Kristalls in der gezeichneten Lage? ${PFEIL.replace('in den Zeichnungen', 'im Bild')}`,
+        bild: zeichnung(k, lage).app,
+        bildAlt: zeichnung(k, lage).alt,
+        antworten: [stereo(k, lage), ...andere.map((l) => stereo(k, l)), stereo(x, lage)],
+        hinweise: [null, ...andere.map((l) => `Das ist das Stereogramm ${e.des} mit ${lageText(l)} als Projektionsrichtung: ${muster(k, l)}.`),
+          `Das ist das Stereogramm ${KOERPER[x].des} in derselben Lage: ${muster(x, lage)}.`],
+      };
+    }
+    return {
+      ...gemeinsam,
+      frage: `Welche Zeichnung zeigt den Kristall in der Lage, zu der dieses Stereogramm gehört? ${PFEIL}`,
+      bild: stereo(k, lage).app,
+      bildAlt: stereo(k, lage).alt,
+      antworten: [zeichnung(k, lage), ...andere.map((l) => zeichnung(k, l)), zeichnung(x, lage)],
+      hinweise: [null, ...andere.map((l) => `Das ist ${e.der} mit ${lageText(l)} als Projektionsrichtung (in der Zeichnung senkrecht). Stereogramm dazu: ${muster(k, l)}.`),
+        `Das ist ${KOERPER[x].der} in derselben Lage. Stereogramm dazu: ${muster(x, lage)}.`],
+    };
+  },
+};
+
+// ------------------------------------------------------------------ Räumliches Symmetriegerüst ↔ Stereogramm
+/** Kubische Gerüste mit vielen Elementen sind als feste Zeichnung nicht lesbar; sie bleiben bei gen-geruest. */
+export const GERUEST3D_OHNE = ['m-3m', '432', '-43m', 'm-3'];
+/** Elemente mit Richtung, z. B. „eine 4-zählige Drehachse ∥ c, vier 2-zählige Drehachsen ⊥ c, … und ein Inversionszentrum“. */
+function elementeRichtung(info) {
+  const t = [];
+  for (const sym of ['6', '-6', '4', '-4', '3', '-3', '2']) {
+    for (const [lage, test] of [['∥ c', (d) => Math.abs(d[2]) > 1 - 1e-6], ['⊥ c', (d) => Math.abs(d[2]) < 1e-6]]) {
+      const n = info.axes.filter((a) => a.symbol === sym && test(a.dir)).length;
+      if (n) t.push(`${nennen(sym, n)} ${lage}`);
+    }
+  }
+  const zm = info.mirrors.filter((n) => Math.abs(n[2]) > 1 - 1e-6).length, pm = info.mirrors.length - zm;
+  if (pm) t.push(`${pm === 1 ? 'eine Spiegelebene' : `${ZAHL[pm]} Spiegelebenen`} ∥ c`);
+  if (zm) t.push('eine Spiegelebene ⊥ c');
+  if (info.centro) t.push('ein Inversionszentrum');
+  return t.length ? und(t) : 'keine Symmetrieelemente';
+}
+const geruest3d = (id) => ({ app: `3d#m=pg&g=${encodeURIComponent(id)}`, alt: `Räumliche Zeichnung eines Symmetriegerüsts: ${elementeRichtung(buildPointGroup(id))}` });
+const geruest2d = (id) => ({ app: `#m=pg&g=${encodeURIComponent(id)}&obj=0&farbe=0`, alt: `Stereogramm eines Symmetriegerüsts: ${elementeRichtung(buildPointGroup(id))}` });
+
+/** Ablenker wie bei gen-geruest, ohne die unlesbaren kubischen Gerüste (23 hat damit keine). */
+const abl3d = (id) => geruestAblenker(id).filter((x) => !GERUEST3D_OHNE.includes(x.id));
+/** Abstand zweier Gerüste: Zahl der Elemente, in denen sie sich unterscheiden (Achsen je Symbol, Spiegelebenen, 1̄). */
+function abstand(a, b) {
+  const p = zaehle(a), q = zaehle(b);
+  return Object.keys({ ...p, ...q }).reduce((n, k) => n + Math.abs((p[k] || 0) - (q[k] || 0)), 0);
+}
+/** Die drei ähnlichsten Ablenker (bei gleichem Abstand in der Reihenfolge von geruestAblenker), damit keiner auf einen Blick falsch ist. */
+function wahl3d(id) {
+  const info = buildPointGroup(id);
+  return abl3d(id).map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).slice(0, 3).map((u) => u.x);
+}
+
+/** Nach „statt“ (Genitiv): „der 3-zähligen Drehachse“, „der 4-zähligen Drehachsen“. */
+const ACHSE_GEN = (sym, n) => `der ${(n === 1 ? ACHSE : ACHSEN)[sym].replace('zählige', 'zähligen')}`;
+const und = (l) => (l.length === 1 ? l[0] : `${l.slice(0, -1).join(', ')} und ${l[l.length - 1]}`);
+const nennen = (sym, n) => `${n === 1 ? 'eine' : ZAHL[n]} ${n === 1 ? ACHSE[sym] : ACHSEN[sym]}`;
+/**
+ * Hinweis zu einem Ablenker: was sein Gerüst gegenüber dem gezeigten zusätzlich hat bzw. was ihm fehlt. Achsen werden
+ * nach Richtung verglichen: Liegt im Ablenker an derselben Stelle eine Achse anderen Charakters (z. B. 3 statt 3̄ ∥ c),
+ * heisst es „statt“; dieselbe Achse in anderer Richtung heisst „in anderer Richtung“, nicht „zusätzlich … fehlt“.
+ */
+export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' && x.setting ? x.setting : x.hm)) {
+  const andere = buildPointGroup(x.id);
+  const richtung = (d) => { const l = Math.hypot(...d); const v = d.map((c) => c / l); const s = v.find((c) => Math.abs(c) > 1e-6) < 0 ? -1 : 1; return v.map((c) => (Math.abs(c) < 5e-5 ? 0 : c * s).toFixed(4)).join(','); };
+  const achsen = (info) => new Map(info.axes.filter((a) => ACHSE[a.symbol]).map((a) => [richtung(a.dir), a.symbol]));
+  const A = achsen(gezeigt), B = achsen(andere);
+  const statt = new Map(), mehr = {}, weniger = {};
+  for (const [k, sym] of B) {
+    if (!A.has(k)) mehr[sym] = (mehr[sym] || 0) + 1;
+    else if (A.get(k) !== sym) { const key = `${sym}|${A.get(k)}`; statt.set(key, (statt.get(key) || 0) + 1); }
+  }
+  for (const [k, sym] of A) if (!B.has(k)) weniger[sym] = (weniger[sym] || 0) + 1;
+  const zm = andere.mirrors.length - gezeigt.mirrors.length;
+  const plus = [], minus = [], anders = [];
+  for (const sym of ['6', '-6', '4', '-4', '3', '-3', '2']) {
+    // gleiche Achse in anderer Richtung (z. B. 2 ∥ b statt 2 ∥ c) nicht als „zusätzlich“ und „fehlt“ zählen
+    const n = Math.min(mehr[sym] || 0, weniger[sym] || 0);
+    if (n) anders.push(nennen(sym, n));
+    if ((mehr[sym] || 0) > n) plus.push(nennen(sym, mehr[sym] - n));
+    if ((weniger[sym] || 0) > n) minus.push(nennen(sym, weniger[sym] - n));
+  }
+  if (zm > 0) plus.push(`${zm === 1 ? 'eine' : ZAHL[zm]} ${zm === 1 ? 'Spiegelebene' : 'Spiegelebenen'}`);
+  if (zm < 0) minus.push(`${-zm === 1 ? 'eine' : ZAHL[-zm]} ${-zm === 1 ? 'Spiegelebene' : 'Spiegelebenen'}`);
+  if (andere.centro && !gezeigt.centro) plus.push('ein Inversionszentrum');
+  if (!andere.centro && gezeigt.centro) minus.push('ein Inversionszentrum');
+  const ersetzt = [...statt].map(([key, n]) => { const [neu, alt] = key.split('|'); return `${nennen(neu, n)} statt ${ACHSE_GEN(alt, n)}`; });
+  const stellen = [...statt.values()].reduce((a, b) => a + b, 0);
+  const teile = ersetzt.length ? [`an ${stellen === 1 ? 'derselben Stelle' : 'denselben Stellen'} ${und(ersetzt)}`] : [];
+  if (anders.length) teile.push(`${und(anders)} in anderer Richtung`);
+  if (plus.length) teile.push(`zusätzlich ${und(plus)}`);
+  const verb = minus.length === 1 && /^(ein|eine) /.test(minus[0]) ? 'fehlt' : 'fehlen';
+  if (!teile.length && !minus.length) return `Das Gerüst von ${name} hat dieselben Elemente in anderer Anordnung.`;
+  if (!teile.length) return `Dem Gerüst von ${name} ${verb} ${und(minus)}.`;
+  return `Das Gerüst von ${name} hat ${teile.join(' und ')}${minus.length ? `; dafür ${verb} ihm ${und(minus)}` : ''}.`;
+}
+
+/** Wie die Elemente im Stereogramm erscheinen, nur für die Elemente dieses Gerüsts (Skript Kap. 3). */
+function darstellungText(info) {
+  const t = [];
+  const zAchse = info.axes.find((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
+  const ebene = info.axes.filter((a) => Math.abs(a.dir[2]) < 1e-6);
+  if (zAchse) t.push(`die Achse ∥ c als Symbol in der Mitte`);
+  if (ebene.length) t.push(`${ebene.length === 1 ? 'die Achse' : 'die Achsen'} in der Projektionsebene als Symbole an beiden Enden auf dem Grundkreis`);
+  const zm = info.mirrors.some((n) => Math.abs(n[2]) > 1 - 1e-6);
+  const schief = info.mirrors.length - (zm ? 1 : 0);
+  if (schief) t.push(`${schief === 1 ? 'die Spiegelebene' : 'die Spiegelebenen'} ∥ c als ${schief === 1 ? 'Durchmesser' : 'Durchmesser (Grosskreise)'}`);
+  if (zm) t.push('die Spiegelebene ⊥ c als kräftiger Grundkreis');
+  if (info.centro) t.push(zAchse ? 'das Inversionszentrum als Punkt im Achsensymbol' : 'das Inversionszentrum als kleiner Kreis in der Mitte');
+  if (!t.length) return 'Ohne Symmetrieelemente bleibt im Stereogramm nur der Grundkreis.';
+  return `Im Stereogramm erscheinen ${und(t)}.`;
+}
+
+export const GERUEST3D = {
+  id: 'gen-geruest3d', kapitel: 3, stufen: [1, 2], status: 'entwurf',
+  /** r:… Zeichnung → Stereogramm, s:… Stereogramm → Zeichnung */
+  params: (stufe) => GERUEST.params(stufe).filter((id) => !GERUEST3D_OHNE.includes(id) && abl3d(id).length >= 3).flatMap((id) => [`r:${id}`, `s:${id}`]),
+  make(param) {
+    const [richtung, id] = param.split(':');
+    const g = groupById(id);
+    const info = buildPointGroup(id);
+    const wahl = wahl3d(id);
+    const gemeinsam = {
+      typ: 'bild-bild',
+      richtig: [0],
+      hinweise: [null, ...wahl.map((x) => unterschied(info, x))],
+      erklaerung: `Das ist das Symmetriegerüst von ${gruppenSymbol(g)}: ${elementeText(info)}. ${darstellungText(info)}`,
+      skript: 'elemente',
+      app: `#m=pg&g=${encodeURIComponent(id)}&obj=0`,
+      quelle: 'Folien 89–91; nach Borchardt-Ott & Sowa (2018), Abschn. 5.4 (S. 43) und Abb. 7.8–7.13',
+    };
+    if (richtung === 'r') {
+      return {
+        ...gemeinsam,
+        lernziel: 'die Symmetrieelemente einer Punktgruppe ins Stereogramm einzeichnen',
+        frage: 'Welches Stereogramm zeigt dieses Symmetriegerüst? Die c-Achse liegt in Projektionsrichtung und steht im Bild senkrecht (Pfeil).',
+        bild: geruest3d(id).app,
+        bildAlt: geruest3d(id).alt,
+        antworten: [geruest2d(id), ...wahl.map((x) => geruest2d(x.id))],
+      };
+    }
+    return {
+      ...gemeinsam,
+      lernziel: 'ein Stereogramm einer Symmetrie zuordnen',
+      frage: 'Welche räumliche Zeichnung zeigt das Symmetriegerüst zu diesem Stereogramm? Die c-Achse liegt in Projektionsrichtung und steht in den Zeichnungen senkrecht (Pfeil).',
+      bild: geruest2d(id).app,
+      bildAlt: geruest2d(id).alt,
+      antworten: [geruest3d(id), ...wahl.map((x) => geruest3d(x.id))],
+    };
+  },
+};
+
+export const GENERATOREN = [GERUEST, FLAECHENZAHL, FLAECHENSYM, KOERPER_STEREO, LAGE, GERUEST3D];
 export { GERUEST_ALLE, GERUEST_STUFE1, POINT_GROUPS, SPEZIELL };

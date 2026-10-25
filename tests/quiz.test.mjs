@@ -3,9 +3,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { BANK } from '../js/quiz-bank.js';
-import { GENERATOREN, GERUEST, GERUEST_ALLE, GERUEST_STUFE1, FLAECHENZAHL, FLAECHENSYM } from '../js/quiz-gen.js';
 import {
-  KAPITEL, kandidaten, zaehlen, ziehen, stellen, pruefen, rng, GEN_ANTEIL,
+  GENERATOREN, GERUEST, GERUEST_ALLE, GERUEST_STUFE1, FLAECHENZAHL, FLAECHENSYM,
+  KOERPER, KOERPER_STEREO, LAGE, LAGE_MUSTER, GERUEST3D, GERUEST3D_OHNE,
+} from '../js/quiz-gen.js';
+import { istRaum, appHash, raumInner, raumSVG } from '../js/bild3d.js';
+import {
+  KAPITEL, kandidaten, zaehlen, ziehen, stellen, pruefen, rng, GEN_ANTEIL, GEN_GESAMT,
   leererFortschritt, fortschrittAus, vermerken, stand,
 } from '../js/quiz-core.js';
 import { createState, applyHashTo, stereoForHash, stateForHash, currentEntryId } from '../js/scene.js';
@@ -22,7 +26,8 @@ import { inverse, transpose, mulVec, mul, matEq, neg, I3, vecEq } from '../js/li
 const skript = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
 const K = '#336699';
 const col = new Proxy({ form: Array(8).fill(K), dir: [K, K, K] }, { get: (o, k) => (k in o ? o[k] : K) });
-const svg = (hash) => buildSVG(stereoForHash(hash, col).scene).inner;
+/** Abbildung einer Bildangabe wie im Quiz: räumliche Zeichnung ("3d#…") oder Stereogramm. */
+const svg = (hash) => (istRaum(hash) ? raumInner(hash, col) : buildSVG(stereoForHash(hash, col).scene).inner);
 const text = (h) => h.replace(/<span class="ov">([^<]*)<\/span>/g, '$1').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
 
 /** Indizes aus „[0<span class="ov">1</span>1]“ bzw. „(112)“ → [0, -1, 1]. */
@@ -120,7 +125,8 @@ function zieleUndZusammenfassung(nr) {
   return boxes.flatMap((bx) => [...bx.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => text(m[1])));
 }
 
-const TYPEN = ['einfach', 'mehrfach', 'bild-text', 'text-bild'];
+const TYPEN = ['einfach', 'mehrfach', 'bild-text', 'text-bild', 'bild-bild'];
+const BILDANTWORT = ['text-bild', 'bild-bild'];
 
 test('Fragen: Pflichtfelder, eindeutige IDs, gültige Werte', () => {
   const ids = new Set();
@@ -133,7 +139,7 @@ test('Fragen: Pflichtfelder, eindeutige IDs, gültige Werte', () => {
     assert.ok(['entwurf', 'geprüft'].includes(q.status), q.id);
     for (const f of ['frage', 'lernziel', 'erklaerung', 'skript', 'quelle']) assert.ok(typeof q[f] === 'string' && q[f].length > 2, `${q.id}: ${f}`);
     assert.ok(q.antworten.length >= 3 && q.antworten.length <= 6, q.id);
-    assert.equal(q.typ === 'bild-text', !!q.bild, `${q.id}: Bild genau bei „bild-text“`);
+    assert.equal(q.typ.startsWith('bild-'), !!q.bild, `${q.id}: Bild genau bei „bild-text“ und „bild-bild“`);
   }
 });
 
@@ -178,20 +184,27 @@ test('Fragen: Skript-Anker im richtigen Kapitel; Stufe 1 und 2 verweisen nicht a
 
 test('Fragen: Ansichten der App sind gültig und ergeben Stereogramme', () => {
   for (const q of BANK) {
-    const hashes = [q.app, q.bild, ...(q.typ === 'text-bild' ? q.antworten.map((a) => a.app) : [])].filter(Boolean);
-    for (const h of hashes) {
-      assert.ok(applyHashTo(createState(), h, createState()), `${q.id}: kein gültiger Link ${h}`);
-      // eine verlinkte Form wird ohne Ersatz gezeigt (sonst zeigte das Bild eine andere Form als die Frage meint)
-      const f = new URLSearchParams(h.slice(1)).get('f');
-      if (f) assert.equal(currentEntryId(stateForHash(h)), f, `${q.id}: ${h} zeigt eine andere Form`);
-      assert.match(svg(h), /<circle/, `${q.id}: ${h}`);
-    }
-    if (q.typ === 'text-bild') {
-      const bilder = q.antworten.map((a) => svg(a.app));
-      assert.equal(new Set(bilder).size, bilder.length, `${q.id}: zwei Antwortbilder sind gleich`);
-    }
+    pruefeBilder(q);
   }
 });
+
+/** Bildangaben einer Frage: gültige Links der App, ohne Ersatz der Form, Antwortbilder verschieden. */
+function pruefeBilder(q) {
+  const hashes = [q.app, q.bild, ...(BILDANTWORT.includes(q.typ) ? q.antworten.map((a) => a.app) : [])].filter(Boolean);
+  assert.ok(!istRaum(q.app), `${q.id}: „In der App öffnen“ braucht eine Link-Adresse der App`);
+  for (const h of hashes) {
+    const a = appHash(h);
+    assert.ok(applyHashTo(createState(), a, createState()), `${q.id}: kein gültiger Link ${h}`);
+    // eine verlinkte Form wird ohne Ersatz gezeigt (sonst zeigte das Bild eine andere Form als die Frage meint)
+    const f = new URLSearchParams(a.slice(1)).get('f');
+    if (f) assert.equal(currentEntryId(stateForHash(a)), f, `${q.id}: ${h} zeigt eine andere Form`);
+    assert.match(svg(h), istRaum(h) ? /<path/ : /<circle/, `${q.id}: ${h}`);
+  }
+  if (BILDANTWORT.includes(q.typ)) {
+    const bilder = q.antworten.map((a) => svg(a.app));
+    assert.equal(new Set(bilder).size, bilder.length, `${q.id}: zwei Antwortbilder sind gleich`);
+  }
+}
 
 test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines Pols)', () => {
   let n = 0;
@@ -565,18 +578,140 @@ test('Generator Symmetriegerüst: alle 32 Punktgruppen, Ablenker mit anderem Sym
   }
 });
 
+// ------------------------------------------------------------------ Räumliche Zeichnungen
+/** Erzeugte Fragen eines Generators, mit id, stufe, kapitel und status wie in quiz-core.js. */
+const erzeugt = (g) => g.stufen.flatMap((st) => g.params(st).map((p) => ({ ...g.make(p, st), id: `${g.id}:${p}`, stufe: st, kapitel: g.kapitel, status: g.status })));
+
+/** Pole eines Stereogramms gezählt (Mittelpunkt, Grundkreis, Punkt im Kreis, nur ● oder ○) und ihre Poldistanzen ρ. */
+function polZahl(hash) {
+  const stellen = [];
+  for (const p of stereoForHash(hash, col).scene.poles) {
+    const [x, y, z] = p.p;
+    const rand = Math.abs(z) < 1e-6;
+    const d = rand ? 1 : 1 + Math.abs(z);
+    const q = [x / d, y / d];
+    let t = stellen.find((u) => Math.hypot(u.q[0] - q[0], u.q[1] - q[1]) < 1e-6);
+    if (!t) stellen.push((t = { q, rand, n: 0, rho: (Math.acos(Math.min(1, Math.abs(z))) * 180) / Math.PI }));
+    t.n += 1;
+  }
+  const mitte = stellen.filter((t) => Math.hypot(...t.q) < 1e-6);
+  const rest = stellen.filter((t) => !mitte.includes(t));
+  return {
+    pole: { mitte: mitte.length, rand: rest.filter((t) => t.rand).length, doppelt: rest.filter((t) => !t.rand && t.n === 2).length, einzeln: rest.filter((t) => !t.rand && t.n === 1).length },
+    rho: [...new Set(stellen.filter((t) => !t.rand).map((t) => Math.round(t.rho * 10) / 10))],
+  };
+}
+/** ρ-Werte in einem Text („bei ρ = 54,7°“). */
+const rhoImText = (t) => [...t.matchAll(/ρ = (\d+(?:,\d)?)°/g)].map((m) => Number(m[1].replace(',', '.')));
+
+test('Räumliche Zeichnungen: Bildangabe, eigenständiges SVG, Kristall und Gerüst', () => {
+  assert.ok(istRaum('3d#m=pg&g=mmm') && !istRaum('#m=pg&g=mmm'));
+  assert.equal(appHash('3d#m=pg&g=mmm'), '#m=pg&g=mmm');
+  assert.equal(appHash('#m=pg&g=mmm'), '#m=pg&g=mmm');
+  const s = raumSVG('3d#m=form&sys=kubisch&f=m-3m:a34', col);
+  assert.match(s, /^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
+  // Würfel: drei sichtbare Flächen (Vierecke) aus dieser Blickrichtung, keine Rückseiten
+  assert.equal((raumInner('3d#m=form&sys=kubisch&f=m-3m:a34', col).match(/<path d="M [^"]* Z"/g) || []).length, 3);
+  // Tetraeder: zwei sichtbare Flächen (nicht nur eine wie aus der Standardansicht der 3D-Ansicht)
+  assert.equal((raumInner('3d#m=form&sys=kubisch&f=-43m:a33', col).match(/<path d="M [^"]* Z"/g) || []).length, 2);
+  // Gerüst 4/mmm: fünf Spiegelebenen (Scheiben), je Achse zwei Symbole
+  const g = raumInner('3d#m=pg&g=4/mmm', col);
+  assert.equal((g.match(/fill-opacity="0.13"/g) || []).length, 5);
+  assert.equal((g.match(/<g transform/g) || []).length, 2 * buildPointGroup('4/mmm').axes.length);
+});
+
+test('Kristalle ↔ Stereogramm: Zählung und ρ der Beschreibungen stimmen mit den Stereogrammen', () => {
+  for (const [k, e] of Object.entries(KOERPER)) {
+    const z = polZahl(`#m=form&${e.form}`);
+    assert.deepEqual(z.pole, e.pole, k);
+    for (const r of rhoImText(e.muster)) assert.ok(z.rho.includes(r), `${k}: ρ = ${r}° nicht im Stereogramm (${z.rho})`);
+  }
+  for (const [k, lagen] of Object.entries(LAGE_MUSTER)) {
+    for (const [lage, [muster, pole]] of Object.entries(lagen)) {
+      const z = polZahl(`#m=form&${KOERPER[k].form}${lage === '001' ? '' : `&lage=${lage}`}`);
+      assert.deepEqual(z.pole, pole, `${k} ${lage}`);
+      for (const r of rhoImText(muster)) assert.ok(z.rho.includes(r), `${k} ${lage}: ρ = ${r}° nicht im Stereogramm (${z.rho})`);
+    }
+  }
+});
+
+test('Hinweise zu Gerüsten: kein Element zugleich „zusätzlich“ und „fehlt“', () => {
+  const qs = [...GERUEST_ALLE.map((id) => GERUEST.make(id)), ...erzeugt(GERUEST3D)];
+  for (const q of qs) {
+    for (const h of q.hinweise.slice(1)) {
+      const t = text(h);
+      const [vor, nach = ''] = t.split('dafür');
+      const namen = (x) => new Set([...x.matchAll(/\d-zählige Dreh(?:inversions)?achse|Spiegelebene|Inversionszentrum/g)].map((m) => m[0]));
+      const A = namen(vor.replace(/an (?:derselben Stelle|denselben Stellen) [^;]*/g, '')), B = namen(nach);
+      for (const n of A) assert.ok(!B.has(n), `${t}`);
+    }
+  }
+  // dieselbe Achse ∥ c mit anderem Charakter: „statt“
+  const h = text(GERUEST.make('-3').hinweise[GERUEST.make('-3').antworten.indexOf(hmHTML('3'))] || '');
+  assert.match(h, /an derselben Stelle eine 3-zählige Drehachse statt der 3-zähligen Drehinversionsachse/);
+});
+
+test('Generatoren mit Bildantworten: gültige Fragen, richtige Antwort passt zum Bild', () => {
+  for (const g of [KOERPER_STEREO, LAGE, GERUEST3D]) {
+    const qs = erzeugt(g);
+    assert.ok(qs.length >= 18, g.id);
+    for (const q of qs) {
+      assert.equal(q.typ, 'bild-bild', q.id);
+      assert.equal(q.antworten.length, 4, q.id);
+      assert.deepEqual(q.richtig, [0], q.id);
+      assert.equal(q.hinweise.length, 4, q.id);
+      assert.equal(q.hinweise[0], null, q.id);
+      q.hinweise.slice(1).forEach((h, i) => assert.ok(typeof h === 'string' && h.length > 10, `${q.id}: Hinweis ${i + 1}`));
+      for (const f of ['frage', 'erklaerung', 'quelle']) assert.ok(q[f].length > 10, `${q.id}: ${f}`);
+      assert.ok(zieleUndZusammenfassung(q.kapitel).includes(q.lernziel), `${q.id}: ${q.lernziel}`);
+      const a = abschnitt(q.skript);
+      assert.equal(a.kapitel, q.kapitel, q.id);
+      assert.ok(!a.vertiefung, q.id);
+      pruefeBilder(q);
+      // Bild und Antworten in verschiedener Darstellung (Zeichnung ↔ Stereogramm), Antworten alle gleich
+      assert.ok(q.antworten.every((x) => istRaum(x.app) === istRaum(q.antworten[0].app)), q.id);
+      assert.notEqual(istRaum(q.bild), istRaum(q.antworten[0].app), q.id);
+      // Alternativtexte beschreiben das jeweilige Bild: verschieden je Antwort, Fragebild wie die richtige Antwort beschrieben
+      assert.equal(new Set(q.antworten.map((x) => x.alt)).size, 4, `${q.id}: gleiche Alternativtexte`);
+      assert.ok(!/"/.test(q.bildAlt + q.antworten.map((x) => x.alt).join('')), q.id);
+      // richtige Antwort: derselbe Kristall bzw. dieselbe Punktgruppe in derselben Lage wie das Bild
+      const ohne = (h) => appHash(h).replace('&idx=0', '').replace('&obj=0&farbe=0', '');
+      assert.equal(ohne(q.antworten[0].app), ohne(q.bild), q.id);
+      q.antworten.slice(1).forEach((x) => assert.notEqual(ohne(x.app), ohne(q.bild), q.id));
+    }
+  }
+  // Gerüste: keine unlesbaren kubischen Gerüste, auch nicht als Ablenker
+  for (const q of erzeugt(GERUEST3D)) {
+    for (const x of q.antworten) assert.ok(!GERUEST3D_OHNE.includes(decodeURIComponent(new URLSearchParams(appHash(x.app).slice(1)).get('g'))), q.id);
+  }
+  // Lage: drei Lagen desselben Kristalls und ein anderer Kristall in der gefragten Lage
+  for (const q of erzeugt(LAGE)) {
+    const lagen = q.antworten.map((x) => stateForHash(appHash(x.app)).poly.presetId);
+    assert.deepEqual(new Set(lagen.slice(0, 3)).size, 3, q.id);
+    assert.equal(lagen[3], lagen[0], q.id);
+  }
+});
+
 test('Ablauf: Stufe, Kapitel, Anzahl und Höchstanteil eines Generators', () => {
   const kands = kandidaten(BANK, GENERATOREN, { entwurf: true });
   const n = zaehlen(kands);
   assert.ok(n[1][1] >= 8 && n[4][1] >= 8);
-  assert.equal(n[3][1], GERUEST_STUFE1.length + BANK.filter((q) => q.kapitel === 3 && q.stufe === 1).length);
+  const gen31 = GENERATOREN.filter((g) => g.kapitel === 3 && g.stufen.includes(1)).reduce((m, g) => m + g.params(1).length, 0);
+  assert.equal(n[3][1], gen31 + BANK.filter((q) => q.kapitel === 3 && q.stufe === 1).length);
+  assert.ok(gen31 > GERUEST_STUFE1.length);
   for (let seed = 1; seed <= 30; seed++) {
     const r = rng(seed);
     const z = ziehen(kands, { stufe: 1, n: 10, rand: r });
     assert.equal(z.length, 10);
     assert.equal(new Set(z.map((k) => k.key)).size, 10, 'keine Frage doppelt');
     assert.ok(z.every((k) => k.stufe === 1));
-    assert.ok(z.filter((k) => k.gen).length <= Math.round(10 * GEN_ANTEIL));
+    for (const g of GENERATOREN) assert.ok(z.filter((k) => k.gen === g).length <= Math.round(10 * GEN_ANTEIL), g.id);
+    // alle erzeugten Fragen zusammen höchstens die Hälfte, auch in Kapiteln mit vielen erzeugten Fragen
+    for (const [kap, st, n] of [[null, 1, 10], [[3], 2, 10], [[2], 2, 5], [[8], 3, 20], [[2, 3], 1, 20]]) {
+      const zz = ziehen(kands, { stufe: st, kapitel: kap, n, rand: r });
+      const g = zz.filter((k) => k.gen).length;
+      assert.ok(g <= Math.floor(n * GEN_GESAMT) && g <= zz.length * GEN_GESAMT, `Kap. ${kap}, Stufe ${st}, n = ${n}: ${g} von ${zz.length}`);
+    }
     const z4 = ziehen(kands, { stufe: 1, kapitel: [4], n: 20, rand: r });
     assert.ok(z4.length === n[4][1] && z4.every((k) => k.kapitel === 4));
   }

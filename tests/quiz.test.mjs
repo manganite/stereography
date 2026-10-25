@@ -9,7 +9,7 @@ import {
 } from '../js/quiz-gen.js';
 import { istRaum, appHash, raumInner, raumSVG } from '../js/bild3d.js';
 import {
-  KAPITEL, kandidaten, zaehlen, ziehen, stellen, pruefen, rng, GEN_ANTEIL,
+  KAPITEL, kandidaten, zaehlen, ziehen, stellen, pruefen, rng, GEN_ANTEIL, GEN_GESAMT,
   leererFortschritt, fortschrittAus, vermerken, stand,
 } from '../js/quiz-core.js';
 import { createState, applyHashTo, stereoForHash, stateForHash, currentEntryId } from '../js/scene.js';
@@ -687,6 +687,11 @@ test('Ablauf: Stufe, Kapitel, Anzahl und Höchstanteil eines Generators', () => 
     assert.equal(new Set(z.map((k) => k.key)).size, 10, 'keine Frage doppelt');
     assert.ok(z.every((k) => k.stufe === 1));
     for (const g of GENERATOREN) assert.ok(z.filter((k) => k.gen === g).length <= Math.round(10 * GEN_ANTEIL), g.id);
+    // alle erzeugten Fragen zusammen höchstens die Hälfte, auch in Kapiteln mit vielen erzeugten Fragen
+    for (const [kap, st, n] of [[null, 1, 10], [[3], 2, 10], [[2], 2, 5], [[8], 3, 20], [[2, 3], 1, 20]]) {
+      const zz = ziehen(kands, { stufe: st, kapitel: kap, n, rand: r });
+      assert.ok(zz.filter((k) => k.gen).length <= Math.floor(n * GEN_GESAMT), `Kap. ${kap}, Stufe ${st}, n = ${n}`);
+    }
     const z4 = ziehen(kands, { stufe: 1, kapitel: [4], n: 20, rand: r });
     assert.ok(z4.length === n[4][1] && z4.every((k) => k.kapitel === 4));
   }

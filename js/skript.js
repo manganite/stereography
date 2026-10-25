@@ -95,7 +95,7 @@ async function render3d(fig, col) {
   const labels = st.poly.labels && st.poly.showPoles && fig.dataset.labels !== 'aus' ? C.faces.map((f) => hklHTML(f.hkl, C.hex && st.poly.bravais)) : null;
   v.showPolyhedron(C, col, {
     showPoles: st.poly.showPoles, showRays: st.view.rays, showSphere: st.view.sphere, showGlobe: st.view.globe, showPlane: st.view.plane, showAxes: st.view.axes, showNormals: st.view.normals,
-    size: st.poly.size, planeOpacity: 0.55, motifs: null, zones: C.selZones, arc: null, picked: [],
+    size: st.poly.size, planeOpacity: 0.55, motifs: st.poly.faceSym ? C.motifs : null, // Flächenmuster wie in der App (muster=1) zones: C.selZones, arc: null, picked: [],
   }, null, labels);
 }
 

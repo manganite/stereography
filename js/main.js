@@ -16,6 +16,7 @@ import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, setTip, showTipAt, hideTip } from './help.js';
 import * as S from './scene.js';
+import { snapPole } from './sitesym.js';
 import {
   createState, hashOf, applyHashTo, phiFromOld, rhoText, palette, formColor, groupOf, groupOrder, EIG_SAME, crystalAxesFor, ORBIT_COLORS, pgScene, polyCrystal, polyScene, normalizeZones,
   pgPolesOn, polyLabelsOn, pgViewDirections, polyViewDirections, lightPalette,
@@ -375,13 +376,13 @@ const generalPole = () => S.generalPole(state);
 
 function renderPG() {
   const col = palette();
-  const { info, p0, orb, classes, sel, pgAngle, scene } = pgScene(state, col, { hitR: touchRadius(13, 22) });
+  const { info, p0, orb, distinct, site, classes, sel, pgAngle, scene } = pgScene(state, col, { hitR: touchRadius(13, 22) });
   state.pgSel = sel;
   const out = buildSVG(scene);
   svg.innerHTML = out.inner;
   current = { kind: 'pg', info, scene };
   updateLegendPG(info, col, classes);
-  updateInfoPG(info, orb, col, classes, pgAngle);
+  updateInfoPG(info, orb, col, classes, pgAngle, site, distinct);
   updateDirChips(classes, col);
   updateViews(pgViewDirections(state), col);
   syncDependentChecks();
@@ -550,7 +551,7 @@ function renderPoly() {
   $('v3d-hint').textContent = state.poly.tool
     ? [`${tn}: zwei Flächen${state.poly.showPoles ? ' oder Pole' : ''} antippen`, `${tn}: zweite Fläche${fp2} antippen`, `${state.poly.tool === 'zone' ? 'Zone bestimmt' : 'Winkel gemessen'}; nächstes Antippen beginnt neu`][Math.min(state.zoneSel.length, 2)]
     : `Fläche${fp} antippen zum Hervorheben`;
-  $('stereo-sub').textContent = 'Projektion ∥ ' + C.preset.name.replace(' ∥ Projektionsrichtung', '').replace(/ \(.*\)/, '');
+  $('stereo-sub').textContent = 'Projektion ∥ ' + C.preset.name.replace(/ \(.*\)/, '');
   updateViews(polyViewDirections(C), col);
   syncDependentChecks();
   draw3dPoly(view3d, col, C, scene, hex4);
@@ -680,6 +681,7 @@ function updateLegendPG(info, col, classes) {
   if (state.pg.colorful && polesOn) {
     items.push(`<span class="lg"><i class="sw" style="background:${col.upper}"></i>gleiche Händigkeit</span>`);
     items.push(`<span class="lg"><i class="sw" style="background:${col.accent2}"></i>Spiegelbild</span>`);
+    if (current && current.scene && current.scene.poles.some((P) => P.color)) items.push(`<span class="lg"><i class="sw" style="background:${col.muted}"></i>beides (spezielle Lage)</span>`);
   }
   if (polesOn && state.pg.tool) {
     items.push(`<span class="lg hint">Winkel: zwei Pole antippen; liegen zwei übereinander, schaltet erneutes Antippen weiter („Winkel“ erneut drücken: beenden)</span>`);
@@ -762,7 +764,7 @@ function describeOp(M, classes, col, axes) {
   return `die Drehinversion ${hmHTML('-' + Math.round(360 / ang))} (Drehung um ${ang}° und Inversion) an ${elDat}${where()}`;
 }
 
-function pgAngleBox(info, orb, col, classes, pgAngle) {
+function pgAngleBox(info, orb, col, classes, pgAngle, site) {
   if (!state.pg.tool) return '';
   if (!state.pg.showObject) return '<div class="zonebox">Winkel messen: „Objekt in allgemeiner Lage“ einschalten.</div>';
   if (!pgPolesOn(state)) return '<div class="zonebox">Winkel messen: „Flächenpole“ unter „Darstellung“ einschalten.</div>';
@@ -773,11 +775,11 @@ function pgAngleBox(info, orb, col, classes, pgAngle) {
   const M = [0, 1, 2].map((r) => [0, 1, 2].map((c) => B[r][0] * A[c][0] + B[r][1] * A[c][1] + B[r][2] * A[c][2]));
   const side = (k) => (orb[k].p[2] >= -1e-9 ? 'oben' : 'unten');
   return `<div class="zonebox"><strong>Winkel zwischen den Polen = <span class="num">${pgAngle.deg.toFixed(1)}°</span></strong>
-    <p>Gewählt: zwei der ${info.order} symmetrieäquivalenten Pole (${side(i)}, ${side(j)}). Sie gehen durch ${describeOp(M, classes, col, info.axes)} ineinander über.</p>
+    <p>Gewählt: zwei der ${site.mult} symmetrieäquivalenten Pole (${side(i)}, ${side(j)}). Sie gehen ${site.special ? 'unter anderem ' : ''}durch ${describeOp(M, classes, col, info.axes)} ineinander über.${site.special ? ` In spezieller Lage führen jeweils ${site.stab.length} Operationen einen Pol in den anderen über.` : ''}</p>
     <p class="note">Mit der Poldistanz ρ und dem Azimut φ des Ausgangspols ändert sich der Winkel; die verknüpfende Operation bleibt dieselbe.</p></div>`;
 }
 
-function updateInfoPG(info, orb, col, classes, pgAngle) {
+function updateInfoPG(info, orb, col, classes, pgAngle, site, distinct) {
   const icol = { ...col, axis: col.ink, paper: col.paper };
   const dc = (k) => (state.view.dirColors ? col.dir[k] : col.ink);
   const mirrorIcon = (c) => `<svg class="sym-icon" width="22" height="22" viewBox="0 0 26 26"><line x1="3" y1="13" x2="23" y2="13" stroke="${c}" stroke-width="3.2" stroke-linecap="round"/></svg>`;
@@ -804,14 +806,28 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
   if (info.centro) free.push(`<li><svg class="sym-icon" width="22" height="22" viewBox="-13 -13 26 26"><circle r="4.5" fill="${col.paper}" stroke="${col.ink}" stroke-width="1.4"/></svg><span>Inversionszentrum ${hmHTML('-1')} (im Ursprung)</span></li>`);
   if (!classes.length && !info.centro) free.push('<li><span>nur die Identität 1</span></li>');
   if (free.length) rows.push(`<div class="dirrow"><div class="dirhead"><span class="dirlab">ohne Richtung</span></div><ul>${free.join('')}</ul></div>`);
-  const lower = orb.filter((o) => o.p[2] < -1e-9).length;
+  const lower = distinct.filter((o) => o.p[2] < -1e-9).length;
+  const n = site.mult;
+  const wy = site.wy ? `${n}<i>${site.wy}</i>, ` : '';
+  const lage = site.special
+    ? `speziell (${wy}Lagesymmetrie ${hmHTML(site.fs || '?')})`
+    : `allgemein (${wy}Lagesymmetrie 1)`;
+  const snapHint = info.axes.length || info.mirrors.length ? ' In der Nähe einer Achse oder Spiegelebene rastet er beim Ziehen ein.' : '';
+  const k = site.stab.length;
+  const lageNote = (poles) => {
+    if (!site.special) return `Allgemeine Lage: ${n} ${poles ? 'Pole' : 'Objekte'} (${n - lower} oben, ${lower} unten).`;
+    const why = `Spezielle Lage: Der Ausgangspol liegt auf einem Symmetrieelement. ${k} der ${info.order} Operationen halten ihn fest (Lagesymmetrie), deshalb`;
+    return poles
+      ? `${why} gibt es nur ${info.order}/${k} = ${n} Pole (${n - lower} oben, ${lower} unten); in der 3D-Konstruktion liegen an jedem Pol ${k} Objekte übereinander. Fallen Bild und Spiegelbild zusammen, ist der Pol bei „Pole nach Händigkeit färben“ grau.`
+      : `${why} liegen die ${info.order} Objekte an nur ${info.order}/${k} = ${n} Stellen (${n - lower} oben, ${lower} unten), je ${k} übereinander.`;
+  };
   setInfo(`
     <div class="info-head">
       <div class="hm-big">${hmHTML(info.hm)}</div>
       <div class="hm-meta"><span>${info.system[0].toUpperCase() + info.system.slice(1)}${info.setting ? ' · Aufstellung ' + (info.setting.startsWith('Achse') ? info.setting : hmHTML(info.setting)) : ''}</span>
       <span>Schoenflies ${info.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}</span></div>
     </div>
-    ${pgAngleBox(info, orb, col, classes, pgAngle)}
+    ${pgAngleBox(info, orb, col, classes, pgAngle, site)}
     <dl class="facts">
       <div><dt>Volles Symbol</dt><dd>${fullHTML}</dd></div>
       <div><dt>Ordnung</dt><dd class="num">${info.order}</dd></div>
@@ -820,12 +836,18 @@ function updateInfoPG(info, orb, col, classes, pgAngle) {
       <div><dt>Enantiomorph</dt><dd>${yesno(info.chiral)}</dd></div>
       <div title="Eine Richtung bleibt unter allen Operationen erhalten; spontane Polarisation (Pyroelektrizität) möglich. 10 Punktgruppen."><dt>Polar</dt><dd>${yesno(info.polar)}</dd></div>
       <div title="Piezoelektrischer Effekt symmetrieerlaubt: alle 21 Punktgruppen ohne Inversionszentrum ausser 432."><dt>Piezoelektrisch</dt><dd>${yesno(info.piezo)}</dd></div>
+      ${state.pg.showObject ? `<div class="wide"><dt>Lage des Ausgangspols${skriptLink('lage-pol')}</dt><dd>${lage}</dd></div>` : ''}
     </dl>
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
     ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
-    ${pgPolesOn(state) ? `<p class="note">Allgemeine Lage: ${info.order} Pole (${info.order - lower} oben, ${lower} unten). Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).</p>`
-    : state.pg.showObject ? `<p class="note">Allgemeine Lage: ${info.order} Objekte (${info.order - lower} oben, ${lower} unten). Die Flächenpole sind ausgeblendet (einblenden unter „Darstellung“); ρ und φ des Ausgangspols lassen sich weiter mit den Reglern einstellen.</p>` : ''}`);
+    ${pgPolesOn(state) ? `<p class="note">${lageNote(true)} Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).${snapHint}</p>`
+    : state.pg.showObject ? `<p class="note">${lageNote(false)} Die Flächenpole sind ausgeblendet (einblenden unter „Darstellung“); ρ und φ des Ausgangspols lassen sich weiter mit den Reglern einstellen.</p>` : ''}`);
+}
+
+/** Kleiner Link ins Skript (Abschnitt anchor), z. B. hinter einer Zeile der Infobox. */
+function skriptLink(anchor) {
+  return ` <a class="to-skript" href="skript.html#${anchor}" title="Mehr dazu im Skript, Kapitel 8">Skript →</a>`;
 }
 
 function poleAngles(n) {
@@ -886,7 +908,7 @@ function updateInfoPoly(C, col) {
       };
       const parts = C.orbitsMain.map((o, i) => `<li><i class="sw" style="background:${C.orbitsMain.length > 1 ? oc[i % oc.length] : col.crystal}"></i>${brace(o.rep)}, ${o.hkls.length} Fläche${o.hkls.length > 1 ? 'n' : ''}${hexPart(i)}</li>`).join('');
       const hexNote = hs
-        ? `<p>Die Restgruppe ist trigonal. In hexagonalen Achsen gilt c ∥ ${dirHTML(hs.c, false)}, a₁ ∥ ${dirHTML(hs.a1, false)}, a₂ ∥ ${dirHTML(hs.a2, false)} (Richtungen im kubischen Gitter), c/a = ${hs.ca.toFixed(2).replace('.', ',')}; die Formen dort stehen hinter dem Pfeil.${hs.c.join('') === '111' && state.poly.presetId !== '111' ? ' Die Lage „[111] ∥ Projektionsrichtung“ zeigt den Kristall entlang der neuen c-Achse.' : ''}</p>`
+        ? `<p>Die Restgruppe ist trigonal. In hexagonalen Achsen gilt c ∥ ${dirHTML(hs.c, false)}, a₁ ∥ ${dirHTML(hs.a1, false)}, a₂ ∥ ${dirHTML(hs.a2, false)} (Richtungen im kubischen Gitter), c/a = ${hs.ca.toFixed(2).replace('.', ',')}; die Formen dort stehen hinter dem Pfeil.${hs.c.join('') === '111' && state.poly.presetId !== '111' ? ' Mit der Projektionsrichtung [111] blickt man entlang der neuen c-Achse.' : ''}</p>`
         : '';
       broken = `<div class="warnbox"><strong>Symmetrie erniedrigt: ${hmHTML(g.hm)} → ${hmHTML(C.reduced.hm)}</strong>${ax}
         ${st ? `<p>${stText}.</p>` : ''}
@@ -964,7 +986,7 @@ function updateInfoPoly(C, col) {
       <div><dt>Habitus</dt><dd>${habitHTML}</dd></div>
       <div><dt>Flächen insgesamt</dt><dd class="num">${C.faces.filter((f) => !f.hidden).length}</dd></div>
       <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, false)}</dd></div>
-      <div><dt>Lage</dt><dd>${C.preset.name}</dd></div>
+      <div><dt>Projektionsrichtung</dt><dd>${C.preset.name}</dd></div>
     </dl>
     ${ex.note ? `<p class="note">${ex.note.replace(/\{hkl:(-?\d+),(-?\d+),(-?\d+)\}/g, (_, h, k, l) => brace([+h, +k, +l]))}</p>` : ''}
     ${sel}
@@ -1002,10 +1024,10 @@ function updateInfoPoly(C, col) {
       <div><dt>Habitus</dt><dd>${habitHTML}</dd></div>
       <div><dt>Flächen der Form</dt><dd class="num">${C.mainHKL.length}</dd></div>
       <div><dt>Indexmuster (ITA)</dt><dd>{${symText(e.sym, hex4)}}</dd></div>
-      <div><dt>Wyckoff-Lage, Flächensymmetrie</dt><dd>${e.wy}, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
-      <div><dt>Eigensymmetrie der Form${C.isReduced ? ' (unverzerrt)' : ''}</dt><dd>${hmHTML(formEig(e))}</dd></div>
+      <div><dt>Wyckoff-Lage, Flächensymmetrie${skriptLink('lage-pol')}</dt><dd>${e.mult}<i>${e.wy}</i>, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
+      <div><dt>Eigensymmetrie der Form${C.isReduced ? ' (unverzerrt)' : ''}${skriptLink('eigensymmetrie')}</dt><dd>${hmHTML(formEig(e))}</dd></div>
       <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken || !!st)}</dd></div>
-      <div><dt>Lage</dt><dd>${C.preset.name}</dd></div>
+      <div><dt>Projektionsrichtung</dt><dd>${C.preset.name}</dd></div>
     </dl>
     ${twinNote}
     ${sel}
@@ -1060,9 +1082,12 @@ function svgPoint(e) {
 }
 function setPoleFromScreen(x, y) {
   const lower = state.pg.theta > 90;
-  const p = unproject(x, y, lower);
+  let p = unproject(x, y, lower);
+  // nahe einer Achse oder Spiegelebene rastet der Pol ein (spezielle Lage)
+  if (current && current.kind === 'pg') p = snapPole(current.info, p).p;
   state.pg.theta = Math.acos(Math.max(-1, Math.min(1, p[2]))) / deg;
-  state.pg.phi = azimuth(p);
+  const az = azimuth(p);
+  state.pg.phi = az > 360 - 1e-6 ? 0 : az; // eingerastet auf φ = 0 nicht als 360° anzeigen
   syncSliders();
   render();
 }

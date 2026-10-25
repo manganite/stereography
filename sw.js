@@ -22,6 +22,7 @@ const FILES = [
   'js/linalg.js',
   'js/main.js',
   'js/scene.js',
+  'js/sitesym.js',
   'js/skript.js',
   'js/pointgroups.js',
   'js/polyhedra.js',

@@ -287,6 +287,8 @@ select {
 .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 16px; margin: 0; }
 .facts div { border-top: 1px solid var(--line); padding-top: 5px; }
 .facts dt { font-size: 0.75rem; color: var(--muted); }
+.facts dt .to-skript { margin-left: 0.4em; color: var(--accent); text-decoration: none; white-space: nowrap; }
+.facts dt .to-skript:hover { text-decoration: underline; }
 .facts dd { margin: 0; font-weight: 500; }
 .facts .wide { grid-column: 1 / -1; }
 .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
@@ -422,7 +424,7 @@ footer a { color: inherit; }
           <p class="hintline" id="form-hint">Je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie. Alle Formen mit „Flächensymmetrie zeigen“.</p>
         </div>
         <div class="field">
-          <label for="preset-select">Lage</label>
+          <label for="preset-select">Projektionsrichtung</label>
           <select id="preset-select"></select>
         </div>
         <p class="group-title">Anzeigen</p>
@@ -453,7 +455,7 @@ footer a { color: inherit; }
             <input type="range" id="pg-phi" min="0" max="359.5" step="0.5">
           </div>
           <p class="hintline">Wie bei Borchardt-Ott: ρ zählt auf der oberen Halbkugel vom Nordpol (Zentrum), auf der unteren vom Südpol mit negativem Vorzeichen. φ zählt vom rechten Rand (→, bei orthogonalen Achsen die b-Achse) im Uhrzeigersinn; (100) liegt bei 90°.</p>
-          <p class="hintline">Im Stereogramm: Ausgangspol ziehen oder an eine Stelle tippen; Ausgangspol antippen wechselt die Halbkugel.</p>
+          <p class="hintline">Im Stereogramm: Ausgangspol ziehen oder an eine Stelle tippen; Ausgangspol antippen wechselt die Halbkugel. Nahe an einer Achse oder Spiegelebene rastet er ein (spezielle Lage).</p>
         </div>
       </details>
 

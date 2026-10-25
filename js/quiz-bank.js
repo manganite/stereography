@@ -209,7 +209,7 @@ export const BANK = [
     skript: 'koordinaten', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folie 81; Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 45–46; nach Aufg. 5.13, Tab. 5.2 (S. 63–64)',
     pruefung: { art: 'phirho', hkl: [1, 0, 1] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-2-02', stufe: 2, kapitel: 1, typ: 'text-bild',
@@ -232,7 +232,7 @@ export const BANK = [
     skript: 'koordinaten', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folien 81, 83; Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 45–46; nach Aufg. 5.13, Tab. 5.2 (S. 63–64)',
     pruefung: { art: 'polHKL', hkl: [1, -1, -1] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-2-03', stufe: 2, kapitel: 1, typ: 'einfach',
@@ -250,7 +250,7 @@ export const BANK = [
     skript: 'projizieren', app: '#m=pg&g=1&rho=53.13&az=0',
     quelle: 'Folie 81; Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 46; Skript Kap. 1 (Abb. 1.1)',
     pruefung: { art: 'radius', r: 0.5 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-2-04', stufe: 2, kapitel: 1, typ: 'einfach',
@@ -268,7 +268,7 @@ export const BANK = [
     skript: 'koordinaten', app: '#m=pg&g=-1&rho=40&az=30',
     quelle: 'Folie 81; Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 45–46; Skript Kap. 1 (Umkugel und Flächenpole)',
     pruefung: { art: 'phirho', gegen: { phi: 30, rho: 40 } },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-2-05', stufe: 2, kapitel: 1, typ: 'mehrfach',
@@ -287,7 +287,7 @@ export const BANK = [
     skript: 'projizieren', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folien 83, 91; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 40–43; Skript Kap. 1 (Abb. 1.3)',
     pruefung: { art: 'deckung', flaechen: [[1, 1, 1], [1, 0, 1], [0, 0, 1], [1, 0, 0], [1, 1, 0]] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-2-06', stufe: 2, kapitel: 1, typ: 'einfach',
@@ -305,7 +305,7 @@ export const BANK = [
     skript: 'umkugel', app: '#m=form&sys=kubisch&bsp=galenit&w=winkel',
     quelle: 'Folie 81; Borchardt-Ott & Sowa (2018), Aufg. 5.13, Tab. 5.2 (S. 63–64); Skript Kap. 1 (Umkugel und Flächenpole)',
     pruefung: { art: 'winkel', a: [1, 1, 1], b: [1, 0, 0] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-2-07', stufe: 2, kapitel: 1, typ: 'einfach',
@@ -328,7 +328,7 @@ export const BANK = [
     skript: 'projizieren', app: '#m=pg&g=1&rho=40&az=0',
     quelle: 'Folie 80; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 40–43; Skript Kap. 1 (Abb. 1.1)',
     pruefung: { art: 'gleicherOrt', phi: 0, rhos: [40, -40] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 4: Zonen
@@ -521,7 +521,7 @@ export const BANK = [
     skript: 'zonengleichung', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=1,${-1},1`,
     quelle: 'Folie 85; Borchardt-Ott & Sowa (2018), Abschn. 3.5, S. 18–21',
     pruefung: { art: 'zoneUndFlaeche', flaechen: [[1, 1, 0], [0, 1, 1]], achse: [1, -1, 1], flaeche: [1, 0, -1] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-2-02', stufe: 2, kapitel: 4, typ: 'einfach',
@@ -544,7 +544,7 @@ export const BANK = [
     skript: 'schnitt', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=1,0,1;0,${-1},1`,
     quelle: 'Folien 86–87; Borchardt-Ott & Sowa (2018), Abschn. 3.5, S. 18–21, und Abschn. 5.2, S. 35–36 (Galenit)',
     pruefung: { art: 'schnitt', zonen: [[1, 0, 1], [0, -1, 1]], flaeche: [-1, 1, 1] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-2-03', stufe: 2, kapitel: 4, typ: 'mehrfach',
@@ -569,7 +569,7 @@ export const BANK = [
     skript: 'nichtkubisch', app: '#m=form&sys=tetragonal&w=zone',
     quelle: 'Folien 50, 53, 86; Skript Kap. 4 (Zonenachse und Flächennormale)',
     pruefung: { art: 'zonenpol', faelle: [['kubisch', [1, 1, 1]], ['tetragonal', [0, 0, 1]], ['tetragonal', [1, 0, 0]], ['tetragonal', [1, 0, 1]], ['orthorhombisch', [1, 1, 0]]] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-2-04', stufe: 2, kapitel: 4, typ: 'einfach',
@@ -592,7 +592,7 @@ export const BANK = [
     skript: 'zonengleichung', app: '#m=form&sys=tetragonal&w=zone',
     quelle: 'Folien 46, 85; Borchardt-Ott & Sowa (2018), Abschn. 3.5, S. 18–21',
     pruefung: { art: 'zonengleichung', flaeche: [1, 0, 1], achse: [-1, 0, 1], gehoert: true, system: 'tetragonal' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-2-05', stufe: 2, kapitel: 4, typ: 'einfach',
@@ -610,7 +610,7 @@ export const BANK = [
     skript: 'schnitt', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,0,1;1,${-1},0`,
     quelle: 'Folie 87; Borchardt-Ott & Sowa (2018), Abschn. 5.2, S. 35–36 (Abb. 5.3); Skript Kap. 4 (Abb. 4.4)',
     pruefung: { art: 'zonenzahl', flaeche: [1, 1, 0], achsen: [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-2-06', stufe: 2, kapitel: 4, typ: 'einfach',
@@ -628,7 +628,7 @@ export const BANK = [
     skript: 'zonengleichung',
     quelle: 'Folie 85; Borchardt-Ott & Sowa (2018), Abschn. 3.5.1.2, S. 21 (Gl. 3.13)',
     pruefung: { art: 'zonenachse', flaechen: [[1, -2, 1], [0, 1, 1]], achse: [-3, -1, 1] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-2-07', stufe: 2, kapitel: 4, typ: 'text-bild',
@@ -652,7 +652,7 @@ export const BANK = [
     skript: 'zonenkreis', app: '#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=1,0,0',
     quelle: 'Folien 84, 86; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 42 (Abb. 5.12)',
     pruefung: { art: 'zonenbild', achse: [1, 0, 0] },
-    status: 'entwurf',
+    status: 'geprüft',
   },  {
     id: 'zon-2-08', stufe: 2, kapitel: 4, typ: 'mehrfach',
     lernziel: 'mit der Zonengleichung prüfen, ob eine Fläche zu einer Zone gehört',
@@ -670,7 +670,7 @@ export const BANK = [
     skript: 'zonengleichung', app: '#m=form&sys=kubisch&bsp=galenit&lage=111',
     quelle: 'Folien 85–86; Skript Kap. 2 (Andere Projektionsrichtung, gleicher Kristall) und Kap. 4 (Zonengleichung)',
     pruefung: { art: 'grundkreis', lage: '111', flaechen: [[1, -1, 0], [-1, 0, 1], [1, 0, 0], [-1, 1, 1], [1, 1, 0]] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 2: Kristallformen im Stereogramm
@@ -694,7 +694,7 @@ export const BANK = [
     erklaerung: 'Die vier Prismenflächen stehen senkrecht auf der Projektionsebene: Ihre Pole liegen auf dem Grundkreis, je 90° voneinander entfernt. Die beiden Pinakoidflächen liegen parallel zur Projektionsebene; ihre Pole fallen im Mittelpunkt zusammen (● im ○).',
     skript: 'form', app: '#m=form&sys=tetragonal&f=4/mmm:c10',
     quelle: 'Folie 42; nach Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 42–43 (Abb. 5.13a) und Aufg. 5.3 (S. 59)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-1-02', stufe: 1, kapitel: 2, typ: 'bild-text',
@@ -712,7 +712,7 @@ export const BANK = [
     erklaerung: 'Sechs gleich stark geneigte Flächen der oberen Halbkugel ergeben sechs Pole (●) im gleichen Abstand vom Grundkreis, je 60° auseinander: eine hexagonale Pyramide. Der Kreis ○ in der Mitte ist das Pedion, die Grundfläche, die nach unten zeigt.',
     skript: 'form', app: '#m=form&sys=hexagonal&f=6mm:c23',
     quelle: 'nach Borchardt-Ott & Sowa (2018), Aufg. 5.5 (S. 60) mit Lösung (S. 376); Abschn. 5.4, S. 42–43 (Abb. 5.13b)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-1-03', stufe: 1, kapitel: 2, typ: 'einfach',
@@ -734,7 +734,7 @@ export const BANK = [
     erklaerung: 'Wendet man die Symmetrieoperationen auf eine Fläche an, entstehen weitere, gleichwertige Flächen. Diese Menge ist eine Kristallform, bezeichnet mit den Indizes einer ihrer Flächen in geschweiften Klammern, z. B. {100} für den Würfel.',
     skript: 'form', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folien 71–72; Borchardt-Ott & Sowa (2018), Abschn. 5.2, S. 35, und Abschn. 9.2, S. 142',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-1-04', stufe: 1, kapitel: 2, typ: 'einfach',
@@ -756,7 +756,7 @@ export const BANK = [
     erklaerung: `Ein Pinakoid besteht aus zwei parallelen Flächen, hier (001) oben und (00${o(1)}) unten. Beide stehen senkrecht zur Projektionsrichtung; ihre Pole liegen am Nord- und am Südpol der Umkugel und erscheinen beide im Mittelpunkt, oben als ●, unten als ○.`,
     skript: 'form', app: '#m=form&sys=tetragonal&f=4/mmm:c10',
     quelle: 'Folie 42; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 42–43 (Pedion und Pinakoid, Abb. 5.13)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-1-05', stufe: 1, kapitel: 2, typ: 'einfach',
@@ -774,7 +774,7 @@ export const BANK = [
     skript: 'allgemein', app: '#m=form&sys=tetragonal&f=4/mmm:g16&geruest=1',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.1, S. 130, und Abschn. 9.2, S. 146–147; Skript Abb. 2.3',
     pruefung: { art: 'flaechenzahl', form: '4/mmm:g16', anzahl: 16, ordnung: 16 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-1-06', stufe: 1, kapitel: 2, typ: 'einfach',
@@ -796,7 +796,7 @@ export const BANK = [
     erklaerung: 'Bei einer speziellen Form liegt jeder Pol auf mindestens einem Symmetrieelement; sie hat deshalb weniger Flächen als die allgemeine Form, deren Pole auf keinem Symmetrieelement liegen.',
     skript: 'allgemein', app: '#m=form&sys=tetragonal&f=4/mmm:e14&geruest=1',
     quelle: 'Folien 89, 91; Borchardt-Ott & Sowa (2018), Abschn. 9.2, S. 143 und 146–147',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-1-07', stufe: 1, kapitel: 2, typ: 'bild-text',
@@ -820,7 +820,7 @@ export const BANK = [
     skript: 'allgemein', app: '#m=form&sys=tetragonal&f=4/mmm:g16&geruest=1',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2, S. 143–146 (Abb. 9.7a, S. 145); Skript Abb. 2.3',
     pruefung: { art: 'flaechenzahl', form: '4/mmm:g16', anzahl: 16, ordnung: 16 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-1-08', stufe: 1, kapitel: 2, typ: 'einfach',
@@ -842,7 +842,7 @@ export const BANK = [
     erklaerung: 'Eine andere Projektionsrichtung dreht den Kristall auf der Umkugel: Die Pole wandern an andere Stellen, die Winkel zwischen den Flächennormalen bleiben gleich.',
     skript: 'lage', app: '#m=form&sys=kubisch&bsp=galenit&lage=111',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 49 (Drehung eines Oktaeders, Abb. 5.23); Skript Abb. 2.5–2.7',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-1-09', stufe: 1, kapitel: 2, typ: 'text-bild',
@@ -862,7 +862,7 @@ export const BANK = [
     erklaerung: `Entlang [111] liegt eine ${o(3)}-Achse des Galenits. Mit [111] als Projektionsrichtung liegt der Pol der Oktaederfläche (111) im Mittelpunkt, und die Pole ordnen sich dreizählig um ihn an. Ohne Rücksicht auf ● und ○ wirkt das Muster sechszählig, weil ${o(3)} ein Inversionszentrum enthält.`,
     skript: 'lage', app: '#m=form&sys=kubisch&bsp=galenit&lage=111',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 49 (Abb. 5.23); Skript Abb. 2.5–2.7',
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ---------------------------------------------------------------- Kapitel 2, Stufe 2
@@ -993,7 +993,7 @@ export const BANK = [
     erklaerung: 'Projiziert wird der Grosskreis, in dem die Spiegelebene die Umkugel schneidet. Enthält die Ebene die Projektionsrichtung, geht dieser Grosskreis durch Nord- und Südpol und wird zu einer Geraden durch den Mittelpunkt.',
     skript: 'elemente', app: '#m=pg&g=mb&obj=0',
     quelle: 'Folie 88; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 43, und Abschn. 6.2, S. 73',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-1-02', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -1015,7 +1015,7 @@ export const BANK = [
     erklaerung: 'Projiziert werden die Punkte, in denen eine Achse die Umkugel durchstösst. Eine Achse in der Projektionsebene durchstösst die Kugel an zwei gegenüberliegenden Punkten des Äquators; dort steht je ein Linsensymbol auf dem Grundkreis.',
     skript: 'elemente', app: '#m=pg&g=2b&obj=0',
     quelle: 'Folie 88; Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 43; Skript Kap. 3',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-1-03', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -1038,7 +1038,7 @@ export const BANK = [
     skript: 'abbilden', app: '#m=pg&g=mc',
     quelle: 'Folie 88; Borchardt-Ott & Sowa (2018), Aufg. 6.1b (S. 79); Skript Abb. 3.1e',
     pruefung: { art: 'abbildung', gruppe: 'mc', bild: 'z' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-1-04', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -1061,7 +1061,7 @@ export const BANK = [
     skript: 'abbilden', app: '#m=pg&g=2b',
     quelle: 'Folie 88; Borchardt-Ott & Sowa (2018), Aufg. 6.1b (S. 79); Skript Abb. 3.1c',
     pruefung: { art: 'abbildung', gruppe: '2b', bild: 'y' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-1-05', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -1079,7 +1079,7 @@ export const BANK = [
     skript: 'bahn', app: '#m=pg&g=mm2',
     quelle: 'Folien 63–64, 103; Borchardt-Ott & Sowa (2018), Abschn. 7.2, S. 102 (Symmetriesatz II)',
     pruefung: { art: 'erzeugt', gruppe: 'mm2', achse: '2' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-1-06', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -1102,7 +1102,7 @@ export const BANK = [
     skript: 'bahn', app: '#m=pg&g=-4',
     quelle: 'Folien 65–67; Borchardt-Ott & Sowa (2018), Abschn. 6.4.1, S. 76–77; Skript Abb. 3.3, 3.4',
     pruefung: { art: 'bahn', soll: '-4', gruppen: { '-4': [2, 2], 4: [4, 0] } },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-1-07', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -1120,7 +1120,7 @@ export const BANK = [
     skript: 'speziell', app: '#m=form&sys=kubisch&bsp=galenit&geruest=1',
     quelle: 'Folie 89; Borchardt-Ott & Sowa (2018), Abschn. 9.2, S. 142 (Abb. 9.4); Skript Abb. 3.6',
     pruefung: { art: 'lage', gruppe: 'm-3m', system: 'kubisch', hkl: [1, 1, 1], achse: '-3' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ---------------------------------------------------------------- Kapitel 3, Stufe 2
@@ -1261,7 +1261,7 @@ export const BANK = [
     erklaerung: 'Die Tracht ist die Menge der Kristallformen, die einen Kristall begrenzen; z. B. beim Galenit Würfel {100}, Oktaeder {111} und Rhombendodekaeder {110}.',
     skript: 'tracht', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Folie 40; Borchardt-Ott & Sowa (2018), Abschn. 5.2, S. 35',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hab-1-03', stufe: 1, kapitel: 5, typ: 'mehrfach',
@@ -1273,7 +1273,7 @@ export const BANK = [
     erklaerung: 'Man unterscheidet drei Grundtypen des Habitus: isometrisch (nach allen Richtungen etwa gleich ausgedehnt), planar oder tafelig (flach) und prismatisch oder nadelig (lang gestreckt).',
     skript: 'habitus-def', app: '#m=form&sys=hexagonal&f=6/mmm:c25&abstand=0.3',
     quelle: 'Folie 40; Borchardt-Ott & Sowa (2018), Abschn. 5.2, S. 35 (Abb. 5.2)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hab-1-04', stufe: 1, kapitel: 5, typ: 'einfach',
@@ -1295,7 +1295,7 @@ export const BANK = [
     erklaerung: 'Tracht und Habitus sind unabhängig voneinander. Würfel und Oktaeder sind verschiedene Formen (verschiedene Tracht), beide sind aber nach allen Richtungen etwa gleich ausgedehnt (gleicher, isometrischer Habitus).',
     skript: 'habitus-def', app: '#m=form&sys=kubisch&f=m-3m:b35',
     quelle: 'Folie 41; Borchardt-Ott & Sowa (2018), Abschn. 5.2, S. 35; Skript Kap. 5',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hab-1-05', stufe: 1, kapitel: 5, typ: 'einfach',
@@ -1312,7 +1312,7 @@ export const BANK = [
     erklaerung: 'Beim Wachstum verschieben sich die Flächen parallel. Eine schnell wachsende Fläche wird dabei von ihren Nachbarn eingeholt, wird kleiner und kann verschwinden; langsam wachsende Flächen werden immer grösser und bestimmen den Habitus.',
     skript: 'wachstum', app: null,
     quelle: 'Folien 36–38; Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 38–39 (Abb. 5.6)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hab-1-06', stufe: 1, kapitel: 5, typ: 'einfach',
@@ -1334,7 +1334,7 @@ export const BANK = [
     erklaerung: 'Nadelig heisst: grosse Prismenflächen, kleine Pinakoidflächen. Gross werden die langsam wachsenden Flächen, also wächst das Prisma langsam und das Pinakoid schnell; der Kristall streckt sich entlang c.',
     skript: 'wachstum', app: '#m=form&sys=hexagonal&f=6/mmm:c25&abstand=2.5',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.2, S. 35 (Abb. 5.2c mit Wachstumsgeschwindigkeiten), Abschn. 5.3, S. 38',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hab-1-07', stufe: 1, kapitel: 5, typ: 'einfach',
@@ -1357,7 +1357,7 @@ export const BANK = [
     skript: 'habitus-stereo', app: '#m=form&sys=hexagonal&f=6/mmm:c25',
     quelle: 'Folie 39; Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 38–40 (Abb. 5.7); Skript Abb. 5.4',
     pruefung: { art: 'gleichesBild', hashes: ['#m=form&sys=hexagonal&f=6/mmm:c25&abstand=0.3', '#m=form&sys=hexagonal&f=6/mmm:c25&abstand=2.5'] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hab-1-08', stufe: 1, kapitel: 5, typ: 'einfach',
@@ -1379,7 +1379,7 @@ export const BANK = [
     erklaerung: 'Das Stereogramm zeigt, welche Flächen mit welcher Orientierung auftreten, also die Tracht. Es ändert sich erst, wenn sich die Tracht ändert: wenn eine schnell wachsende Form verschwindet oder eine neue hinzukommt.',
     skript: 'habitus-stereo', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 38 (Abb. 5.6b); Skript Kap. 5',
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ---------------------------------------------------------------- Kapitel 5, Stufe 2
@@ -1471,7 +1471,7 @@ export const BANK = [
     skript: 'blick-def', app: '#m=pg&g=4/mmm&obj=0',
     quelle: 'Folien 76–77; Borchardt-Ott & Sowa (2018), Abschn. 7.1, S. 88 (Tab. 7.3), Abschn. 7.2.4, S. 105–108 (Abb. 7.21)',
     pruefung: { art: 'blickrichtungen', gruppe: '4/mmm' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-1-02', stufe: 1, kapitel: 6, typ: 'einfach',
@@ -1489,7 +1489,7 @@ export const BANK = [
     skript: 'blick-def', app: '#m=pg&g=m-3m&obj=0',
     quelle: 'Folie 102; Borchardt-Ott & Sowa (2018), Abschn. 7.2.6, S. 109–111 (Abb. 7.24)',
     pruefung: { art: 'blickrichtungen', gruppe: 'm-3m' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-1-03', stufe: 1, kapitel: 6, typ: 'einfach',
@@ -1534,7 +1534,7 @@ export const BANK = [
     erklaerung: 'An jeder Position des Symbols steht, was zur Blickrichtung gehört: Drehachsen und Drehinversionsachsen parallel zu ihr, Spiegelebenen senkrecht zu ihr, also mit der Blickrichtung als Normale.',
     skript: 'symbol', app: '#m=pg&g=4/mmm&obj=0',
     quelle: 'Folie 77; Borchardt-Ott & Sowa (2018), Aufg. 9.10d (S. 181)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-1-05', stufe: 1, kapitel: 6, typ: 'einfach',
@@ -1557,7 +1557,7 @@ export const BANK = [
     skript: 'symbol', app: '#m=pg&g=4/mmm&obj=0',
     quelle: 'Folien 77–78; Borchardt-Ott & Sowa (2018), Abschn. 7.2.4, S. 105–108 (Abb. 7.21c)',
     pruefung: { art: 'position', gruppe: '4/mmm', nr: 2, richtung: '⟨100⟩', symbol: '2/m' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-1-06', stufe: 1, kapitel: 6, typ: 'einfach',
@@ -1575,7 +1575,7 @@ export const BANK = [
     skript: 'kurz', app: '#m=pg&g=mmm&obj=0',
     quelle: 'Folie 103; Borchardt-Ott & Sowa (2018), Abschn. 9.1, S. 128–130 (Tab. 9.2)',
     pruefung: { art: 'symbol', gruppe: 'mmm', voll: '2/m 2/m 2/m' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-1-07', stufe: 1, kapitel: 6, typ: 'einfach',
@@ -1598,7 +1598,7 @@ export const BANK = [
     skript: 'symbol', app: '#m=pg&g=m-3m&obj=0',
     quelle: 'Folie 102; Borchardt-Ott & Sowa (2018), Aufg. 9.8a (S. 179); Skript Kap. 6',
     pruefung: { art: 'kubischesSymbol' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-1-08', stufe: 1, kapitel: 6, typ: 'einfach',
@@ -1620,7 +1620,7 @@ export const BANK = [
     erklaerung: 'Blickrichtungen sind die höchstens drei Klassen nicht gleichwertiger Symmetrierichtungen; sie sind durch die Symmetrie festgelegt und ordnen das Hermann-Mauguin-Symbol. Die Projektionsrichtung des Stereogramms wählt man dagegen frei.',
     skript: 'blick-def', app: '#m=form&sys=kubisch&bsp=galenit&lage=111',
     quelle: 'Folie 76; Borchardt-Ott & Sowa (2018), Abschn. 7.1, S. 88–89; Skript Kap. 6 (Blickrichtung und Projektionsrichtung)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ---------------------------------------------------------------- Kapitel 6, Stufe 2
@@ -1757,7 +1757,7 @@ export const BANK = [
     erklaerung: 'Im hexagonalen Achsensystem liegt c entlang der 3- bzw. 6-zähligen Hauptachse, a und b sind gleich lang und schliessen 120° ein; c steht senkrecht auf beiden.',
     skript: 'hexachsen', app: '#m=form&sys=hexagonal&f=6/mmm:c25&achsen=1',
     quelle: 'Folie 105; Borchardt-Ott & Sowa (2018), Abschn. 7.1, S. 88 (Tab. 7.2)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-1-02', stufe: 1, kapitel: 7, typ: 'einfach',
@@ -1779,7 +1779,7 @@ export const BANK = [
     erklaerung: `Eine 3-, ${o(3)}-, 6- oder ${o(6)}-zählige Hauptachse macht in der Ebene senkrecht dazu Achsen im Winkel von 120° zweckmässig. Deshalb beschreibt man trigonale und hexagonale Kristalle mit dem hexagonalen Achsensystem.`,
     skript: 'hexachsen', app: '#m=form&sys=hexagonal&f=6/mmm:c25',
     quelle: 'Folie 105; Borchardt-Ott & Sowa (2018), Abschn. 9.2.2, S. 151; Skript Kap. 7',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-1-03', stufe: 1, kapitel: 7, typ: 'einfach',
@@ -1797,7 +1797,7 @@ export const BANK = [
     skript: 'hexachsen', app: '#m=form&sys=hexagonal&f=6/mmm:c25&achsen=1',
     quelle: 'Folie 105; Borchardt-Ott & Sowa (2018), Abschn. 7.2.5, S. 107–109 (Abb. 7.22)',
     pruefung: { art: 'hexAchsen' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-1-04', stufe: 1, kapitel: 7, typ: 'einfach',
@@ -1815,7 +1815,7 @@ export const BANK = [
     skript: 'hexachsen', app: '#m=pg&g=6/mmm&obj=0',
     quelle: 'Folie 105; Borchardt-Ott & Sowa (2018), Abschn. 7.2.5, S. 107–109',
     pruefung: { art: 'hexSenkrecht', zu: [0, 1, 0] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-1-05', stufe: 1, kapitel: 7, typ: 'einfach',
@@ -1833,7 +1833,7 @@ export const BANK = [
     skript: 'hexachsen', app: '#m=pg&g=6/mmm&obj=0',
     quelle: 'Folie 105; Skript Kap. 7 (Abb. 7.1)',
     pruefung: { art: 'hexMitte', a: [1, 0, 0], b: [0, 1, 0] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-1-06', stufe: 1, kapitel: 7, typ: 'einfach',
@@ -1856,7 +1856,7 @@ export const BANK = [
     skript: 'hexachsen', app: '#m=pg&g=6/mmm&obj=0',
     quelle: 'Folie 106; Borchardt-Ott & Sowa (2018), Abschn. 7.2.5, S. 107–110 (Abb. 7.22, 7.23)',
     pruefung: { art: 'hexFamilie', gruppe: '6/mmm', richtung: [1, 1, 0], position: 2 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-2-01', stufe: 2, kapitel: 7, typ: 'einfach',
@@ -1879,7 +1879,7 @@ export const BANK = [
     skript: 'hexachsen', app: '#m=form&sys=hexagonal&f=6/mmm:c25&achsen=1',
     quelle: 'Folien 50, 105; Skript Kap. 7 (Abschnitt „Das hexagonale Achsensystem“)',
     pruefung: { art: 'hexPol', hkl: [1, 0, 0], richtung: [2, 1, 0] },
-    status: 'entwurf',
+    status: 'geprüft',
   },  {
     id: 'hex-2-02', stufe: 2, kapitel: 7, typ: 'mehrfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',

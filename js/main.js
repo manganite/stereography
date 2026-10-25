@@ -1002,7 +1002,7 @@ function updateInfoPoly(C, col) {
       <div><dt>Habitus</dt><dd>${habitHTML}</dd></div>
       <div><dt>Flächen der Form</dt><dd class="num">${C.mainHKL.length}</dd></div>
       <div><dt>Indexmuster (ITA)</dt><dd>{${symText(e.sym, hex4)}}</dd></div>
-      <div><dt>Wyckoff-Lage, Flächensymmetrie</dt><dd>${e.wy}, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
+      <div><dt>Wyckoff-Lage, Flächensymmetrie</dt><dd>${e.mult}<i>${e.wy}</i>, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
       <div><dt>Eigensymmetrie der Form${C.isReduced ? ' (unverzerrt)' : ''}</dt><dd>${hmHTML(formEig(e))}</dd></div>
       <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken || !!st)}</dd></div>
       <div><dt>Projektionsrichtung</dt><dd>${C.preset.name}</dd></div>

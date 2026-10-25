@@ -287,6 +287,8 @@ select {
 .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 16px; margin: 0; }
 .facts div { border-top: 1px solid var(--line); padding-top: 5px; }
 .facts dt { font-size: 0.75rem; color: var(--muted); }
+.facts dt .to-skript { margin-left: 0.4em; color: var(--accent); text-decoration: none; white-space: nowrap; }
+.facts dt .to-skript:hover { text-decoration: underline; }
 .facts dd { margin: 0; font-weight: 500; }
 .facts .wide { grid-column: 1 / -1; }
 .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }

@@ -106,3 +106,19 @@ test('Link-Adresse: eingerasteter Pol bleibt nach dem Runden auf 4 Stellen spezi
   assert.equal(distinct.length, 24);
   assert.equal(scene.poles.length, 24);
 });
+
+test('Skript, Kapitel 8: Abbildungen zeigen die genannten Lagen', () => {
+  const col = new Proxy({}, { get: () => '#000' });
+  const expect = {
+    '#m=pg&g=4/mmm&rho=40&az=20': '16g 1', '#m=pg&g=4/mmm&rho=40&az=0': '8f .m.', '#m=pg&g=4/mmm&rho=40&az=45': '8e ..m',
+    '#m=pg&g=4/mmm&rho=90&az=20': '8d m..', '#m=pg&g=4/mmm&rho=90&az=0': '4c m2m.', '#m=pg&g=4/mmm&rho=90&az=45': '4b m.m2',
+    '#m=pg&g=4/mmm&rho=0': '2a 4mm', '#m=pg&g=m-3m&rho=54.7356&az=45': '8b .3m', '#m=pg&g=23&rho=54.7356&az=45': '4a .3.',
+  };
+  for (const [h, want] of Object.entries(expect)) {
+    const st = createState();
+    applyHashTo(st, h, createState());
+    const { site, distinct } = pgScene(st, col);
+    assert.equal(`${site.mult}${site.wy} ${site.fs}`, want, h);
+    assert.equal(distinct.length, site.mult, h);
+  }
+});

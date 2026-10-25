@@ -836,13 +836,18 @@ function updateInfoPG(info, orb, col, classes, pgAngle, site, distinct) {
       <div><dt>Enantiomorph</dt><dd>${yesno(info.chiral)}</dd></div>
       <div title="Eine Richtung bleibt unter allen Operationen erhalten; spontane Polarisation (Pyroelektrizität) möglich. 10 Punktgruppen."><dt>Polar</dt><dd>${yesno(info.polar)}</dd></div>
       <div title="Piezoelektrischer Effekt symmetrieerlaubt: alle 21 Punktgruppen ohne Inversionszentrum ausser 432."><dt>Piezoelektrisch</dt><dd>${yesno(info.piezo)}</dd></div>
-      ${state.pg.showObject ? `<div class="wide"><dt>Lage des Ausgangspols</dt><dd>${lage}</dd></div>` : ''}
+      ${state.pg.showObject ? `<div class="wide"><dt>Lage des Ausgangspols${skriptLink('lage-pol')}</dt><dd>${lage}</dd></div>` : ''}
     </dl>
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
     ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
     ${pgPolesOn(state) ? `<p class="note">${lageNote(true)} Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).${snapHint}</p>`
     : state.pg.showObject ? `<p class="note">${lageNote(false)} Die Flächenpole sind ausgeblendet (einblenden unter „Darstellung“); ρ und φ des Ausgangspols lassen sich weiter mit den Reglern einstellen.</p>` : ''}`);
+}
+
+/** Kleiner Link ins Skript (Abschnitt anchor), z. B. hinter einer Zeile der Infobox. */
+function skriptLink(anchor) {
+  return ` <a class="to-skript" href="skript.html#${anchor}" title="Mehr dazu im Skript, Kapitel 8">Skript →</a>`;
 }
 
 function poleAngles(n) {
@@ -1019,8 +1024,8 @@ function updateInfoPoly(C, col) {
       <div><dt>Habitus</dt><dd>${habitHTML}</dd></div>
       <div><dt>Flächen der Form</dt><dd class="num">${C.mainHKL.length}</dd></div>
       <div><dt>Indexmuster (ITA)</dt><dd>{${symText(e.sym, hex4)}}</dd></div>
-      <div><dt>Wyckoff-Lage, Flächensymmetrie</dt><dd>${e.mult}<i>${e.wy}</i>, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
-      <div><dt>Eigensymmetrie der Form${C.isReduced ? ' (unverzerrt)' : ''}</dt><dd>${hmHTML(formEig(e))}</dd></div>
+      <div><dt>Wyckoff-Lage, Flächensymmetrie${skriptLink('lage-pol')}</dt><dd>${e.mult}<i>${e.wy}</i>, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
+      <div><dt>Eigensymmetrie der Form${C.isReduced ? ' (unverzerrt)' : ''}${skriptLink('eigensymmetrie')}</dt><dd>${hmHTML(formEig(e))}</dd></div>
       <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken || !!st)}</dd></div>
       <div><dt>Projektionsrichtung</dt><dd>${C.preset.name}</dd></div>
     </dl>

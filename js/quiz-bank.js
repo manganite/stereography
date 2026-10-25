@@ -1200,15 +1200,15 @@ export const BANK = [
     lernziel: 'die Blickrichtungen eines Kristallsystems angeben',
     frage: 'Wie viele Blickrichtungen hat das <b>monokline</b> System, und welche Richtung ist es?',
     antworten: [
-      'Eine: die eindeutige Achse (2-zählige Achse bzw. Normale der Spiegelebene), üblicherweise b = [010]',
-      'Eine: immer die c-Achse [001]',
+      'Eine: die eindeutige Achse, meist b = [010]',
+      'Zwei: die 2-zählige Achse und die Normale der Spiegelebene',
       'Drei: [100], [010] und [001]',
       'Keine, weil die Achsen schiefwinklig sind',
     ],
     richtig: [0],
     hinweise: [
       null,
-      'Die eindeutige Achse legt die Symmetrie fest, nicht der Name der Achse. Man kann sie b oder c nennen; Standard ist b, so auch in Vorlesung und Skript.',
+      'Die Spiegelebene steht senkrecht auf der 2-zähligen Achse; ihre Normale ist also dieselbe Richtung. Achse und Spiegelebene gehören zu einer Blickrichtung (Symbol 2/m).',
       'Drei Blickrichtungen [100], [010], [001] hat das orthorhombische System.',
       'Keine Blickrichtung hat nur das trikline System. Monokline Kristalle haben eine 2-zählige Achse oder eine Spiegelebene oder beides.',
     ],

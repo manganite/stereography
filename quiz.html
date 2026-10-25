@@ -23,9 +23,9 @@ body { font-size: 16px; line-height: 1.55; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin: 0 0 16px; }
 .card > h3 { margin: 0 0 10px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
 .hint { font-size: 0.86rem; color: var(--muted); margin: 8px 0 0; }
-.vorschau { border-left: 4px solid var(--ax3); }
-.vorschau .hint { margin-top: 6px; }
-.schalter { display: flex; gap: 10px; align-items: center; font-weight: 600; cursor: pointer; }
+.vorschau { margin: -4px 0 20px; padding: 0 2px; }
+.vorschau .hint { margin: 2px 0 0 28px; }
+.schalter { display: flex; gap: 10px; align-items: center; font-size: 0.92rem; cursor: pointer; }
 .schalter input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
 .leer p { margin: 0; }
 fieldset.card { margin-inline: 0; min-width: 0; }
@@ -147,10 +147,6 @@ footer a { color: inherit; }
   <section id="start" aria-labelledby="start-title">
     <h2 id="start-title">Quiz</h2>
     <p class="lead">Prüfen Sie, ob Sie die Lernziele des Skripts erreichen. Nach jeder Antwort sehen Sie eine Erklärung und den passenden Abschnitt im Skript.</p>
-    <div class="card vorschau" id="vorschau" hidden>
-      <label class="schalter"><input type="checkbox" id="entwurf-schalter"> Auch ungeprüfte Fragen zeigen</label>
-      <p class="hint" id="entwurf-hinweis"></p>
-    </div>
     <div class="card leer" id="leer" hidden>
       <h3>Noch keine Fragen</h3>
       <p>Die Fragen werden gerade geprüft und erscheinen hier, sobald sie freigegeben sind.</p>
@@ -179,10 +175,14 @@ footer a { color: inherit; }
         </div>
       </div>
     </form>
+    <div class="vorschau" id="vorschau" hidden>
+      <label class="schalter"><input type="checkbox" id="entwurf-schalter"> Auch ungeprüfte Fragen zeigen</label>
+      <p class="hint" id="entwurf-hinweis"></p>
+    </div>
     <div class="card" id="stand-card">
-      <h3>Ihr Stand</h3>
+      <h3>Ihr Stand · <span id="stand-stufe"></span></h3>
       <ul class="stand" id="stand"></ul>
-      <p class="hint">Gezählt werden Fragen, deren letzte Antwort richtig war. Der Stand wird nur in diesem Browser gespeichert. <button class="linkbtn" type="button" id="reset">Zurücksetzen</button></p>
+      <p class="hint">Gezählt werden die Fragen der gewählten Stufe und der Stufen darunter, wie in der Auswahl oben, und davon die, deren letzte Antwort richtig war. Der Stand wird nur in diesem Browser gespeichert. <button class="linkbtn" type="button" id="reset">Zurücksetzen</button></p>
     </div>
   </section>
 

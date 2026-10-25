@@ -66,7 +66,7 @@ function zeigeEntwurf() {
   const n = ALLE.length - GEPRUEFT.length;
   $('vorschau').hidden = n === 0;
   $('entwurf-schalter').checked = entwurf;
-  $('entwurf-hinweis').textContent = `${n} ${n === 1 ? 'Frage ist' : 'Fragen sind'} noch nicht fachlich durchgesehen. Eingeschaltet erscheinen sie im Quiz, gekennzeichnet mit „Entwurf“.`;
+  $('entwurf-hinweis').textContent = `${n} ${n === 1 ? 'Frage ist' : 'Fragen sind'} noch nicht fachlich durchgesehen; im Quiz tragen sie die Markierung „Entwurf“.`;
   KANDS = entwurf ? ALLE : GEPRUEFT;
   ANZ = zaehlen(KANDS);
   $('leer').hidden = KANDS.length > 0;
@@ -86,7 +86,7 @@ function zeigeKapitel() {
     lab.className = 'chip';
     lab.title = k.titel;
     const an = n > 0 && (!vorher.size || vorher.has(k.nr));
-    lab.innerHTML = `<input type="checkbox" value="${k.nr}"${n ? '' : ' disabled'}${an ? ' checked' : ''}> Kap. ${k.nr} <small>${n ? n : 'folgt'}</small>`;
+    lab.innerHTML = `<input type="checkbox" value="${k.nr}"${n ? '' : ' disabled'}${an ? ' checked' : ''}> ${k.nr} ${k.kurz} <small>${n ? n : 'folgt'}</small>`;
     box.append(lab);
   }
   // Vorgewähltes Kapitel ohne Fragen in dieser Stufe: alle Kapitel mit Fragen wählen
@@ -103,8 +103,10 @@ function aktualisiereStart() {
   $('los').disabled = !kap.length || !anzahl(wahl.stufe, kap);
 }
 
+/** Stand je Kapitel für die gewählte Stufe (mit den niedrigeren), gezählt wie in der Auswahl darüber. */
 function zeigeStand() {
-  const st = stand(KANDS, fortschritt);
+  const st = stand(KANDS.filter((k) => k.stufe <= wahl.stufe), fortschritt);
+  $('stand-stufe').textContent = wahl.stufe === 1 ? 'Stufe 1' : `Stufen 1–${wahl.stufe}`;
   const ul = $('stand');
   ul.innerHTML = '';
   for (const k of KAPITEL) {
@@ -332,7 +334,7 @@ function init() {
     try { localStorage.setItem(ENTWURF, entwurf ? '1' : '0'); } catch { /* ohne Speicher weiter */ }
     zeigeEntwurf();
   });
-  $('stufen').addEventListener('change', (e) => { wahl.stufe = Number(e.target.value); zeigeKapitel(); });
+  $('stufen').addEventListener('change', (e) => { wahl.stufe = Number(e.target.value); zeigeKapitel(); zeigeStand(); });
   $('kapitel').addEventListener('change', aktualisiereStart);
   $('auswahl').addEventListener('change', (e) => { if (e.target.name === 'anzahl') wahl.n = Number(e.target.value); });
   $('auswahl').addEventListener('submit', (e) => { e.preventDefault(); starten(); });

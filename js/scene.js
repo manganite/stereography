@@ -11,6 +11,7 @@ import { CATALOG, formEig, entryById } from './forms.js';
 import { hklParts } from './format.js';
 import { normalize, mulVec } from './linalg.js';
 import { exampleById } from './examples.js';
+import { siteOf, distinctPoles } from './sitesym.js';
 
 const deg = Math.PI / 180;
 
@@ -343,12 +344,18 @@ export function angleOf(a, b) {
  */
 export function pgScene(state, col, env = {}) {
   const info = buildPointGroup(state.pg.id);
-  const p0 = generalPole(state);
+  // Lage des Ausgangspols: auf einem Symmetrieelement fallen Bilder zusammen (spezielle Lage)
+  const site = siteOf(state.pg.id, info, generalPole(state));
+  const p0 = site.p;
   const orb = orbit(info.ops, p0);
+  const distinct = distinctPoles(orb);
+  // je Stelle zählt die erste Operation (Pol wird einmal gezeichnet); Bild und Spiegelbild an derselben Stelle: mixed
+  for (const u of distinct) for (const k of u.ops) Object.assign(orb[k], { rep: k === u.op, mixed: u.mixed });
+  const repOf = (k) => (orb[k] ? distinct.find((u) => u.ops.includes(k)).op : k);
   const axisAlongZ = info.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
   const classes = symmetryDirections(info);
   const polesOn = pgPolesOn(state);
-  const sel = state.pg.tool && polesOn ? state.pgSel.filter((k) => k < orb.length) : [];
+  const sel = state.pg.tool && polesOn ? [...new Set(state.pgSel.filter((k) => k < orb.length).map(repOf))] : [];
   const pgAngle = sel.length === 2 ? angleOf(orb[sel[0]].p, orb[sel[1]].p) : null;
   // Farbe nach Blickrichtung (Position im vollen HM-Symbol) oder einheitlich schwarz wie in ITA
   const dcol = (k) => (state.view.dirColors && k >= 0 ? col.dir[k] : null);
@@ -362,14 +369,14 @@ export function pgScene(state, col, env = {}) {
     axes: state.pg.showElements ? info.axes.map((a) => ({ ...a, color: dcol(a.cls) })) : [],
     centreAtOrigin: state.pg.showElements && info.centro && !axisAlongZ,
     zones: state.pg.showElements && info.system === 'kubisch' ? CUBIC_ZONES : [],
-    poles: polesOn ? orb.map((o, i) => ({ p: o.p, det: o.det, idx: i, gen: i === 0, selected: sel.includes(i) })) : [],
+    poles: polesOn ? distinct.map((u) => ({ p: u.p, det: u.det, idx: u.op, gen: u.op === 0, selected: sel.includes(u.op), color: u.mixed && state.pg.colorful ? col.muted : undefined })) : [],
     hitR: env.hitR ?? 13,
     arc: pgAngle ? { a: pgAngle.a, b: pgAngle.b, label: pgAngle.deg.toFixed(1) + '°' } : null,
     colorByDet: state.pg.colorful,
     showLower: true,
     axisLabels: state.view.axes ? crystalAxesFor(info.hex) : [],
   };
-  return { info, p0, orb, classes, sel, pgAngle, scene };
+  return { info, p0, orb, distinct, site, classes, sel, pgAngle, scene };
 }
 
 /** Punktgruppen: Pole sichtbar (Objekt in allgemeiner Lage und Flächenpole eingeschaltet). */

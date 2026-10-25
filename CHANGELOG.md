@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Ausgangspol in spezieller Lage (Punktgruppen):** Nahe an einer Achse (4°) oder Spiegelebene (3°) rastet der Ausgangspol beim Ziehen ein; weiter weg bleibt er frei. Die Infobox zeigt unter „Lage des Ausgangspols“, ob die Lage allgemein oder speziell ist, mit Wyckoff-Lage und Lagesymmetrie nach ITA Tab. 10.1.2.2 (z. B. „speziell (24*e*, Lagesymmetrie ..*m*)“ in *m*3̄*m*), und erklärt die Polzahl: Ordnung der Gruppe geteilt durch die Zahl der Operationen, die den Pol festhalten. Zusammenfallende Pole werden einmal gezeichnet; fallen Bild und Spiegelbild zusammen, ist der Pol bei „Pole nach Händigkeit färben“ grau, in der 3D-Konstruktion liegen die Objekte übereinander. Auch Werte von ρ und φ aus Reglern oder Links, die auf einem Symmetrieelement liegen, gelten als spezielle Lage. Die Wyckoff-Lagen der Aufstellungen ohne eigenen Formkatalog (monoklin Achse *c*, 312, 31*m*, 3̄1*m*, 4̄*m*2, 6̄2*m*) stammen aus ITA Tab. 10.1.2.2.
+
 ## [1.6.0] - 2026-10-24
 
 3D-Konstruktion: Ansichten entlang der Blickrichtungen, Bildexport immer hell und durchsichtig, Flächenpole abschaltbar; Seitenleiste nach dem Prinzip „weniger auf einmal“.

@@ -450,8 +450,8 @@ export class View3D {
         const color = c(o.det > 0 ? col.upper : col.accent2);
         const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color, side: THREE.DoubleSide, roughness: 0.55, flatShading: true }));
         this.content.add(mesh);
-        if (opts.showPoles === false) return;
-        const dot = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: i === 0 ? c(col.accent) : color }));
+        if (opts.showPoles === false || o.rep === false) return; // zusammenfallende Pole (spezielle Lage) einmal
+        const dot = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: i === 0 ? c(col.accent) : o.mixed ? c(col.muted) : color }));
         dot.position.copy(V(o.p));
         this.content.add(dot);
       });

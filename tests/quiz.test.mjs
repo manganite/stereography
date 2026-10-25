@@ -12,12 +12,12 @@ import { createState, applyHashTo, stereoForHash, stateForHash, currentEntryId }
 import { buildSVG } from '../js/stereogram.js';
 import { groupById, POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart } from '../js/pointgroups.js';
 import { CATALOG } from '../js/forms.js';
-import { poleOfHKL } from '../js/sitesym.js';
+import { poleOfHKL, stabilizer } from '../js/sitesym.js';
 import { hmHTML } from '../js/format.js';
 import { moodleXML } from '../tools/moodle-export.mjs';
 import { project, C as SC, R as SR } from '../js/stereogram.js';
 import { latticeFromParams, LATTICE_DEFAULTS, orientationPresets, orientationMatrix } from '../js/polyhedra.js';
-import { inverse, transpose, mulVec } from '../js/linalg.js';
+import { inverse, transpose, mulVec, mul, matEq, neg, I3 } from '../js/linalg.js';
 
 const skript = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
 const K = '#336699';
@@ -221,7 +221,14 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       const info = buildPointGroup(p.gruppe);
       assert.ok(info.axes.some((a) => a.symbol === p.achse && info.mirrors.filter((m) => Math.abs(dot(m, a.dir)) < 1e-9).length >= 2), q.id);
     } else if (p.art === 'bahn') {
-      for (const [g, [oben, unten]] of Object.entries(p.gruppen)) {
+      // Stereogramme als Antworten: Antwort i zeigt die i-te Gruppe, die richtige ist p.soll
+      // (Gruppen als Liste von Paaren, wenn die Reihenfolge zählt: Objektschlüssel wie '4' sortiert JS um)
+      const paare = Array.isArray(p.gruppen) ? p.gruppen : Object.entries(p.gruppen);
+      if (q.typ === 'text-bild') {
+        assert.deepEqual(q.antworten.map((x) => new URLSearchParams(x.app.slice(1)).get('g')), paare.map(([g]) => g), q.id);
+        assert.equal(paare[q.richtig[0]][0], p.soll, q.id);
+      }
+      for (const [g, [oben, unten]] of paare) {
         const orb = orbit(buildPointGroup(g).ops, P0).map((o) => o.p ?? o);
         assert.deepEqual([orb.filter((x) => x[2] > 0).length, orb.filter((x) => x[2] < 0).length], [oben, unten], `${q.id}: ${g}`);
       }
@@ -334,6 +341,75 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       const [a, b] = p.rhos.map((r) => phiRho(ausPhiRho(p.phi, r)).b);
       assert.ok(Math.abs(a.x - b.x) < 1e-9 && Math.abs(a.y - b.y) < 1e-9 && a.upper !== b.upper, q.id);
       assert.ok(a.x > SC && Math.abs(a.y - SC) < 1e-9, `${q.id}: φ = 0° liegt rechts`);
+    } else if (p.art === 'flaechen') {
+      // Flächenzahl = Ordnung / Zahl der Operationen, die den Pol festhalten; allgemein: keine ausser der Identität
+      const info = buildPointGroup(p.gruppe);
+      const pol = poleOfHKL(p.system, p.hkl);
+      const st = stabilizer(info.ops, pol).length;
+      assert.equal(info.ops.length / st, p.anzahl, `${q.id}: Flächenzahl`);
+      assert.equal(st === 1, p.allgemein, `${q.id}: allgemein/speziell`);
+      if (p.aufAchse === false) {
+        assert.ok(!info.axes.some((a) => parallelF(a.dir, pol)), `${q.id}: Pol auf einer Achse`);
+        assert.ok(info.mirrors.some((m) => Math.abs(dot(m, pol)) < 1e-9), `${q.id}: Pol auf keiner Spiegelebene`);
+      }
+      const zahl0 = text(q.antworten[q.richtig[0]]).match(/\d+(?= Flächen|$| \()/);
+      if (zahl0) assert.equal(Number(zahl0[0]), p.anzahl, `${q.id}: Zahl in der richtigen Antwort`);
+      const t0 = text(q.antworten[q.richtig[0]]);
+      if (/allgemein|speziell/i.test(t0)) assert.equal(/allgemein/i.test(t0), p.allgemein, `${q.id}: ${t0}`);
+    } else if (p.art === 'ordnungen') {
+      const soll = p.gruppen.map((g, i) => (buildPointGroup(g).ops.length === p.anzahl ? i : -1)).filter((i) => i >= 0);
+      assert.deepEqual(q.richtig, soll, q.id);
+      p.gruppen.forEach((g, i) => assert.equal(text(q.antworten[i]), text(hmHTML(groupById(g).hm)), q.id));
+    } else if (p.art === 'drehung') {
+      // Drehung um die Achse: Der Winkel des Pols zur Achse bleibt gleich (Kleinkreis), er ist nicht 90°
+      const a = norm(p.achse), v = norm(p.pol);
+      const w0 = winkel(a, v);
+      for (const t of [30, 77, 150, 260]) {
+        const c = Math.cos((t * Math.PI) / 180), sn = Math.sin((t * Math.PI) / 180);
+        const axv = cross(a, v), ad = dot(a, v);
+        const r = [0, 1, 2].map((k) => v[k] * c + axv[k] * sn + a[k] * ad * (1 - c));
+        assert.ok(Math.abs(winkel(a, r) - w0) < 1e-9, q.id);
+      }
+      assert.ok(Math.abs(w0 - 90) > 1, `${q.id}: Grosskreis`);
+      assert.ok(text(q.erklaerung).includes(`${w0.toFixed(2).replace('.', ',')}°`), `${q.id}: ${w0}`);
+    } else if (p.art === 'bahnStellen') {
+      const orb = orbit(buildPointGroup(p.gruppe).ops, P0).map((o) => o.p ?? o);
+      const stellen = new Set(orb.map((x) => { const b = project(x); return `${b.x.toFixed(6)},${b.y.toFixed(6)}`; }));
+      assert.deepEqual([orb.filter((x) => x[2] > 0).length, orb.filter((x) => x[2] < 0).length, stellen.size], [p.oben, p.unten, p.stellen], q.id);
+      assert.ok(text(q.antworten[q.richtig[0]]).startsWith(['', 'Eine', 'Zwei', 'Drei', 'Vier', 'Fünf', 'Sechs'][p.stellen]), q.id);
+    } else if (p.art === 'zentrum') {
+      // Drehung um 180° und Spiegelung senkrecht dazu ergeben die Inversion
+      const op = (g) => buildPointGroup(g).ops.find((m) => !matEq(m, I3()));
+      assert.ok(matEq(mul(op(p.spiegel), op(p.achse)), neg(I3())), q.id);
+    } else if (p.art === 'vollSymbol' || p.art === 'kurzSymbol') {
+      const g = groupById(p.gruppe);
+      const t = (h) => text(h.replace(/<span class="ov">/g, '‾')).replace(/\s+/g, '');
+      const soll = (p.art === 'vollSymbol' ? g.full : g.hm).replace(/-(\d)/g, '‾$1').replace(/\s+/g, '');
+      q.antworten.forEach((a, i) => assert.equal(t(a) === soll, q.richtig.includes(i), `${q.id}: ${t(a)} gegen ${soll}`));
+    } else if (p.art === 'elemente') {
+      const info = buildPointGroup(p.gruppe);
+      const soll = p.faelle.map(([art, sym, d], i) => {
+        const v = norm(d);
+        const da = art === 'achse' ? info.axes.some((a) => a.symbol === sym && parallelF(a.dir, v)) : info.mirrors.some((m) => parallelF(m, v));
+        return da ? i : -1;
+      }).filter((i) => i >= 0);
+      assert.deepEqual(q.richtig, soll, q.id);
+    } else if (p.art === 'hexFamilieMehr') {
+      const c = symmetryDirections(buildPointGroup(p.gruppe))[p.position - 1];
+      q.antworten.forEach((a, i) => assert.equal(c.dirs.some((d) => parallelF(d, hex(idx(a)))), q.richtig.includes(i), `${q.id}: ${text(a)}`));
+    } else if (p.art === 'wachstum') {
+      // Würfel {100} im Abstand d₁, Oktaeder {111} im Abstand d₂: Oktaederflächen gibt es, solange d₂/d₁ < √3,
+      // Würfelflächen, solange d₂/d₁ > 1/√3 (Ecke (d₁, d₁, d₁) bzw. Spitze √3·d₂ auf der Achse)
+      const [d1, d2] = p.abstand, [v1, v2] = p.geschwindigkeit;
+      const r = (t) => (d2 + v2 * t) / (d1 + v1 * t);
+      assert.ok(r(0) > 1 / Math.sqrt(3) && r(0) < Math.sqrt(3), `${q.id}: anfangs beide Formen`);
+      assert.ok(v2 / v1 > Math.sqrt(3), `${q.id}: Oktaederflächen verschwinden nicht`);
+      const t = (Math.sqrt(3) * d1 - d2) / (v2 - Math.sqrt(3) * v1);
+      assert.ok(t > 0 && Math.abs(r(t) - Math.sqrt(3)) < 1e-9, q.id);
+      assert.match(text(q.antworten[q.richtig[0]]), /verschwinden/, q.id);
+    } else if (p.art === 'hexWinkel') {
+      const w = winkel(hex(p.a), hex(p.b));
+      q.antworten.forEach((a, i) => assert.equal(Math.abs(zahl(text(a).replace('°', '')) - w) < 0.005, q.richtig.includes(i), `${q.id}: ${text(a)} (soll ${w})`));
     } else assert.fail(`${q.id}: unbekannte Prüfung ${p.art}`);
   }
   assert.ok(n >= 15);

@@ -24,7 +24,10 @@ body { font-size: 16px; line-height: 1.55; }
 .card > h3 { margin: 0 0 10px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
 .hint { font-size: 0.86rem; color: var(--muted); margin: 8px 0 0; }
 .vorschau { border-left: 4px solid var(--ax3); }
-.vorschau p, .leer p { margin: 0; }
+.vorschau .hint { margin-top: 6px; }
+.schalter { display: flex; gap: 10px; align-items: center; font-weight: 600; cursor: pointer; }
+.schalter input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+.leer p { margin: 0; }
 fieldset.card { margin-inline: 0; min-width: 0; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -145,8 +148,8 @@ footer a { color: inherit; }
     <h2 id="start-title">Quiz</h2>
     <p class="lead">Prüfen Sie, ob Sie die Lernziele des Skripts erreichen. Nach jeder Antwort sehen Sie eine Erklärung und den passenden Abschnitt im Skript.</p>
     <div class="card vorschau" id="vorschau" hidden>
-      <h3>Vorschau</h3>
-      <p class="hint">Diese Ansicht zeigt auch Fragen, die noch nicht geprüft sind (gekennzeichnet mit „Entwurf“).</p>
+      <label class="schalter"><input type="checkbox" id="entwurf-schalter"> Auch ungeprüfte Fragen zeigen</label>
+      <p class="hint" id="entwurf-hinweis"></p>
     </div>
     <div class="card leer" id="leer" hidden>
       <h3>Noch keine Fragen</h3>

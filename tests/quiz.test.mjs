@@ -169,9 +169,9 @@ test('Fragen: Lernziel steht wörtlich in Lernzielen oder Zusammenfassung des Ka
 
 test('Fragen: Skript-Anker im richtigen Kapitel; Stufe 1 und 2 verweisen nicht auf Vertiefungen', () => {
   // Probe der Erkennung
-  assert.deepEqual(abschnitt('hkil'), { kapitel: 7, vertiefung: true });
-  assert.deepEqual(abschnitt('multiplizitaet'), { kapitel: 8, vertiefung: true });
-  assert.deepEqual(abschnitt('zonengleichung'), { kapitel: 4, vertiefung: false });
+  assert.deepEqual(abschnitt('hkil'), { kapitel: 9, vertiefung: true });
+  assert.deepEqual(abschnitt('multiplizitaet'), { kapitel: 10, vertiefung: true });
+  assert.deepEqual(abschnitt('zonengleichung'), { kapitel: 7, vertiefung: false });
   for (const k of KAPITEL) assert.ok(skript.includes(`<section id="${k.anker}"`), k.anker);
   const alle = [...BANK, ...GERUEST_ALLE.map((id) => ({ id: `gen:${id}`, ...GERUEST.make(id), kapitel: GERUEST.kapitel, stufe: GERUEST_STUFE1.includes(id) ? 1 : 2 }))];
   for (const q of alle) {
@@ -695,9 +695,9 @@ test('Generatoren mit Bildantworten: gültige Fragen, richtige Antwort passt zum
 test('Ablauf: Stufe, Kapitel, Anzahl und Höchstanteil eines Generators', () => {
   const kands = kandidaten(BANK, GENERATOREN, { entwurf: true });
   const n = zaehlen(kands);
-  assert.ok(n[1][1] >= 8 && n[4][1] >= 8);
-  const gen31 = GENERATOREN.filter((g) => g.kapitel === 3 && g.stufen.includes(1)).reduce((m, g) => m + g.params(1).length, 0);
-  assert.equal(n[3][1], gen31 + BANK.filter((q) => q.kapitel === 3 && q.stufe === 1).length);
+  assert.ok(n[2][1] >= 8 && n[7][1] >= 8);
+  const gen31 = GENERATOREN.filter((g) => g.kapitel === 4 && g.stufen.includes(1)).reduce((m, g) => m + g.params(1).length, 0);
+  assert.equal(n[4][1], gen31 + BANK.filter((q) => q.kapitel === 4 && q.stufe === 1).length);
   assert.ok(gen31 > GERUEST_STUFE1.length);
   for (let seed = 1; seed <= 30; seed++) {
     const r = rng(seed);
@@ -707,13 +707,13 @@ test('Ablauf: Stufe, Kapitel, Anzahl und Höchstanteil eines Generators', () => 
     assert.ok(z.every((k) => k.stufe === 1));
     for (const g of GENERATOREN) assert.ok(z.filter((k) => k.gen === g).length <= Math.round(10 * GEN_ANTEIL), g.id);
     // alle erzeugten Fragen zusammen höchstens die Hälfte, auch in Kapiteln mit vielen erzeugten Fragen
-    for (const [kap, st, n] of [[null, 1, 10], [[3], 2, 10], [[2], 2, 5], [[8], 3, 20], [[2, 3], 1, 20]]) {
+    for (const [kap, st, n] of [[null, 1, 10], [[4], 2, 10], [[6], 2, 5], [[10], 3, 20], [[6, 4], 1, 20]]) {
       const zz = ziehen(kands, { stufe: st, kapitel: kap, n, rand: r });
       const g = zz.filter((k) => k.gen).length;
       assert.ok(g <= Math.floor(n * GEN_GESAMT) && g <= zz.length * GEN_GESAMT, `Kap. ${kap}, Stufe ${st}, n = ${n}: ${g} von ${zz.length}`);
     }
-    const z4 = ziehen(kands, { stufe: 1, kapitel: [4], n: 20, rand: r });
-    assert.ok(z4.length === n[4][1] && z4.every((k) => k.kapitel === 4));
+    const z7 = ziehen(kands, { stufe: 1, kapitel: [7], n: 20, rand: r });
+    assert.ok(z7.length === n[7][1] && z7.every((k) => k.kapitel === 7));
   }
   // ohne Freigabe (status 'geprüft') erscheint nichts
   assert.equal(kandidaten(BANK.map((q) => ({ ...q, status: 'entwurf' })), [], {}).length, 0);
@@ -743,13 +743,13 @@ test('Fortschritt: vermerken, Stand je Kapitel, unbrauchbarer Speicher', () => {
   vermerken(p, 'zon-1-06', true);
   vermerken(p, 'zon-1-06', false);
   assert.deepEqual({ n: p.fragen['zon-1-06'].n, r: p.fragen['zon-1-06'].r, letzte: p.fragen['zon-1-06'].letzte }, { n: 2, r: 1, letzte: 0 });
-  assert.equal(stand(kands, p)[4].richtig, 1);
+  assert.equal(stand(kands, p)[7].richtig, 1);
   for (const t of [null, '', 'x', '{"v":2}', '[]']) assert.deepEqual(fortschrittAus(t), leererFortschritt());
   assert.deepEqual(fortschrittAus(JSON.stringify(p)), p);
   // zuletzt falsch beantwortete Fragen kommen vor richtig beantworteten an die Reihe
   const p2 = leererFortschritt();
-  for (const q of BANK.filter((x) => x.kapitel === 4)) vermerken(p2, q.id, q.id !== 'zon-1-07');
-  const z = ziehen(kands, { stufe: 1, kapitel: [4], n: 1, progress: p2, rand: rng(9) });
+  for (const q of BANK.filter((x) => x.kapitel === 7)) vermerken(p2, q.id, q.id !== 'zon-1-07');
+  const z = ziehen(kands, { stufe: 1, kapitel: [7], n: 1, progress: p2, rand: rng(9) });
   assert.equal(z[0].key, 'zon-1-07');
 });
 
@@ -766,17 +766,23 @@ test('Moodle-Export: Kategorien, Bruchteile, eingebettete Bilder, nur geprüfte 
     for (const m of q.matchAll(/@@PLUGINFILE@@\/([\w.]+)/g)) assert.ok(q.includes(`<file name="${m[1]}"`), `Datei ${m[1]} fehlt`);
     assert.ok(!q.includes('class="ov"'), 'Querstrich nicht umgesetzt');
   }
-  assert.ok(xml.includes('$course$/top/Stereographische Projektion/Kap. 4 Zonen/Stufe 1'));
+  assert.ok(xml.includes('$course$/top/Stereographische Projektion/Kap. 7 Zonen/Stufe 1'));
   // wohlgeformt genug: Tags ausgeglichen
   for (const t of ['question', 'answer', 'text', 'file']) assert.equal((xml.match(new RegExp(`<${t}[ >]`, 'g')) || []).length, (xml.match(new RegExp(`</${t}>`, 'g')) || []).length, t);
 });
 
 test('Skript: „Lernziele prüfen“ am Ende jedes Kapitels führt ins Quiz mit Kapitel und Stufe', () => {
   const n = zaehlen(kandidaten(BANK, GENERATOREN, { entwurf: true }));
-  const links = [...skript.matchAll(/<p class="quizlink">([\s\S]*?)<\/p>/g)].map((m) => m[1]);
-  assert.equal(links.length, KAPITEL.length);
-  links.forEach((l, i) => {
-    const nr = KAPITEL[i].nr;
+  // Kapitel ohne Fragen (z. B. ein neues Kapitel) haben noch keinen Link
+  KAPITEL.forEach((kap, i) => {
+    const nr = kap.nr;
+    const a = skript.indexOf(`<section id="${kap.anker}"`);
+    const b = i + 1 < KAPITEL.length ? skript.indexOf(`<section id="${KAPITEL[i + 1].anker}"`) : skript.length;
+    const ls = [...skript.slice(a, b).matchAll(/<p class="quizlink">([\s\S]*?)<\/p>/g)].map((m) => m[1]);
+    const hatFragen = [1, 2, 3].some((st) => n[nr]?.[st]);
+    assert.equal(ls.length, hatFragen ? 1 : 0, `Kap. ${nr}: ${ls.length} Links`);
+    if (!hatFragen) return;
+    const l = ls[0];
     const ziele = [...l.matchAll(/href="quiz\.html\?kap=(\d+)&amp;stufe=(\d)"/g)].map((m) => [Number(m[1]), Number(m[2])]);
     assert.ok(ziele.length >= 1, `Kap. ${nr}`);
     for (const [k, st] of ziele) {

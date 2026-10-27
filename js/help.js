@@ -6,7 +6,7 @@ export const TIPS = {
   // Kopfzeile
   'tab-pg': 'Symmetriegerüste der 32 Punktgruppen und wie ihre Operationen einen Pol vervielfältigen.',
   'tab-poly': 'Kristallformen und Beispielkristalle: Flächen, ihre Pole im Stereogramm und der Kristall in 3D.',
-  'skript-link': 'Skript zur Vorlesung: Projektion, Kristallformen, Symmetriegerüste, Zonen, Tracht und Habitus, Blickrichtungen, hexagonale Achsen.',
+  'skript-link': 'Skript zur Vorlesung: Indizes, Projektion, Symmetrie und Punktgruppen, Symmetriegerüste, Blickrichtungen, Kristallformen, Zonen, Tracht und Habitus, trigonale und hexagonale Kristalle.',
   'copy-link': 'Link auf genau diese Ansicht in die Zwischenablage kopieren, z. B. für Folien.',
   'help-open': 'Erste Schritte: kurze Einführung in die App.',
   // Punktgruppen

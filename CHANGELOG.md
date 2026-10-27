@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Skript, neue Kapitelfolge:** Das Skript beginnt mit den Indizes und führt die Symmetrie ein, bevor Formen und HM-Symbole sie brauchen: 1 Kristallflächen und Indizes, 2 Die stereographische Projektion, 3 Symmetrieoperationen und Punktgruppen (neu), 4 Symmetriegerüste, 5 Blickrichtungen, 6 Kristallformen, 7 Zonen, 8 Tracht und Habitus, 9 Trigonale und hexagonale Kristalle, als Vertiefungen 10 Lagen und 11 Verzerrungen. „Aufstellung und Indizes“ und das hexagonale Achsensystem stehen jetzt in Kapitel 1; Kapitel 9 erklärt das Rhomboeder als entlang [111] gestreckten Würfel (3̄*m*, hexagonale Achsen) im Haupttext, Kapitel 11 verweist dorthin. Anker und Links aus App und Quiz bleiben gültig; Kapitel- und Abbildungsnummern, Quiz-Kapitel und Links „Lernziele prüfen“ sind angepasst.
+
 ## [1.8.1] - 2026-10-26
 
 Quiz-Startseite übersichtlicher: Kapitel mit Namen, Schalter für ungeprüfte Fragen unter der Auswahl, Stand passend zur gewählten Stufe.

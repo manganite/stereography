@@ -847,7 +847,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle, site, distinct) {
 
 /** Kleiner Link ins Skript (Abschnitt anchor), z. B. hinter einer Zeile der Infobox. */
 function skriptLink(anchor) {
-  return ` <a class="to-skript" href="skript.html#${anchor}" title="Mehr dazu im Skript, Kapitel 8">Skript →</a>`;
+  return ` <a class="to-skript" href="skript.html#${anchor}" title="Mehr dazu im Skript, Kapitel 10">Skript →</a>`;
 }
 
 function poleAngles(n) {

@@ -15,9 +15,9 @@
 const o = (d) => `<span class="ov">${d}</span>`;
 
 export const BANK = [
-  // ================================================================ Kapitel 1: Die stereographische Projektion
+  // ================================================================ Kapitel 2: Die stereographische Projektion
   {
-    id: 'proj-1-01', stufe: 1, kapitel: 1, typ: 'einfach',
+    id: 'proj-1-01', stufe: 1, kapitel: 2, typ: 'einfach',
     lernziel: 'den Flächenpol einer Kristallfläche konstruieren und in die Projektionsebene projizieren',
     frage: 'Was ist der <b>Flächenpol</b> einer Kristallfläche?',
     antworten: [
@@ -39,7 +39,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-1-02', stufe: 1, kapitel: 1, typ: 'einfach',
+    id: 'proj-1-02', stufe: 1, kapitel: 2, typ: 'einfach',
     lernziel: 'Jede Fläche wird durch ihren Flächenpol auf der Umkugel vertreten. Er hängt nur von der Orientierung der Fläche ab.',
     frage: 'Zwei gleich aufgestellte Kristalle derselben Art: Beim einen ist die Fläche (111) gross und liegt nahe am Mittelpunkt, beim anderen ist sie klein und liegt weiter aussen, parallel zur ersten. Wie unterscheiden sich die Flächenpole von (111)?',
     antworten: [
@@ -61,7 +61,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-1-03', stufe: 1, kapitel: 1, typ: 'einfach',
+    id: 'proj-1-03', stufe: 1, kapitel: 2, typ: 'einfach',
     lernziel: 'den Flächenpol einer Kristallfläche konstruieren und in die Projektionsebene projizieren',
     frage: 'Ein Flächenpol liegt auf der <b>Nordhalbkugel</b> der Umkugel. Wie entsteht sein Bildpunkt im Stereogramm, und wie wird er gezeichnet?',
     antworten: [
@@ -83,7 +83,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-1-04', stufe: 1, kapitel: 1, typ: 'bild-text',
+    id: 'proj-1-04', stufe: 1, kapitel: 2, typ: 'bild-text',
     lernziel: 'Pole der oberen und der unteren Halbkugel unterscheiden',
     frage: 'Im Stereogramm des Galenits erscheinen einige Pole als <b>Punkt in einem Kreis</b>. Was bedeutet das?',
     bild: '#m=form&sys=kubisch&bsp=galenit', bildAlt: 'Stereogramm des Galenits mit Würfel, Oktaeder und Rhombendodekaeder',
@@ -106,7 +106,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-1-05', stufe: 1, kapitel: 1, typ: 'einfach',
+    id: 'proj-1-05', stufe: 1, kapitel: 2, typ: 'einfach',
     lernziel: 'die Lage eines Pols mit den Winkeln φ und ρ angeben',
     frage: 'Wo liegt im Stereogramm der Pol einer Fläche, die <b>senkrecht</b> auf der Projektionsebene steht, z. B. einer Prismenfläche, wenn die Prismenachse in Projektionsrichtung zeigt?',
     antworten: [
@@ -128,7 +128,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-1-06', stufe: 1, kapitel: 1, typ: 'text-bild',
+    id: 'proj-1-06', stufe: 1, kapitel: 2, typ: 'text-bild',
     lernziel: 'die Lage eines Pols mit den Winkeln φ und ρ angeben',
     frage: 'Welches Stereogramm zeigt einen Pol mit <b>φ = 90°</b> und <b>ρ = −30°</b>?',
     antworten: [
@@ -151,7 +151,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-1-07', stufe: 1, kapitel: 1, typ: 'mehrfach',
+    id: 'proj-1-07', stufe: 1, kapitel: 2, typ: 'mehrfach',
     lernziel: 'Die Projektion ist kreistreu und winkeltreu, aber nicht längentreu.',
     frage: 'Welche Aussagen über die stereographische Projektion treffen zu?',
     antworten: [
@@ -173,7 +173,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-1-08', stufe: 1, kapitel: 1, typ: 'einfach',
+    id: 'proj-1-08', stufe: 1, kapitel: 2, typ: 'einfach',
     lernziel: 'Die Projektion ist kreistreu und winkeltreu, aber nicht längentreu.',
     frage: 'Wie erscheint die obere Hälfte eines <b>geneigten Grosskreises</b> im Stereogramm, also eines Grosskreises, der weder durch Nord- und Südpol geht noch der Äquator ist?',
     antworten: [
@@ -194,9 +194,9 @@ export const BANK = [
     quelle: 'Folie 82; Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 46; Skript Kap. 1 (Kreistreue)',
     status: 'geprüft',
   },
-  // ---------------------------------------------------------------- Kapitel 1, Stufe 2
+  // ---------------------------------------------------------------- Kapitel 2, Stufe 2
   {
-    id: 'proj-2-01', stufe: 2, kapitel: 1, typ: 'einfach',
+    id: 'proj-2-01', stufe: 2, kapitel: 2, typ: 'einfach',
     lernziel: 'die Lage eines Pols mit den Winkeln φ und ρ angeben',
     frage: 'Galenit, Projektion ∥ [001] wie im Skript. Welche Winkelkoordinaten hat der Pol der Fläche <b>(101)</b>?',
     antworten: ['φ = 90°, ρ = 45°', 'φ = 0°, ρ = 45°', 'φ = 90°, ρ = 54,74°', 'φ = 45°, ρ = 45°'],
@@ -214,7 +214,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-2-02', stufe: 2, kapitel: 1, typ: 'text-bild',
+    id: 'proj-2-02', stufe: 2, kapitel: 2, typ: 'text-bild',
     lernziel: 'die Lage eines Pols mit den Winkeln φ und ρ angeben',
     frage: `Galenit, Projektion ∥ [001]. Welches Stereogramm zeigt den Pol der Fläche <b>(1${o(1)}${o(1)})</b>?`,
     antworten: [
@@ -237,7 +237,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-2-03', stufe: 2, kapitel: 1, typ: 'einfach',
+    id: 'proj-2-03', stufe: 2, kapitel: 2, typ: 'einfach',
     lernziel: 'Die Projektion ist kreistreu und winkeltreu, aber nicht längentreu.',
     frage: 'Der Bildpunkt eines Pols der oberen Halbkugel liegt im Stereogramm genau auf halbem Weg zwischen Mittelpunkt und Grundkreis. Welche Poldistanz ρ hat der Pol?',
     antworten: ['Etwa 53°, also mehr als 45°', 'Genau 45°, die Hälfte von 90°', 'Etwa 37°, also weniger als 45°', 'Das hängt vom Azimut φ ab'],
@@ -255,7 +255,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-2-04', stufe: 2, kapitel: 1, typ: 'einfach',
+    id: 'proj-2-04', stufe: 2, kapitel: 2, typ: 'einfach',
     lernziel: 'die Lage eines Pols mit den Winkeln φ und ρ angeben',
     frage: 'Der Pol einer Fläche liegt bei φ = 30°, ρ = 40°. Welche Winkelkoordinaten hat der Pol ihrer <b>parallelen Gegenfläche</b>?',
     antworten: ['φ = 210°, ρ = −40°', 'φ = 210°, ρ = 40°', 'φ = 30°, ρ = −40°', 'φ = 330°, ρ = −40°'],
@@ -273,7 +273,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-2-05', stufe: 2, kapitel: 1, typ: 'mehrfach',
+    id: 'proj-2-05', stufe: 2, kapitel: 2, typ: 'mehrfach',
     lernziel: 'Pole der oberen und der unteren Halbkugel unterscheiden',
     frage: 'Galenit, Projektion ∥ [001]. Welche dieser Flächen erscheinen im Stereogramm als <b>Punkt im Kreis</b>, haben also einen zweiten Pol an derselben Stelle?',
     antworten: ['(111)', '(101)', '(001)', '(100)', '(110)'],
@@ -292,7 +292,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-2-06', stufe: 2, kapitel: 1, typ: 'einfach',
+    id: 'proj-2-06', stufe: 2, kapitel: 2, typ: 'einfach',
     lernziel: 'Die Lage eines Pols beschreiben der Azimut φ und die Poldistanz ρ.',
     frage: 'Am Galenit (Projektion ∥ [001]) liegt der Pol von (111) bei φ = 45°, ρ = 54,74°, der Pol von (100) bei φ = 90°, ρ = 90°. Welchen Winkel bilden die beiden Flächennormalen?',
     antworten: ['54,74°', '45°', '35,26°', '90°'],
@@ -310,7 +310,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'proj-2-07', stufe: 2, kapitel: 1, typ: 'einfach',
+    id: 'proj-2-07', stufe: 2, kapitel: 2, typ: 'einfach',
     lernziel: 'Pole der oberen Halbkugel werden zum Südpol hin auf die Äquatorebene projiziert (●), Pole der unteren Halbkugel zum Nordpol hin (○).',
     frage: 'Ein Pol wandert auf der Umkugel entlang des Längenkreises φ = 0° vom Nordpol über den Äquator bis zum Südpol. Wie bewegt sich sein Bildpunkt im Stereogramm?',
     antworten: [
@@ -333,9 +333,9 @@ export const BANK = [
     status: 'geprüft',
   },
 
-  // ---------------------------------------------------------------- Kapitel 1, Stufe 3 (Vertiefungen)
+  // ---------------------------------------------------------------- Kapitel 2, Stufe 3 (Vertiefungen)
   {
-    id: 'proj-3-01', stufe: 3, kapitel: 1, typ: 'einfach',
+    id: 'proj-3-01', stufe: 3, kapitel: 2, typ: 'einfach',
     lernziel: 'Normalenwinkel und Flächenwinkel unterscheiden',
     frage: 'Zwei benachbarte Oktaederflächen bilden an ihrer gemeinsamen Kante den Flächenwinkel 109,47°. Welchen Winkel bilden ihre Pole?',
     antworten: ['70,53°', '109,47°', '54,74°', '90°'],
@@ -353,7 +353,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'proj-3-02', stufe: 3, kapitel: 1, typ: 'einfach',
+    id: 'proj-3-02', stufe: 3, kapitel: 2, typ: 'einfach',
     lernziel: 'begründen, warum Winkel im Stereogramm nur auf Grosskreisen abgelesen werden dürfen',
     frage: 'Warum darf man den Winkel zwischen zwei Polen nicht auf einem Kleinkreis durch beide Pole ablesen?',
     antworten: [
@@ -375,7 +375,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'proj-3-03', stufe: 3, kapitel: 1, typ: 'einfach',
+    id: 'proj-3-03', stufe: 3, kapitel: 2, typ: 'einfach',
     lernziel: 'Normalenwinkel und Flächenwinkel unterscheiden',
     frage: 'Was zeigt ein zweikreisiges Reflexionsgoniometer bei justiertem Kristall auf seinen beiden Kreisen direkt an?',
     antworten: [
@@ -397,9 +397,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ================================================================ Kapitel 4: Zonen
+  // ================================================================ Kapitel 7: Zonen
   {
-    id: 'zon-1-01', stufe: 1, kapitel: 4, typ: 'einfach',
+    id: 'zon-1-01', stufe: 1, kapitel: 7, typ: 'einfach',
     lernziel: 'Flächen mit parallelen Kanten bilden eine Zone; die Kantenrichtung ist die Zonenachse [uvw].',
     frage: 'Was versteht man unter einer <b>Zone</b>?',
     antworten: [
@@ -421,7 +421,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-1-02', stufe: 1, kapitel: 4, typ: 'einfach',
+    id: 'zon-1-02', stufe: 1, kapitel: 7, typ: 'einfach',
     lernziel: 'Flächen mit parallelen Kanten bilden eine Zone; die Kantenrichtung ist die Zonenachse [uvw].',
     frage: 'Wie liegen die <b>Normalen</b> aller Flächen einer Zone zur Zonenachse?',
     antworten: [
@@ -443,7 +443,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-1-03', stufe: 1, kapitel: 4, typ: 'einfach',
+    id: 'zon-1-03', stufe: 1, kapitel: 7, typ: 'einfach',
     lernziel: 'Die Pole einer Zone liegen auf einem Grosskreis, dem Zonenkreis.',
     frage: 'Wo liegen im Stereogramm die Pole aller Flächen einer Zone?',
     antworten: [
@@ -465,7 +465,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-1-04', stufe: 1, kapitel: 4, typ: 'bild-text',
+    id: 'zon-1-04', stufe: 1, kapitel: 7, typ: 'bild-text',
     lernziel: 'die Zonenachse zweier Flächen bestimmen',
     frage: 'Die umrandeten Pole des Galenits liegen auf einem Zonenkreis. Welche Zonenachse hat diese Zone?',
     bild: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=${-1},0,1`, bildAlt: 'Stereogramm des Galenits mit einer hervorgehobenen Zone',
@@ -485,7 +485,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-1-05', stufe: 1, kapitel: 4, typ: 'einfach',
+    id: 'zon-1-05', stufe: 1, kapitel: 7, typ: 'einfach',
     lernziel: 'mit der Zonengleichung prüfen, ob eine Fläche zu einer Zone gehört',
     frage: `Gehört die Fläche (112) zur Zone [1${o(1)}0]?`,
     antworten: [
@@ -508,7 +508,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-1-06', stufe: 1, kapitel: 4, typ: 'einfach',
+    id: 'zon-1-06', stufe: 1, kapitel: 7, typ: 'einfach',
     lernziel: 'die Zonenachse zweier Flächen bestimmen',
     frage: 'Welche Zonenachse haben die Flächen (100) und (011)?',
     antworten: [`[0${o(1)}1]`, '[011]', '[111]', '[100]'],
@@ -526,7 +526,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-1-07', stufe: 1, kapitel: 4, typ: 'mehrfach',
+    id: 'zon-1-07', stufe: 1, kapitel: 7, typ: 'mehrfach',
     lernziel: 'mit der Zonengleichung prüfen, ob eine Fläche zu einer Zone gehört',
     frage: 'Zu welchen Zonen gehört die Fläche (100)?',
     antworten: ['[001]', `[0${o(1)}1]`, '[100]', '[110]'],
@@ -544,7 +544,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-1-08', stufe: 1, kapitel: 4, typ: 'einfach',
+    id: 'zon-1-08', stufe: 1, kapitel: 7, typ: 'einfach',
     lernziel: 'die Zonenachse zweier Flächen bestimmen',
     frage: 'Die Zonenachse zweier Flächen ist das Kreuzprodukt [uvw] = (h₁k₁l₁) × (h₂k₂l₂). Was ergibt sich, wenn man die beiden Flächen vertauscht?',
     antworten: [
@@ -565,9 +565,9 @@ export const BANK = [
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 3.5.1.2, S. 21 (mit Fussnote 5)',
     status: 'geprüft',
   },
-  // ---------------------------------------------------------------- Kapitel 4, Stufe 2
+  // ---------------------------------------------------------------- Kapitel 7, Stufe 2
   {
-    id: 'zon-2-01', stufe: 2, kapitel: 4, typ: 'einfach',
+    id: 'zon-2-01', stufe: 2, kapitel: 7, typ: 'einfach',
     lernziel: 'die Zonenachse zweier Flächen bestimmen',
     frage: `Welche Zonenachse haben die Flächen (110) und (011), und gehört die Fläche (10${o(1)}) zu dieser Zone?`,
     antworten: [
@@ -590,7 +590,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-2-02', stufe: 2, kapitel: 4, typ: 'einfach',
+    id: 'zon-2-02', stufe: 2, kapitel: 7, typ: 'einfach',
     lernziel: 'eine Fläche als Schnittpunkt zweier Zonenkreise indizieren',
     frage: `Am Galenit schneiden sich die Zonenkreise der Zonen [101] und [0${o(1)}1]. Welche Flächen liegen in den Schnittpunkten?`,
     antworten: [
@@ -613,7 +613,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-2-03', stufe: 2, kapitel: 4, typ: 'mehrfach',
+    id: 'zon-2-03', stufe: 2, kapitel: 7, typ: 'mehrfach',
     lernziel: 'Nur im kubischen System fallen Zonenpol [uvw] und Flächenpol (uvw) für alle uvw zusammen; sonst nur in Sonderfällen wie [001] und (001).',
     frage: 'In welchen Fällen liegt der Zonenpol [uvw] an derselben Stelle wie der Flächenpol (uvw)? Beim tetragonalen Kristall ist c ≠ a, beim orthorhombischen a ≠ b ≠ c.',
     antworten: [
@@ -638,7 +638,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-2-04', stufe: 2, kapitel: 4, typ: 'einfach',
+    id: 'zon-2-04', stufe: 2, kapitel: 7, typ: 'einfach',
     lernziel: 'mit der Zonengleichung prüfen, ob eine Fläche zu einer Zone gehört',
     frage: `Ein tetragonaler Kristall mit c ≠ a. Gehört die Fläche (101) zur Zone [${o(1)}01]?`,
     antworten: [
@@ -661,7 +661,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-2-05', stufe: 2, kapitel: 4, typ: 'einfach',
+    id: 'zon-2-05', stufe: 2, kapitel: 7, typ: 'einfach',
     lernziel: 'mit der Zonengleichung prüfen, ob eine Fläche zu einer Zone gehört',
     frage: 'Abb. 4.4 des Skripts zeigt am Galenit die 3 Zonen ⟨100⟩ und die 6 Zonen ⟨110⟩. Auf wie vielen dieser 9 Zonenkreise liegt der Pol von (110)?',
     antworten: ['2', '4', '3', '6'],
@@ -679,7 +679,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-2-06', stufe: 2, kapitel: 4, typ: 'einfach',
+    id: 'zon-2-06', stufe: 2, kapitel: 7, typ: 'einfach',
     lernziel: 'die Zonenachse zweier Flächen bestimmen',
     frage: `Welche Zonenachse haben die Flächen (1${o(2)}1) und (011)?`,
     antworten: [`[${o(3)}${o(1)}1]`, `[${o(3)}11]`, `[3${o(1)}1]`, `[1${o(1)}2]`],
@@ -697,7 +697,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'zon-2-07', stufe: 2, kapitel: 4, typ: 'text-bild',
+    id: 'zon-2-07', stufe: 2, kapitel: 7, typ: 'text-bild',
     lernziel: 'Die Pole einer Zone liegen auf einem Grosskreis, dem Zonenkreis.',
     frage: 'Galenit, Projektion ∥ [001]. Welches Stereogramm zeigt den Zonenkreis der Zone <b>[100]</b>?',
     antworten: [
@@ -720,7 +720,7 @@ export const BANK = [
     pruefung: { art: 'zonenbild', achse: [1, 0, 0] },
     status: 'geprüft',
   },  {
-    id: 'zon-2-08', stufe: 2, kapitel: 4, typ: 'mehrfach',
+    id: 'zon-2-08', stufe: 2, kapitel: 7, typ: 'mehrfach',
     lernziel: 'mit der Zonengleichung prüfen, ob eine Fläche zu einer Zone gehört',
     frage: 'Der Galenit wird so aufgestellt, dass <b>[111]</b> in Projektionsrichtung zeigt. Welche dieser Flächen liegen dann auf dem Grundkreis?',
     antworten: [`(1${o(1)}0)`, `(${o(1)}01)`, '(100)', `(${o(1)}11)`, '(110)'],
@@ -739,9 +739,9 @@ export const BANK = [
     status: 'geprüft',
   },
 
-  // ---------------------------------------------------------------- Kapitel 4, Stufe 3 (Vertiefungen)
+  // ---------------------------------------------------------------- Kapitel 7, Stufe 3 (Vertiefungen)
   {
-    id: 'zon-3-01', stufe: 3, kapitel: 4, typ: 'einfach',
+    id: 'zon-3-01', stufe: 3, kapitel: 7, typ: 'einfach',
     lernziel: 'Zonenkreis und Zonenpol einander zuordnen',
     frage: 'Wie weit ist der Zonenpol einer Zone von jedem Pol auf ihrem Zonenkreis entfernt?',
     antworten: ['90°', '45°', '180°', 'Das hängt von der Zone ab'],
@@ -759,7 +759,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'zon-3-02', stufe: 3, kapitel: 4, typ: 'einfach',
+    id: 'zon-3-02', stufe: 3, kapitel: 7, typ: 'einfach',
     lernziel: 'mit der Komplikationsregel weitere mögliche Flächen einer Zone finden',
     frage: `Die Flächen (100) und (011) gehören zur Zone [0${o(1)}1]. Welche Fläche liefert die Komplikationsregel als weitere mögliche Fläche dieser Zone?`,
     antworten: ['(111)', '(110)', '(101)', '(012)'],
@@ -777,9 +777,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ================================================================ Kapitel 2: Kristallformen im Stereogramm
+  // ================================================================ Kapitel 6: Kristallformen im Stereogramm
   {
-    id: 'form-1-01', stufe: 1, kapitel: 2, typ: 'text-bild',
+    id: 'form-1-01', stufe: 1, kapitel: 6, typ: 'text-bild',
     lernziel: 'das Stereogramm einfacher Kristallformen zeichnen und ein Stereogramm einem Körper zuordnen',
     frage: 'Welches Stereogramm zeigt ein <b>tetragonales Prisma {100} mit Pinakoid {001}</b>, [001] in Projektionsrichtung?',
     antworten: [
@@ -801,7 +801,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'form-1-02', stufe: 1, kapitel: 2, typ: 'bild-text',
+    id: 'form-1-02', stufe: 1, kapitel: 6, typ: 'bild-text',
     lernziel: 'das Stereogramm einfacher Kristallformen zeichnen und ein Stereogramm einem Körper zuordnen',
     frage: 'Welcher Körper gehört zu diesem Stereogramm? Die Projektionsrichtung ist [001].',
     bild: '#m=form&sys=hexagonal&f=6mm:c23&idx=0', bildAlt: 'Stereogramm mit sechs Punkten im gleichen Abstand vom Grundkreis und einem Kreis in der Mitte',
@@ -819,7 +819,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'form-1-03', stufe: 1, kapitel: 2, typ: 'einfach',
+    id: 'form-1-03', stufe: 1, kapitel: 6, typ: 'einfach',
     lernziel: 'Eine Kristallform {hkl} ist die Menge der Flächen, die durch die Symmetrieoperationen auseinander hervorgehen.',
     frage: 'Was ist eine <b>Kristallform</b>?',
     antworten: [
@@ -841,7 +841,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'form-1-04', stufe: 1, kapitel: 2, typ: 'einfach',
+    id: 'form-1-04', stufe: 1, kapitel: 6, typ: 'einfach',
     lernziel: 'Flächen parallel zur Projektionsrichtung haben ihre Pole auf dem Grundkreis, Flächen senkrecht dazu im Mittelpunkt.',
     frage: 'Wie sieht das Stereogramm eines <b>Pinakoids {001}</b> aus, wenn [001] in Projektionsrichtung zeigt?',
     antworten: [
@@ -863,7 +863,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'form-1-05', stufe: 1, kapitel: 2, typ: 'einfach',
+    id: 'form-1-05', stufe: 1, kapitel: 6, typ: 'einfach',
     lernziel: 'allgemeine und spezielle Form unterscheiden',
     frage: 'Die Punktgruppe 4/<i>mmm</i> hat 16 Symmetrieoperationen. Wie viele Flächen hat ihre <b>allgemeine Form</b> {<i>hkl</i>}?',
     antworten: ['16', '8', '48', '4'],
@@ -881,7 +881,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'form-1-06', stufe: 1, kapitel: 2, typ: 'einfach',
+    id: 'form-1-06', stufe: 1, kapitel: 6, typ: 'einfach',
     lernziel: 'allgemeine und spezielle Form unterscheiden',
     frage: 'Woran erkennt man im Stereogramm über dem Symmetriegerüst eine <b>spezielle Form</b>?',
     antworten: [
@@ -903,7 +903,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'form-1-07', stufe: 1, kapitel: 2, typ: 'bild-text',
+    id: 'form-1-07', stufe: 1, kapitel: 6, typ: 'bild-text',
     lernziel: 'allgemeine und spezielle Form unterscheiden',
     frage: 'Das Stereogramm zeigt eine Form der Punktgruppe 4/<i>mmm</i> über ihrem Symmetriegerüst. Ist sie allgemein oder speziell?',
     bild: '#m=form&sys=tetragonal&f=4/mmm:g16&geruest=1&idx=0', bildAlt: 'Sechzehn Pole einer ditetragonalen Dipyramide über dem Symmetriegerüst von 4/mmm',
@@ -927,7 +927,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'form-1-08', stufe: 1, kapitel: 2, typ: 'einfach',
+    id: 'form-1-08', stufe: 1, kapitel: 6, typ: 'einfach',
     lernziel: 'erklären, was sich bei einer anderen Projektionsrichtung am Stereogramm ändert und was gleich bleibt',
     frage: 'Der Galenit wird statt mit [001] mit [111] als Projektionsrichtung dargestellt. Was bleibt dabei gleich?',
     antworten: [
@@ -949,7 +949,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'form-1-09', stufe: 1, kapitel: 2, typ: 'text-bild',
+    id: 'form-1-09', stufe: 1, kapitel: 6, typ: 'text-bild',
     lernziel: 'erklären, was sich bei einer anderen Projektionsrichtung am Stereogramm ändert und was gleich bleibt',
     frage: 'Welches Stereogramm zeigt den Galenit mit <b>[111]</b> als Projektionsrichtung?',
     antworten: [
@@ -969,9 +969,9 @@ export const BANK = [
     status: 'geprüft',
   },
 
-  // ---------------------------------------------------------------- Kapitel 2, Stufe 2
+  // ---------------------------------------------------------------- Kapitel 6, Stufe 2
   {
-    id: 'form-2-01', stufe: 2, kapitel: 2, typ: 'einfach',
+    id: 'form-2-01', stufe: 2, kapitel: 6, typ: 'einfach',
     lernziel: 'allgemeine und spezielle Form unterscheiden',
     frage: 'Wie viele Flächen hat die Form <b>{110}</b> in der tetragonalen Punktgruppe 4/<i>mmm</i>?',
     antworten: ['4 (tetragonales Prisma)', '12 (Rhombendodekaeder)', '8 (ditetragonales Prisma)', '2 (Pinakoid)'],
@@ -989,7 +989,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'form-2-02', stufe: 2, kapitel: 2, typ: 'mehrfach',
+    id: 'form-2-02', stufe: 2, kapitel: 6, typ: 'mehrfach',
     lernziel: 'Allgemeine Form: Pole auf keinem Symmetrieelement, Flächenzahl gleich der Zahl der Symmetrieoperationen. Spezielle Formen: Pole auf Symmetrieelementen, weniger Flächen.',
     frage: 'Die allgemeine Form einer Punktgruppe hat <b>8 Flächen</b>. Welche Punktgruppen kommen in Frage?',
     antworten: ['<i>mmm</i>', '4/<i>m</i>', '4<i>mm</i>', '6<i>mm</i>', '222'],
@@ -1008,7 +1008,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'form-2-03', stufe: 2, kapitel: 2, typ: 'einfach',
+    id: 'form-2-03', stufe: 2, kapitel: 6, typ: 'einfach',
     lernziel: 'erklären, was sich bei einer anderen Projektionsrichtung am Stereogramm ändert und was gleich bleibt',
     frage: 'Der Galenit wird um die Achse [100] gedreht, die in der Projektionsebene liegt. Auf welcher Bahn wandert dabei der Pol von <b>(111)</b> über die Umkugel?',
     antworten: [
@@ -1031,7 +1031,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'form-2-04', stufe: 2, kapitel: 2, typ: 'einfach',
+    id: 'form-2-04', stufe: 2, kapitel: 6, typ: 'einfach',
     lernziel: 'allgemeine und spezielle Form unterscheiden',
     frage: 'In 4/<i>mmm</i> ist die tetragonale Dipyramide {111} eine spezielle Form mit 8 Flächen. Was ist {111} in der Punktgruppe <b>4/<i>m</i></b>?',
     antworten: [
@@ -1054,7 +1054,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'form-2-05', stufe: 2, kapitel: 2, typ: 'einfach',
+    id: 'form-2-05', stufe: 2, kapitel: 6, typ: 'einfach',
     lernziel: 'das Stereogramm einfacher Kristallformen zeichnen und ein Stereogramm einem Körper zuordnen',
     frage: 'Alle Pole einer Kristallform liegen auf der oberen Halbkugel (●), keiner auf dem Grundkreis. Was folgt daraus?',
     antworten: [
@@ -1076,9 +1076,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ---------------------------------------------------------------- Kapitel 2, Stufe 3 (Vertiefungen)
+  // ---------------------------------------------------------------- Kapitel 6, Stufe 3 (Vertiefungen)
   {
-    id: 'form-3-01', stufe: 3, kapitel: 2, typ: 'einfach',
+    id: 'form-3-01', stufe: 3, kapitel: 6, typ: 'einfach',
     lernziel: 'Flächensymmetrie und asymmetrische Flächeneinheit erklären und Grenzformen erkennen',
     frage: 'In der Punktgruppe 4 wandern die Pole der tetragonalen Pyramide {hkl} auf den Grundkreis. Was entsteht?',
     antworten: [
@@ -1101,7 +1101,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'form-3-02', stufe: 3, kapitel: 2, typ: 'einfach',
+    id: 'form-3-02', stufe: 3, kapitel: 6, typ: 'einfach',
     lernziel: 'Flächensymmetrie und asymmetrische Flächeneinheit erklären und Grenzformen erkennen',
     frage: 'Welcher Teil der Kugeloberfläche ist in der Punktgruppe 4/<i>mmm</i> die <b>asymmetrische Flächeneinheit</b>?',
     antworten: ['Ein Sechzehntel', 'Ein Achtel', 'Ein Achtundvierzigstel', 'Ein Viertel'],
@@ -1119,9 +1119,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ================================================================ Kapitel 3: Symmetriegerüste im Stereogramm
+  // ================================================================ Kapitel 4: Symmetriegerüste im Stereogramm
   {
-    id: 'sym-1-01', stufe: 1, kapitel: 3, typ: 'einfach',
+    id: 'sym-1-01', stufe: 1, kapitel: 4, typ: 'einfach',
     lernziel: 'die Symmetrieelemente einer Punktgruppe ins Stereogramm einzeichnen',
     frage: 'Wie erscheint eine <b>Spiegelebene, die die Projektionsrichtung enthält</b>, im Symmetriegerüst?',
     antworten: [
@@ -1143,7 +1143,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'sym-1-02', stufe: 1, kapitel: 3, typ: 'einfach',
+    id: 'sym-1-02', stufe: 1, kapitel: 4, typ: 'einfach',
     lernziel: 'die Symmetrieelemente einer Punktgruppe ins Stereogramm einzeichnen',
     frage: 'Eine <b>2-zählige Drehachse liegt in der Projektionsebene</b>. Wie wird sie im Stereogramm dargestellt?',
     antworten: [
@@ -1165,7 +1165,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'sym-1-03', stufe: 1, kapitel: 3, typ: 'einfach',
+    id: 'sym-1-03', stufe: 1, kapitel: 4, typ: 'einfach',
     lernziel: 'einzeichnen, wohin ein Symmetrieelement einen beliebigen Pol abbildet',
     frage: 'Ein Pol der oberen Halbkugel (●) wird an einer <b>Spiegelebene in der Projektionsebene</b> gespiegelt. Wo liegt sein Bild?',
     antworten: [
@@ -1188,7 +1188,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'sym-1-04', stufe: 1, kapitel: 3, typ: 'einfach',
+    id: 'sym-1-04', stufe: 1, kapitel: 4, typ: 'einfach',
     lernziel: 'einzeichnen, wohin ein Symmetrieelement einen beliebigen Pol abbildet',
     frage: 'Wohin bringt eine <b>2-zählige Drehachse in der Projektionsebene</b> einen Pol der oberen Halbkugel (●)?',
     antworten: [
@@ -1211,7 +1211,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'sym-1-05', stufe: 1, kapitel: 3, typ: 'einfach',
+    id: 'sym-1-05', stufe: 1, kapitel: 4, typ: 'einfach',
     lernziel: 'Symmetrieelemente erzeugen einander, z. B. m ⊥ m eine 2-zählige Achse in der Schnittgeraden.',
     frage: 'Zwei Spiegelebenen schneiden sich <b>senkrecht</b>. Was erzeugen die beiden Spiegelebenen allein in ihrer Schnittgeraden?',
     antworten: ['Eine 2-zählige Drehachse', 'Eine 4-zählige Drehachse', 'Ein Inversionszentrum', 'Kein weiteres Symmetrieelement'],
@@ -1229,7 +1229,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'sym-1-06', stufe: 1, kapitel: 3, typ: 'einfach',
+    id: 'sym-1-06', stufe: 1, kapitel: 4, typ: 'einfach',
     lernziel: 'einzeichnen, wohin ein Symmetrieelement einen beliebigen Pol abbildet',
     frage: 'Wie unterscheidet sich die Bahn eines Pols in allgemeiner Lage unter einer 4-zähligen Drehinversionsachse <span class="ov">4</span> (entlang der Projektionsrichtung) von der unter einer 4-zähligen Drehachse 4?',
     antworten: [
@@ -1252,7 +1252,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'sym-1-07', stufe: 1, kapitel: 3, typ: 'einfach',
+    id: 'sym-1-07', stufe: 1, kapitel: 4, typ: 'einfach',
     lernziel: 'Alle Operationen zusammen machen aus einem allgemeinen Pol die Pole der allgemeinen Form. Pole spezieller Formen liegen auf Symmetrieelementen.',
     frage: `Auf welchen Symmetrieelementen von m${o(3)}m liegen die Pole des Oktaeders {111} am Galenit?`,
     antworten: [`Auf den ${o(3)}-Achsen`, 'Auf den 4-zähligen Drehachsen', 'Auf den 2-zähligen Drehachsen', 'Auf keinem Symmetrieelement'],
@@ -1270,9 +1270,9 @@ export const BANK = [
     status: 'geprüft',
   },
 
-  // ---------------------------------------------------------------- Kapitel 3, Stufe 2
+  // ---------------------------------------------------------------- Kapitel 4, Stufe 2
   {
-    id: 'sym-2-01', stufe: 2, kapitel: 3, typ: 'text-bild',
+    id: 'sym-2-01', stufe: 2, kapitel: 4, typ: 'text-bild',
     lernziel: 'einzeichnen, wohin ein Symmetrieelement einen beliebigen Pol abbildet',
     frage: 'Welches Stereogramm zeigt die Bahn eines Pols in allgemeiner Lage in der Punktgruppe <b>2/<i>m</i></b>, Standardaufstellung mit b als eindeutiger Achse? Die Symmetrieelemente sind ausgeblendet; b zeigt nach rechts.',
     antworten: [
@@ -1295,7 +1295,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'sym-2-02', stufe: 2, kapitel: 3, typ: 'einfach',
+    id: 'sym-2-02', stufe: 2, kapitel: 4, typ: 'einfach',
     lernziel: 'Symmetrieelemente erzeugen einander, z. B. m ⊥ m eine 2-zählige Achse in der Schnittgeraden.',
     frage: 'Ein Symmetriegerüst zeigt eine 2-zählige Drehachse im Mittelpunkt und den kräftig gezeichneten Grundkreis, also eine Spiegelebene senkrecht zur Achse. Welches Symmetrieelement muss dann ebenfalls vorhanden sein?',
     antworten: [
@@ -1318,7 +1318,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'sym-2-03', stufe: 2, kapitel: 3, typ: 'text-bild',
+    id: 'sym-2-03', stufe: 2, kapitel: 4, typ: 'text-bild',
     lernziel: 'einzeichnen, wohin ein Symmetrieelement einen beliebigen Pol abbildet',
     frage: `Welches Stereogramm zeigt die Bahn eines Pols in allgemeiner Lage unter einer <b>4-zähligen Drehinversionsachse ${o(4)}</b> in Projektionsrichtung? Die Symmetrieelemente sind ausgeblendet.`,
     antworten: [
@@ -1341,7 +1341,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'sym-2-04', stufe: 2, kapitel: 3, typ: 'einfach',
+    id: 'sym-2-04', stufe: 2, kapitel: 4, typ: 'einfach',
     lernziel: 'Alle Operationen zusammen machen aus einem allgemeinen Pol die Pole der allgemeinen Form. Pole spezieller Formen liegen auf Symmetrieelementen.',
     frage: 'Wie sieht in der Punktgruppe <b><i>mmm</i></b> (Projektion entlang c) die Bahn eines Pols in allgemeiner Lage aus?',
     antworten: [
@@ -1364,7 +1364,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'sym-2-05', stufe: 2, kapitel: 3, typ: 'einfach',
+    id: 'sym-2-05', stufe: 2, kapitel: 4, typ: 'einfach',
     lernziel: 'Alle Operationen zusammen machen aus einem allgemeinen Pol die Pole der allgemeinen Form. Pole spezieller Formen liegen auf Symmetrieelementen.',
     frage: `Wo liegen in <i>m</i>${o(3)}<i>m</i> die Pole der Form <b>{211}</b>, und wie viele Flächen hat sie?`,
     antworten: [
@@ -1387,9 +1387,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ---------------------------------------------------------------- Kapitel 3, Stufe 3 (Vertiefungen)
+  // ---------------------------------------------------------------- Kapitel 4, Stufe 3 (Vertiefungen)
   {
-    id: 'sym-3-01', stufe: 3, kapitel: 3, typ: 'einfach',
+    id: 'sym-3-01', stufe: 3, kapitel: 4, typ: 'einfach',
     lernziel: 'Das Polmuster einer Form kann höhere Symmetrie haben als die Punktgruppe des Kristalls.',
     frage: 'Die allgemeine Form der Punktgruppe 4, eine tetragonale Pyramide, hat vier Pole auf der oberen Halbkugel. Welche Symmetrie hat das Polmuster für sich allein?',
     antworten: ['4<i>mm</i>', '4', '4/<i>m</i>', '4/<i>mmm</i>'],
@@ -1407,9 +1407,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ================================================================ Kapitel 5: Tracht und Habitus
+  // ================================================================ Kapitel 8: Tracht und Habitus
   {
-    id: 'hab-1-01', stufe: 1, kapitel: 5, typ: 'einfach',
+    id: 'hab-1-01', stufe: 1, kapitel: 8, typ: 'einfach',
     lernziel: 'Tracht und Habitus eines Kristalls unterscheiden und benennen',
     frage: 'Was versteht man unter der <b>Tracht</b> eines Kristalls?',
     antworten: [
@@ -1431,7 +1431,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hab-1-03', stufe: 1, kapitel: 5, typ: 'mehrfach',
+    id: 'hab-1-03', stufe: 1, kapitel: 8, typ: 'mehrfach',
     lernziel: 'Tracht und Habitus eines Kristalls unterscheiden und benennen',
     frage: 'Welche sind <b>Grundtypen des Habitus</b>?',
     antworten: ['isometrisch', 'planar oder tafelig', 'prismatisch oder nadelig', 'hexagonal', 'kubisch'],
@@ -1443,7 +1443,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hab-1-04', stufe: 1, kapitel: 5, typ: 'einfach',
+    id: 'hab-1-04', stufe: 1, kapitel: 8, typ: 'einfach',
     lernziel: 'Tracht und Habitus eines Kristalls unterscheiden und benennen',
     frage: 'Ein isometrischer Würfel und ein isometrisches Oktaeder desselben Minerals haben …',
     antworten: [
@@ -1465,7 +1465,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hab-1-05', stufe: 1, kapitel: 5, typ: 'einfach',
+    id: 'hab-1-05', stufe: 1, kapitel: 8, typ: 'einfach',
     lernziel: 'erklären, wie der Habitus beim Wachstum entsteht',
     frage: 'Welche Flächen werden beim Wachstum eines Kristalls immer <b>grösser</b>?',
     antworten: ['Die langsam wachsenden Flächen', 'Die schnell wachsenden Flächen', 'Die hoch indizierten Flächen', 'Alle Flächen im gleichen Verhältnis'],
@@ -1482,7 +1482,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hab-1-06', stufe: 1, kapitel: 5, typ: 'einfach',
+    id: 'hab-1-06', stufe: 1, kapitel: 8, typ: 'einfach',
     lernziel: 'erklären, wie der Habitus beim Wachstum entsteht',
     frage: 'Ein Kristall aus hexagonalem Prisma und Pinakoid wird beim Wachstum <b>prismatisch (nadelig)</b>. Wie verhalten sich die Wachstumsgeschwindigkeiten?',
     antworten: [
@@ -1504,7 +1504,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hab-1-07', stufe: 1, kapitel: 5, typ: 'einfach',
+    id: 'hab-1-07', stufe: 1, kapitel: 8, typ: 'einfach',
     lernziel: 'begründen, warum das Stereogramm die Tracht zeigt, aber nicht den Habitus',
     frage: 'Zwei Kristalle aus hexagonalem Prisma und Pinakoid: einer tafelig, einer nadelig. Wie unterscheiden sich ihre Stereogramme (Projektion ∥ c)?',
     antworten: [
@@ -1527,7 +1527,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hab-1-08', stufe: 1, kapitel: 5, typ: 'einfach',
+    id: 'hab-1-08', stufe: 1, kapitel: 8, typ: 'einfach',
     lernziel: 'begründen, warum das Stereogramm die Tracht zeigt, aber nicht den Habitus',
     frage: 'Wann ändert sich das Stereogramm eines wachsenden Kristalls?',
     antworten: [
@@ -1549,9 +1549,9 @@ export const BANK = [
     status: 'geprüft',
   },
 
-  // ---------------------------------------------------------------- Kapitel 5, Stufe 2
+  // ---------------------------------------------------------------- Kapitel 8, Stufe 2
   {
-    id: 'hab-2-01', stufe: 2, kapitel: 5, typ: 'einfach',
+    id: 'hab-2-01', stufe: 2, kapitel: 8, typ: 'einfach',
     lernziel: 'erklären, wie der Habitus beim Wachstum entsteht',
     frage: 'Ein Galenit aus Würfel und Oktaeder; Würfel- und Oktaederflächen sind gleich weit vom Mittelpunkt entfernt. Beim Wachstum verschieben sich die Oktaederflächen <b>doppelt so schnell</b> nach aussen wie die Würfelflächen. Was geschieht?',
     antworten: [
@@ -1574,7 +1574,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'hab-2-02', stufe: 2, kapitel: 5, typ: 'mehrfach',
+    id: 'hab-2-02', stufe: 2, kapitel: 8, typ: 'mehrfach',
     lernziel: 'Tracht und Habitus eines Kristalls unterscheiden und benennen',
     frage: 'Ein <b>tafeliger</b> Kristall aus dem hexagonalen Prisma {100} und dem Pinakoid {001}. Welche Aussagen treffen zu?',
     antworten: [
@@ -1599,7 +1599,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'hab-2-03', stufe: 2, kapitel: 5, typ: 'einfach',
+    id: 'hab-2-03', stufe: 2, kapitel: 8, typ: 'einfach',
     lernziel: 'erklären, wie der Habitus beim Wachstum entsteht',
     frage: 'Am Galenit findet man Würfel {100}, Oktaeder {111} und Rhombendodekaeder {110}, aber kaum Flächen wie {421}. Woran liegt das?',
     antworten: [
@@ -1622,9 +1622,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ================================================================ Kapitel 6: Blickrichtungen
+  // ================================================================ Kapitel 5: Blickrichtungen
   {
-    id: 'blick-1-01', stufe: 1, kapitel: 6, typ: 'einfach',
+    id: 'blick-1-01', stufe: 1, kapitel: 5, typ: 'einfach',
     lernziel: 'die Blickrichtungen eines Kristallsystems angeben',
     frage: 'Welche Blickrichtungen hat das <b>tetragonale</b> System, in der Reihenfolge des Hermann-Mauguin-Symbols?',
     antworten: ['[001], ⟨100⟩, ⟨110⟩', '⟨100⟩, ⟨111⟩, ⟨110⟩', '[100], [010], [001]', '[001], ⟨100⟩, ⟨210⟩'],
@@ -1642,7 +1642,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'blick-1-02', stufe: 1, kapitel: 6, typ: 'einfach',
+    id: 'blick-1-02', stufe: 1, kapitel: 5, typ: 'einfach',
     lernziel: 'die Blickrichtungen eines Kristallsystems angeben',
     frage: 'Welche Blickrichtungen hat das <b>kubische</b> System, in der Reihenfolge des Hermann-Mauguin-Symbols?',
     antworten: ['⟨100⟩, ⟨111⟩, ⟨110⟩', '⟨100⟩, ⟨110⟩, ⟨111⟩', '⟨111⟩, ⟨100⟩, ⟨110⟩', '[001], ⟨100⟩, ⟨110⟩'],
@@ -1660,7 +1660,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'blick-1-03', stufe: 1, kapitel: 6, typ: 'einfach',
+    id: 'blick-1-03', stufe: 1, kapitel: 5, typ: 'einfach',
     lernziel: 'die Blickrichtungen eines Kristallsystems angeben',
     frage: 'Wie viele Blickrichtungen hat das <b>monokline</b> System, und welche Richtung ist es?',
     antworten: [
@@ -1683,7 +1683,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'blick-1-04', stufe: 1, kapitel: 6, typ: 'einfach',
+    id: 'blick-1-04', stufe: 1, kapitel: 5, typ: 'einfach',
     lernziel: 'ein Hermann-Mauguin-Symbol Position für Position lesen',
     frage: 'Wie liegt eine Spiegelebene zu der Blickrichtung, an deren Position sie im Hermann-Mauguin-Symbol steht?',
     antworten: [
@@ -1705,7 +1705,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'blick-1-05', stufe: 1, kapitel: 6, typ: 'einfach',
+    id: 'blick-1-05', stufe: 1, kapitel: 5, typ: 'einfach',
     lernziel: 'ein Hermann-Mauguin-Symbol Position für Position lesen',
     frage: 'Was steht im vollen Symbol 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> an der <b>zweiten</b> Position?',
     antworten: [
@@ -1728,7 +1728,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'blick-1-06', stufe: 1, kapitel: 6, typ: 'einfach',
+    id: 'blick-1-06', stufe: 1, kapitel: 5, typ: 'einfach',
     lernziel: 'volles und gekürztes Symbol ineinander überführen',
     frage: 'Wie lautet das gekürzte Symbol zu 2/<i>m</i> 2/<i>m</i> 2/<i>m</i>?',
     antworten: ['<i>mmm</i>', '222', '2/<i>m</i>', '<i>mm</i>2'],
@@ -1746,7 +1746,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'blick-1-07', stufe: 1, kapitel: 6, typ: 'einfach',
+    id: 'blick-1-07', stufe: 1, kapitel: 5, typ: 'einfach',
     lernziel: 'ein Hermann-Mauguin-Symbol Position für Position lesen',
     frage: 'Woran erkennt man am Hermann-Mauguin-Symbol eine <b>kubische</b> Punktgruppe?',
     antworten: [
@@ -1769,7 +1769,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'blick-1-08', stufe: 1, kapitel: 6, typ: 'einfach',
+    id: 'blick-1-08', stufe: 1, kapitel: 5, typ: 'einfach',
     lernziel: 'die Blickrichtungen eines Kristallsystems angeben',
     frage: 'Was unterscheidet die <b>Blickrichtungen</b> eines Kristalls von der <b>Projektionsrichtung</b> eines Stereogramms?',
     antworten: [
@@ -1791,9 +1791,9 @@ export const BANK = [
     status: 'geprüft',
   },
 
-  // ---------------------------------------------------------------- Kapitel 6, Stufe 2
+  // ---------------------------------------------------------------- Kapitel 5, Stufe 2
   {
-    id: 'blick-2-01', stufe: 2, kapitel: 6, typ: 'einfach',
+    id: 'blick-2-01', stufe: 2, kapitel: 5, typ: 'einfach',
     lernziel: 'volles und gekürztes Symbol ineinander überführen',
     frage: `Wie lautet das <b>volle</b> Symbol zu <i>m</i>${o(3)}<i>m</i>?`,
     antworten: [
@@ -1816,7 +1816,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'blick-2-02', stufe: 2, kapitel: 6, typ: 'mehrfach',
+    id: 'blick-2-02', stufe: 2, kapitel: 5, typ: 'mehrfach',
     lernziel: 'volles und gekürztes Symbol ineinander überführen',
     frage: `Das gekürzte Symbol <i>m</i>${o(3)}<i>m</i> nennt weder 4-zählige noch 2-zählige Achsen. Welche Symmetrieelemente hat <i>m</i>${o(3)}<i>m</i> trotzdem?`,
     antworten: [
@@ -1839,7 +1839,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'blick-2-03', stufe: 2, kapitel: 6, typ: 'bild-text',
+    id: 'blick-2-03', stufe: 2, kapitel: 5, typ: 'bild-text',
     lernziel: 'ein Hermann-Mauguin-Symbol Position für Position lesen',
     frage: 'Das Bild zeigt das Symmetriegerüst von <b>4<i>mm</i></b>, Projektion entlang c (a nach unten, b nach rechts). Welche Spiegelebenen stehen im Symbol an der <b>zweiten</b> Position?',
     bild: '#m=pg&g=4mm&obj=0&farbe=0', bildAlt: 'Symmetriegerüst von 4mm: vier Spiegelebenen als Geraden durch die Mitte',
@@ -1863,7 +1863,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'blick-2-04', stufe: 2, kapitel: 6, typ: 'einfach',
+    id: 'blick-2-04', stufe: 2, kapitel: 5, typ: 'einfach',
     lernziel: 'ein Hermann-Mauguin-Symbol Position für Position lesen',
     frage: 'Im Symbol <b><i>mm</i>2</b> steht die 2 an dritter Stelle. Wo liegt die 2-zählige Achse, und woher kommt sie?',
     antworten: [
@@ -1886,7 +1886,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'blick-2-05', stufe: 2, kapitel: 6, typ: 'einfach',
+    id: 'blick-2-05', stufe: 2, kapitel: 5, typ: 'einfach',
     lernziel: 'volles und gekürztes Symbol ineinander überführen',
     frage: `Wie lautet das gekürzte Symbol zu <b>2/<i>m</i> ${o(3)}</b>?`,
     antworten: [`<i>m</i>${o(3)}`, `<i>m</i>${o(3)}<i>m</i>`, '23', '2/<i>m</i>3'],
@@ -1904,9 +1904,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ---------------------------------------------------------------- Kapitel 6, Stufe 3 (Vertiefungen)
+  // ---------------------------------------------------------------- Kapitel 5, Stufe 3 (Vertiefungen)
   {
-    id: 'blick-3-01', stufe: 3, kapitel: 6, typ: 'einfach',
+    id: 'blick-3-01', stufe: 3, kapitel: 5, typ: 'einfach',
     lernziel: 'ein Hermann-Mauguin-Symbol Position für Position lesen',
     frage: 'Zu welcher Blickrichtung gehört die Spiegelebene im Symbol <b>31<i>m</i></b>?',
     antworten: ['⟨210⟩, die 3. Blickrichtung', '⟨100⟩, die 2. Blickrichtung', '[001], die 1. Blickrichtung', 'Zu keiner; die 1 trennt sie vom Symbol ab'],
@@ -1924,7 +1924,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'blick-3-02', stufe: 3, kapitel: 6, typ: 'einfach',
+    id: 'blick-3-02', stufe: 3, kapitel: 5, typ: 'einfach',
     lernziel: 'die Blickrichtungen eines Kristallsystems angeben',
     frage: `Die International Tables schreiben die 3. hexagonale Blickrichtung als ⟨${o(1)}10⟩. Welche Familie ist das in der Schreibweise des Skripts?`,
     antworten: ['⟨210⟩', '⟨110⟩', '⟨100⟩', '⟨001⟩'],
@@ -1942,9 +1942,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ================================================================ Kapitel 7: Hexagonale Achsen
+  // ================================================================ Kapitel 1 und 9: Hexagonale Achsen (Stufe 1 und 2: Kapitel 1)
   {
-    id: 'hex-1-01', stufe: 1, kapitel: 7, typ: 'einfach',
+    id: 'hex-1-01', stufe: 1, kapitel: 1, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Welche Gitterparameter hat das <b>hexagonale</b> Achsensystem?',
     antworten: [
@@ -1966,7 +1966,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hex-1-02', stufe: 1, kapitel: 7, typ: 'einfach',
+    id: 'hex-1-02', stufe: 1, kapitel: 1, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Für welche Kristalle verwendet man das hexagonale Achsensystem?',
     antworten: [
@@ -1988,7 +1988,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hex-1-03', stufe: 1, kapitel: 7, typ: 'einfach',
+    id: 'hex-1-03', stufe: 1, kapitel: 1, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Welche Richtungen sind die drei gleichwertigen Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃ des hexagonalen Achsensystems?',
     antworten: [`[100], [010], [${o(1)}${o(1)}0]`, '[100], [010], [001]', '[100], [010], [210]', `[100], [010], [1${o(1)}0]`],
@@ -2006,7 +2006,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hex-1-04', stufe: 1, kapitel: 7, typ: 'einfach',
+    id: 'hex-1-04', stufe: 1, kapitel: 1, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Welche Richtung steht im hexagonalen Achsensystem <b>senkrecht auf <i>a</i>₂ = [010]</b>?',
     antworten: ['[210]', '[110]', '[100]', '[120]'],
@@ -2024,7 +2024,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hex-1-05', stufe: 1, kapitel: 7, typ: 'einfach',
+    id: 'hex-1-05', stufe: 1, kapitel: 1, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Welche Richtung liegt im hexagonalen Achsensystem genau <b>in der Mitte zwischen <i>a</i>₁ und <i>a</i>₂</b>?',
     antworten: ['[110]', '[210]', '[120]', `[${o(1)}${o(1)}0]`],
@@ -2042,7 +2042,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hex-1-06', stufe: 1, kapitel: 7, typ: 'einfach',
+    id: 'hex-1-06', stufe: 1, kapitel: 1, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Warum steht im Symbol 6/<i>m</i> 2/<i>m</i> 2/<i>m</i> an dritter Stelle die Blickrichtung ⟨210⟩ und nicht ⟨110⟩ wie im tetragonalen System?',
     antworten: [
@@ -2065,7 +2065,7 @@ export const BANK = [
     status: 'geprüft',
   },
   {
-    id: 'hex-2-01', stufe: 2, kapitel: 7, typ: 'einfach',
+    id: 'hex-2-01', stufe: 2, kapitel: 1, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Wo liegt bei einem hexagonalen Kristall der Pol der Fläche <b>(100)</b>, wenn c in Projektionsrichtung zeigt?',
     antworten: [
@@ -2087,7 +2087,7 @@ export const BANK = [
     pruefung: { art: 'hexPol', hkl: [1, 0, 0], richtung: [2, 1, 0] },
     status: 'geprüft',
   },  {
-    id: 'hex-2-02', stufe: 2, kapitel: 7, typ: 'mehrfach',
+    id: 'hex-2-02', stufe: 2, kapitel: 1, typ: 'mehrfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Welche Richtungen gehören in 6/<i>mmm</i> zur Familie <b>⟨100⟩</b>, sind also gleichwertig zu a₁ = [100]?',
     antworten: ['[010]', `[${o(1)}${o(1)}0]`, '[110]', '[210]', `[1${o(1)}0]`],
@@ -2106,7 +2106,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'hex-2-03', stufe: 2, kapitel: 7, typ: 'einfach',
+    id: 'hex-2-03', stufe: 2, kapitel: 1, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Welchen Winkel bilden im hexagonalen Achsensystem die Richtungen <b>[210]</b> und <b>[100]</b>?',
     antworten: ['30°', '26,57°', '60°', '45°'],
@@ -2124,7 +2124,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'hex-2-04', stufe: 2, kapitel: 7, typ: 'einfach',
+    id: 'hex-2-04', stufe: 2, kapitel: 1, typ: 'einfach',
     lernziel: 'das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen',
     frage: 'Ein hexagonaler Kristall, c in Projektionsrichtung. In welcher Richtung liegt der Pol der Fläche <b>(110)</b>?',
     antworten: ['In Richtung [110] = −a₃', 'In Richtung [210]', 'In Richtung [120]', 'In Richtung [100] = a₁'],
@@ -2142,9 +2142,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ---------------------------------------------------------------- Kapitel 7, Stufe 3 (Vertiefungen)
+  // ---------------------------------------------------------------- Kapitel 9, Stufe 3 (Vertiefungen)
   {
-    id: 'hex-3-01', stufe: 3, kapitel: 7, typ: 'einfach',
+    id: 'hex-3-01', stufe: 3, kapitel: 9, typ: 'einfach',
     lernziel: 'Miller-Indizes (hkl) in Miller-Bravais-Indizes (hkil) umrechnen und zurück',
     frage: 'Wie lauten die Miller-Bravais-Indizes (hkil) der hexagonalen Fläche <b>(102)</b>?',
     antworten: [`(10${o(1)}2)`, '(1012)', `(102${o(1)})`, `(10${o(3)}2)`],
@@ -2162,7 +2162,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'hex-3-02', stufe: 3, kapitel: 7, typ: 'einfach',
+    id: 'hex-3-02', stufe: 3, kapitel: 9, typ: 'einfach',
     lernziel: 'begründen, wozu der vierte Index dient',
     frage: 'Wozu dient der vierte Index i der Miller-Bravais-Indizes (hkil)?',
     antworten: [
@@ -2184,9 +2184,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ================================================================ Kapitel 8: Lagen, Flächensymmetrie und Multiplizität (Stufe 3)
+  // ================================================================ Kapitel 10: Lagen, Flächensymmetrie und Multiplizität (Stufe 3)
   {
-    id: 'lag-3-01', stufe: 3, kapitel: 8, typ: 'einfach',
+    id: 'lag-3-01', stufe: 3, kapitel: 10, typ: 'einfach',
     lernziel: 'für einen Pol oder eine Richtung die Lagesymmetrie angeben und entscheiden, ob die Lage allgemein oder speziell ist',
     frage: 'Welche Lagesymmetrie hat der Pol von <b>(001)</b> in der Punktgruppe 4/<i>mmm</i>?',
     antworten: ['4<i>mm</i>', '4/<i>mmm</i>', '4/<i>m</i>', '4'],
@@ -2204,7 +2204,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'lag-3-02', stufe: 3, kapitel: 8, typ: 'einfach',
+    id: 'lag-3-02', stufe: 3, kapitel: 10, typ: 'einfach',
     lernziel: 'für einen Pol oder eine Richtung die Lagesymmetrie angeben und entscheiden, ob die Lage allgemein oder speziell ist',
     frage: `In der Punktgruppe ${o(4)} liegt ein Pol genau auf der ${o(4)}-Achse, in Projektionsrichtung. Welche Lagesymmetrie hat er?`,
     antworten: ['2', o(4), '1', '4'],
@@ -2222,7 +2222,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'lag-3-03', stufe: 3, kapitel: 8, typ: 'einfach',
+    id: 'lag-3-03', stufe: 3, kapitel: 10, typ: 'einfach',
     lernziel: 'erklären, warum dieselbe Form in verschiedenen Punktgruppen verschiedene Flächensymmetrie, aber gleiche Flächenzahl haben kann',
     frage: `Das Oktaeder {111} hat in <i>m</i>${o(3)}<i>m</i> (48 Operationen) die Flächensymmetrie .3<i>m</i>. In ${o(4)}3<i>m</i> (24 Operationen) hat {111} dieselbe Flächensymmetrie. Wie viele Flächen hat die Form dort?`,
     antworten: ['4', '8', '2', '24'],
@@ -2240,7 +2240,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'lag-3-04', stufe: 3, kapitel: 8, typ: 'einfach',
+    id: 'lag-3-04', stufe: 3, kapitel: 10, typ: 'einfach',
     lernziel: 'erklären, warum dieselbe Form in verschiedenen Punktgruppen verschiedene Flächensymmetrie, aber gleiche Flächenzahl haben kann',
     frage: `Der Würfel {100} hat in <i>m</i>${o(3)}<i>m</i> die Flächensymmetrie 4<i>m</i>.<i>m</i> und 6 Flächen. Welche Flächensymmetrie hat er in der Punktgruppe <b>23</b>?`,
     antworten: ['2..', '4<i>m</i>.<i>m</i>', '4..', '.3.'],
@@ -2258,7 +2258,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'lag-3-05', stufe: 3, kapitel: 8, typ: 'einfach',
+    id: 'lag-3-05', stufe: 3, kapitel: 10, typ: 'einfach',
     lernziel: 'für einen Pol oder eine Richtung die Lagesymmetrie angeben und entscheiden, ob die Lage allgemein oder speziell ist',
     frage: 'Wie viele gleichwertige Richtungen gehören in der Punktgruppe <b>23</b> zur Familie von [111]?',
     antworten: ['4', '8', '3', '12'],
@@ -2276,7 +2276,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'lag-3-06', stufe: 3, kapitel: 8, typ: 'einfach',
+    id: 'lag-3-06', stufe: 3, kapitel: 10, typ: 'einfach',
     lernziel: 'für einen Pol oder eine Richtung die Lagesymmetrie angeben und entscheiden, ob die Lage allgemein oder speziell ist',
     frage: `Wie viele gleichwertige <b>Geraden</b> ⟨110⟩ hat der Würfel (<i>m</i>${o(3)}<i>m</i>)? Eine Gerade umfasst eine Richtung und ihre Gegenrichtung.`,
     antworten: ['6', '12', '3', '4'],
@@ -2294,7 +2294,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'lag-3-07', stufe: 3, kapitel: 8, typ: 'einfach',
+    id: 'lag-3-07', stufe: 3, kapitel: 10, typ: 'einfach',
     lernziel: 'Wyckoff-Lage: alle Pole mit gleichwertiger Lagesymmetrie, bezeichnet mit Multiplizität und Buchstabe (z. B. 24e). Kristallform und Punktform derselben Lage haben dieselbe Multiplizität.',
     frage: `In <i>m</i>${o(3)}<i>m</i> gehören das Trisoktaeder {221} und das Deltoidikositetraeder {112} zur selben Wyckoff-Lage 24<i>e</i>, das Tetrakishexaeder {210} mit ebenfalls 24 Flächen aber zur Lage 24<i>d</i>. Warum?`,
     antworten: [
@@ -2317,7 +2317,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'lag-3-08', stufe: 3, kapitel: 8, typ: 'einfach',
+    id: 'lag-3-08', stufe: 3, kapitel: 10, typ: 'einfach',
     lernziel: 'Der Umriss einer Fläche hat mindestens ihre Flächensymmetrie. Die Eigensymmetrie einer Form kann höher sein als die erzeugende Symmetrie.',
     frage: 'Ein Würfel {100} entsteht in der Punktgruppe <b>23</b>. Welche erzeugende Symmetrie und welche Eigensymmetrie hat er?',
     antworten: [
@@ -2340,9 +2340,9 @@ export const BANK = [
     status: 'entwurf',
   },
 
-  // ================================================================ Kapitel 9: Symmetrieändernde Verzerrungen (Stufe 3)
+  // ================================================================ Kapitel 11: Symmetrieändernde Verzerrungen (Stufe 3)
   {
-    id: 'verz-3-01', stufe: 3, kapitel: 9, typ: 'einfach',
+    id: 'verz-3-01', stufe: 3, kapitel: 11, typ: 'einfach',
     lernziel: 'die Restgruppe eines entlang ⟨100⟩, ⟨111⟩ oder ⟨110⟩ gestreckten Würfels bestimmen',
     frage: `Ein Würfel (<i>m</i>${o(3)}<i>m</i>) wird entlang der Raumdiagonalen <b>[111]</b> gestreckt. Welche Punktgruppe bleibt?`,
     antworten: [`${o(3)}<i>m</i>`, '3<i>m</i>', '4/<i>mmm</i>', '<i>mmm</i>'],
@@ -2360,7 +2360,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'verz-3-02', stufe: 3, kapitel: 9, typ: 'einfach',
+    id: 'verz-3-02', stufe: 3, kapitel: 11, typ: 'einfach',
     lernziel: 'die Restgruppe eines entlang ⟨100⟩, ⟨111⟩ oder ⟨110⟩ gestreckten Würfels bestimmen',
     frage: `Ein Würfel (<i>m</i>${o(3)}<i>m</i>) wird entlang der Flächendiagonalen <b>[110]</b> gestreckt. Welche Punktgruppe bleibt?`,
     antworten: ['<i>mmm</i>', '<i>mm</i>2', '2/<i>m</i>', '4/<i>mmm</i>'],
@@ -2378,7 +2378,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'verz-3-03', stufe: 3, kapitel: 9, typ: 'einfach',
+    id: 'verz-3-03', stufe: 3, kapitel: 11, typ: 'einfach',
     lernziel: 'im Stereogramm erkennen, in welche Formen eine Form bei der Verzerrung zerfällt',
     frage: 'Ein Würfel wird entlang <b>[001]</b> gestreckt. In welche Formen zerfällt er?',
     antworten: [
@@ -2401,7 +2401,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'verz-3-04', stufe: 3, kapitel: 9, typ: 'einfach',
+    id: 'verz-3-04', stufe: 3, kapitel: 11, typ: 'einfach',
     lernziel: 'im Stereogramm erkennen, in welche Formen eine Form bei der Verzerrung zerfällt',
     frage: 'Ein Oktaeder {111} wird entlang <b>[111]</b> gestreckt. In welche Formen zerfällt es?',
     antworten: [
@@ -2424,7 +2424,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'verz-3-05', stufe: 3, kapitel: 9, typ: 'einfach',
+    id: 'verz-3-05', stufe: 3, kapitel: 11, typ: 'einfach',
     lernziel: 'Streckung und Polarisation unterscheiden und die zugehörige Punktgruppe angeben',
     frage: `In einem kubischen Kristall (<i>m</i>${o(3)}<i>m</i>) entsteht eine elektrische <b>Polarisation</b> entlang [001]. Welche Punktgruppe bleibt?`,
     antworten: ['4<i>mm</i>', '4/<i>mmm</i>', '4', '4/<i>m</i>'],
@@ -2442,7 +2442,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'verz-3-06', stufe: 3, kapitel: 9, typ: 'mehrfach',
+    id: 'verz-3-06', stufe: 3, kapitel: 11, typ: 'mehrfach',
     lernziel: 'Streckung und Polarisation unterscheiden und die zugehörige Punktgruppe angeben',
     frage: 'Welche dieser Punktgruppen sind <b>polar</b>?',
     antworten: ['4<i>mm</i>', '<i>mm</i>2', '3<i>m</i>', '4/<i>mmm</i>', '422'],
@@ -2461,7 +2461,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'verz-3-07', stufe: 3, kapitel: 9, typ: 'einfach',
+    id: 'verz-3-07', stufe: 3, kapitel: 11, typ: 'einfach',
     lernziel: 'begründen, warum beim Übergang zu niedrigerer Symmetrie Domänen entstehen',
     frage: `BaTiO₃ geht beim Abkühlen von <i>m</i>${o(3)}<i>m</i> in die tetragonale Phase 4<i>mm</i> über, mit der Polarisation entlang einer Würfelkante. Wie viele Domänenorientierungen sind möglich?`,
     antworten: ['6', '3', '8', '12'],
@@ -2479,7 +2479,7 @@ export const BANK = [
     status: 'entwurf',
   },
   {
-    id: 'verz-3-08', stufe: 3, kapitel: 9, typ: 'einfach',
+    id: 'verz-3-08', stufe: 3, kapitel: 11, typ: 'einfach',
     lernziel: 'Streckung und Polarisation unterscheiden und die zugehörige Punktgruppe angeben',
     frage: 'Warum bleibt das Inversionszentrum bei einer Streckung erhalten, bei einer Polarisation aber nicht?',
     antworten: [

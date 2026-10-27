@@ -72,7 +72,7 @@ export function geruestAblenker(id) {
 }
 
 export const GERUEST = {
-  id: 'gen-geruest', kapitel: 3, stufen: [1, 2], status: 'geprüft',
+  id: 'gen-geruest', kapitel: 4, stufen: [1, 2], status: 'geprüft',
   params: (stufe) => (stufe === 1 ? GERUEST_STUFE1 : GERUEST_ALLE.filter((id) => !GERUEST_STUFE1.includes(id))),
   /** Ablenker deterministisch aus dem Parameter (die Reihenfolge mischt quiz-core.js). */
   make(id) {
@@ -128,7 +128,7 @@ function enthalten(e, x) {
 }
 
 export const FLAECHENZAHL = {
-  id: 'gen-flaechenzahl', kapitel: 8, stufen: [3], status: 'entwurf',
+  id: 'gen-flaechenzahl', kapitel: 10, stufen: [3], status: 'entwurf',
   params: () => SPEZIELL.map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechenzahl'].includes(id)),
   make(id) {
     const e = entryById(id);
@@ -166,7 +166,7 @@ export const FLAECHENZAHL = {
 /** Flächensymmetrie wählen: Gruppen mit mindestens vier verschiedenen speziellen Flächensymmetrien. */
 const FS_GRUPPEN = [...new Set(SPEZIELL.map((e) => e.pg))].filter((pg) => new Set(SPEZIELL.filter((e) => e.pg === pg).map((e) => e.fs)).size >= 4);
 export const FLAECHENSYM = {
-  id: 'gen-flaechensym', kapitel: 8, stufen: [3], status: 'entwurf',
+  id: 'gen-flaechensym', kapitel: 10, stufen: [3], status: 'entwurf',
   params: () => SPEZIELL.filter((e) => FS_GRUPPEN.includes(e.pg)).map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechensym'].includes(id)),
   make(id) {
     const e = entryById(id);
@@ -262,7 +262,7 @@ const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}`, alt: `Räumlich
 const QUELLE_FORM = 'Folie 91 (Lernziel); Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
 
 export const KOERPER_STEREO = {
-  id: 'gen-koerper', kapitel: 2, stufen: [1, 2], status: 'entwurf',
+  id: 'gen-koerper', kapitel: 6, stufen: [1, 2], status: 'entwurf',
   /** k:… Kristall → Stereogramm, s:… Stereogramm → Kristall */
   params: (stufe) => KOERPER_AUFGABEN.filter((a) => a.stufe === stufe).flatMap((a) => [`k:${a.id}`, `s:${a.id}`]),
   make(param) {
@@ -328,7 +328,7 @@ const lageText = (l) => `[${l}]`;
 const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${ov(3)}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
 
 export const LAGE = {
-  id: 'gen-lage', kapitel: 2, stufen: [2], status: 'entwurf',
+  id: 'gen-lage', kapitel: 6, stufen: [2], status: 'entwurf',
   params: () => Object.keys(LAGE_MUSTER).flatMap((k) => LAGEN.flatMap((l) => [`k:${k}:${l}`, `s:${k}:${l}`])),
   make(param) {
     const [richtung, k, lage] = param.split(':');
@@ -463,7 +463,7 @@ function darstellungText(info) {
 }
 
 export const GERUEST3D = {
-  id: 'gen-geruest3d', kapitel: 3, stufen: [1, 2], status: 'entwurf',
+  id: 'gen-geruest3d', kapitel: 4, stufen: [1, 2], status: 'entwurf',
   /** r:… Zeichnung → Stereogramm, s:… Stereogramm → Zeichnung */
   params: (stufe) => GERUEST.params(stufe).filter((id) => !GERUEST3D_OHNE.includes(id) && abl3d(id).length >= 3).flatMap((id) => [`r:${id}`, `s:${id}`]),
   make(param) {

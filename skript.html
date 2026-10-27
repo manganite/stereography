@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Skript: Stereographische Projektion</title>
-<meta name="description" content="Skript zur Vorlesung Kristallographie: stereographische Projektion, Kristallformen, Symmetriegerüste, Zonen, Tracht und Habitus, Blickrichtungen, hexagonale Achsen.">
+<meta name="description" content="Skript zur Vorlesung Kristallographie: Indizes, stereographische Projektion, Symmetrie und Punktgruppen, Symmetriegerüste, Blickrichtungen, Kristallformen, Zonen, Tracht und Habitus, trigonale und hexagonale Kristalle.">
 <link rel="icon" href="icons/favicon.ico" sizes="any">
 <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -234,7 +234,13 @@ footer a { color: inherit; }
       <details open>
         <summary>Inhalt</summary>
         <ol>
-          <li><a href="#projektion"><span class="nr">1</span>Die stereographische Projektion</a>
+          <li><a href="#indizes"><span class="nr">1</span>Kristallflächen und Indizes</a>
+            <ol>
+              <li><a href="#aufstellung">Aufstellung und Indizes</a></li>
+              <li><a href="#hexachsen">Das hexagonale Achsensystem</a></li>
+            </ol>
+          </li>
+          <li><a href="#projektion"><span class="nr">2</span>Die stereographische Projektion</a>
             <ol>
               <li><a href="#umkugel">Umkugel und Flächenpole</a></li>
               <li><a href="#projizieren">Vom Pol zum Stereogramm</a></li>
@@ -242,15 +248,8 @@ footer a { color: inherit; }
               <li><a href="#kreise">Kreise, Winkel und das Wulffsche Netz</a></li>
             </ol>
           </li>
-          <li><a href="#formen"><span class="nr">2</span>Kristallformen im Stereogramm</a>
-            <ol>
-              <li><a href="#aufstellung">Aufstellung und Indizes</a></li>
-              <li><a href="#form">Was ist eine Kristallform?</a></li>
-              <li><a href="#allgemein">Allgemeine Form, spezielle Form, Grenzform</a></li>
-              <li><a href="#lage">Andere Projektionsrichtung</a></li>
-            </ol>
-          </li>
-          <li><a href="#symmetrie"><span class="nr">3</span>Symmetriegerüste im Stereogramm</a>
+          <li><a href="#punktgruppen"><span class="nr">3</span>Symmetrieoperationen und Punktgruppen</a></li>
+          <li><a href="#symmetrie"><span class="nr">4</span>Symmetriegerüste im Stereogramm</a>
             <ol>
               <li><a href="#elemente">Symmetrieelemente in der Projektion</a></li>
               <li><a href="#abbilden">Wohin ein Symmetrieelement einen Pol bringt</a></li>
@@ -258,7 +257,21 @@ footer a { color: inherit; }
               <li><a href="#speziell">Pole auf Symmetrieelementen</a></li>
             </ol>
           </li>
-          <li><a href="#zonen"><span class="nr">4</span>Zonen</a>
+          <li><a href="#blickrichtungen"><span class="nr">5</span>Blickrichtungen</a>
+            <ol>
+              <li><a href="#blick-def">Was ist eine Blickrichtung?</a></li>
+              <li><a href="#symbol">Das Hermann-Mauguin-Symbol lesen</a></li>
+              <li><a href="#kurz">Volles und gekürztes Symbol</a></li>
+            </ol>
+          </li>
+          <li><a href="#formen"><span class="nr">6</span>Kristallformen im Stereogramm</a>
+            <ol>
+              <li><a href="#form">Was ist eine Kristallform?</a></li>
+              <li><a href="#allgemein">Allgemeine Form, spezielle Form, Grenzform</a></li>
+              <li><a href="#lage">Andere Projektionsrichtung</a></li>
+            </ol>
+          </li>
+          <li><a href="#zonen"><span class="nr">7</span>Zonen</a>
             <ol>
               <li><a href="#zone">Was ist eine Zone?</a></li>
               <li><a href="#zonenkreis">Zonenkreis und Zonenpol</a></li>
@@ -267,7 +280,7 @@ footer a { color: inherit; }
               <li><a href="#nichtkubisch">Zonenachse und Flächennormale</a></li>
             </ol>
           </li>
-          <li><a href="#habitus"><span class="nr">5</span>Tracht und Habitus</a>
+          <li><a href="#habitus"><span class="nr">8</span>Tracht und Habitus</a>
             <ol>
               <li><a href="#tracht">Tracht</a></li>
               <li><a href="#habitus-def">Habitus</a></li>
@@ -275,21 +288,14 @@ footer a { color: inherit; }
               <li><a href="#habitus-stereo">Was das Stereogramm zeigt</a></li>
             </ol>
           </li>
-          <li><a href="#blickrichtungen"><span class="nr">6</span>Blickrichtungen</a>
+          <li><a href="#hexagonal"><span class="nr">9</span>Trigonale und hexagonale Kristalle</a>
             <ol>
-              <li><a href="#blick-def">Was ist eine Blickrichtung?</a></li>
-              <li><a href="#symbol">Das Hermann-Mauguin-Symbol lesen</a></li>
-              <li><a href="#kurz">Volles und gekürztes Symbol</a></li>
-            </ol>
-          </li>
-          <li><a href="#hexagonal"><span class="nr">7</span>Hexagonale Achsen und vierstellige Indizes</a>
-            <ol>
-              <li><a href="#hexachsen">Das hexagonale Achsensystem</a></li>
+              <li><a href="#rhomboeder">Das Rhomboeder</a></li>
               <li><a href="#hkil">Vier Indizes für Flächen</a></li>
             </ol>
           </li>
           <li class="toc-teil">Vertiefungen</li>
-          <li><a href="#lagen"><span class="nr">8</span>Lagen, Flächensymmetrie und Multiplizität</a>
+          <li><a href="#lagen"><span class="nr">10</span>Lagen, Flächensymmetrie und Multiplizität</a>
             <ol>
               <li><a href="#lage-pol">Die Lage eines Pols</a></li>
               <li><a href="#lagesymbol">Das orientierte Symbol</a></li>
@@ -300,7 +306,7 @@ footer a { color: inherit; }
               <li><a href="#punktlagen">Ausblick: Punktlagen in Raumgruppen</a></li>
             </ol>
           </li>
-          <li><a href="#verzerrung"><span class="nr">9</span>Symmetrieändernde Verzerrungen</a>
+          <li><a href="#verzerrung"><span class="nr">11</span>Symmetrieändernde Verzerrungen</a>
             <ol>
               <li><a href="#verzerrung-prinzip">Was bei einer Verzerrung erhalten bleibt</a></li>
               <li><a href="#streck-100">Streckung entlang ⟨100⟩</a></li>
@@ -327,8 +333,75 @@ footer a { color: inherit; }
       </dl>
     </div>
 
+    <section id="indizes">
+      <h2><span class="nr">1</span>Kristallflächen und Indizes</h2>
+      <p class="lead">Um die Flächen und Kanten eines Kristalls zu beschreiben, legt man ein Achsensystem in den Kristall. Auf seine Achsen beziehen sich die Indizes von Flächen und Richtungen.</p>
+
+      <div class="box ziele">
+        <h4>Lernziele</h4>
+        <ul>
+          <li>Flächen mit (<i>hkl</i>) und Richtungen mit [<i>uvw</i>] bezeichnen</li>
+          <li>das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen</li>
+        </ul>
+      </div>
+
+      <section id="aufstellung">
+        <h3>Aufstellung und Indizes</h3>
+        <p>Jede Kristallfläche verläuft parallel zu einer Schar von Netzebenen des Kristallgitters. Ihre Lage lässt sich deshalb mit den Miller'schen Indizes (<i>hkl</i>) angeben, jede Kante als Richtung [<i>uvw</i>]. Parallele Gegenflächen gehören zur selben Netzebenenschar, man unterscheidet sie aber als (<i>hkl</i>) und (<i>h̄k̄l̄</i>).</p>
+        <p>Man stellt einen Kristall üblicherweise so auf, dass <i>a</i> nach vorn, <i>b</i> nach rechts und <i>c</i> nach oben zeigt.</p>
+      </section>
+
+      <section id="hexachsen">
+        <h3>Das hexagonale Achsensystem</h3>
+        <p>Trigonale und hexagonale Kristalle haben eine 3-, 3̄-, 6- oder 6̄-zählige Hauptachse. Man beschreibt sie mit einem eigenen Achsensystem und legt <i>c</i> parallel zu dieser Hauptachse. Senkrecht dazu liegen <i>a</i> und <i>b</i>, gleich lang und im Winkel von 120° zueinander: <i>a</i> = <i>b</i>, α = β = 90°, γ = 120°. Wegen der Hauptachse gibt es in dieser Ebene noch eine dritte, gleichwertige Achse: Man schreibt <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, je 120° voneinander (Abb. 1.1). Als Richtungen sind das [100], [010] und [1̄1̄0], denn <i>a</i>₁ + <i>a</i>₂ + <i>a</i>₃ = 0.</p>
+        <p>Die Richtungen ⟨210⟩ halbieren die Winkel zwischen benachbarten Achsenrichtungen ±<i>a</i>₁, ±<i>a</i>₂, ±<i>a</i>₃: [210] = 2<i>a</i>₁ + <i>a</i>₂ liegt zwischen <i>a</i>₁ und −<i>a</i>₃ und steht senkrecht auf <i>a</i>₂. Genau in der Mitte zwischen <i>a</i>₁ und <i>a</i>₂ liegt dagegen [110] = −<i>a</i>₃, eine Richtung der Familie ⟨100⟩. ⟨100⟩ und ⟨210⟩ sind die 2. und 3. Blickrichtung des hexagonalen Systems (Kapitel 5). Richtungen gibt dieses Skript wie die Vorlesung mit drei Indizes [<i>uvw</i>] an.</p>
+        <p>Eine Richtung und die Normale der gleich indizierten Fläche fallen hier im Allgemeinen nicht zusammen (Kapitel 7): Die Fläche (100) ist parallel zu <i>a</i>₂ und <i>c</i>, ihr Pol liegt deshalb nicht auf <i>a</i>₁, sondern in Richtung [210] (im Stereogramm unten, Abb. 9.2).</p>
+        <figure class="fig-card hexfig">
+          <div class="fig-art">
+            <svg viewBox="0 0 370 320" role="img" aria-label="Hexagonale Achsen a₁, a₂, a₃ im Winkel von 120° und die Richtungen ⟨210⟩ dazwischen, Blick entlang c">
+              <circle class="hx-base" cx="160" cy="160" r="128"/>
+              <line class="hx-210" x1="160" y1="40" x2="160" y2="280"/>
+              <line class="hx-210" x1="56.1" y1="100" x2="263.9" y2="220"/>
+              <line class="hx-210" x1="56.1" y1="220" x2="263.9" y2="100"/>
+              <text class="hx-l2" x="160" y="298" text-anchor="middle">[210]</text>
+              <text class="hx-l2" x="50" y="94" text-anchor="end">[1̄2̄0]</text>
+              <text class="hx-l2" x="272" y="94">[1̄10]</text>
+              <path class="hx-arc" d="M196,160 A36,36 0 0 1 142,191.2"/>
+              <text class="hx-g" x="180" y="214">γ = 120°</text>
+              <line class="hx-a" x1="160" y1="160" x2="100" y2="263.9" marker-end="url(#hxarr)"/>
+              <line class="hx-a" x1="160" y1="160" x2="280" y2="160" marker-end="url(#hxarr)"/>
+              <line class="hx-a" x1="160" y1="160" x2="100" y2="56.1" marker-end="url(#hxarr)"/>
+              <text class="hx-l" x="72" y="284">a₁ = [100]</text>
+              <text class="hx-l" x="286" y="152">a₂ = [010]</text>
+              <text class="hx-l" x="40" y="46">a₃ = [1̄1̄0]</text>
+              <circle class="hx-c" cx="160" cy="160" r="5"/><circle class="hx-cdot" cx="160" cy="160" r="1.8"/>
+              <text class="hx-c-l" x="178" y="139">c</text>
+              <defs><marker id="hxarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="hx-head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+            </svg>
+          </div>
+          <figcaption><b>Abb. 1.1</b> Hexagonale Achsen, Blick entlang <i>c</i> (wie im Stereogramm der App): <i>a</i>₁, <i>a</i>₂ und <i>a</i>₃ = −(<i>a</i>₁ + <i>a</i>₂) im Winkel von 120°; die Geraden ⟨210⟩ (gestrichelt) halbieren die Winkel zwischen den Achsenrichtungen.</figcaption>
+        </figure>
+      </section>
+
+      <div class="box zusammen">
+        <h4>Zusammenfassung</h4>
+        <ul>
+          <li>Flächen bezeichnet man mit Miller'schen Indizes (<i>hkl</i>), Kanten und andere Richtungen mit [<i>uvw</i>]; parallele Gegenflächen sind (<i>hkl</i>) und (<i>h̄k̄l̄</i>).</li>
+          <li>Hexagonale Achsen: <i>a</i> = <i>b</i>, γ = 120°, <i>c</i> senkrecht dazu entlang der Hauptachse; drei gleichwertige Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃ = −(<i>a</i>₁ + <i>a</i>₂).</li>
+        </ul>
+      </div>
+      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=1&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=1&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a></p>
+
+      <div class="quellen">
+        <h4>Quellen</h4>
+        <ul>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 3.3 (Aufstellung, S. 13), 5.1 (Kristallflächen und Netzebenen, S. 33–34), 7.1 (hexagonales P-Gitter, Tab. 7.2, S. 88), 7.2.5 (Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, Richtungen ⟨100⟩ und ⟨210⟩, S. 107–109, Abb. 7.22), Tab. 7.4 (S. 115).</li>
+        </ul>
+      </div>
+    </section>
+
     <section id="projektion">
-      <h2><span class="nr">1</span>Die stereographische Projektion</h2>
+      <h2><span class="nr">2</span>Die stereographische Projektion</h2>
       <p class="lead">Kristalle sind dreidimensionale Körper. Die stereographische Projektion stellt die Orientierung aller ihrer Flächen eindeutig und übersichtlich in einer Ebene dar.</p>
 
       <div class="box ziele">
@@ -375,20 +448,20 @@ footer a { color: inherit; }
             <input type="range" id="proj-rho" min="-90" max="90" step="1" value="40">
             <output for="proj-rho" aria-live="polite"></output>
           </div>
-          <figcaption><b>Abb. 1.1</b> Links ein Schnitt durch die Umkugel: Die Normale der Fläche (dunkel) trifft die Kugel im Flächenpol P; der Strahl zum Südpol (bei Polen der unteren Halbkugel zum Nordpol) schneidet die Äquatorebene im Bildpunkt P′. Rechts derselbe Bildpunkt im Stereogramm. Mit dem Regler wandert der Pol über die Kugel.</figcaption>
+          <figcaption><b>Abb. 2.1</b> Links ein Schnitt durch die Umkugel: Die Normale der Fläche (dunkel) trifft die Kugel im Flächenpol P; der Strahl zum Südpol (bei Polen der unteren Halbkugel zum Nordpol) schneidet die Äquatorebene im Bildpunkt P′. Rechts derselbe Bildpunkt im Stereogramm. Mit dem Regler wandert der Pol über die Kugel.</figcaption>
         </figure>
 
         <p>Am Regler lässt sich ablesen: Ein Pol am Nordpol landet im Mittelpunkt des Stereogramms, ein Pol auf dem Äquator auf dem Grundkreis. Dazwischen rücken die Bildpunkte nicht gleichmässig nach aussen. Ein Schritt von 10° Poldistanz ist am Rand fast doppelt so lang wie in der Mitte. Abstände im Stereogramm sind deshalb kein direktes Mass für Winkel.</p>
-        <p>Abb. 1.2 zeigt die Konstruktion für einen ganzen Kristall, den Galenit (PbS) mit Würfel, Oktaeder und Rhombendodekaeder. Jede Fläche hat ihre Normale und ihren Pol; die Projektionsstrahlen führen zum Süd- bzw. Nordpol. Abb. 1.3 ist das fertige Stereogramm. Die Flächen (111) oben und (111̄) unten liegen genau übereinander, deshalb erscheint ihr Bild als Punkt im Kreis.</p>
+        <p>Abb. 2.2 zeigt die Konstruktion für einen ganzen Kristall, den Galenit (PbS) mit Würfel, Oktaeder und Rhombendodekaeder. Jede Fläche hat ihre Normale und ihren Pol; die Projektionsstrahlen führen zum Süd- bzw. Nordpol. Abb. 2.3 ist das fertige Stereogramm. Die Flächen (111) oben und (111̄) unten liegen genau übereinander, deshalb erscheint ihr Bild als Punkt im Kreis.</p>
 
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="side" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit" data-alt="3D-Konstruktion des Galenits">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 1.2</b> Galenit im Mittelpunkt der Umkugel, seitlich gesehen. Ziehen dreht die Ansicht.</figcaption>
+            <figcaption><b>Abb. 2.2</b> Galenit im Mittelpunkt der Umkugel, seitlich gesehen. Ziehen dreht die Ansicht.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit" data-alt="Stereogramm des Galenits">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 1.3</b> Stereogramm des Galenits: ● obere, ○ untere Halbkugel. Farben wie in Abb. 1.2: Würfel {100}, Oktaeder {111}, Rhombendodekaeder {110}.</figcaption>
+            <figcaption><b>Abb. 2.3</b> Stereogramm des Galenits: ● obere, ○ untere Halbkugel. Farben wie in Abb. 2.2: Würfel {100}, Oktaeder {111}, Rhombendodekaeder {110}.</figcaption>
           </figure>
         </div>
         <div class="box merke">
@@ -399,6 +472,7 @@ footer a { color: inherit; }
 
       <section id="koordinaten">
         <h3>Die Winkel φ und ρ</h3>
+        <p>Für das Stereogramm stellt man den Kristall wie in Kapitel 1 auf (<i>a</i> nach vorn, <i>b</i> nach rechts, <i>c</i> nach oben) und blickt von oben entlang <i>c</i>. Bei rechtwinkligen Achsen liegt dann der Pol von (001) im Mittelpunkt, (100), die nach vorn weisende Fläche, unten auf dem Grundkreis und (010) rechts. Bei schiefwinkligen Achsen (monoklin, triklin, hexagonal) weichen diese Pole davon ab, weil die Normale einer Fläche nicht mehr entlang der gleich benannten Achse liegt. Alle Flächen, die parallel zu <i>c</i> verlaufen, also (<i>hk</i>0), stehen senkrecht auf der Projektionsebene; ihre Pole liegen auf dem Grundkreis.</p>
         <p>Die Lage eines Pols lässt sich mit zwei Winkeln angeben, ähnlich wie geographische Länge und Breite auf dem Globus:</p>
         <ul>
           <li>Die <span class="term">Poldistanz</span> ρ ist der Winkel zwischen dem Pol und dem Nordpol, für Pole der oberen Halbkugel also 0° bis 90°. Für Pole der unteren Halbkugel misst man vom Südpol aus und setzt ein Minuszeichen: −90° bis 0°.</li>
@@ -421,18 +495,18 @@ footer a { color: inherit; }
         <p>Die stereographische Projektion hat zwei Eigenschaften, die sie für die Kristallographie so nützlich machen:</p>
         <ul>
           <li><span class="term">Kreistreue:</span> Jeder Kreis auf der Kugel wird wieder als Kreis oder Kreisbogen abgebildet. Grosskreise, also Kreise, deren Mittelpunkt der Kugelmittelpunkt ist, werden zu Kreisbögen, die den Grundkreis in zwei gegenüberliegenden Punkten treffen. Grosskreise durch Nord- und Südpol werden zu Geraden durch den Mittelpunkt. Auch ein Kleinkreis wird ein Kreis. Streng gilt die Kreistreue für jede Halbkugel für sich: Die untere Hälfte eines geneigten Grosskreises wird zum Nordpol hin projiziert und erscheint als zweiter Bogen durch dieselben Randpunkte, zur anderen Seite gekrümmt. Bei Zonenkreisen und Winkelbögen zeichnet die App diese untere Hälfte gestrichelt.</li>
-          <li><span class="term">Winkeltreue:</span> Die Winkel, unter denen sich zwei Kreise auf der Kugel schneiden, bleiben in der Projektion erhalten. So schneiden sich Längen- und Breitenkreise im Wulffschen Netz (Abb. 1.4, Vertiefung unten) wie auf dem Globus rechtwinklig.</li>
+          <li><span class="term">Winkeltreue:</span> Die Winkel, unter denen sich zwei Kreise auf der Kugel schneiden, bleiben in der Projektion erhalten. So schneiden sich Längen- und Breitenkreise im Wulffschen Netz (Abb. 2.4, Vertiefung unten) wie auf dem Globus rechtwinklig.</li>
         </ul>
-        <p>Die Projektion ist nicht längentreu (Regler in Abb. 1.1). Grosskreise sind besonders wichtig: Die Pole vieler Flächen eines Kristalls liegen auf wenigen Grosskreisen. Solche Flächen bilden eine Zone (Kapitel 4).</p>
+        <p>Die Projektion ist nicht längentreu (Regler in Abb. 2.1). Grosskreise sind besonders wichtig: Die Pole vieler Flächen eines Kristalls liegen auf wenigen Grosskreisen. Solche Flächen bilden eine Zone (Kapitel 7).</p>
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Kleinkreise, Winkel und das Wulffsche Netz</b></h4>
           <p>Kreis- und Winkeltreue helfen, ein Stereogramm zu lesen. Wer Winkel selbst ablesen oder ein Stereogramm von Hand konstruieren will, muss wissen, wo das Bild eines Kreises liegt und auf welchen Kreisen Winkel stimmen, und braucht eine Winkelskala.</p>
           <p>Der Mittelpunkt eines Kleinkreises im Stereogramm ist im Allgemeinen nicht das Bild seines Mittelpunkts auf der Kugel (eine Ausnahme sind Kleinkreise um den Nordpol).</p>
           <p>Die Normalen zweier Flächen spannen die Ebene eines Grosskreises auf. Nur dessen Bogen zwischen den beiden Polen ist der Normalenwinkel, ein Bogen auf einem Kleinkreis durch dieselben Pole ist es nicht. Deshalb dürfen Winkel nur auf Grosskreisen abgetragen oder abgelesen werden. Weil die Projektion zudem nicht längentreu ist, braucht man dafür eine Winkelskala, das Wulffsche Netz, und kein Lineal.</p>
-          <p>Zum Zeichnen von Hand benutzt man das <span class="term">Wulffsche Netz</span> (Abb. 1.4). Es ist die stereographische Projektion des Gradnetzes eines Globus, dessen Achse in der Projektionsebene liegt: Die Längenkreise sind Grosskreise, die Breitenkreise (ausser dem Äquator des Globus) Kleinkreise. Man zeichnet auf Transparentpapier, das über dem Netz um den Mittelpunkt drehbar ist, und dreht zwei Pole auf denselben Längenkreis, um ihren Winkel abzulesen.</p>
+          <p>Zum Zeichnen von Hand benutzt man das <span class="term">Wulffsche Netz</span> (Abb. 2.4). Es ist die stereographische Projektion des Gradnetzes eines Globus, dessen Achse in der Projektionsebene liegt: Die Längenkreise sind Grosskreise, die Breitenkreise (ausser dem Äquator des Globus) Kleinkreise. Man zeichnet auf Transparentpapier, das über dem Netz um den Mittelpunkt drehbar ist, und dreht zwei Pole auf denselben Längenkreis, um ihren Winkel abzulesen.</p>
         <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=1&amp;obj=0&amp;wulff=1" data-alt="Wulffsches Netz" style="max-width: 380px; margin-inline: auto;">
           <div class="fig-art"></div>
-          <figcaption><b>Abb. 1.4</b> Wulffsches Netz mit Linien im Abstand von 2°, kräftig alle 10°. Die App blendet es unter „Darstellung“ ein und kann es drehen.</figcaption>
+          <figcaption><b>Abb. 2.4</b> Wulffsches Netz mit Linien im Abstand von 2°, kräftig alle 10°. Die App blendet es unter „Darstellung“ ein und kann es drehen.</figcaption>
         </figure>
         </div>
       </section>
@@ -451,170 +525,25 @@ footer a { color: inherit; }
           <li>Der Winkel zwischen zwei Polen ist der Bogen auf dem Grosskreis durch beide Pole; von Hand misst man ihn mit dem Wulffschen Netz.</li>
         </ul>
       </div>
-      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=1&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=1&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=1&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
-
-      <div class="quellen">
-        <h4>Quellen</h4>
-        <ul>
-          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 5.3 (Gesetz der Winkelkonstanz, S. 38–39), 5.4 (Stereographische Projektion, S. 40–43, Abb. 5.9–5.12), 5.5 (Reflexionsgoniometer, S. 43–45, Abb. 5.15), 5.6 (Wulffsches Netz, Winkelkoordinaten, Kreis- und Winkeltreue, S. 45–47, Abb. 5.16–5.19).</li>
-          <li>Winkelkoordinaten des Galenits: Borchardt-Ott &amp; Sowa (2018), Aufgabe 5.13, Tab. 5.2 (S. 63–64).</li>
-        </ul>
-      </div>
-    </section>
-
-    <section id="formen">
-      <h2><span class="nr">2</span>Kristallformen im Stereogramm</h2>
-      <p class="lead">Gleichwertige Flächen eines Kristalls bilden eine Kristallform. Im Stereogramm erscheint jede Form als ein Muster von Polen, an dem man sie wiedererkennt.</p>
-
-      <div class="box ziele">
-        <h4>Lernziele</h4>
-        <ul>
-          <li>das Stereogramm einfacher Kristallformen zeichnen und ein Stereogramm einem Körper zuordnen</li>
-          <li>allgemeine und spezielle Form unterscheiden</li>
-          <li>erklären, was sich bei einer anderen Projektionsrichtung am Stereogramm ändert und was gleich bleibt</li>
-        </ul>
-        <h5>Zur Vertiefung</h5>
-        <ul>
-          <li>Flächensymmetrie und asymmetrische Flächeneinheit erklären und Grenzformen erkennen</li>
-        </ul>
-      </div>
-
-      <section id="aufstellung">
-        <h3>Aufstellung und Indizes</h3>
-        <p>Jede Kristallfläche verläuft parallel zu einer Schar von Netzebenen des Kristallgitters. Ihre Lage lässt sich deshalb mit den Miller'schen Indizes (<i>hkl</i>) angeben, jede Kante als Richtung [<i>uvw</i>]. Parallele Gegenflächen gehören zur selben Netzebenenschar, man unterscheidet sie aber als (<i>hkl</i>) und (<i>h̄k̄l̄</i>).</p>
-        <p>Für das Stereogramm stellt man den Kristall so auf, dass <i>a</i> nach vorn, <i>b</i> nach rechts und <i>c</i> nach oben zeigt, und blickt von oben entlang <i>c</i>. Bei rechtwinkligen Achsen liegt dann der Pol von (001) im Mittelpunkt, (100), die nach vorn weisende Fläche, unten auf dem Grundkreis und (010) rechts. Bei schiefwinkligen Achsen (monoklin, triklin, hexagonal) weichen diese Pole davon ab, weil die Normale einer Fläche nicht mehr entlang der gleich benannten Achse liegt. Alle Flächen, die parallel zu <i>c</i> verlaufen, also (<i>hk</i>0), stehen senkrecht auf der Projektionsebene; ihre Pole liegen auf dem Grundkreis.</p>
-      </section>
-
-      <section id="form">
-        <h3>Was ist eine Kristallform?</h3>
-        <p>Wendet man die Symmetrieoperationen eines Kristalls auf eine seiner Flächen an, so entstehen weitere, gleichwertige Flächen. Eine solche Menge äquivalenter Flächen ist eine <span class="term">Kristallform</span>. Man bezeichnet sie mit den Indizes einer ihrer Flächen in geschweiften Klammern, z. B. {100} für den Würfel. Die Zahl der Flächen einer Form ist ihre <span class="term">Flächenzahl</span>.</p>
-        <p>Die Pole einer Form bilden im Stereogramm ein regelmässiges Muster. Beim tetragonalen Prisma {100} stehen alle vier Flächen senkrecht auf der Projektionsebene: Ihre Pole liegen auf dem Grundkreis, je 90° voneinander entfernt (Abb. 2.1). Bei der tetragonalen Pyramide {101} sind alle vier Flächen gleich stark gegen die Projektionsebene geneigt; ihre Pole haben deshalb den gleichen Abstand vom Grundkreis (Abb. 2.2).</p>
-
-        <div class="fig-row">
-          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:c10&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonales Prisma mit Pinakoid in der Umkugel">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.1a</b> Tetragonales Prisma {100} mit Pinakoid {001} (grau) in der Umkugel, [001] ∥ Projektionsrichtung (senkrecht).</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:c10" data-alt="Stereogramm von tetragonalem Prisma und Pinakoid">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.1b</b> Stereogramm dazu: Die Prismenpole liegen auf dem Grundkreis, die beiden Pinakoidflächen oben und unten im Mittelpunkt (● im ○).</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4mm:c8&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonale Pyramide mit Pedion in der Umkugel">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.2a</b> Tetragonale Pyramide {101} mit Pedion (001̄) (grau), gleiche Projektionsrichtung.</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4mm:c8" data-alt="Stereogramm von tetragonaler Pyramide und Pedion">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.2b</b> Stereogramm dazu: vier Pole im gleichen Abstand vom Grundkreis; die Grundfläche zeigt nach unten (○ im Mittelpunkt).</figcaption>
-          </figure>
-        </div>
-
-        <p>Prisma, Pyramide, Pinakoid und Pedion sind <span class="term">offene Formen</span>: Allein umschliessen sie keinen Raum. Am Kristall treten sie immer zusammen mit anderen Formen auf, so wie in Abb. 2.1 und 2.2. Würfel, Oktaeder oder Dipyramiden sind dagegen <span class="term">geschlossene Formen</span>.</p>
-        <div class="box app">
-          <h4>In der App</h4>
-          <p>Die App ergänzt offene Formen grau durch Formen derselben Punktgruppe; unter „Gestalt“ lassen sie sich auch offen zeigen.</p>
-        </div>
-      </section>
-
-      <section id="allgemein">
-        <h3>Allgemeine Form, spezielle Form, Grenzform</h3>
-        <p>Ob eine Form viele oder wenige Flächen hat, hängt davon ab, wo ihr Pol relativ zu den Symmetrieelementen liegt (Kapitel 3).</p>
-        <ul>
-          <li>Die Pole einer <span class="term">allgemeinen Form</span> liegen auf keinem Symmetrieelement. Sie hat so viele Flächen, wie die Punktgruppe Symmetrieoperationen hat, und wird mit {<i>hkl</i>} bezeichnet.</li>
-          <li>Bei einer <span class="term">speziellen Form</span> liegt jeder Pol auf mindestens einem Symmetrieelement, und sie hat weniger Flächen. Ihre Indizes sind ein Spezialfall von {<i>hkl</i>}, z. B. {<i>hhl</i>}, {<i>h</i>0<i>l</i>} oder {100}.</li>
-        </ul>
-        <p>Abb. 2.3 und 2.4 zeigen beides in der Punktgruppe 4/<i>mmm</i>, mit dem Symmetriegerüst gedämpft im Hintergrund. Die ditetragonale Dipyramide {211} ist die allgemeine Form: 16 Pole, keiner auf einem Symmetrieelement. Die tetragonale Dipyramide {111} ist eine spezielle Form: Ihre 8 Pole liegen auf Spiegelebenen.</p>
-
-        <div class="fig-row">
-          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:g16&amp;strahlen=0&amp;normalen=0" data-alt="Ditetragonale Dipyramide in der Umkugel">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.3a</b> Allgemeine Form der Punktgruppe 4/<i>mmm</i>: ditetragonale Dipyramide {211} mit 16 Flächen, [001] senkrecht.</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:g16&amp;geruest=1" data-alt="Ditetragonale Dipyramide über dem Symmetriegerüst von 4/mmm">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.3b</b> Stereogramm dazu, über dem Symmetriegerüst: 16 Pole, keiner auf einem Symmetrieelement.</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:e14&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonale Dipyramide in der Umkugel">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.4a</b> Spezielle Form derselben Punktgruppe: tetragonale Dipyramide {111}, gleiche Projektionsrichtung.</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:e14&amp;geruest=1" data-alt="Tetragonale Dipyramide über dem Symmetriegerüst von 4/mmm">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.4b</b> Stereogramm dazu: Die 8 Pole liegen auf Spiegelebenen.</figcaption>
-          </figure>
-        </div>
-
-        <div class="box merke">
-          <h4>Merke</h4>
-          <p>Die allgemeine Form hat so viele Flächen, wie die Punktgruppe Operationen hat; ihre Pole liegen auf keinem Symmetrieelement. Die Pole spezieller Formen liegen auf Symmetrieelementen, ihre Flächenzahl ist kleiner.</p>
-        </div>
-        <div class="box vertiefung">
-          <h4>Vertiefung · <b>Flächensymmetrie, Freiheitsgrade und Grenzformen</b></h4>
-          <p>Warum hat eine spezielle Form weniger Flächen, und wie können Formen mit derselben Flächenzahl verschieden angeordnet sein? Dafür braucht man die Flächensymmetrie, die Kapitel 8 ausbaut, und den Begriff der Grenzform.</p>
-          <p>Entscheidend ist die <span class="term">Flächensymmetrie</span>: die Symmetrie, die eine einzelne Fläche innerhalb der Punktgruppe noch besitzt. Die Flächen einer allgemeinen Form haben die Flächensymmetrie 1, die einer speziellen Form eine höhere. Die Pole einer allgemeinen Form lassen sich in zwei Richtungen verschieben, ohne dass die Form verloren geht (zwei Freiheitsgrade).</p>
-          <p>Eine <span class="term">Grenzform</span> ist ein Spezialfall einer allgemeinen oder speziellen Form, mit gleicher Flächenzahl und Flächensymmetrie, aber anderer Anordnung der Flächen. Wandern in der Punktgruppe 4 die Pole der tetragonalen Pyramide {<i>hkl</i>} auf den Grundkreis, so entsteht das tetragonale Prisma {<i>hk</i>0}.</p>
-          <p>Wie gross der Teil der Kugel ist, der für eine Punktgruppe „zählt“, sagt die <span class="term">asymmetrische Flächeneinheit</span>: der kleinste Teil der Kugeloberfläche, der unter den Symmetrieoperationen die ganze Kugel ergibt. Bei 4/<i>mmm</i> ist sie ein sphärisches Dreieck zwischen den Polen von (001), (100) und (110), also ein Sechzehntel der Kugel. Bei 4/<i>mmm</i> sind alle Seiten dieses Dreiecks Spiegelebenen: Ein Pol im Inneren ergibt die allgemeine Form, ein Pol auf einer Seite oder Ecke eine spezielle Form.</p>
-          <p>Dieselbe geometrische Form kann in mehreren Punktgruppen vorkommen. Der Würfel tritt in allen fünf kubischen Punktgruppen auf; seine Pole liegen immer gleich, aber seine Flächen haben verschiedene Flächensymmetrie, in <i>m</i>3̄<i>m</i> z. B. 4<i>m</i>.<i>m</i>, in 23 nur 2.. (eine 2-zählige Achse); wie man diese Symbole liest und wie aus der Flächensymmetrie die Flächenzahl folgt, erklärt Kapitel 8. Die App macht das sichtbar: Mit „Flächensymmetrie zeigen“ trägt jede Fläche ein Muster in allgemeiner Lage (<a href="index.html#m=form&amp;sys=kubisch&amp;f=23:b34&amp;muster=1">Würfel in 23</a>, <a href="index.html#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;muster=1">Würfel in <i>m</i>3̄<i>m</i></a>).</p>
-        </div>
-      </section>
-
-      <section id="lage">
-        <h3>Andere Projektionsrichtung, gleicher Kristall</h3>
-        <p>Das Stereogramm hängt davon ab, welche Richtung des Kristalls zum Betrachter zeigt. Abb. 2.5–2.7 zeigen den Galenit mit [001], [111] und [110] als Projektionsrichtung. Die Winkel zwischen den Polen bleiben dabei gleich; nur der Blickwinkel ändert sich. Dreht man den Kristall, so wandern die Pole auf Kleinkreisen um die Drehachse.</p>
-        <p>Mit [111] als Projektionsrichtung liegt der Pol einer Oktaederfläche im Mittelpunkt, und die dreizählige Symmetrie um diese Richtung wird sichtbar; mit [110] die zweizählige. So lässt sich dieselbe Form aus verschiedenen Richtungen erkennen.</p>
-        <div class="fig-row fig-row3 fig-cols">
-          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;strahlen=0&amp;normalen=0" data-alt="Galenit in der Umkugel, Projektionsrichtung [001]">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.5a</b> Galenit, [001] senkrecht.</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;idx=0" data-alt="Galenit, Projektionsrichtung [001]">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.5b</b> Stereogramm, [001] ∥ Projektionsrichtung.</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=111&amp;strahlen=0&amp;normalen=0" data-alt="Galenit in der Umkugel, Projektionsrichtung [111]">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.6a</b> Galenit, [111] senkrecht.</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=111&amp;idx=0" data-alt="Galenit, Projektionsrichtung [111]">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.6b</b> Stereogramm, [111] ∥ Projektionsrichtung.</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=110&amp;strahlen=0&amp;normalen=0" data-alt="Galenit in der Umkugel, Projektionsrichtung [110]">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.7a</b> Galenit, [110] senkrecht.</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=110&amp;idx=0" data-alt="Galenit, Projektionsrichtung [110]">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 2.7b</b> Stereogramm, [110] ∥ Projektionsrichtung.</figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <div class="box zusammen">
-        <h4>Zusammenfassung</h4>
-        <ul>
-          <li>Eine Kristallform {<i>hkl</i>} ist die Menge der Flächen, die durch die Symmetrieoperationen auseinander hervorgehen.</li>
-          <li>Flächen parallel zur Projektionsrichtung haben ihre Pole auf dem Grundkreis, Flächen senkrecht dazu im Mittelpunkt.</li>
-          <li>Allgemeine Form: Pole auf keinem Symmetrieelement, Flächenzahl gleich der Zahl der Symmetrieoperationen. Spezielle Formen: Pole auf Symmetrieelementen, weniger Flächen.</li>
-          <li>Eine andere Projektionsrichtung dreht den Kristall auf der Umkugel: Das Stereogramm sieht anders aus, die Winkel zwischen den Flächennormalen bleiben gleich.</li>
-        </ul>
-        <h5>Zur Vertiefung</h5>
-        <ul>
-          <li>Die allgemeine Form hat die Flächensymmetrie 1, spezielle Formen eine höhere. Grenzformen: gleiche Flächenzahl und Flächensymmetrie, andere Anordnung.</li>
-        </ul>
-      </div>
       <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=2&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=2&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=2&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
 
       <div class="quellen">
         <h4>Quellen</h4>
         <ul>
-          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 3.3 (Aufstellung, S. 13), 5.1 (Kristallflächen und Netzebenen, S. 33–34), 5.2 (Kristallform und Tracht, S. 35), 5.4 (Abb. 5.13, S. 43), 5.6 (Drehung eines Oktaeders, Abb. 5.23, S. 49), 9.2 (Kristallform, allgemeine und spezielle Form, Grenzform, asymmetrische Flächeneinheit, S. 142–149, Abb. 9.5–9.9; Flächensymmetrien Tab. 9.5–9.8), 9.1 (Flächenzahl der allgemeinen Form und Ordnung der Gruppe, Abb. 9.3, S. 130), Abb. 15.2 (die 47 Kristallformen, S. 358–360).</li>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 3.3 (Aufstellung, S. 13), 5.3 (Gesetz der Winkelkonstanz, S. 38–39), 5.4 (Stereographische Projektion, S. 40–43, Abb. 5.9–5.12), 5.5 (Reflexionsgoniometer, S. 43–45, Abb. 5.15), 5.6 (Wulffsches Netz, Winkelkoordinaten, Kreis- und Winkeltreue, S. 45–47, Abb. 5.16–5.19).</li>
+          <li>Winkelkoordinaten des Galenits: Borchardt-Ott &amp; Sowa (2018), Aufgabe 5.13, Tab. 5.2 (S. 63–64).</li>
         </ul>
       </div>
     </section>
 
+    <section id="punktgruppen">
+      <h2><span class="nr">3</span>Symmetrieoperationen und Punktgruppen</h2>
+      <p class="lead">Die Symmetrie eines Kristalls beschreibt man durch die Operationen, die ihn mit sich selbst zur Deckung bringen. Zusammen bilden sie eine Gruppe, die Punktgruppe des Kristalls.</p>
+      <p class="fig-note">Dieses Kapitel ist in Arbeit: Symmetrieoperationen und Symmetrieelemente, Drehinversionsachsen, Gruppe und Untergruppe, Kristallsysteme und Kristallklassen.</p>
+    </section>
+
     <section id="symmetrie">
-      <h2><span class="nr">3</span>Symmetriegerüste im Stereogramm</h2>
+      <h2><span class="nr">4</span>Symmetriegerüste im Stereogramm</h2>
       <p class="lead">Das Stereogramm zeigt nicht nur die Flächen eines Kristalls, sondern auch seine Symmetrieelemente. Zusammen erklären sie, warum die Pole so liegen, wie sie liegen.</p>
 
       <div class="box ziele">
@@ -633,7 +562,7 @@ footer a { color: inherit; }
           <li><span class="term">Drehachse senkrecht zur Projektionsebene:</span> ein Symbol im Mittelpunkt. Die Symbole sind eine Linse für 2-zählige, ein Dreieck für 3-zählige, ein Quadrat für 4-zählige und ein Sechseck für 6-zählige Drehachsen; Drehinversionsachsen haben eigene Symbole.</li>
           <li><span class="term">Drehachse in der Projektionsebene:</span> zwei Symbole an gegenüberliegenden Stellen des Grundkreises, in der App mit einer dünnen Linie verbunden.</li>
           <li><span class="term">Geneigte Drehachse</span> (z. B. die 3-zähligen Achsen ⟨111⟩ im Würfel): Symbole im Inneren des Grundkreises.</li>
-          <li><span class="term">Spiegelebene:</span> ein kräftiger Grosskreis. Enthält sie die Projektionsrichtung, ist es eine Gerade durch den Mittelpunkt; liegt sie geneigt, ein Kreisbogen; liegt sie in der Projektionsebene, ist sie der kräftig gezeichnete Grundkreis. Im Symmetriegerüst zeichnet man von einer geneigten Spiegelebene nur einen Bogen; bei Zonenkreisen zeigt die App auch die untere Hälfte, gestrichelt (Kapitel 4).</li>
+          <li><span class="term">Spiegelebene:</span> ein kräftiger Grosskreis. Enthält sie die Projektionsrichtung, ist es eine Gerade durch den Mittelpunkt; liegt sie geneigt, ein Kreisbogen; liegt sie in der Projektionsebene, ist sie der kräftig gezeichnete Grundkreis. Im Symmetriegerüst zeichnet man von einer geneigten Spiegelebene nur einen Bogen; bei Zonenkreisen zeigt die App auch die untere Hälfte, gestrichelt (Kapitel 7).</li>
           <li><span class="term">Inversionszentrum:</span> ein kleiner Kreis im Mittelpunkt.</li>
         </ul>
         <p>Das Stereogramm aller Symmetrieelemente einer Punktgruppe ist ihr <span class="term">Symmetriegerüst</span>. Die Legende der App erklärt jedes Symbol, das gerade zu sehen ist.</p>
@@ -641,7 +570,7 @@ footer a { color: inherit; }
 
       <section id="abbilden">
         <h3>Wohin ein Symmetrieelement einen Pol bringt</h3>
-        <p>Abb. 3.1 zeigt für die einfachsten Symmetrieelemente, was mit einem Pol in allgemeiner Lage geschieht. Man kann es am Stereogramm ablesen, ohne die Kugel zu zeichnen:</p>
+        <p>Abb. 4.1 zeigt für die einfachsten Symmetrieelemente, was mit einem Pol in allgemeiner Lage geschieht. Man kann es am Stereogramm ablesen, ohne die Kugel zu zeichnen:</p>
         <ul>
           <li>Ein <span class="term">Inversionszentrum</span> 1̄ bringt den Pol an die gegenüberliegende Stelle und auf die andere Halbkugel.</li>
           <li>Eine <span class="term">2-zählige Drehachse senkrecht zur Projektionsebene</span> dreht ihn um 180°; er bleibt auf seiner Halbkugel.</li>
@@ -652,7 +581,7 @@ footer a { color: inherit; }
         <div class="fig-grid5">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=-1" data-alt="Punktgruppe 1̄ mit Pol in allgemeiner Lage">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 3.1a</b> 1̄</figcaption>
+            <figcaption><b>Abb. 4.1a</b> 1̄</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=2c" data-alt="2-zählige Achse senkrecht zur Projektionsebene">
             <div class="fig-art"></div>
@@ -671,55 +600,55 @@ footer a { color: inherit; }
             <figcaption><b>e</b> <i>m</i> in der Ebene</figcaption>
           </figure>
         </div>
-        <p class="fig-note"><b>Abb. 3.1</b> Ein Pol in allgemeiner Lage (gestrichelter Ring) und sein Bild unter (a) einem Inversionszentrum, (b) einer 2-zähligen Achse senkrecht zur Projektionsebene, (c) einer 2-zähligen Achse in der Projektionsebene, (d) einer Spiegelebene senkrecht und (e) parallel zur Projektionsebene. Jede Abbildung führt in die App; dort lässt sich der Pol ziehen.</p>
+        <p class="fig-note"><b>Abb. 4.1</b> Ein Pol in allgemeiner Lage (gestrichelter Ring) und sein Bild unter (a) einem Inversionszentrum, (b) einer 2-zähligen Achse senkrecht zur Projektionsebene, (c) einer 2-zähligen Achse in der Projektionsebene, (d) einer Spiegelebene senkrecht und (e) parallel zur Projektionsebene. Jede Abbildung führt in die App; dort lässt sich der Pol ziehen.</p>
       </section>
 
       <section id="bahn">
         <h3>Vom Pol zur Bahn</h3>
-        <p>Wendet man alle Symmetrieoperationen einer Punktgruppe auf einen Pol in allgemeiner Lage an, so entsteht seine Bahn: so viele Pole, wie die Gruppe Operationen hat. Das sind die Pole der allgemeinen Form aus Kapitel 2.</p>
-        <p>Symmetrieelemente erzeugen einander. Zwei zueinander senkrechte Spiegelebenen erzeugen in ihrer Schnittgeraden eine (mindestens) 2-zählige Drehachse. In <i>mmm</i> entstehen so aus den drei Spiegelebenen die drei 2-zähligen Achsen, und das vollständige Symbol lautet 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> (Abb. 3.2). Ebenso erzeugen eine 2-zählige Achse und ein Inversionszentrum auf ihr eine Spiegelebene senkrecht zur Achse.</p>
-        <p>Bei einer Drehinversionsachse sind Drehung und Inversion zu <em>einer</em> Operation gekoppelt; die einzelnen Operationen müssen dann keine Symmetrieoperationen sein. Abb. 3.3 und 3.4 vergleichen eine 4-zählige Drehachse mit einer 4-zähligen Drehinversionsachse 4̄: Bei 4 liegen alle vier Pole auf derselben Halbkugel, bei 4̄ wechseln sie mit jedem Schritt um 90° die Halbkugel. 4̄ enthält eine 2-zählige Drehachse, aber weder 4 noch ein Inversionszentrum.</p>
+        <p>Wendet man alle Symmetrieoperationen einer Punktgruppe auf einen Pol in allgemeiner Lage an, so entsteht seine Bahn: so viele Pole, wie die Gruppe Operationen hat. Das sind die Pole der allgemeinen Form (Kapitel 6).</p>
+        <p>Symmetrieelemente erzeugen einander. Zwei zueinander senkrechte Spiegelebenen erzeugen in ihrer Schnittgeraden eine (mindestens) 2-zählige Drehachse. In <i>mmm</i> entstehen so aus den drei Spiegelebenen die drei 2-zähligen Achsen, und das vollständige Symbol lautet 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> (Abb. 4.2). Ebenso erzeugen eine 2-zählige Achse und ein Inversionszentrum auf ihr eine Spiegelebene senkrecht zur Achse.</p>
+        <p>Bei einer Drehinversionsachse sind Drehung und Inversion zu <em>einer</em> Operation gekoppelt; die einzelnen Operationen müssen dann keine Symmetrieoperationen sein. Abb. 4.3 und 4.4 vergleichen eine 4-zählige Drehachse mit einer 4-zähligen Drehinversionsachse 4̄: Bei 4 liegen alle vier Pole auf derselben Halbkugel, bei 4̄ wechseln sie mit jedem Schritt um 90° die Halbkugel. 4̄ enthält eine 2-zählige Drehachse, aber weder 4 noch ein Inversionszentrum.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-app="#m=pg&amp;g=mmm" data-alt="Symmetriegerüst von mmm in 3D mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 3.2a</b> <i>mmm</i> in 3D: die drei Spiegelebenen (Scheiben), die 2-zähligen Achsen in ihren Schnittgeraden und die 8 äquivalenten Pole auf der Umkugel. Ziehen dreht die Ansicht.</figcaption>
+            <figcaption><b>Abb. 4.2a</b> <i>mmm</i> in 3D: die drei Spiegelebenen (Scheiben), die 2-zähligen Achsen in ihren Schnittgeraden und die 8 äquivalenten Pole auf der Umkugel. Ziehen dreht die Ansicht.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mmm" data-alt="Punktgruppe mmm mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 3.2b</b> <i>mmm</i> im Stereogramm: Drei Spiegelebenen erzeugen drei 2-zählige Achsen; der allgemeine Pol ergibt 8 äquivalente Pole.</figcaption>
+            <figcaption><b>Abb. 4.2b</b> <i>mmm</i> im Stereogramm: Drei Spiegelebenen erzeugen drei 2-zählige Achsen; der allgemeine Pol ergibt 8 äquivalente Pole.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4" data-alt="Punktgruppe 4 mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 3.3</b> 4: vier Pole auf derselben Halbkugel.</figcaption>
+            <figcaption><b>Abb. 4.3</b> 4: vier Pole auf derselben Halbkugel.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=-4" data-alt="Punktgruppe 4̄ mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 3.4</b> 4̄: Die Pole wechseln mit jeder Vierteldrehung die Halbkugel.</figcaption>
+            <figcaption><b>Abb. 4.4</b> 4̄: Die Pole wechseln mit jeder Vierteldrehung die Halbkugel.</figcaption>
           </figure>
         </div>
         <div class="box app">
           <h4>In der App</h4>
-          <p>Im Tab „Punktgruppen“ erzeugt das Objekt in allgemeiner Lage diese Bahn; man kann den Ausgangspol ziehen und durch Antippen auf die andere Halbkugel bringen. Nahe an einer Achse oder Spiegelebene rastet er ein; dann fallen Bilder zusammen, und es entstehen weniger Pole (Kapitel 8).</p>
+          <p>Im Tab „Punktgruppen“ erzeugt das Objekt in allgemeiner Lage diese Bahn; man kann den Ausgangspol ziehen und durch Antippen auf die andere Halbkugel bringen. Nahe an einer Achse oder Spiegelebene rastet er ein; dann fallen Bilder zusammen, und es entstehen weniger Pole (Kapitel 10).</p>
         </div>
       </section>
 
       <section id="speziell">
         <h3>Pole auf Symmetrieelementen</h3>
-        <p>Die Pole spezieller Formen liegen auf Symmetrieelementen. Am Galenit sieht man das, wenn man das Symmetriegerüst von <i>m</i>3̄<i>m</i> unter die Pole legt (Abb. 3.5 und 3.6): Die Pole des Würfels {100} liegen auf den 4-zähligen Achsen, die des Oktaeders {111} auf den 3̄-Achsen und die des Rhombendodekaeders {110} auf den 2-zähligen Achsen. Umgekehrt kann man aus einem Stereogramm von Flächenpolen auf die Symmetrie schliessen, indem man die Drehungen und Spiegelungen sucht, die das Muster der Pole in sich überführen. Eindeutig ist dieser Schluss aber nicht immer (Vertiefung am Ende des Abschnitts).</p>
+        <p>Die Pole spezieller Formen (Kapitel 6) liegen auf Symmetrieelementen. Am Galenit sieht man das, wenn man das Symmetriegerüst von <i>m</i>3̄<i>m</i> unter die Pole legt (Abb. 4.5 und 4.6): Die Pole des Würfels {100} liegen auf den 4-zähligen Achsen, die des Oktaeders {111} auf den 3̄-Achsen und die des Rhombendodekaeders {110} auf den 2-zähligen Achsen. Umgekehrt kann man aus einem Stereogramm von Flächenpolen auf die Symmetrie schliessen, indem man die Drehungen und Spiegelungen sucht, die das Muster der Pole in sich überführen. Eindeutig ist dieser Schluss aber nicht immer (Vertiefung am Ende des Abschnitts).</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=m-3m&amp;obj=0" data-alt="Symmetriegerüst der Punktgruppe m3̄m">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 3.5</b> Symmetriegerüst von <i>m</i>3̄<i>m</i>, Farben nach Blickrichtung (Kapitel 6).</figcaption>
+            <figcaption><b>Abb. 4.5</b> Symmetriegerüst von <i>m</i>3̄<i>m</i>, Farben nach Blickrichtung (Kapitel 5).</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;geruest=1&amp;idx=0" data-alt="Galenit über dem Symmetriegerüst von m3̄m">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 3.6</b> Galenit über dem Symmetriegerüst: Würfel {100} auf 4, Oktaeder {111} auf 3̄, Rhombendodekaeder {110} auf 2.</figcaption>
+            <figcaption><b>Abb. 4.6</b> Galenit über dem Symmetriegerüst: Würfel {100} auf 4, Oktaeder {111} auf 3̄, Rhombendodekaeder {110} auf 2.</figcaption>
           </figure>
         </div>
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Grenzen des Schlusses vom Polmuster auf die Punktgruppe</b></h4>
           <p>Wer aus einem Stereogramm die Punktgruppe bestimmt, sollte wissen, wann dieser Schluss nicht eindeutig ist.</p>
-          <p>Sucht man die Symmetrie auf diese Weise, erhält man die Symmetrie des Polmusters, und die kann höher sein als die Punktgruppe des Kristalls: Die Pole eines Würfels in 23 liegen genau wie in <i>m</i>3̄<i>m</i> (Kapitel 2), und selbst die allgemeine Form der Punktgruppe 4, die tetragonale Pyramide, hat ein Polmuster mit Spiegelebenen (Abb. 3.3). Sicher wird die Zuordnung erst, wenn mehrere Formen zusammen oder die Symmetrie der Flächen selbst die höhere Symmetrie ausschliessen; die App zeigt Letztere mit „Flächensymmetrie zeigen“.</p>
+          <p>Sucht man die Symmetrie auf diese Weise, erhält man die Symmetrie des Polmusters, und die kann höher sein als die Punktgruppe des Kristalls: Die Pole eines Würfels in 23 liegen genau wie in <i>m</i>3̄<i>m</i> (Kapitel 6), und selbst die allgemeine Form der Punktgruppe 4, die tetragonale Pyramide, hat ein Polmuster mit Spiegelebenen (Abb. 4.3). Sicher wird die Zuordnung erst, wenn mehrere Formen zusammen oder die Symmetrie der Flächen selbst die höhere Symmetrie ausschliessen; die App zeigt Letztere mit „Flächensymmetrie zeigen“.</p>
         </div>
       </section>
 
@@ -736,7 +665,7 @@ footer a { color: inherit; }
           <li>Das Polmuster einer Form kann höhere Symmetrie haben als die Punktgruppe des Kristalls.</li>
         </ul>
       </div>
-      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=3&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=3&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=3&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
+      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=4&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=4&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=4&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
 
       <div class="quellen">
         <h4>Quellen</h4>
@@ -747,8 +676,264 @@ footer a { color: inherit; }
       </div>
     </section>
 
+    <section id="blickrichtungen">
+      <h2><span class="nr">5</span>Blickrichtungen</h2>
+      <p class="lead">Das Hermann-Mauguin-Symbol einer Punktgruppe ist eine kurze Liste: Für jede Klasse gleichwertiger Richtungen sagt es, welche Symmetrieelemente dort liegen. Diese Richtungen heissen Blickrichtungen.</p>
+
+      <div class="box ziele">
+        <h4>Lernziele</h4>
+        <ul>
+          <li>die Blickrichtungen eines Kristallsystems angeben</li>
+          <li>ein Hermann-Mauguin-Symbol Position für Position lesen</li>
+          <li>volles und gekürztes Symbol ineinander überführen</li>
+        </ul>
+      </div>
+
+      <section id="blick-def">
+        <h3>Was ist eine Blickrichtung?</h3>
+        <p>Drehachsen und Normalen von Spiegelebenen können in einem Kristall nur in ganz bestimmten Richtungen liegen. Diese Richtungen bilden höchstens drei Klassen: Innerhalb einer Klasse gehen die Richtungen durch Symmetrieoperationen ineinander über, Richtungen verschiedener Klassen nicht. Diese Klassen symmetrisch nicht äquivalenter Symmetrierichtungen heissen <span class="term">Blickrichtungen</span>. Welche es sind, hängt vom Kristallsystem und dem gewählten Achsensystem ab; trigonale Kristalle werden hier wie in der Vorlesung immer mit hexagonalen Achsen beschrieben:</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Kristallsystem</th><th>1. Blickrichtung</th><th>2. Blickrichtung</th><th>3. Blickrichtung</th></tr></thead>
+            <tbody>
+              <tr><td>Triklin</td><td>–</td><td>–</td><td>–</td></tr>
+              <tr><td>Monoklin</td><td>[010]</td><td>–</td><td>–</td></tr>
+              <tr><td>Orthorhombisch</td><td>[100]</td><td>[010]</td><td>[001]</td></tr>
+              <tr><td>Tetragonal</td><td>[001]</td><td>⟨100⟩</td><td>⟨110⟩</td></tr>
+              <tr><td>Trigonal, hexagonal</td><td>[001]</td><td>⟨100⟩</td><td>⟨210⟩</td></tr>
+              <tr><td>Kubisch</td><td>⟨100⟩</td><td>⟨111⟩</td><td>⟨110⟩</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Spitze Klammern ⟨<i>uvw</i>⟩ bezeichnen eine Richtung und alle zu ihr gleichwertigen Richtungen; tetragonal umfasst ⟨100⟩ z. B. [100] und [010]. Im monoklinen System gibt es nur eine Blickrichtung, die <span class="term">eindeutige Achse</span> (in den International Tables <i>unique axis</i>): die Richtung der 2-zähligen Achse bzw. der Normalen der Spiegelebene. Standard ist <i>b</i> als eindeutige Achse, so auch in der Tabelle; gebräuchlich ist auch <i>c</i>, dann ist die Blickrichtung [001]. Die App bietet beide Aufstellungen an. Ältere Bezeichnungen wie „1. Aufstellung“ und „2. Aufstellung“ sind nicht eindeutig: Die International Tables von 1952 meinten damit <i>c</i> bzw. <i>b</i>, Borchardt-Ott verwendet sie umgekehrt.</p>
+        <p>Die Blickrichtung ist etwas anderes als die Projektionsrichtung des Stereogramms (Kapitel 6): Die Projektionsrichtung wählt man frei, die Blickrichtungen sind durch die Symmetrie festgelegt.</p>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Schreibweise in den International Tables</b></h4>
+          <p>Wer in den International Tables nachschlägt, findet für das hexagonale System eine andere Schreibweise.</p>
+          <p>Die International Tables schreiben die dritte hexagonale Blickrichtung als ⟨1̄10⟩; das ist dieselbe Familie wie ⟨210⟩, denn [1̄10] gehört zu ihr.</p>
+        </div>
+      </section>
+
+      <section id="symbol">
+        <h3>Das Hermann-Mauguin-Symbol lesen</h3>
+        <p>Jede Position des Symbols gehört zu einer Blickrichtung, in der Reihenfolge der Tabelle. An jeder Position steht, was zu dieser Richtung gehört: Achsen parallel, Spiegelebenen senkrecht. Also eine Drehachse oder Drehinversionsachse <i>X</i> entlang der Richtung, eine Spiegelebene mit der Richtung als Normale (<i>m</i>) oder beides (<i>X</i>/<i>m</i>). Gleichwertige Elemente werden nur einmal genannt. Gehört zu einer Blickrichtung nichts, fällt ihre Position am Ende des Symbols weg (z. B. 4/<i>m</i>, 23).</p>
+        <p>Am Beispiel 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> (Abb. 5.1–5.3):</p>
+        <ul>
+          <li>1. Position [001]: eine 4-zählige Drehachse entlang <i>c</i> und eine Spiegelebene senkrecht dazu;</li>
+          <li>2. Position ⟨100⟩: 2-zählige Achsen entlang <i>a</i> und <i>b</i>, Spiegelebenen senkrecht dazu;</li>
+          <li>3. Position ⟨110⟩: 2-zählige Achsen entlang der Diagonalen, Spiegelebenen senkrecht dazu.</li>
+        </ul>
+        <div class="fig-row fig-row3">
+          <figure class="fig-card" data-kind="stereo" data-dirs="1" data-app="#m=pg&amp;g=4/mmm&amp;obj=0" data-alt="4/mmm, nur 1. Blickrichtung">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.1</b> 4/<i>mmm</i>, 1. Blickrichtung [001]: 4/<i>m</i></figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-dirs="2" data-app="#m=pg&amp;g=4/mmm&amp;obj=0" data-alt="4/mmm, nur 2. Blickrichtung">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.2</b> 2. Blickrichtung ⟨100⟩: 2/<i>m</i></figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-dirs="3" data-app="#m=pg&amp;g=4/mmm&amp;obj=0" data-alt="4/mmm, nur 3. Blickrichtung">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.3</b> 3. Blickrichtung ⟨110⟩: 2/<i>m</i></figcaption>
+          </figure>
+        </div>
+        <p>Kubisch steht ⟨100⟩ an erster Stelle, ⟨111⟩ an zweiter. Beim Galenit (<i>m</i>3̄<i>m</i>) liegen entlang ⟨100⟩ 4-zählige Achsen mit Spiegelebenen senkrecht dazu (4/<i>m</i>), entlang der Raumdiagonalen ⟨111⟩ 3̄-Achsen, entlang ⟨110⟩ 2-zählige Achsen mit Spiegelebenen senkrecht dazu (2/<i>m</i>) (Abb. 5.4–5.6). Ein kubisches Symbol erkennt man an der 3 oder 3̄ an zweiter Stelle.</p>
+        <div class="fig-row fig-row3">
+          <figure class="fig-card" data-kind="stereo" data-dirs="1" data-app="#m=pg&amp;g=m-3m&amp;obj=0" data-alt="m3̄m, nur 1. Blickrichtung">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.4</b> <i>m</i>3̄<i>m</i>, ⟨100⟩: 4/<i>m</i></figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-dirs="2" data-app="#m=pg&amp;g=m-3m&amp;obj=0" data-alt="m3̄m, nur 2. Blickrichtung">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.5</b> ⟨111⟩: 3̄</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-dirs="3" data-app="#m=pg&amp;g=m-3m&amp;obj=0" data-alt="m3̄m, nur 3. Blickrichtung">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.6</b> ⟨110⟩: 2/<i>m</i></figcaption>
+          </figure>
+        </div>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Die 1 als Platzhalter</b></h4>
+          <p>Am Ende des Symbols darf eine leere Position wegfallen. Dazwischen geht das nicht, denn sonst wüsste man nicht mehr, welche Position zu welcher Blickrichtung gehört.</p>
+          <p>Steht eine leere Position zwischen besetzten Positionen, schreibt man eine 1 (z. B. 31<i>m</i> gegenüber 3<i>m</i>1).</p>
+        </div>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>Die App färbt die Symmetrieelemente nach ihrer Blickrichtung (violett, grün, ocker für die 1., 2. und 3. Position), auch im vollen Symbol und in der Infobox. In der 3D-Ansicht lassen sich die Blickrichtungen einzeln ein- und ausblenden.</p>
+        </div>
+      </section>
+
+      <section id="kurz">
+        <h3>Volles und gekürztes Symbol</h3>
+        <p>Einige Symbole sind überbestimmt, weil Symmetrieelemente einander erzeugen (Kapitel 4). In 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> erzeugen die drei zueinander senkrechten Spiegelebenen die 2-zähligen Achsen von selbst; das gekürzte Symbol lautet <i>mmm</i>. Ebenso wird 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> zu 4/<i>mmm</i> und 4/<i>m</i> 3̄ 2/<i>m</i> zu <i>m</i>3̄<i>m</i>. Welche Teile entfallen, ist festgelegt (Borchardt-Ott Tab. 9.2); die 4 in 4/<i>mmm</i> bleibt stehen, weil sie das tetragonale System kennzeichnet, während in <i>m</i>3̄<i>m</i> die 3̄ an zweiter Stelle das kubische System anzeigt. Das gekürzte Symbol behält die Positionen bei: In <i>m</i>3̄<i>m</i> steht das erste <i>m</i> für ⟨100⟩, das zweite für ⟨110⟩. Die App zeigt zu jeder Punktgruppe beide Symbole.</p>
+      </section>
+
+      <div class="box zusammen">
+        <h4>Zusammenfassung</h4>
+        <ul>
+          <li>Blickrichtungen sind die höchstens drei Klassen nicht gleichwertiger Symmetrierichtungen; sie hängen nur vom Kristallsystem ab.</li>
+          <li>Jede Position des Hermann-Mauguin-Symbols gehört zu einer Blickrichtung: Achsen parallel, Spiegelebenen senkrecht zu ihr.</li>
+          <li>Das gekürzte Symbol lässt Elemente weg, die von den übrigen erzeugt werden, z. B. <i>mmm</i> für 2/<i>m</i> 2/<i>m</i> 2/<i>m</i>.</li>
+        </ul>
+      </div>
+      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=5&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=5&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=5&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
+
+      <div class="quellen">
+        <h4>Quellen</h4>
+        <ul>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 6.4.2 (Schreibweise ⟨<i>uvw</i>⟩, S. 78), 7.1 (Blickrichtungen, Tab. 7.3, S. 88–89), 7.2.2–7.2.6 (Symbole der Gitter nach Blickrichtungen, S. 104–111, monoklin 1. und 2. Aufstellung S. 104 Fussnote 6, Abb. 7.19, 7.21, 7.23, 7.24), 9.1 (gekürzte Symbole, Abb. 9.1, Tab. 9.2, S. 128–130), 9.2 (Galenit, S. 131, Abb. 9.4, S. 142).</li>
+          <li>International Tables for Crystallography, Vol. A (2006), Teil 2 (Symmetrierichtungen der Gitter), Abschn. 2.2.16.2 (monokline Aufstellungen <i>unique axis b</i> und <i>c</i>, Standard <i>b</i>; frühere Bezeichnungen „1st/2nd setting“).</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="formen">
+      <h2><span class="nr">6</span>Kristallformen im Stereogramm</h2>
+      <p class="lead">Gleichwertige Flächen eines Kristalls bilden eine Kristallform. Im Stereogramm erscheint jede Form als ein Muster von Polen, an dem man sie wiedererkennt.</p>
+
+      <div class="box ziele">
+        <h4>Lernziele</h4>
+        <ul>
+          <li>das Stereogramm einfacher Kristallformen zeichnen und ein Stereogramm einem Körper zuordnen</li>
+          <li>allgemeine und spezielle Form unterscheiden</li>
+          <li>erklären, was sich bei einer anderen Projektionsrichtung am Stereogramm ändert und was gleich bleibt</li>
+        </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
+          <li>Flächensymmetrie und asymmetrische Flächeneinheit erklären und Grenzformen erkennen</li>
+        </ul>
+      </div>
+
+      <section id="form">
+        <h3>Was ist eine Kristallform?</h3>
+        <p>Wendet man die Symmetrieoperationen eines Kristalls auf eine seiner Flächen an, so entstehen weitere, gleichwertige Flächen. Eine solche Menge äquivalenter Flächen ist eine <span class="term">Kristallform</span>. Man bezeichnet sie mit den Indizes einer ihrer Flächen in geschweiften Klammern, z. B. {100} für den Würfel. Die Zahl der Flächen einer Form ist ihre <span class="term">Flächenzahl</span>.</p>
+        <p>Die Pole einer Form bilden im Stereogramm ein regelmässiges Muster. Beim tetragonalen Prisma {100} stehen alle vier Flächen senkrecht auf der Projektionsebene: Ihre Pole liegen auf dem Grundkreis, je 90° voneinander entfernt (Abb. 6.1). Bei der tetragonalen Pyramide {101} sind alle vier Flächen gleich stark gegen die Projektionsebene geneigt; ihre Pole haben deshalb den gleichen Abstand vom Grundkreis (Abb. 6.2).</p>
+
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:c10&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonales Prisma mit Pinakoid in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.1a</b> Tetragonales Prisma {100} mit Pinakoid {001} (grau) in der Umkugel, [001] ∥ Projektionsrichtung (senkrecht).</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:c10" data-alt="Stereogramm von tetragonalem Prisma und Pinakoid">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.1b</b> Stereogramm dazu: Die Prismenpole liegen auf dem Grundkreis, die beiden Pinakoidflächen oben und unten im Mittelpunkt (● im ○).</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4mm:c8&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonale Pyramide mit Pedion in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.2a</b> Tetragonale Pyramide {101} mit Pedion (001̄) (grau), gleiche Projektionsrichtung.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4mm:c8" data-alt="Stereogramm von tetragonaler Pyramide und Pedion">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.2b</b> Stereogramm dazu: vier Pole im gleichen Abstand vom Grundkreis; die Grundfläche zeigt nach unten (○ im Mittelpunkt).</figcaption>
+          </figure>
+        </div>
+
+        <p>Prisma, Pyramide, Pinakoid und Pedion sind <span class="term">offene Formen</span>: Allein umschliessen sie keinen Raum. Am Kristall treten sie immer zusammen mit anderen Formen auf, so wie in Abb. 6.1 und 6.2. Würfel, Oktaeder oder Dipyramiden sind dagegen <span class="term">geschlossene Formen</span>.</p>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>Die App ergänzt offene Formen grau durch Formen derselben Punktgruppe; unter „Gestalt“ lassen sie sich auch offen zeigen.</p>
+        </div>
+      </section>
+
+      <section id="allgemein">
+        <h3>Allgemeine Form, spezielle Form, Grenzform</h3>
+        <p>Ob eine Form viele oder wenige Flächen hat, hängt davon ab, wo ihr Pol relativ zu den Symmetrieelementen liegt (Kapitel 4).</p>
+        <ul>
+          <li>Die Pole einer <span class="term">allgemeinen Form</span> liegen auf keinem Symmetrieelement. Sie hat so viele Flächen, wie die Punktgruppe Symmetrieoperationen hat, und wird mit {<i>hkl</i>} bezeichnet.</li>
+          <li>Bei einer <span class="term">speziellen Form</span> liegt jeder Pol auf mindestens einem Symmetrieelement, und sie hat weniger Flächen. Ihre Indizes sind ein Spezialfall von {<i>hkl</i>}, z. B. {<i>hhl</i>}, {<i>h</i>0<i>l</i>} oder {100}.</li>
+        </ul>
+        <p>Abb. 6.3 und 6.4 zeigen beides in der Punktgruppe 4/<i>mmm</i>, mit dem Symmetriegerüst gedämpft im Hintergrund. Die ditetragonale Dipyramide {211} ist die allgemeine Form: 16 Pole, keiner auf einem Symmetrieelement. Die tetragonale Dipyramide {111} ist eine spezielle Form: Ihre 8 Pole liegen auf Spiegelebenen.</p>
+
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:g16&amp;strahlen=0&amp;normalen=0" data-alt="Ditetragonale Dipyramide in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.3a</b> Allgemeine Form der Punktgruppe 4/<i>mmm</i>: ditetragonale Dipyramide {211} mit 16 Flächen, [001] senkrecht.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:g16&amp;geruest=1" data-alt="Ditetragonale Dipyramide über dem Symmetriegerüst von 4/mmm">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.3b</b> Stereogramm dazu, über dem Symmetriegerüst: 16 Pole, keiner auf einem Symmetrieelement.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:e14&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonale Dipyramide in der Umkugel">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.4a</b> Spezielle Form derselben Punktgruppe: tetragonale Dipyramide {111}, gleiche Projektionsrichtung.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:e14&amp;geruest=1" data-alt="Tetragonale Dipyramide über dem Symmetriegerüst von 4/mmm">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.4b</b> Stereogramm dazu: Die 8 Pole liegen auf Spiegelebenen.</figcaption>
+          </figure>
+        </div>
+
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Die allgemeine Form hat so viele Flächen, wie die Punktgruppe Operationen hat; ihre Pole liegen auf keinem Symmetrieelement. Die Pole spezieller Formen liegen auf Symmetrieelementen, ihre Flächenzahl ist kleiner.</p>
+        </div>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Flächensymmetrie, Freiheitsgrade und Grenzformen</b></h4>
+          <p>Warum hat eine spezielle Form weniger Flächen, und wie können Formen mit derselben Flächenzahl verschieden angeordnet sein? Dafür braucht man die Flächensymmetrie, die Kapitel 10 ausbaut, und den Begriff der Grenzform.</p>
+          <p>Entscheidend ist die <span class="term">Flächensymmetrie</span>: die Symmetrie, die eine einzelne Fläche innerhalb der Punktgruppe noch besitzt. Die Flächen einer allgemeinen Form haben die Flächensymmetrie 1, die einer speziellen Form eine höhere. Die Pole einer allgemeinen Form lassen sich in zwei Richtungen verschieben, ohne dass die Form verloren geht (zwei Freiheitsgrade).</p>
+          <p>Eine <span class="term">Grenzform</span> ist ein Spezialfall einer allgemeinen oder speziellen Form, mit gleicher Flächenzahl und Flächensymmetrie, aber anderer Anordnung der Flächen. Wandern in der Punktgruppe 4 die Pole der tetragonalen Pyramide {<i>hkl</i>} auf den Grundkreis, so entsteht das tetragonale Prisma {<i>hk</i>0}.</p>
+          <p>Wie gross der Teil der Kugel ist, der für eine Punktgruppe „zählt“, sagt die <span class="term">asymmetrische Flächeneinheit</span>: der kleinste Teil der Kugeloberfläche, der unter den Symmetrieoperationen die ganze Kugel ergibt. Bei 4/<i>mmm</i> ist sie ein sphärisches Dreieck zwischen den Polen von (001), (100) und (110), also ein Sechzehntel der Kugel. Bei 4/<i>mmm</i> sind alle Seiten dieses Dreiecks Spiegelebenen: Ein Pol im Inneren ergibt die allgemeine Form, ein Pol auf einer Seite oder Ecke eine spezielle Form.</p>
+          <p>Dieselbe geometrische Form kann in mehreren Punktgruppen vorkommen. Der Würfel tritt in allen fünf kubischen Punktgruppen auf; seine Pole liegen immer gleich, aber seine Flächen haben verschiedene Flächensymmetrie, in <i>m</i>3̄<i>m</i> z. B. 4<i>m</i>.<i>m</i>, in 23 nur 2.. (eine 2-zählige Achse); wie man diese Symbole liest und wie aus der Flächensymmetrie die Flächenzahl folgt, erklärt Kapitel 10. Die App macht das sichtbar: Mit „Flächensymmetrie zeigen“ trägt jede Fläche ein Muster in allgemeiner Lage (<a href="index.html#m=form&amp;sys=kubisch&amp;f=23:b34&amp;muster=1">Würfel in 23</a>, <a href="index.html#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;muster=1">Würfel in <i>m</i>3̄<i>m</i></a>).</p>
+        </div>
+      </section>
+
+      <section id="lage">
+        <h3>Andere Projektionsrichtung, gleicher Kristall</h3>
+        <p>Das Stereogramm hängt davon ab, welche Richtung des Kristalls zum Betrachter zeigt. Abb. 6.5–6.7 zeigen den Galenit mit [001], [111] und [110] als Projektionsrichtung. Die Winkel zwischen den Polen bleiben dabei gleich; nur der Blickwinkel ändert sich. Dreht man den Kristall, so wandern die Pole auf Kleinkreisen um die Drehachse.</p>
+        <p>Mit [111] als Projektionsrichtung liegt der Pol einer Oktaederfläche im Mittelpunkt, und die dreizählige Symmetrie um diese Richtung wird sichtbar; mit [110] die zweizählige. So lässt sich dieselbe Form aus verschiedenen Richtungen erkennen.</p>
+        <div class="fig-row fig-row3 fig-cols">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;strahlen=0&amp;normalen=0" data-alt="Galenit in der Umkugel, Projektionsrichtung [001]">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.5a</b> Galenit, [001] senkrecht.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;idx=0" data-alt="Galenit, Projektionsrichtung [001]">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.5b</b> Stereogramm, [001] ∥ Projektionsrichtung.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=111&amp;strahlen=0&amp;normalen=0" data-alt="Galenit in der Umkugel, Projektionsrichtung [111]">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.6a</b> Galenit, [111] senkrecht.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=111&amp;idx=0" data-alt="Galenit, Projektionsrichtung [111]">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.6b</b> Stereogramm, [111] ∥ Projektionsrichtung.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=110&amp;strahlen=0&amp;normalen=0" data-alt="Galenit in der Umkugel, Projektionsrichtung [110]">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.7a</b> Galenit, [110] senkrecht.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;lage=110&amp;idx=0" data-alt="Galenit, Projektionsrichtung [110]">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.7b</b> Stereogramm, [110] ∥ Projektionsrichtung.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <div class="box zusammen">
+        <h4>Zusammenfassung</h4>
+        <ul>
+          <li>Eine Kristallform {<i>hkl</i>} ist die Menge der Flächen, die durch die Symmetrieoperationen auseinander hervorgehen.</li>
+          <li>Flächen parallel zur Projektionsrichtung haben ihre Pole auf dem Grundkreis, Flächen senkrecht dazu im Mittelpunkt.</li>
+          <li>Allgemeine Form: Pole auf keinem Symmetrieelement, Flächenzahl gleich der Zahl der Symmetrieoperationen. Spezielle Formen: Pole auf Symmetrieelementen, weniger Flächen.</li>
+          <li>Eine andere Projektionsrichtung dreht den Kristall auf der Umkugel: Das Stereogramm sieht anders aus, die Winkel zwischen den Flächennormalen bleiben gleich.</li>
+        </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
+          <li>Die allgemeine Form hat die Flächensymmetrie 1, spezielle Formen eine höhere. Grenzformen: gleiche Flächenzahl und Flächensymmetrie, andere Anordnung.</li>
+        </ul>
+      </div>
+      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=6&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=6&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=6&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
+
+      <div class="quellen">
+        <h4>Quellen</h4>
+        <ul>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 5.2 (Kristallform und Tracht, S. 35), 5.4 (Abb. 5.13, S. 43), 5.6 (Drehung eines Oktaeders, Abb. 5.23, S. 49), 9.2 (Kristallform, allgemeine und spezielle Form, Grenzform, asymmetrische Flächeneinheit, S. 142–149, Abb. 9.5–9.9; Flächensymmetrien Tab. 9.5–9.8), 9.1 (Flächenzahl der allgemeinen Form und Ordnung der Gruppe, Abb. 9.3, S. 130), Abb. 15.2 (die 47 Kristallformen, S. 358–360).</li>
+        </ul>
+      </div>
+    </section>
+
     <section id="zonen">
-      <h2><span class="nr">4</span>Zonen</h2>
+      <h2><span class="nr">7</span>Zonen</h2>
       <p class="lead">An vielen Kristallen schneiden sich mehrere Flächen in parallelen Kanten. Solche Flächen bilden eine Zone. Im Stereogramm liegen ihre Pole auf einem Grosskreis.</p>
 
       <div class="box ziele">
@@ -768,15 +953,15 @@ footer a { color: inherit; }
       <section id="zone">
         <h3>Was ist eine Zone?</h3>
         <p>Eine <span class="term">Zone</span> ist eine Schar von Kristallflächen, deren Schnittkanten parallel verlaufen; meist sind es drei oder mehr Flächen. Die Flächen einer Zone heissen <span class="term">tautozonal</span>, die gemeinsame Richtung ihrer Kanten ist die <span class="term">Zonenachse</span> [<i>uvw</i>]. Bereits zwei nicht parallele Flächen legen eine Zone fest: Ihre Schnittkante gibt die Richtung der Zonenachse an.</p>
-        <p>Die Normalen aller Flächen einer Zone stehen senkrecht auf der Zonenachse und liegen deshalb in einer Ebene. Am Galenit gehört die Würfelfläche (100) zu vier Zonen: [010], [001], [011] und [01̄1]. Abb. 4.1 zeigt die Zone [001] in 3D: Alle Flächen, deren Kanten parallel zur <i>c</i>-Achse verlaufen, sind hervorgehoben.</p>
+        <p>Die Normalen aller Flächen einer Zone stehen senkrecht auf der Zonenachse und liegen deshalb in einer Ebene. Am Galenit gehört die Würfelfläche (100) zu vier Zonen: [010], [001], [011] und [01̄1]. Abb. 7.1 zeigt die Zone [001] in 3D: Alle Flächen, deren Kanten parallel zur <i>c</i>-Achse verlaufen, sind hervorgehoben.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;w=zone&amp;zonen=0,0,1" data-alt="Galenit mit der Zone [001] in 3D">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.1</b> Zone [001] am Galenit: die 8 Flächen mit Kanten parallel zu <i>c</i>, ihr Zonenkreis auf der Umkugel und die Zonenachse.</figcaption>
+            <figcaption><b>Abb. 7.1</b> Zone [001] am Galenit: die 8 Flächen mit Kanten parallel zu <i>c</i>, ihr Zonenkreis auf der Umkugel und die Zonenachse.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;w=zone&amp;zonen=0,0,1" data-alt="Stereogramm des Galenits mit der Zone [001]">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.2</b> Dieselbe Zone im Stereogramm: Ihre Pole liegen auf dem Grundkreis, die Zonenachse [001] (×) im Mittelpunkt.</figcaption>
+            <figcaption><b>Abb. 7.2</b> Dieselbe Zone im Stereogramm: Ihre Pole liegen auf dem Grundkreis, die Zonenachse [001] (×) im Mittelpunkt.</figcaption>
           </figure>
         </div>
       </section>
@@ -807,15 +992,15 @@ footer a { color: inherit; }
       <section id="schnitt">
         <h3>Flächen im Schnittpunkt zweier Zonen</h3>
         <p>Genauso bestimmt man die Fläche, die zwei Zonen gemeinsam ist: (<i>hkl</i>) = [<i>u</i>₁<i>v</i>₁<i>w</i>₁] × [<i>u</i>₂<i>v</i>₂<i>w</i>₂]. Im Stereogramm liegt ihr Pol im Schnittpunkt der beiden Zonenkreise. Zwei Grosskreise schneiden sich in zwei gegenüberliegenden Punkten; sie gehören zu einer Fläche und ihrer Gegenfläche (<i>hkl</i>) und (<i>h̄k̄l̄</i>).</p>
-        <p>Am Galenit schneiden sich die Zonen [1̄10] und [01̄1] im Pol von (111): (1·1 − 0·(−1), 0·0 − (−1)·1, (−1)·(−1) − 1·0) = (111). Auch die Zone [1̄01] geht durch diesen Pol (Abb. 4.3). So lassen sich die Flächen eines Kristalls Schritt für Schritt über ihre Zonen indizieren.</p>
+        <p>Am Galenit schneiden sich die Zonen [1̄10] und [01̄1] im Pol von (111): (1·1 − 0·(−1), 0·0 − (−1)·1, (−1)·(−1) − 1·0) = (111). Auch die Zone [1̄01] geht durch diesen Pol (Abb. 7.3). So lassen sich die Flächen eines Kristalls Schritt für Schritt über ihre Zonen indizieren.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;w=zone&amp;zonen=1,-1,0;0,1,-1;1,0,-1" data-alt="Galenit mit drei Zonen durch (111)">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.3</b> Die Zonen [1̄10], [01̄1] und [1̄01] schneiden sich im Pol von (111) und in dem der Gegenfläche (1̄1̄1̄).</figcaption>
+            <figcaption><b>Abb. 7.3</b> Die Zonen [1̄10], [01̄1] und [1̄01] schneiden sich im Pol von (111) und in dem der Gegenfläche (1̄1̄1̄).</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;w=zone&amp;zonen=0,0,1;0,1,0;1,0,0;0,1,1;0,1,-1;1,0,1;1,0,-1;1,1,0;1,-1,0" data-alt="Galenit mit allen Zonen ⟨100⟩ und ⟨110⟩">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.4</b> Galenit mit einer Auswahl seiner Zonen, den 3 Zonen ⟨100⟩ und den 6 Zonen ⟨110⟩: Jede Fläche liegt auf mehreren Zonenkreisen.</figcaption>
+            <figcaption><b>Abb. 7.4</b> Galenit mit einer Auswahl seiner Zonen, den 3 Zonen ⟨100⟩ und den 6 Zonen ⟨110⟩: Jede Fläche liegt auf mehreren Zonenkreisen.</figcaption>
           </figure>
         </div>
         <div class="box vertiefung">
@@ -831,15 +1016,15 @@ footer a { color: inherit; }
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Ein Beispiel: Topas</b></h4>
           <p>Wie gross der Unterschied ausserhalb des kubischen Systems ist, zeigt ein orthorhombischer Kristall. Wer nichtkubische Kristalle über Zonen indiziert, darf Zonenachse und Flächenpol nicht verwechseln.</p>
-          <p>Abb. 4.5 und 4.6 vergleichen die Zone [101] am Galenit und am Topas (orthorhombisch, <i>a</i> : <i>b</i> : <i>c</i> ≈ 0,53 : 1 : 0,95): Beim Galenit liegt die Zonenachse (×) genau auf dem Pol von (101), beim Topas daneben.</p>
+          <p>Abb. 7.5 und 7.6 vergleichen die Zone [101] am Galenit und am Topas (orthorhombisch, <i>a</i> : <i>b</i> : <i>c</i> ≈ 0,53 : 1 : 0,95): Beim Galenit liegt die Zonenachse (×) genau auf dem Pol von (101), beim Topas daneben.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;w=zone&amp;zonen=1,0,1" data-alt="Galenit mit Zone [101]">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.5</b> Galenit (kubisch): Zonenachse [101] und Pol von (101) fallen zusammen.</figcaption>
+            <figcaption><b>Abb. 7.5</b> Galenit (kubisch): Zonenachse [101] und Pol von (101) fallen zusammen.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=orthorhombisch&amp;bsp=topas&amp;w=zone&amp;zonen=1,0,1" data-alt="Topas mit Zone [101]">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.6</b> Topas (orthorhombisch): Die Zonenachse [101] liegt nicht auf dem Pol von (101).</figcaption>
+            <figcaption><b>Abb. 7.6</b> Topas (orthorhombisch): Die Zonenachse [101] liegt nicht auf dem Pol von (101).</figcaption>
           </figure>
         </div>
         </div>
@@ -863,7 +1048,7 @@ footer a { color: inherit; }
           <li>Mit der Komplikationsregel findet man aus zwei Flächen einer Zone weitere mögliche Flächen derselben Zone.</li>
         </ul>
       </div>
-      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=4&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=4&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=4&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
+      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=7&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=7&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=7&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
 
       <div class="quellen">
         <h4>Quellen</h4>
@@ -875,7 +1060,7 @@ footer a { color: inherit; }
 
 
     <section id="habitus">
-      <h2><span class="nr">5</span>Tracht und Habitus</h2>
+      <h2><span class="nr">8</span>Tracht und Habitus</h2>
       <p class="lead">Kristalle derselben Art können sehr verschieden aussehen. Zwei Begriffe beschreiben, worin sie sich unterscheiden: welche Formen auftreten und wie gross ihre Flächen sind.</p>
 
       <div class="box ziele">
@@ -898,22 +1083,22 @@ footer a { color: inherit; }
 
       <section id="habitus-def">
         <h3>Habitus</h3>
-        <p>Der <span class="term">Habitus</span> beschreibt die relative Grösse der Flächen, also die Gestalt des Kristalls. Man unterscheidet drei Grundtypen: <span class="term">isometrisch</span> (nach allen Richtungen etwa gleich ausgedehnt), <span class="term">planar</span> oder tafelig (flach) und <span class="term">prismatisch</span> oder nadelig (lang gestreckt). Abb. 5.1–5.3 zeigen alle drei für dieselbe Tracht aus hexagonalem Prisma und Pinakoid.</p>
+        <p>Der <span class="term">Habitus</span> beschreibt die relative Grösse der Flächen, also die Gestalt des Kristalls. Man unterscheidet drei Grundtypen: <span class="term">isometrisch</span> (nach allen Richtungen etwa gleich ausgedehnt), <span class="term">planar</span> oder tafelig (flach) und <span class="term">prismatisch</span> oder nadelig (lang gestreckt). Abb. 8.1–8.3 zeigen alle drei für dieselbe Tracht aus hexagonalem Prisma und Pinakoid.</p>
         <div class="fig-row fig-row3">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=hexagonal&amp;f=6/mmm:c25&amp;abstand=0.3&amp;strahlen=0&amp;normalen=0" data-alt="Hexagonales Prisma mit Pinakoid, planarer Habitus">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 5.1</b> planar (tafelig)</figcaption>
+            <figcaption><b>Abb. 8.1</b> planar (tafelig)</figcaption>
           </figure>
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=hexagonal&amp;f=6/mmm:c25&amp;abstand=0.8&amp;strahlen=0&amp;normalen=0" data-alt="Hexagonales Prisma mit Pinakoid, isometrischer Habitus">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 5.2</b> isometrisch</figcaption>
+            <figcaption><b>Abb. 8.2</b> isometrisch</figcaption>
           </figure>
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=hexagonal&amp;f=6/mmm:c25&amp;abstand=2.5&amp;strahlen=0&amp;normalen=0" data-alt="Hexagonales Prisma mit Pinakoid, prismatischer Habitus">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 5.3</b> prismatisch (nadelig)</figcaption>
+            <figcaption><b>Abb. 8.3</b> prismatisch (nadelig)</figcaption>
           </figure>
         </div>
-        <p>Tracht und Habitus sind unabhängig voneinander: Kristalle mit gleicher Tracht können verschiedenen Habitus haben (Abb. 5.1–5.3), und Kristalle mit gleichem Habitus verschiedene Tracht, etwa ein isometrischer Würfel und ein isometrisches Oktaeder.</p>
+        <p>Tracht und Habitus sind unabhängig voneinander: Kristalle mit gleicher Tracht können verschiedenen Habitus haben (Abb. 8.1–8.3), und Kristalle mit gleichem Habitus verschiedene Tracht, etwa ein isometrischer Würfel und ein isometrisches Oktaeder.</p>
       </section>
 
       <section id="wachstum">
@@ -924,10 +1109,10 @@ footer a { color: inherit; }
 
       <section id="habitus-stereo">
         <h3>Was das Stereogramm zeigt</h3>
-        <p>Weil sich die Flächen beim Wachstum nur parallel verschieben, ändern sich die Winkel zwischen ihnen nicht (Kapitel 1). Die drei Kristalle in Abb. 5.1–5.3 haben deshalb genau dasselbe Stereogramm (Abb. 5.4). Das Stereogramm zeigt die Tracht, aber nicht den Habitus. Erst wenn eine Form beim Wachstum ganz verschwindet (oder eine neue hinzukommt), ändert sich mit der Tracht auch das Stereogramm.</p>
+        <p>Weil sich die Flächen beim Wachstum nur parallel verschieben, ändern sich die Winkel zwischen ihnen nicht (Kapitel 2). Die drei Kristalle in Abb. 8.1–8.3 haben deshalb genau dasselbe Stereogramm (Abb. 8.4). Das Stereogramm zeigt die Tracht, aber nicht den Habitus. Erst wenn eine Form beim Wachstum ganz verschwindet (oder eine neue hinzukommt), ändert sich mit der Tracht auch das Stereogramm.</p>
         <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=hexagonal&amp;f=6/mmm:c25" data-alt="Stereogramm von hexagonalem Prisma und Pinakoid" style="max-width: 380px; margin-inline: auto;">
           <div class="fig-art"></div>
-          <figcaption><b>Abb. 5.4</b> Stereogramm der drei Kristalle aus Abb. 5.1–5.3: sechs Prismenpole auf dem Grundkreis, das Pinakoid im Mittelpunkt.</figcaption>
+          <figcaption><b>Abb. 8.4</b> Stereogramm der drei Kristalle aus Abb. 8.1–8.3: sechs Prismenpole auf dem Grundkreis, das Pinakoid im Mittelpunkt.</figcaption>
         </figure>
         <div class="box app">
           <h4>In der App</h4>
@@ -943,7 +1128,7 @@ footer a { color: inherit; }
           <li>Beim Wachstum verschieben sich die Flächen parallel. Das Stereogramm zeigt deshalb die Tracht, nicht den Habitus.</li>
         </ul>
       </div>
-      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=5&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=5&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a></p>
+      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=8&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=8&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a></p>
 
       <div class="quellen">
         <h4>Quellen</h4>
@@ -953,125 +1138,15 @@ footer a { color: inherit; }
       </div>
     </section>
 
-    <section id="blickrichtungen">
-      <h2><span class="nr">6</span>Blickrichtungen</h2>
-      <p class="lead">Das Hermann-Mauguin-Symbol einer Punktgruppe ist eine kurze Liste: Für jede Klasse gleichwertiger Richtungen sagt es, welche Symmetrieelemente dort liegen. Diese Richtungen heissen Blickrichtungen.</p>
-
-      <div class="box ziele">
-        <h4>Lernziele</h4>
-        <ul>
-          <li>die Blickrichtungen eines Kristallsystems angeben</li>
-          <li>ein Hermann-Mauguin-Symbol Position für Position lesen</li>
-          <li>volles und gekürztes Symbol ineinander überführen</li>
-        </ul>
-      </div>
-
-      <section id="blick-def">
-        <h3>Was ist eine Blickrichtung?</h3>
-        <p>Drehachsen und Normalen von Spiegelebenen können in einem Kristall nur in ganz bestimmten Richtungen liegen. Diese Richtungen bilden höchstens drei Klassen: Innerhalb einer Klasse gehen die Richtungen durch Symmetrieoperationen ineinander über, Richtungen verschiedener Klassen nicht. Diese Klassen symmetrisch nicht äquivalenter Symmetrierichtungen heissen <span class="term">Blickrichtungen</span>. Welche es sind, hängt vom Kristallsystem und dem gewählten Achsensystem ab; trigonale Kristalle werden hier wie in der Vorlesung immer mit hexagonalen Achsen beschrieben:</p>
-        <div class="tabwrap">
-          <table class="tab">
-            <thead><tr><th>Kristallsystem</th><th>1. Blickrichtung</th><th>2. Blickrichtung</th><th>3. Blickrichtung</th></tr></thead>
-            <tbody>
-              <tr><td>Triklin</td><td>–</td><td>–</td><td>–</td></tr>
-              <tr><td>Monoklin</td><td>[010]</td><td>–</td><td>–</td></tr>
-              <tr><td>Orthorhombisch</td><td>[100]</td><td>[010]</td><td>[001]</td></tr>
-              <tr><td>Tetragonal</td><td>[001]</td><td>⟨100⟩</td><td>⟨110⟩</td></tr>
-              <tr><td>Trigonal, hexagonal</td><td>[001]</td><td>⟨100⟩</td><td>⟨210⟩</td></tr>
-              <tr><td>Kubisch</td><td>⟨100⟩</td><td>⟨111⟩</td><td>⟨110⟩</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p>Spitze Klammern ⟨<i>uvw</i>⟩ bezeichnen eine Richtung und alle zu ihr gleichwertigen Richtungen; tetragonal umfasst ⟨100⟩ z. B. [100] und [010]. Im monoklinen System gibt es nur eine Blickrichtung, die <span class="term">eindeutige Achse</span> (in den International Tables <i>unique axis</i>): die Richtung der 2-zähligen Achse bzw. der Normalen der Spiegelebene. Standard ist <i>b</i> als eindeutige Achse, so auch in der Tabelle; gebräuchlich ist auch <i>c</i>, dann ist die Blickrichtung [001]. Die App bietet beide Aufstellungen an. Ältere Bezeichnungen wie „1. Aufstellung“ und „2. Aufstellung“ sind nicht eindeutig: Die International Tables von 1952 meinten damit <i>c</i> bzw. <i>b</i>, Borchardt-Ott verwendet sie umgekehrt.</p>
-        <p>Die Blickrichtung ist etwas anderes als die Projektionsrichtung des Stereogramms (Kapitel 2): Die Projektionsrichtung wählt man frei, die Blickrichtungen sind durch die Symmetrie festgelegt.</p>
-        <div class="box vertiefung">
-          <h4>Vertiefung · <b>Schreibweise in den International Tables</b></h4>
-          <p>Wer in den International Tables nachschlägt, findet für das hexagonale System eine andere Schreibweise.</p>
-          <p>Die International Tables schreiben die dritte hexagonale Blickrichtung als ⟨1̄10⟩; das ist dieselbe Familie wie ⟨210⟩, denn [1̄10] gehört zu ihr.</p>
-        </div>
-      </section>
-
-      <section id="symbol">
-        <h3>Das Hermann-Mauguin-Symbol lesen</h3>
-        <p>Jede Position des Symbols gehört zu einer Blickrichtung, in der Reihenfolge der Tabelle. An jeder Position steht, was zu dieser Richtung gehört: Achsen parallel, Spiegelebenen senkrecht. Also eine Drehachse oder Drehinversionsachse <i>X</i> entlang der Richtung, eine Spiegelebene mit der Richtung als Normale (<i>m</i>) oder beides (<i>X</i>/<i>m</i>). Gleichwertige Elemente werden nur einmal genannt. Gehört zu einer Blickrichtung nichts, fällt ihre Position am Ende des Symbols weg (z. B. 4/<i>m</i>, 23).</p>
-        <p>Am Beispiel 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> (Abb. 6.1–6.3):</p>
-        <ul>
-          <li>1. Position [001]: eine 4-zählige Drehachse entlang <i>c</i> und eine Spiegelebene senkrecht dazu;</li>
-          <li>2. Position ⟨100⟩: 2-zählige Achsen entlang <i>a</i> und <i>b</i>, Spiegelebenen senkrecht dazu;</li>
-          <li>3. Position ⟨110⟩: 2-zählige Achsen entlang der Diagonalen, Spiegelebenen senkrecht dazu.</li>
-        </ul>
-        <div class="fig-row fig-row3">
-          <figure class="fig-card" data-kind="stereo" data-dirs="1" data-app="#m=pg&amp;g=4/mmm&amp;obj=0" data-alt="4/mmm, nur 1. Blickrichtung">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 6.1</b> 4/<i>mmm</i>, 1. Blickrichtung [001]: 4/<i>m</i></figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-dirs="2" data-app="#m=pg&amp;g=4/mmm&amp;obj=0" data-alt="4/mmm, nur 2. Blickrichtung">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 6.2</b> 2. Blickrichtung ⟨100⟩: 2/<i>m</i></figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-dirs="3" data-app="#m=pg&amp;g=4/mmm&amp;obj=0" data-alt="4/mmm, nur 3. Blickrichtung">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 6.3</b> 3. Blickrichtung ⟨110⟩: 2/<i>m</i></figcaption>
-          </figure>
-        </div>
-        <p>Kubisch steht ⟨100⟩ an erster Stelle, ⟨111⟩ an zweiter. Beim Galenit (<i>m</i>3̄<i>m</i>) liegen entlang ⟨100⟩ 4-zählige Achsen mit Spiegelebenen senkrecht dazu (4/<i>m</i>), entlang der Raumdiagonalen ⟨111⟩ 3̄-Achsen, entlang ⟨110⟩ 2-zählige Achsen mit Spiegelebenen senkrecht dazu (2/<i>m</i>) (Abb. 6.4–6.6). Ein kubisches Symbol erkennt man an der 3 oder 3̄ an zweiter Stelle.</p>
-        <div class="fig-row fig-row3">
-          <figure class="fig-card" data-kind="stereo" data-dirs="1" data-app="#m=pg&amp;g=m-3m&amp;obj=0" data-alt="m3̄m, nur 1. Blickrichtung">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 6.4</b> <i>m</i>3̄<i>m</i>, ⟨100⟩: 4/<i>m</i></figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-dirs="2" data-app="#m=pg&amp;g=m-3m&amp;obj=0" data-alt="m3̄m, nur 2. Blickrichtung">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 6.5</b> ⟨111⟩: 3̄</figcaption>
-          </figure>
-          <figure class="fig-card" data-kind="stereo" data-dirs="3" data-app="#m=pg&amp;g=m-3m&amp;obj=0" data-alt="m3̄m, nur 3. Blickrichtung">
-            <div class="fig-art"></div>
-            <figcaption><b>Abb. 6.6</b> ⟨110⟩: 2/<i>m</i></figcaption>
-          </figure>
-        </div>
-        <div class="box vertiefung">
-          <h4>Vertiefung · <b>Die 1 als Platzhalter</b></h4>
-          <p>Am Ende des Symbols darf eine leere Position wegfallen. Dazwischen geht das nicht, denn sonst wüsste man nicht mehr, welche Position zu welcher Blickrichtung gehört.</p>
-          <p>Steht eine leere Position zwischen besetzten Positionen, schreibt man eine 1 (z. B. 31<i>m</i> gegenüber 3<i>m</i>1).</p>
-        </div>
-        <div class="box app">
-          <h4>In der App</h4>
-          <p>Die App färbt die Symmetrieelemente nach ihrer Blickrichtung (violett, grün, ocker für die 1., 2. und 3. Position), auch im vollen Symbol und in der Infobox. In der 3D-Ansicht lassen sich die Blickrichtungen einzeln ein- und ausblenden.</p>
-        </div>
-      </section>
-
-      <section id="kurz">
-        <h3>Volles und gekürztes Symbol</h3>
-        <p>Einige Symbole sind überbestimmt, weil Symmetrieelemente einander erzeugen (Kapitel 3). In 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> erzeugen die drei zueinander senkrechten Spiegelebenen die 2-zähligen Achsen von selbst; das gekürzte Symbol lautet <i>mmm</i>. Ebenso wird 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> zu 4/<i>mmm</i> und 4/<i>m</i> 3̄ 2/<i>m</i> zu <i>m</i>3̄<i>m</i>. Welche Teile entfallen, ist festgelegt (Borchardt-Ott Tab. 9.2); die 4 in 4/<i>mmm</i> bleibt stehen, weil sie das tetragonale System kennzeichnet, während in <i>m</i>3̄<i>m</i> die 3̄ an zweiter Stelle das kubische System anzeigt. Das gekürzte Symbol behält die Positionen bei: In <i>m</i>3̄<i>m</i> steht das erste <i>m</i> für ⟨100⟩, das zweite für ⟨110⟩. Die App zeigt zu jeder Punktgruppe beide Symbole.</p>
-      </section>
-
-      <div class="box zusammen">
-        <h4>Zusammenfassung</h4>
-        <ul>
-          <li>Blickrichtungen sind die höchstens drei Klassen nicht gleichwertiger Symmetrierichtungen; sie hängen nur vom Kristallsystem ab.</li>
-          <li>Jede Position des Hermann-Mauguin-Symbols gehört zu einer Blickrichtung: Achsen parallel, Spiegelebenen senkrecht zu ihr.</li>
-          <li>Das gekürzte Symbol lässt Elemente weg, die von den übrigen erzeugt werden, z. B. <i>mmm</i> für 2/<i>m</i> 2/<i>m</i> 2/<i>m</i>.</li>
-        </ul>
-      </div>
-      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=6&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=6&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=6&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
-
-      <div class="quellen">
-        <h4>Quellen</h4>
-        <ul>
-          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 6.4.2 (Schreibweise ⟨<i>uvw</i>⟩, S. 78), 7.1 (Blickrichtungen, Tab. 7.3, S. 88–89), 7.2.2–7.2.6 (Symbole der Gitter nach Blickrichtungen, S. 104–111, monoklin 1. und 2. Aufstellung S. 104 Fussnote 6, Abb. 7.19, 7.21, 7.23, 7.24), 9.1 (gekürzte Symbole, Abb. 9.1, Tab. 9.2, S. 128–130), 9.2 (Galenit, S. 131, Abb. 9.4, S. 142).</li>
-          <li>International Tables for Crystallography, Vol. A (2006), Teil 2 (Symmetrierichtungen der Gitter), Abschn. 2.2.16.2 (monokline Aufstellungen <i>unique axis b</i> und <i>c</i>, Standard <i>b</i>; frühere Bezeichnungen „1st/2nd setting“).</li>
-        </ul>
-      </div>
-    </section>
-
     <section id="hexagonal">
-      <h2><span class="nr">7</span>Hexagonale Achsen und vierstellige Indizes</h2>
-      <p class="lead">Kristalle mit 3-, 3̄-, 6- oder 6̄-zähliger Hauptachse beschreibt man mit einem eigenen Achsensystem. Seine Besonderheit: In der Ebene senkrecht zu <i>c</i> gibt es drei gleichwertige Achsen.</p>
+      <h2><span class="nr">9</span>Trigonale und hexagonale Kristalle</h2>
+      <p class="lead">Trigonale und hexagonale Kristalle beschreibt man mit dem hexagonalen Achsensystem aus Kapitel 1. Ein wichtiges Beispiel ist das Rhomboeder: Es entsteht aus dem Würfel, wenn man ihn entlang einer Raumdiagonalen streckt oder staucht.</p>
 
       <div class="box ziele">
         <h4>Lernziele</h4>
         <ul>
-          <li>das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen</li>
+          <li>das Rhomboeder als entlang [111] gestreckten Würfel beschreiben und seine Punktgruppe 3̄<i>m</i> angeben</li>
+          <li>angeben, wie man das Rhomboeder mit hexagonalen Achsen aufstellt</li>
         </ul>
         <h5>Zur Vertiefung</h5>
         <ul>
@@ -1080,36 +1155,25 @@ footer a { color: inherit; }
         </ul>
       </div>
 
-      <section id="hexachsen">
-        <h3>Das hexagonale Achsensystem</h3>
-        <p>Für trigonale und hexagonale Kristalle legt man <i>c</i> parallel zur 3- bzw. 6-zähligen Hauptachse. Senkrecht dazu liegen <i>a</i> und <i>b</i>, gleich lang und im Winkel von 120° zueinander: <i>a</i> = <i>b</i>, α = β = 90°, γ = 120°. Wegen der Hauptachse gibt es in dieser Ebene noch eine dritte, gleichwertige Achse: Man schreibt <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, je 120° voneinander (Abb. 7.1). Als Richtungen sind das [100], [010] und [1̄1̄0], denn <i>a</i>₁ + <i>a</i>₂ + <i>a</i>₃ = 0.</p>
-        <p>Die Richtungen ⟨210⟩ halbieren die Winkel zwischen benachbarten Achsenrichtungen ±<i>a</i>₁, ±<i>a</i>₂, ±<i>a</i>₃: [210] = 2<i>a</i>₁ + <i>a</i>₂ liegt zwischen <i>a</i>₁ und −<i>a</i>₃ und steht senkrecht auf <i>a</i>₂. Genau in der Mitte zwischen <i>a</i>₁ und <i>a</i>₂ liegt dagegen [110] = −<i>a</i>₃, eine Richtung der Familie ⟨100⟩. ⟨100⟩ und ⟨210⟩ sind die 2. und 3. Blickrichtung des hexagonalen Systems (Kapitel 6). Richtungen gibt dieses Skript wie die Vorlesung mit drei Indizes [<i>uvw</i>] an.</p>
-        <p>Wie in Kapitel 4 fallen eine Richtung und die Normale der gleich indizierten Fläche hier im Allgemeinen nicht zusammen: Die Fläche (100) ist parallel zu <i>a</i>₂ und <i>c</i>, ihr Pol liegt deshalb nicht auf <i>a</i>₁, sondern in Richtung [210], im Stereogramm unten (Abb. 7.2).</p>
-        <figure class="fig-card hexfig">
-          <div class="fig-art">
-            <svg viewBox="0 0 370 320" role="img" aria-label="Hexagonale Achsen a₁, a₂, a₃ im Winkel von 120° und die Richtungen ⟨210⟩ dazwischen, Blick entlang c">
-              <circle class="hx-base" cx="160" cy="160" r="128"/>
-              <line class="hx-210" x1="160" y1="40" x2="160" y2="280"/>
-              <line class="hx-210" x1="56.1" y1="100" x2="263.9" y2="220"/>
-              <line class="hx-210" x1="56.1" y1="220" x2="263.9" y2="100"/>
-              <text class="hx-l2" x="160" y="298" text-anchor="middle">[210]</text>
-              <text class="hx-l2" x="50" y="94" text-anchor="end">[1̄2̄0]</text>
-              <text class="hx-l2" x="272" y="94">[1̄10]</text>
-              <path class="hx-arc" d="M196,160 A36,36 0 0 1 142,191.2"/>
-              <text class="hx-g" x="180" y="214">γ = 120°</text>
-              <line class="hx-a" x1="160" y1="160" x2="100" y2="263.9" marker-end="url(#hxarr)"/>
-              <line class="hx-a" x1="160" y1="160" x2="280" y2="160" marker-end="url(#hxarr)"/>
-              <line class="hx-a" x1="160" y1="160" x2="100" y2="56.1" marker-end="url(#hxarr)"/>
-              <text class="hx-l" x="72" y="284">a₁ = [100]</text>
-              <text class="hx-l" x="286" y="152">a₂ = [010]</text>
-              <text class="hx-l" x="40" y="46">a₃ = [1̄1̄0]</text>
-              <circle class="hx-c" cx="160" cy="160" r="5"/><circle class="hx-cdot" cx="160" cy="160" r="1.8"/>
-              <text class="hx-c-l" x="178" y="139">c</text>
-              <defs><marker id="hxarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="hx-head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
-            </svg>
-          </div>
-          <figcaption><b>Abb. 7.1</b> Hexagonale Achsen, Blick entlang <i>c</i> (wie im Stereogramm der App): <i>a</i>₁, <i>a</i>₂ und <i>a</i>₃ = −(<i>a</i>₁ + <i>a</i>₂) im Winkel von 120°; die Geraden ⟨210⟩ (gestrichelt) halbieren die Winkel zwischen den Achsenrichtungen.</figcaption>
-        </figure>
+      <section id="rhomboeder">
+        <h3>Das Rhomboeder: ein gestreckter Würfel</h3>
+        <p>Streckt man einen Würfel entlang einer Raumdiagonalen, etwa [111], so bleibt von seinen Symmetrieelementen nur ein Teil übrig: die 3̄-Achse entlang [111] und die drei 2-zähligen Achsen senkrecht dazu, entlang [11̄0], [011̄] und [1̄01], mit den Spiegelebenen senkrecht zu ihnen. Das ist die Punktgruppe 3̄ 2/<i>m</i> = 3̄<i>m</i> mit 12 Operationen, trigonal statt kubisch.</p>
+        <p>Alle sechs Würfelflächen werden durch die 3̄-Achse ineinander überführt; sie bleiben eine einzige Form, aber ihre Winkel ändern sich: Aus dem Würfel wird ein <span class="term">Rhomboeder</span> (Abb. 9.1). Der Würfel ist der Sonderfall eines Rhomboeders mit 90°. Alle Kanten sind gleich lang; an den beiden Ecken auf der 3̄-Achse schliessen sie den gleichen Winkel α ein. Bei Streckung ist α kleiner als 90° (spitzes Rhomboeder), bei Stauchung grösser (stumpfes Rhomboeder); für eine Streckung um den Faktor 1,3 ist α = 79,2°.</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [111] gestreckt: Rhomboeder">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 9.1a</b> Würfel, entlang [111] um den Faktor 1,3 gestreckt, [111] senkrecht: ein Rhomboeder.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;geruest=1" data-alt="Rhomboeder über dem Symmetriegerüst von 3̄m">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 9.1b</b> Stereogramm, [111] ∥ Projektionsrichtung, über dem Symmetriegerüst 3̄<i>m</i>: 3̄-Achse im Mittelpunkt, drei Spiegelebenen, drei 2-zählige Achsen.</figcaption>
+          </figure>
+        </div>
+        <p>Für die trigonale Punktgruppe verwendet man hexagonale Achsen (Kapitel 1): <i>c</i> entlang der 3̄-Achse, also <i>c</i> ∥ [111], und <i>a</i>₁ ∥ [11̄0], <i>a</i>₂ ∥ [011̄] senkrecht dazu. In diesen Achsen ist die Würfelfläche (100) die Rhomboederfläche (101).</p>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>Unter „Kristallformen“ den Würfel wählen, unter „Gitter“ den Schalter „Symmetrie brechen“ einschalten und entlang ⟨111⟩ strecken. Die Infobox nennt die verbleibende Punktgruppe 3̄<i>m</i> und rechnet die Indizes in hexagonale Achsen um.</p>
+        </div>
       </section>
 
       <section id="hkil" data-level="vertiefung">
@@ -1122,11 +1186,11 @@ footer a { color: inherit; }
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=hexagonal&amp;f=6/mmm:c25" data-alt="Hexagonales Prisma mit drei Indizes">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 7.2</b> Hexagonales Prisma {100} mit Pinakoid, drei Indizes (<i>hkl</i>).</figcaption>
+            <figcaption><b>Abb. 9.2</b> Hexagonales Prisma {100} mit Pinakoid, drei Indizes (<i>hkl</i>).</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=hexagonal&amp;f=6/mmm:c25&amp;hkil=1" data-alt="Hexagonales Prisma mit vier Indizes">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 7.3</b> Dieselben Flächen mit vier Indizes (<i>hkil</i>): {101̄0} und {0001}.</figcaption>
+            <figcaption><b>Abb. 9.3</b> Dieselben Flächen mit vier Indizes (<i>hkil</i>): {101̄0} und {0001}.</figcaption>
           </figure>
         </div>
         <p>Beide Schreibweisen beschreiben dieselbe Fläche, der vierte Index macht nur die Symmetrie sichtbar.</p>
@@ -1139,7 +1203,8 @@ footer a { color: inherit; }
       <div class="box zusammen">
         <h4>Zusammenfassung</h4>
         <ul>
-          <li>Hexagonale Achsen: <i>a</i> = <i>b</i>, γ = 120°, <i>c</i> senkrecht dazu entlang der Hauptachse; drei gleichwertige Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃ = −(<i>a</i>₁ + <i>a</i>₂).</li>
+          <li>Ein entlang [111] gestreckter Würfel ist ein Rhomboeder mit der Punktgruppe 3̄<i>m</i>. Der Würfel ist der Sonderfall mit α = 90°.</li>
+          <li>Mit hexagonalen Achsen, <i>c</i> ∥ [111], wird die Würfelfläche (100) zur Rhomboederfläche (101).</li>
         </ul>
         <h5>Zur Vertiefung</h5>
         <ul>
@@ -1147,24 +1212,25 @@ footer a { color: inherit; }
           <li>(<i>hkl</i>) → (<i>hkil</i>): <i>i</i> einfügen; (<i>hkil</i>) → (<i>hkl</i>): <i>i</i> weglassen.</li>
         </ul>
       </div>
-      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=7&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=7&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=7&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
+      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=9&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
 
       <div class="quellen">
         <h4>Quellen</h4>
         <ul>
-          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 7.1 (hexagonales P-Gitter, Tab. 7.2, S. 88), 7.2.5 (Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, Richtungen ⟨100⟩ und ⟨210⟩, S. 107–109, Abb. 7.22), Tab. 7.4 (S. 115), 9.2.2 (Bravais-Miller-Indizes, <i>h</i> + <i>k</i> + <i>i</i> = 0, S. 151, Abb. 9.12; Tab. 9.6, S. 154 f.).</li>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 7.3 (Rhomboeder, Sonderfall Würfel, S. 116), 9.2.2 (Bravais-Miller-Indizes, <i>h</i> + <i>k</i> + <i>i</i> = 0, S. 151, Abb. 9.12; Tab. 9.6, S. 154 f.).</li>
+          <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 2.8 (Rhomboeder als gestreckter Würfel, S. 86–87).</li>
         </ul>
       </div>
     </section>
 
     <div class="teil">
       <p class="teil-titel">Vertiefungen</p>
-      <p>Die Kapitel 8 und 9 gehen über die Vorlesung hinaus. Sie bauen auf den Kapiteln 1–7 auf und zeigen, wie deren Inhalte weitergehen; der Kasten „Bezug zur Vorlesung“ am Anfang jedes Kapitels nennt die Anknüpfungspunkte. Die Randlinie links markiert den ganzen Teil.</p>
+      <p>Die Kapitel 10 und 11 gehen über die Vorlesung hinaus. Sie bauen auf den Kapiteln 1–9 auf und zeigen, wie deren Inhalte weitergehen; der Kasten „Bezug zur Vorlesung“ am Anfang jedes Kapitels nennt die Anknüpfungspunkte. Die Randlinie links markiert den ganzen Teil.</p>
     </div>
 
     <section id="lagen" data-level="vertiefung">
-      <h2><span class="nr">8</span>Lagen, Flächensymmetrie und Multiplizität</h2>
-      <p class="lead">Der Würfel hat 6 Flächen, das Oktaeder 8, das Hexakisoktaeder 48, alle in derselben Punktgruppe <i>m</i>3̄<i>m</i>. Wie viele Flächen eine Form hat, hängt davon ab, wo ihre Pole relativ zu den Symmetrieelementen liegen. Dieses Kapitel bündelt, was dazu in Kapitel 2 und 3 verstreut steht, und bereitet die Punktlagen der Raumgruppen vor.</p>
+      <h2><span class="nr">10</span>Lagen, Flächensymmetrie und Multiplizität</h2>
+      <p class="lead">Der Würfel hat 6 Flächen, das Oktaeder 8, das Hexakisoktaeder 48, alle in derselben Punktgruppe <i>m</i>3̄<i>m</i>. Wie viele Flächen eine Form hat, hängt davon ab, wo ihre Pole relativ zu den Symmetrieelementen liegen. Dieses Kapitel bündelt, was dazu in Kapitel 4 und 6 verstreut steht, und bereitet die Punktlagen der Raumgruppen vor.</p>
 
       <div class="box bezug">
         <h4>Bezug zur Vorlesung</h4>
@@ -1188,9 +1254,9 @@ footer a { color: inherit; }
           <li>Ein Pol in <span class="term">allgemeiner Lage</span> wird nur von der Identität festgehalten. Er liegt auf keinem Symmetrieelement.</li>
           <li>Ein Pol in <span class="term">spezieller Lage</span> wird von mindestens einer weiteren Operation festgehalten. Er liegt auf einer Drehachse, einer Spiegelebene oder mehreren davon.</li>
         </ul>
-        <p>Die Operationen, die einen Pol festhalten, bilden seine <span class="term">Lagesymmetrie</span>. Sie enthält immer die Identität, und führt man zwei von ihnen nacheinander aus, bleibt der Pol wieder an seiner Stelle: Die Lagesymmetrie ist eine Untergruppe der Punktgruppe. Ist der Pol der Pol einer Fläche, heisst sie <span class="term">Flächensymmetrie</span> (Kapitel 2).</p>
+        <p>Die Operationen, die einen Pol festhalten, bilden seine <span class="term">Lagesymmetrie</span>. Sie enthält immer die Identität, und führt man zwei von ihnen nacheinander aus, bleibt der Pol wieder an seiner Stelle: Die Lagesymmetrie ist eine Untergruppe der Punktgruppe. Ist der Pol der Pol einer Fläche, heisst sie <span class="term">Flächensymmetrie</span> (Kapitel 6).</p>
         <p>Die Inversion und die Drehinversionen 3̄, 4̄ und 6̄ als Operationen halten keinen Pol fest, denn sie bringen ihn auf die andere Seite der Kugel. (Die Drehinversion 2̄ ist die Spiegelung; sie hält die Pole auf ihrer Spiegelebene fest.) Die Lagesymmetrie eines Pols enthält deshalb nur Drehungen um die Gerade durch den Pol und Spiegelungen an Ebenen, die diese Gerade enthalten. Als Lagesymmetrie kommen damit nur 1, 2, 3, 4, 6, <i>m</i>, 2<i>mm</i>, 3<i>m</i>, 4<i>mm</i> und 6<i>mm</i> in Frage, die zehn ebenen Punktgruppen. Das gilt für Pole, also für Richtungen. Für Punkte im Raum gilt es nicht: Ein Punkt auf einem Inversionszentrum wird von der Inversion festgehalten, und ein Gitterpunkt in einem Gitter mit der Symmetrie 4/<i>mmm</i> hat die volle Lagesymmetrie 4/<i>mmm</i> (Ausblick am Ende des Kapitels). Der Pol von (001) hat in 4/<i>mmm</i> die Lagesymmetrie 4<i>mm</i>, nicht 4/<i>mmm</i>; ein Pol auf der 4̄-Achse in der Punktgruppe 4̄ hat nur die Lagesymmetrie 2, die Drehung um 180°, die in 4̄ enthalten ist.</p>
-        <p>Wie in Kapitel 2 beschrieben, genügt es, die <span class="term">asymmetrische Flächeneinheit</span> zu betrachten, den kleinsten Teil der Kugel, aus dem die Operationen die ganze Kugel erzeugen. In 4/<i>mmm</i> ist sie ein sphärisches Dreieck mit den Ecken (001), (100) und (110), dessen Seiten auf Spiegelebenen liegen. Für die Lage eines Pols darin gibt es sieben Möglichkeiten: im Inneren, auf einer der drei Seiten oder auf einer der drei Ecken (Abb. 8.1).</p>
+        <p>Wie in Kapitel 6 beschrieben, genügt es, die <span class="term">asymmetrische Flächeneinheit</span> zu betrachten, den kleinsten Teil der Kugel, aus dem die Operationen die ganze Kugel erzeugen. In 4/<i>mmm</i> ist sie ein sphärisches Dreieck mit den Ecken (001), (100) und (110), dessen Seiten auf Spiegelebenen liegen. Für die Lage eines Pols darin gibt es sieben Möglichkeiten: im Inneren, auf einer der drei Seiten oder auf einer der drei Ecken (Abb. 10.1).</p>
         <ul>
           <li>Im Inneren hat er zwei Freiheitsgrade und die Lagesymmetrie 1: die allgemeine Form, 16 Pole.</li>
           <li>Auf einer Seite hat er einen Freiheitsgrad und die Lagesymmetrie <i>m</i>: Er darf auf der Spiegelebene wandern, ohne dass sich die Zahl der Pole ändert, je 8 Pole.</li>
@@ -1199,7 +1265,7 @@ footer a { color: inherit; }
         <div class="fig-grid5">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4/mmm&amp;rho=40&amp;az=20" data-alt="4/mmm, Pol in allgemeiner Lage: 16 Pole">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.1a</b> 16<i>g</i>, 1</figcaption>
+            <figcaption><b>Abb. 10.1a</b> 16<i>g</i>, 1</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4/mmm&amp;rho=40&amp;az=0" data-alt="4/mmm, Pol auf einer Spiegelebene senkrecht zu a: 8 Pole">
             <div class="fig-art"></div>
@@ -1226,17 +1292,17 @@ footer a { color: inherit; }
             <figcaption><b>g</b> 2<i>a</i>, 4<i>mm</i></figcaption>
           </figure>
         </div>
-        <p class="fig-note"><b>Abb. 8.1</b> Die sieben Lagen eines Pols in 4/<i>mmm</i>, jeweils mit Wyckoff-Lage und Lagesymmetrie: (a) allgemeine Lage; (b)–(d) auf einer Spiegelebene: ⊥ ⟨100⟩, ⊥ ⟨110⟩, in der Projektionsebene; (e)–(g) auf einer Drehachse: ⟨100⟩, ⟨110⟩, [001]. Der gestrichelte Ring markiert den Ausgangspol. In der App rastet er beim Ziehen auf den Symmetrieelementen ein, und die Infobox nennt seine Lage.</p>
+        <p class="fig-note"><b>Abb. 10.1</b> Die sieben Lagen eines Pols in 4/<i>mmm</i>, jeweils mit Wyckoff-Lage und Lagesymmetrie: (a) allgemeine Lage; (b)–(d) auf einer Spiegelebene: ⊥ ⟨100⟩, ⊥ ⟨110⟩, in der Projektionsebene; (e)–(g) auf einer Drehachse: ⟨100⟩, ⟨110⟩, [001]. Der gestrichelte Ring markiert den Ausgangspol. In der App rastet er beim Ziehen auf den Symmetrieelementen ein, und die Infobox nennt seine Lage.</p>
         <p>Alle Pole mit gleichwertiger Lagesymmetrie, also Pole, die auf genau denselben Sätzen gleichwertiger Symmetrieelemente liegen, bilden eine <span class="term">Wyckoff-Lage</span>. Ein Pol auf einer Spiegelebene .<i>m</i>. von 4/<i>mmm</i> gehört also nur dann zu 8<i>f</i>, wenn er auf keinem weiteren Element liegt; der Pol (001) liegt zwar auch auf diesen Spiegelebenen, hat aber die höhere Lagesymmetrie 4<i>mm</i>. Man bezeichnet eine Wyckoff-Lage mit ihrer Multiplizität und einem Buchstaben, beginnend mit <i>a</i> für die Lage mit der kleinsten Multiplizität (bei gleicher Multiplizität nach der Konvention der International Tables); die allgemeine Lage hat den letzten Buchstaben. In 4/<i>mmm</i> gehört jede der sieben Möglichkeiten zu einer eigenen Wyckoff-Lage, 2<i>a</i> bis 16<i>g</i>. In <i>m</i>3̄<i>m</i> sind es nur sechs. Dort hat die asymmetrische Flächeneinheit die Ecken (100), (110) und (111); zwei ihrer Seiten, von (100) nach (111) und von (111) nach (110), liegen auf gleichwertigen Spiegelebenen ..<i>m</i>, die dritte auf einer Spiegelebene <i>m</i>... Deshalb gehören Trisoktaeder und Deltoidikositetraeder, beide {<i>hhl</i>}, zur selben Wyckoff-Lage 24<i>e</i>.</p>
-        <p>Ein Beispiel aus der Vorlesung sind die beiden tetragonalen Dipyramiden {111} und {113} (Abb. 8.2). Ihre Pole liegen auf denselben diagonalen Spiegelebenen, nur verschieden weit vom Mittelpunkt. Beide Formen gehören zur Wyckoff-Lage 8<i>e</i> mit der Flächensymmetrie ..<i>m</i> und haben deshalb gleich viele Flächen.</p>
+        <p>Ein Beispiel aus der Vorlesung sind die beiden tetragonalen Dipyramiden {111} und {113} (Abb. 10.2). Ihre Pole liegen auf denselben diagonalen Spiegelebenen, nur verschieden weit vom Mittelpunkt. Beide Formen gehören zur Wyckoff-Lage 8<i>e</i> mit der Flächensymmetrie ..<i>m</i> und haben deshalb gleich viele Flächen.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;bsp=dipyramiden&amp;strahlen=0&amp;normalen=0" data-alt="Zwei tetragonale Dipyramiden in der Umkugel">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.2a</b> Kristall aus den tetragonalen Dipyramiden {111} und {113}, [001] senkrecht.</figcaption>
+            <figcaption><b>Abb. 10.2a</b> Kristall aus den tetragonalen Dipyramiden {111} und {113}, [001] senkrecht.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=tetragonal&amp;bsp=dipyramiden&amp;geruest=1" data-alt="Zwei tetragonale Dipyramiden über dem Symmetriegerüst von 4/mmm">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.2b</b> Stereogramm dazu über dem Symmetriegerüst: Die Pole beider Formen liegen auf den diagonalen Spiegelebenen (Wyckoff-Lage 8<i>e</i>).</figcaption>
+            <figcaption><b>Abb. 10.2b</b> Stereogramm dazu über dem Symmetriegerüst: Die Pole beider Formen liegen auf den diagonalen Spiegelebenen (Wyckoff-Lage 8<i>e</i>).</figcaption>
           </figure>
         </div>
         <div class="box merke">
@@ -1247,7 +1313,7 @@ footer a { color: inherit; }
 
       <section id="lagesymbol">
         <h3>Das orientierte Symbol der Flächensymmetrie</h3>
-        <p>Die Flächensymmetrie schreibt man als <span class="term">orientiertes Symbol</span>. Es hat dieselben Positionen wie das Hermann-Mauguin-Symbol der Punktgruppe, eine je Blickrichtung (Kapitel 6). An jeder Position steht, welche Symmetrieelemente dieser Blickrichtung durch die Fläche gehen; ein Punkt heisst, dass es keines gibt. Ist das Symbol der Punktgruppe kürzer als drei Positionen, ergänzt man es, z. B. 4/<i>m</i> zu 4/<i>m</i> 1 1; die Fläche (001) hat dort die Flächensymmetrie 4.. und eine Fläche {<i>hk</i>0} die Flächensymmetrie <i>m</i>..</p>
+        <p>Die Flächensymmetrie schreibt man als <span class="term">orientiertes Symbol</span>. Es hat dieselben Positionen wie das Hermann-Mauguin-Symbol der Punktgruppe, eine je Blickrichtung (Kapitel 5). An jeder Position steht, welche Symmetrieelemente dieser Blickrichtung durch die Fläche gehen; ein Punkt heisst, dass es keines gibt. Ist das Symbol der Punktgruppe kürzer als drei Positionen, ergänzt man es, z. B. 4/<i>m</i> zu 4/<i>m</i> 1 1; die Fläche (001) hat dort die Flächensymmetrie 4.. und eine Fläche {<i>hk</i>0} die Flächensymmetrie <i>m</i>..</p>
         <p>In <i>m</i>3̄<i>m</i> sind die Blickrichtungen ⟨100⟩, ⟨111⟩ und ⟨110⟩. Für die Würfelfläche (001) ergibt das:</p>
         <ul>
           <li>⟨100⟩: die 4-zählige Achse entlang [001] und die Spiegelebenen senkrecht zu [100] und [010], zusammen 4<i>m</i>;</li>
@@ -1259,7 +1325,7 @@ footer a { color: inherit; }
 
       <section id="multiplizitaet">
         <h3>Multiplizität</h3>
-        <p>Ein Pol in allgemeiner Lage hat so viele Bilder, wie die Punktgruppe Operationen hat (Kapitel 3). Liegt er speziell, liefern mehrere Operationen dasselbe Bild: Hält eine Operation den Pol fest, so bringt jede weitere Operation, nach ihr ausgeführt, ihn an dieselbe Stelle wie ohne sie. Die Operationen der Punktgruppe zerfallen so in gleich grosse Teilmengen, je eine für jedes Bild, und jede ist so gross wie die Lagesymmetrie. (In der Gruppentheorie heissen diese Teilmengen Nebenklassen der Lagesymmetrie; ausser der Lagesymmetrie selbst sind sie keine Gruppen.)</p>
+        <p>Ein Pol in allgemeiner Lage hat so viele Bilder, wie die Punktgruppe Operationen hat (Kapitel 4). Liegt er speziell, liefern mehrere Operationen dasselbe Bild: Hält eine Operation den Pol fest, so bringt jede weitere Operation, nach ihr ausgeführt, ihn an dieselbe Stelle wie ohne sie. Die Operationen der Punktgruppe zerfallen so in gleich grosse Teilmengen, je eine für jedes Bild, und jede ist so gross wie die Lagesymmetrie. (In der Gruppentheorie heissen diese Teilmengen Nebenklassen der Lagesymmetrie; ausser der Lagesymmetrie selbst sind sie keine Gruppen.)</p>
         <div class="box merke">
           <h4>Merke</h4>
           <p class="formel">Flächenzahl = Ordnung der Punktgruppe / Ordnung der Flächensymmetrie</p>
@@ -1279,23 +1345,23 @@ footer a { color: inherit; }
             </tbody>
           </table>
         </div>
-        <p>Die Regel zeigt auch, warum dieselbe Form in einer kleineren Punktgruppe eine entsprechend kleinere Flächensymmetrie hat. Der Würfel hat in <i>m</i>3̄<i>m</i> die Flächensymmetrie 4<i>m</i>.<i>m</i> (48/8 = 6), in 4̄3<i>m</i> nur 2.<i>mm</i> (24/4 = 6) und in 23 nur 2.. (12/2 = 6): Die Gruppe wird kleiner, die Flächensymmetrie im selben Verhältnis. Anders {111}: Die Flächensymmetrie .3<i>m</i> ist in 4̄3<i>m</i> dieselbe wie in <i>m</i>3̄<i>m</i>, die Gruppe hat aber nur 24 Operationen. Die Form hat deshalb 24/6 = 4 Flächen, ein Tetraeder; die übrigen vier Flächen bilden das Gegentetraeder {1̄1̄1̄}, eine eigene Form (Abb. 8.3).</p>
+        <p>Die Regel zeigt auch, warum dieselbe Form in einer kleineren Punktgruppe eine entsprechend kleinere Flächensymmetrie hat. Der Würfel hat in <i>m</i>3̄<i>m</i> die Flächensymmetrie 4<i>m</i>.<i>m</i> (48/8 = 6), in 4̄3<i>m</i> nur 2.<i>mm</i> (24/4 = 6) und in 23 nur 2.. (12/2 = 6): Die Gruppe wird kleiner, die Flächensymmetrie im selben Verhältnis. Anders {111}: Die Flächensymmetrie .3<i>m</i> ist in 4̄3<i>m</i> dieselbe wie in <i>m</i>3̄<i>m</i>, die Gruppe hat aber nur 24 Operationen. Die Form hat deshalb 24/6 = 4 Flächen, ein Tetraeder; die übrigen vier Flächen bilden das Gegentetraeder {1̄1̄1̄}, eine eigene Form (Abb. 10.3).</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;muster=1&amp;strahlen=0&amp;normalen=0" data-alt="Würfel in m3̄m mit Flächenmuster">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.3a</b> Würfel in <i>m</i>3̄<i>m</i>: 6<i>a</i>, Flächensymmetrie 4<i>m</i>.<i>m</i>; acht Muster je Fläche.</figcaption>
+            <figcaption><b>Abb. 10.3a</b> Würfel in <i>m</i>3̄<i>m</i>: 6<i>a</i>, Flächensymmetrie 4<i>m</i>.<i>m</i>; acht Muster je Fläche.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=23:b34&amp;muster=1&amp;strahlen=0&amp;normalen=0" data-alt="Würfel in 23 mit Flächenmuster">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.3b</b> Würfel in 23: 6<i>b</i>, Flächensymmetrie 2..; zwei Muster je Fläche.</figcaption>
+            <figcaption><b>Abb. 10.3b</b> Würfel in 23: 6<i>b</i>, Flächensymmetrie 2..; zwei Muster je Fläche.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:b35&amp;geruest=1" data-alt="Oktaeder über dem Symmetriegerüst von m3̄m">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.3c</b> Oktaeder in <i>m</i>3̄<i>m</i>: 8<i>b</i>, 48/6 = 8 Pole.</figcaption>
+            <figcaption><b>Abb. 10.3c</b> Oktaeder in <i>m</i>3̄<i>m</i>: 8<i>b</i>, 48/6 = 8 Pole.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=-43m:a33&amp;geruest=1" data-alt="Tetraeder über dem Symmetriegerüst von 4̄3m">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.3d</b> Tetraeder in 4̄3<i>m</i>: 4<i>a</i>, 24/6 = 4 Pole; an den übrigen vier Stellen ⟨111⟩ lägen die Pole des Gegentetraeders.</figcaption>
+            <figcaption><b>Abb. 10.3d</b> Tetraeder in 4̄3<i>m</i>: 4<i>a</i>, 24/6 = 4 Pole; an den übrigen vier Stellen ⟨111⟩ lägen die Pole des Gegentetraeders.</figcaption>
           </figure>
         </div>
         <p>Die Grösse der asymmetrischen Flächeneinheit folgt aus der allgemeinen Form: Sie ist die Kugeloberfläche geteilt durch deren Flächenzahl, in <i>m</i>3̄<i>m</i> also ein Achtundvierzigstel der Kugel. Eine Punktgruppe mit halb so vielen Operationen hat eine doppelt so grosse asymmetrische Flächeneinheit.</p>
@@ -1303,20 +1369,20 @@ footer a { color: inherit; }
 
       <section id="richtungen">
         <h3>Richtungen</h3>
-        <p>Eine Richtung durchstösst die Umkugel in einem Punkt, genau wie eine Flächennormale. Für Richtungen gilt deshalb dasselbe wie für Flächenpole: Eine Richtung auf einem Symmetrieelement hat dieselbe Lagesymmetrie wie ein Pol an dieser Stelle, und die Zahl der gleichwertigen Richtungen ist Ordnung der Gruppe durch Ordnung der Lagesymmetrie. Im Würfel gibt es 6 Richtungen ⟨100⟩, 8 Richtungen ⟨111⟩ und 12 Richtungen ⟨110⟩, die Multiplizitäten der Wyckoff-Lagen 6<i>a</i>, 8<i>b</i> und 12<i>c</i>. Im kubischen System liegt die Richtung [<i>uvw</i>] dort, wo der Pol der Fläche (<i>uvw</i>) liegt (Kapitel 4); in den anderen Systemen fallen beide im Allgemeinen nicht zusammen. Die Regel gilt dann weiter, aber eine Richtungsfamilie ⟨<i>uvw</i>⟩ und die Form {<i>uvw</i>} können verschieden viele Glieder haben, weil sie an verschiedenen Stellen liegen: In 3<i>m</i>1 gibt es 6 Richtungen ⟨100⟩, die Form {101̄0} (dreistellig {100}) ist aber ein trigonales Prisma mit 3 Flächen.</p>
-        <p>Auch die Familie gleichwertiger Richtungen hängt von der Punktgruppe ab. In 23 hat [111] nur die Lagesymmetrie 3 (Symbol .3.), also 12/3 = 4 gleichwertige Richtungen: [111], [1̄1̄1], [1̄11̄] und [11̄1̄]. Die Gegenrichtungen bilden eine zweite Familie, so wie das Gegentetraeder eine zweite Form (Abb. 8.4).</p>
+        <p>Eine Richtung durchstösst die Umkugel in einem Punkt, genau wie eine Flächennormale. Für Richtungen gilt deshalb dasselbe wie für Flächenpole: Eine Richtung auf einem Symmetrieelement hat dieselbe Lagesymmetrie wie ein Pol an dieser Stelle, und die Zahl der gleichwertigen Richtungen ist Ordnung der Gruppe durch Ordnung der Lagesymmetrie. Im Würfel gibt es 6 Richtungen ⟨100⟩, 8 Richtungen ⟨111⟩ und 12 Richtungen ⟨110⟩, die Multiplizitäten der Wyckoff-Lagen 6<i>a</i>, 8<i>b</i> und 12<i>c</i>. Im kubischen System liegt die Richtung [<i>uvw</i>] dort, wo der Pol der Fläche (<i>uvw</i>) liegt (Kapitel 7); in den anderen Systemen fallen beide im Allgemeinen nicht zusammen. Die Regel gilt dann weiter, aber eine Richtungsfamilie ⟨<i>uvw</i>⟩ und die Form {<i>uvw</i>} können verschieden viele Glieder haben, weil sie an verschiedenen Stellen liegen: In 3<i>m</i>1 gibt es 6 Richtungen ⟨100⟩, die Form {101̄0} (dreistellig {100}) ist aber ein trigonales Prisma mit 3 Flächen.</p>
+        <p>Auch die Familie gleichwertiger Richtungen hängt von der Punktgruppe ab. In 23 hat [111] nur die Lagesymmetrie 3 (Symbol .3.), also 12/3 = 4 gleichwertige Richtungen: [111], [1̄1̄1], [1̄11̄] und [11̄1̄]. Die Gegenrichtungen bilden eine zweite Familie, so wie das Gegentetraeder eine zweite Form (Abb. 10.4).</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=m-3m&amp;rho=54.7356&amp;az=45" data-alt="m3̄m, Pol auf der Richtung [111]: 8 Pole">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.4a</b> <i>m</i>3̄<i>m</i>, Ausgangspol auf [111]: 8 gleichwertige Richtungen ⟨111⟩ (8<i>b</i>, .3<i>m</i>).</figcaption>
+            <figcaption><b>Abb. 10.4a</b> <i>m</i>3̄<i>m</i>, Ausgangspol auf [111]: 8 gleichwertige Richtungen ⟨111⟩ (8<i>b</i>, .3<i>m</i>).</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=23&amp;rho=54.7356&amp;az=45" data-alt="23, Pol auf der Richtung [111]: 4 Pole">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.4b</b> 23, gleicher Ausgangspol: nur 4 gleichwertige Richtungen (4<i>a</i>, .3.).</figcaption>
+            <figcaption><b>Abb. 10.4b</b> 23, gleicher Ausgangspol: nur 4 gleichwertige Richtungen (4<i>a</i>, .3.).</figcaption>
           </figure>
         </div>
         <p>Die International Tables unterscheiden deshalb neben der <span class="term">Kristallform</span>, der Menge gleichwertiger Flächen, die <span class="term">Punktform</span>, die Menge gleichwertiger Punkte, z. B. der Endpunkte gleichwertiger Richtungen. Beide gehören zu derselben Wyckoff-Lage und haben dieselbe Multiplizität. Ihre Polyeder sind zueinander dual: Die 8 Richtungen ⟨111⟩ zeigen auf die Ecken eines Würfels, die 8 Flächen {111} bilden ein Oktaeder; die 6 Richtungen ⟨100⟩ zeigen auf die Ecken eines Oktaeders, die 6 Flächen {100} bilden einen Würfel.</p>
-        <p>Bei Achsen zählt man oft nicht Richtungen, sondern Geraden. Eine Gerade hat zwei Richtungen, und ihre Lagesymmetrie enthält auch die Operationen, die die beiden Richtungen vertauschen. Die Gerade [001] wird in <i>m</i>3̄<i>m</i> von 16 Operationen in sich überführt (4/<i>mmm</i>), es gibt also 48/16 = 3 gleichwertige Geraden ⟨100⟩, aber 6 Richtungen. Genau diese Zählung steckt in Kapitel 9 (Streckung entlang einer Geraden) und in der Liste der Zonen in der App.</p>
+        <p>Bei Achsen zählt man oft nicht Richtungen, sondern Geraden. Eine Gerade hat zwei Richtungen, und ihre Lagesymmetrie enthält auch die Operationen, die die beiden Richtungen vertauschen. Die Gerade [001] wird in <i>m</i>3̄<i>m</i> von 16 Operationen in sich überführt (4/<i>mmm</i>), es gibt also 48/16 = 3 gleichwertige Geraden ⟨100⟩, aber 6 Richtungen. Genau diese Zählung steckt in Kapitel 11 (Streckung entlang einer Geraden) und in der Liste der Zonen in der App.</p>
       </section>
 
       <section id="flaechenform">
@@ -1331,35 +1397,35 @@ footer a { color: inherit; }
         <div class="fig-row fig-row3">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:f47&amp;strahlen=0&amp;normalen=0&amp;pole=0" data-alt="Hexakisoktaeder">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.5a</b> Hexakisoktaeder {321}, 48<i>f</i>, 1: ungleichseitige Dreiecke.</figcaption>
+            <figcaption><b>Abb. 10.5a</b> Hexakisoktaeder {321}, 48<i>f</i>, 1: ungleichseitige Dreiecke.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:e42&amp;strahlen=0&amp;normalen=0&amp;pole=0" data-alt="Trisoktaeder">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.5b</b> Trisoktaeder {221}, 24<i>e</i>, ..<i>m</i>: gleichschenklige Dreiecke.</figcaption>
+            <figcaption><b>Abb. 10.5b</b> Trisoktaeder {221}, 24<i>e</i>, ..<i>m</i>: gleichschenklige Dreiecke.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:e43&amp;strahlen=0&amp;normalen=0&amp;pole=0" data-alt="Deltoidikositetraeder">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.5c</b> Deltoidikositetraeder {112}, ebenfalls 24<i>e</i>, ..<i>m</i>: Deltoide.</figcaption>
+            <figcaption><b>Abb. 10.5c</b> Deltoidikositetraeder {112}, ebenfalls 24<i>e</i>, ..<i>m</i>: Deltoide.</figcaption>
           </figure>
         </div>
-        <p>Umgekehrt kann der Umriss symmetrischer sein, als die Flächensymmetrie verlangt. Die Würfelfläche ist auch in 23 ein Quadrat, obwohl ihre Flächensymmetrie dort nur 2.. ist. Die Flächensymmetrie zeigt sich dann erst an Ätzfiguren, Streifung und anderen Zeichnungen auf der Fläche; die International Tables nennen sie ausdrücklich auch deren Symmetrie. In der App macht „Flächensymmetrie zeigen“ das sichtbar (Abb. 8.3a und b).</p>
+        <p>Umgekehrt kann der Umriss symmetrischer sein, als die Flächensymmetrie verlangt. Die Würfelfläche ist auch in 23 ein Quadrat, obwohl ihre Flächensymmetrie dort nur 2.. ist. Die Flächensymmetrie zeigt sich dann erst an Ätzfiguren, Streifung und anderen Zeichnungen auf der Fläche; die International Tables nennen sie ausdrücklich auch deren Symmetrie. In der App macht „Flächensymmetrie zeigen“ das sichtbar (Abb. 10.3a und b).</p>
       </section>
 
       <section id="eigensymmetrie">
         <h3>Erzeugende Symmetrie und Eigensymmetrie</h3>
-        <p>Die Symmetrie einer Kristallform lässt sich auf zwei Arten angeben. Die <span class="term">erzeugende Symmetrie</span> ist die Punktgruppe, deren Operationen die Form aus einer Fläche erzeugen. Die <span class="term">Eigensymmetrie</span> ist die Symmetrie des Polyeders für sich allein betrachtet. Eine tetragonale Pyramide entsteht durch die Operationen von 4; für sich betrachtet hat sie aber die Symmetrie 4<i>mm</i> (Abb. 8.6). Ein Würfel kann von allen fünf kubischen Punktgruppen erzeugt werden; seine Eigensymmetrie ist immer <i>m</i>3̄<i>m</i>.</p>
+        <p>Die Symmetrie einer Kristallform lässt sich auf zwei Arten angeben. Die <span class="term">erzeugende Symmetrie</span> ist die Punktgruppe, deren Operationen die Form aus einer Fläche erzeugen. Die <span class="term">Eigensymmetrie</span> ist die Symmetrie des Polyeders für sich allein betrachtet. Eine tetragonale Pyramide entsteht durch die Operationen von 4; für sich betrachtet hat sie aber die Symmetrie 4<i>mm</i> (Abb. 10.6). Ein Würfel kann von allen fünf kubischen Punktgruppen erzeugt werden; seine Eigensymmetrie ist immer <i>m</i>3̄<i>m</i>.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4:b8&amp;muster=1&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonale Pyramide der Punktgruppe 4 mit Flächenmuster">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.6a</b> Tetragonale Pyramide in 4: erzeugende Symmetrie 4, Flächensymmetrie 1.</figcaption>
+            <figcaption><b>Abb. 10.6a</b> Tetragonale Pyramide in 4: erzeugende Symmetrie 4, Flächensymmetrie 1.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;f=4mm:c8&amp;muster=1&amp;strahlen=0&amp;normalen=0" data-alt="Tetragonale Pyramide der Punktgruppe 4mm mit Flächenmuster">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 8.6b</b> Tetragonale Pyramide in 4<i>mm</i>: erzeugende Symmetrie gleich Eigensymmetrie, Flächensymmetrie .<i>m</i>.</figcaption>
+            <figcaption><b>Abb. 10.6b</b> Tetragonale Pyramide in 4<i>mm</i>: erzeugende Symmetrie gleich Eigensymmetrie, Flächensymmetrie .<i>m</i>.</figcaption>
           </figure>
         </div>
-        <p>Ohne Flächenmuster sind beide Körper tetragonale Pyramiden; an der Gestalt allein sieht man nicht, ob die Form von 4 oder von 4<i>mm</i> erzeugt wurde. Ist die Eigensymmetrie höher als die erzeugende Symmetrie, reicht die Form allein deshalb nicht, um die Punktgruppe zu bestimmen. Das ist der Grund für die Vorsicht in Kapitel 3: Das Polmuster einer einzelnen Form zeigt ihre Eigensymmetrie, nicht die erzeugende Symmetrie.</p>
-        <p>Auch die <span class="term">Grenzformen</span> aus Kapitel 2 lassen sich so einordnen. Die International Tables nennen die Formen mit der niedrigsten Eigensymmetrie einer Wyckoff-Lage ihre <span class="term">Grundformen</span>. Eine Grenzform gehört zur selben Wyckoff-Lage wie die zugehörige Grundform, hat also dieselbe Flächenzahl und Flächensymmetrie, aber eine höhere Eigensymmetrie. In der Punktgruppe 4 gehören die tetragonale Pyramide {<i>hkl</i>} (Eigensymmetrie 4<i>mm</i>) und das tetragonale Prisma {<i>hk</i>0} (Eigensymmetrie 4/<i>mmm</i>) beide zur allgemeinen Lage 4<i>b</i>.</p>
+        <p>Ohne Flächenmuster sind beide Körper tetragonale Pyramiden; an der Gestalt allein sieht man nicht, ob die Form von 4 oder von 4<i>mm</i> erzeugt wurde. Ist die Eigensymmetrie höher als die erzeugende Symmetrie, reicht die Form allein deshalb nicht, um die Punktgruppe zu bestimmen. Das ist der Grund für die Vorsicht in Kapitel 4: Das Polmuster einer einzelnen Form zeigt ihre Eigensymmetrie, nicht die erzeugende Symmetrie.</p>
+        <p>Auch die <span class="term">Grenzformen</span> aus Kapitel 6 lassen sich so einordnen. Die International Tables nennen die Formen mit der niedrigsten Eigensymmetrie einer Wyckoff-Lage ihre <span class="term">Grundformen</span>. Eine Grenzform gehört zur selben Wyckoff-Lage wie die zugehörige Grundform, hat also dieselbe Flächenzahl und Flächensymmetrie, aber eine höhere Eigensymmetrie. In der Punktgruppe 4 gehören die tetragonale Pyramide {<i>hkl</i>} (Eigensymmetrie 4<i>mm</i>) und das tetragonale Prisma {<i>hk</i>0} (Eigensymmetrie 4/<i>mmm</i>) beide zur allgemeinen Lage 4<i>b</i>.</p>
         <div class="box app">
           <h4>In der App</h4>
           <p>Die Infobox nennt zu jeder Form die Punktgruppe als erzeugende Symmetrie und die Eigensymmetrie. Ohne „Flächensymmetrie zeigen“ bietet die Formauswahl je Punktgruppe die allgemeine Form und die Formen an, deren Eigensymmetrie die Punktgruppe selbst ist.</p>
@@ -1382,7 +1448,7 @@ footer a { color: inherit; }
           <li>Der Umriss einer Fläche hat mindestens ihre Flächensymmetrie. Die Eigensymmetrie einer Form kann höher sein als die erzeugende Symmetrie.</li>
         </ul>
       </div>
-      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=8&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
+      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=10&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
 
       <div class="quellen">
         <h4>Quellen</h4>
@@ -1395,12 +1461,12 @@ footer a { color: inherit; }
     </section>
 
     <section id="verzerrung" data-level="vertiefung">
-      <h2><span class="nr">9</span>Symmetrieändernde Verzerrungen</h2>
+      <h2><span class="nr">11</span>Symmetrieändernde Verzerrungen</h2>
       <p class="lead">Verzerrt man einen Kristall, bleibt nur ein Teil seiner Symmetrie erhalten. Am gestreckten Würfel lässt sich im Stereogramm ablesen, welcher Teil das ist. Das Kapitel ist ein Ausblick über den Stoff der Vorlesung hinaus: Am Bariumtitanat zeigt es, dass solche Verzerrungen in realen Kristallen vorkommen und ihnen neue Eigenschaften geben.</p>
 
       <div class="box bezug">
         <h4>Bezug zur Vorlesung</h4>
-        <p>In der Vorlesung wird der Würfel entlang [111] zum Rhomboeder mit der Symmetrie 3̄<i>m</i>, beschrieben mit hexagonalen Achsen. Dieser Fall steht im Abschnitt „Streckung entlang ⟨111⟩“. Das Kapitel macht daraus ein allgemeines Verfahren für alle drei Blickrichtungen des Würfels. Es nutzt Untergruppen und die Blickrichtungen aus Kapitel 6 und führt zu Phasenumwandlungen und zu Eigenschaften wie Piezo- und Ferroelektrizität.</p>
+        <p>In der Vorlesung wird der Würfel entlang [111] zum Rhomboeder mit der Symmetrie 3̄<i>m</i>, beschrieben mit hexagonalen Achsen; dieser Fall steht in Kapitel 9. Das Kapitel macht daraus ein allgemeines Verfahren für alle drei Blickrichtungen des Würfels. Es nutzt Untergruppen und die Blickrichtungen aus Kapitel 5 und führt zu Phasenumwandlungen und zu Eigenschaften wie Piezo- und Ferroelektrizität.</p>
       </div>
 
       <div class="box ziele">
@@ -1421,11 +1487,11 @@ footer a { color: inherit; }
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;strahlen=0&amp;normalen=0" data-alt="Würfel in der Umkugel">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.1a</b> Würfel {100} der Punktgruppe <i>m</i>3̄<i>m</i>, [001] senkrecht.</figcaption>
+            <figcaption><b>Abb. 11.1a</b> Würfel {100} der Punktgruppe <i>m</i>3̄<i>m</i>, [001] senkrecht.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;geruest=1" data-alt="Würfel über dem Symmetriegerüst von m3̄m">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.1b</b> Stereogramm des Würfels über dem Symmetriegerüst von <i>m</i>3̄<i>m</i>: 4-zählige Achsen entlang ⟨100⟩, 3̄-Achsen entlang ⟨111⟩, 2-zählige Achsen entlang ⟨110⟩, neun Spiegelebenen.</figcaption>
+            <figcaption><b>Abb. 11.1b</b> Stereogramm des Würfels über dem Symmetriegerüst von <i>m</i>3̄<i>m</i>: 4-zählige Achsen entlang ⟨100⟩, 3̄-Achsen entlang ⟨111⟩, 2-zählige Achsen entlang ⟨110⟩, neun Spiegelebenen.</figcaption>
           </figure>
         </div>
         <div class="box app">
@@ -1442,15 +1508,15 @@ footer a { color: inherit; }
       <section id="streck-100">
         <h3>Streckung entlang ⟨100⟩</h3>
         <p>Streckt man entlang [001], einer der drei 4-zähligen Achsen (1. Blickrichtung), so bleibt die 4-zählige Achse entlang [001] erhalten. Die 4-zähligen Achsen entlang [100] und [010] würden [001] um 90° in die Ebene senkrecht zu [001] drehen; von ihnen bleibt nur die Drehung um 180°, also je eine 2-zählige Achse, die [001] umkehrt. Erhalten bleiben auch die 2-zähligen Achsen entlang [110] und [11̄0], die senkrecht auf [001] stehen. Alle 3̄-Achsen und die übrigen vier 2-zähligen Achsen gehen verloren.</p>
-        <p>Übrig bleibt 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> = 4/<i>mmm</i> mit 16 statt 48 Operationen. Das Gitter ist jetzt tetragonal: <i>a</i> = <i>b</i> ≠ <i>c</i>. Der Würfel zerfällt in zwei Formen: Die Flächen (001) und (001̄) senkrecht zur Streckrichtung bilden ein Pinakoid, die vier Flächen parallel dazu ein tetragonales Prisma (Abb. 9.2). Das ist genau die Kombination aus Kapitel 2 (Abb. 2.1). Die Pole liegen dabei wie beim unverzerrten Würfel, denn die Würfelflächen bleiben senkrecht zueinander. Die Verzerrung zeigt sich im Stereogramm daran, dass Pinakoid und Prisma jetzt verschiedene Formen sind, und am kleineren Symmetriegerüst.</p>
+        <p>Übrig bleibt 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> = 4/<i>mmm</i> mit 16 statt 48 Operationen. Das Gitter ist jetzt tetragonal: <i>a</i> = <i>b</i> ≠ <i>c</i>. Der Würfel zerfällt in zwei Formen: Die Flächen (001) und (001̄) senkrecht zur Streckrichtung bilden ein Pinakoid, die vier Flächen parallel dazu ein tetragonales Prisma (Abb. 11.2). Das ist genau die Kombination aus Kapitel 6 (Abb. 6.1). Die Pole liegen dabei wie beim unverzerrten Würfel, denn die Würfelflächen bleiben senkrecht zueinander. Die Verzerrung zeigt sich im Stereogramm daran, dass Pinakoid und Prisma jetzt verschiedene Formen sind, und am kleineren Symmetriegerüst.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=001,1.3&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [001] gestreckt">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.2a</b> Würfel, entlang [001] um den Faktor 1,3 gestreckt, [001] senkrecht: Pinakoid {001} und tetragonales Prisma {100}.</figcaption>
+            <figcaption><b>Abb. 11.2a</b> Würfel, entlang [001] um den Faktor 1,3 gestreckt, [001] senkrecht: Pinakoid {001} und tetragonales Prisma {100}.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=001,1.3&amp;geruest=1" data-alt="Gestreckter Würfel über dem Symmetriegerüst von 4/mmm">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.2b</b> Stereogramm dazu über dem Symmetriegerüst der Restgruppe 4/<i>mmm</i>; die beiden Farben zeigen die beiden Formen.</figcaption>
+            <figcaption><b>Abb. 11.2b</b> Stereogramm dazu über dem Symmetriegerüst der Restgruppe 4/<i>mmm</i>; die beiden Farben zeigen die beiden Formen.</figcaption>
           </figure>
         </div>
       </section>
@@ -1458,32 +1524,32 @@ footer a { color: inherit; }
       <section id="streck-111">
         <h3>Streckung entlang ⟨111⟩</h3>
         <p>Streckt man entlang der Raumdiagonalen [111], einer 3̄-Achse (2. Blickrichtung), so bleibt die 3̄-Achse entlang [111]. Senkrecht zu [111] liegen drei der sechs 2-zähligen Achsen, entlang [11̄0], [011̄] und [1̄01]; sie kehren [111] um und bleiben erhalten. Verloren gehen alle 4-zähligen Achsen, die übrigen drei 3̄-Achsen und die übrigen drei 2-zähligen Achsen.</p>
-        <p>Übrig bleibt 3̄ 2/<i>m</i> = 3̄<i>m</i> mit 12 Operationen. Alle sechs Würfelflächen werden durch die 3̄-Achse ineinander überführt; sie bleiben eine einzige Form, aber ihre Winkel ändern sich: Aus dem Würfel wird ein <span class="term">Rhomboeder</span> (Abb. 9.3), aus dem kubischen ein rhomboedrisches Gitter. Der Würfel ist der Sonderfall eines Rhomboeders mit 90°. Alle Kanten sind gleich lang; an den beiden Ecken auf der 3̄-Achse schliessen sie den gleichen Winkel α ein. Bei Streckung (<i>s</i> &gt; 1) ist α kleiner als 90° (spitzes Rhomboeder), bei Stauchung (<i>s</i> &lt; 1) grösser (stumpfes Rhomboeder); für <i>s</i> = 1,3 ist α = 79,2°.</p>
+        <p>Übrig bleibt 3̄ 2/<i>m</i> = 3̄<i>m</i> mit 12 Operationen. Alle sechs Würfelflächen werden durch die 3̄-Achse ineinander überführt; sie bleiben eine einzige Form, aber ihre Winkel ändern sich: Aus dem Würfel wird das <span class="term">Rhomboeder</span> aus Kapitel 9 (Abb. 11.3), aus dem kubischen ein rhomboedrisches Gitter. Für <i>s</i> = 1,3 ist der Winkel α an den Ecken auf der 3̄-Achse 79,2°, bei Stauchung (<i>s</i> &lt; 1) wird er grösser als 90°.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [111] gestreckt: Rhomboeder">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.3a</b> Würfel, entlang [111] um den Faktor 1,3 gestreckt, [111] senkrecht: ein Rhomboeder.</figcaption>
+            <figcaption><b>Abb. 11.3a</b> Würfel, entlang [111] um den Faktor 1,3 gestreckt, [111] senkrecht: ein Rhomboeder.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;geruest=1" data-alt="Rhomboeder über dem Symmetriegerüst von 3̄m">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.3b</b> Stereogramm, [111] ∥ Projektionsrichtung, über dem Symmetriegerüst 3̄<i>m</i>: 3̄-Achse im Mittelpunkt, drei Spiegelebenen, drei 2-zählige Achsen.</figcaption>
+            <figcaption><b>Abb. 11.3b</b> Stereogramm, [111] ∥ Projektionsrichtung, über dem Symmetriegerüst 3̄<i>m</i>: 3̄-Achse im Mittelpunkt, drei Spiegelebenen, drei 2-zählige Achsen.</figcaption>
           </figure>
         </div>
-        <p>Für die trigonale Punktgruppe verwendet man hexagonale Achsen (Kapitel 7): <i>c</i> entlang der 3̄-Achse, also <i>c</i> ∥ [111], und <i>a</i>₁ ∥ [11̄0], <i>a</i>₂ ∥ [011̄] senkrecht dazu. In diesen Achsen ist die Würfelfläche (100) die Rhomboederfläche (101) = (101̄1). Die Infobox der App zeigt diese Umrechnung, sobald die Restgruppe trigonal ist. Streckt man ein Oktaeder auf dieselbe Weise, zerfällt es in ein Pinakoid aus den beiden Flächen senkrecht zu [111] und ein Rhomboeder aus den übrigen sechs.</p>
+        <p>Mit hexagonalen Achsen, <i>c</i> ∥ [111], wird die Würfelfläche (100) zur Rhomboederfläche (101) = (101̄1) (Kapitel 9); die Infobox der App zeigt diese Umrechnung, sobald die Restgruppe trigonal ist. Streckt man ein Oktaeder auf dieselbe Weise, zerfällt es in ein Pinakoid aus den beiden Flächen senkrecht zu [111] und ein Rhomboeder aus den übrigen sechs.</p>
       </section>
 
       <section id="streck-110">
         <h3>Streckung entlang ⟨110⟩</h3>
         <p>Streckt man schliesslich entlang der Flächendiagonalen [110], einer 2-zähligen Achse (3. Blickrichtung), so bleiben drei 2-zählige Achsen: die entlang [110] selbst, die senkrecht dazu entlang [11̄0] und entlang [001] die Drehung um 180° der früheren 4-zähligen Achse. Die Drehung um 90° um [001] würde [110] in [1̄10] drehen und geht verloren. Ganz verloren gehen die 4-zähligen Achsen entlang [100] und [010], alle 3̄-Achsen und die übrigen vier 2-zähligen Achsen.</p>
-        <p>Übrig bleibt 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> = <i>mmm</i> mit nur 8 Operationen. Das Gitter ist orthorhombisch, aber seine Achsen liegen nicht mehr entlang der Würfelkanten, sondern entlang [110], [11̄0] und [001]. Der Würfel zerfällt in ein Pinakoid aus (001) und (001̄) und ein rhombisches Prisma aus den vier übrigen Flächen, deren Querschnitt jetzt eine Raute ist (Abb. 9.4).</p>
+        <p>Übrig bleibt 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> = <i>mmm</i> mit nur 8 Operationen. Das Gitter ist orthorhombisch, aber seine Achsen liegen nicht mehr entlang der Würfelkanten, sondern entlang [110], [11̄0] und [001]. Der Würfel zerfällt in ein Pinakoid aus (001) und (001̄) und ein rhombisches Prisma aus den vier übrigen Flächen, deren Querschnitt jetzt eine Raute ist (Abb. 11.4).</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=110,1.3&amp;lage=110&amp;strahlen=0&amp;normalen=0" data-alt="Würfel entlang [110] gestreckt">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.4a</b> Würfel, entlang [110] um den Faktor 1,3 gestreckt, [110] senkrecht: Pinakoid {001} und rhombisches Prisma.</figcaption>
+            <figcaption><b>Abb. 11.4a</b> Würfel, entlang [110] um den Faktor 1,3 gestreckt, [110] senkrecht: Pinakoid {001} und rhombisches Prisma.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=110,1.3&amp;lage=110&amp;geruest=1" data-alt="Entlang [110] gestreckter Würfel über dem Symmetriegerüst von mmm">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.4b</b> Stereogramm, [110] ∥ Projektionsrichtung, über dem Symmetriegerüst <i>mmm</i>.</figcaption>
+            <figcaption><b>Abb. 11.4b</b> Stereogramm, [110] ∥ Projektionsrichtung, über dem Symmetriegerüst <i>mmm</i>.</figcaption>
           </figure>
         </div>
         <p>Je höherzählig die Achse entlang der Streckrichtung, desto mehr Symmetrie bleibt übrig. Die drei Fälle im Überblick:</p>
@@ -1497,12 +1563,12 @@ footer a { color: inherit; }
             </tbody>
           </table>
         </div>
-        <p>Teilt man die 48 Operationen des Würfels durch die Zahl der verbleibenden, erhält man 3, 4 und 6: genau die Zahl der gleichwertigen Geraden ⟨100⟩, ⟨111⟩ und ⟨110⟩, entlang derer man den Würfel gleichwertig strecken könnte (zur Zählung von Geraden und Richtungen Kapitel 8).</p>
+        <p>Teilt man die 48 Operationen des Würfels durch die Zahl der verbleibenden, erhält man 3, 4 und 6: genau die Zahl der gleichwertigen Geraden ⟨100⟩, ⟨111⟩ und ⟨110⟩, entlang derer man den Würfel gleichwertig strecken könnte (zur Zählung von Geraden und Richtungen Kapitel 10).</p>
       </section>
 
       <section id="polar">
         <h3>Streckung oder Polarisation</h3>
-        <p>Eine Streckung hat keinen Richtungssinn. Anders eine Verschiebung von Atomen, durch die ein elektrisches Dipolmoment entsteht, eine <span class="term">Polarisation</span>: Sie ist ein Pfeil und unterscheidet „vorn“ von „hinten“. Bei ihr bleiben nur die Operationen erhalten, die den Pfeil in sich selbst überführen; alle, die ihn umkehren, gehen zusätzlich verloren, darunter das Inversionszentrum. Aus 4/<i>mmm</i> wird so 4<i>mm</i>, aus <i>mmm</i> wird <i>mm</i>2 und aus 3̄<i>m</i> wird 3<i>m</i>. Abb. 9.5 zeigt den Unterschied an der Elementarzelle von Bariumtitanat (siehe unten): Wird die Zelle nur gestreckt, sitzt das Ti weiter in ihrer Mitte, und das Inversionszentrum bleibt. Rückt das Ti zusätzlich aus der Mitte, zeigt die Polarisation <i>P</i> nach oben, und oben und unten sind nicht mehr gleichwertig.</p>
+        <p>Eine Streckung hat keinen Richtungssinn. Anders eine Verschiebung von Atomen, durch die ein elektrisches Dipolmoment entsteht, eine <span class="term">Polarisation</span>: Sie ist ein Pfeil und unterscheidet „vorn“ von „hinten“. Bei ihr bleiben nur die Operationen erhalten, die den Pfeil in sich selbst überführen; alle, die ihn umkehren, gehen zusätzlich verloren, darunter das Inversionszentrum. Aus 4/<i>mmm</i> wird so 4<i>mm</i>, aus <i>mmm</i> wird <i>mm</i>2 und aus 3̄<i>m</i> wird 3<i>m</i>. Abb. 11.5 zeigt den Unterschied an der Elementarzelle von Bariumtitanat (siehe unten): Wird die Zelle nur gestreckt, sitzt das Ti weiter in ihrer Mitte, und das Inversionszentrum bleibt. Rückt das Ti zusätzlich aus der Mitte, zeigt die Polarisation <i>P</i> nach oben, und oben und unten sind nicht mehr gleichwertig.</p>
         <figure class="fig-card pvfig">
           <div class="fig-art">
             <svg viewBox="0 0 650 262" role="img" aria-label="Perowskitzelle von BaTiO₃: kubisch, entlang c gestreckt mit Ti in der Mitte, gestreckt mit nach oben verschobenem Ti und Polarisationspfeil">
@@ -1618,13 +1684,13 @@ footer a { color: inherit; }
             <g class="pv-leg"><circle class="pv-ba" cx="210" cy="246" r="7"/><text x="222" y="250">Ba</text><circle class="pv-ti" cx="275" cy="246" r="6"/><text x="286" y="250">Ti</text><circle class="pv-o" cx="333" cy="246" r="5"/><text x="343" y="250">O</text></g>
             </svg>
           </div>
-          <figcaption><b>Abb. 9.5</b> Elementarzelle von BaTiO₃ (Perowskitstruktur), Verzerrung und Verschiebung stark übertrieben. Links kubisch (<i>m</i>3̄<i>m</i>), Mitte entlang <i>c</i> gestreckt, Ti in der Mitte (4/<i>mmm</i>, Doppelpfeil: Streckung ohne Richtungssinn), rechts zusätzlich Ti nach oben verschoben (4<i>mm</i>, Pfeil: Polarisation <i>P</i>). Gestrichelt die Verbindungen vom Ti zu den sechs O des Oktaeders.</figcaption>
+          <figcaption><b>Abb. 11.5</b> Elementarzelle von BaTiO₃ (Perowskitstruktur), Verzerrung und Verschiebung stark übertrieben. Links kubisch (<i>m</i>3̄<i>m</i>), Mitte entlang <i>c</i> gestreckt, Ti in der Mitte (4/<i>mmm</i>, Doppelpfeil: Streckung ohne Richtungssinn), rechts zusätzlich Ti nach oben verschoben (4<i>mm</i>, Pfeil: Polarisation <i>P</i>). Gestrichelt die Verbindungen vom Ti zu den sechs O des Oktaeders.</figcaption>
         </figure>
-        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 9.6), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 3.2b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 2.2): Oben und unten sind verschieden.</p>
+        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 11.6), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 4.2b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 6.2): Oben und unten sind verschieden.</p>
         <div class="fig-row fig-row3">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4mm" data-alt="Punktgruppe 4mm mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.6a</b> 4<i>mm</i></figcaption>
+            <figcaption><b>Abb. 11.6a</b> 4<i>mm</i></figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mm2" data-alt="Punktgruppe mm2 mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
@@ -1635,7 +1701,7 @@ footer a { color: inherit; }
             <figcaption><b>c</b> 3<i>m</i></figcaption>
           </figure>
         </div>
-        <p class="fig-note"><b>Abb. 9.6</b> Bahn eines allgemeinen Pols in den polaren Punktgruppen (a) 4<i>mm</i> (8 Pole), (b) <i>mm</i>2 (4 Pole) und (c) 3<i>m</i> (6 Pole), die polare Achse jeweils als Projektionsrichtung; bezogen auf den Würfel liegt sie entlang [001], [110] bzw. [111]. Alle Pole liegen auf derselben Halbkugel.</p>
+        <p class="fig-note"><b>Abb. 11.6</b> Bahn eines allgemeinen Pols in den polaren Punktgruppen (a) 4<i>mm</i> (8 Pole), (b) <i>mm</i>2 (4 Pole) und (c) 3<i>m</i> (6 Pole), die polare Achse jeweils als Projektionsrichtung; bezogen auf den Würfel liegt sie entlang [001], [110] bzw. [111]. Alle Pole liegen auf derselben Halbkugel.</p>
         <div class="box merke">
           <h4>Merke</h4>
           <p>Eine Streckung erhält die Operationen, die die Streckrichtung als Gerade in sich überführen; beim Würfel behält die Restgruppe ihr Inversionszentrum. Eine Polarisation erhält nur die Operationen, die den Pfeil in sich überführen; die Restgruppe ist polar.</p>
@@ -1644,16 +1710,16 @@ footer a { color: inherit; }
 
       <section id="batio3">
         <h3>Ein Beispiel aus der Natur</h3>
-        <p>Bariumtitanat BaTiO₃ hat oberhalb von etwa 120 °C (rund 395 K) die kubische Perowskitstruktur: Ba auf den Ecken der Elementarzelle, Ti in ihrer Mitte, umgeben von einem Oktaeder aus sechs O-Atomen auf den Flächenmitten; Punktgruppe <i>m</i>3̄<i>m</i>. Kühlt man den Kristall ab, rückt das Ti um etwa 0,1 Å aus der Mitte des Oktaeders heraus (Abb. 9.5). Die Schwerpunkte der positiven und negativen Ladungen fallen dann nicht mehr zusammen: Jede Zelle trägt ein elektrisches Dipolmoment, der Kristall eine <span class="term">spontane Polarisation</span>. Zugleich verformt sich die Zelle mit der Symmetrie einer Streckung entlang dieser Richtung, allerdings nur sehr wenig: Die Winkel ändern sich um Bruchteile eines Grades, viel weniger als in den Abbildungen dieses Kapitels.</p>
-        <p>Je nach Temperatur liegt die Polarisation entlang einer der drei Blickrichtungen des Würfels, genau wie in den drei Fällen dieses Kapitels. Die Verformung allein ergäbe 4/<i>mmm</i>, <i>mmm</i> bzw. 3̄<i>m</i>; die Verschiebung des Ti nimmt zusätzlich alle Operationen weg, die die Polarisationsrichtung umkehren, und führt auf die polaren Punktgruppen (Abb. 9.6). Die Phasen eines BaTiO₃-Einkristalls beim Abkühlen:</p>
+        <p>Bariumtitanat BaTiO₃ hat oberhalb von etwa 120 °C (rund 395 K) die kubische Perowskitstruktur: Ba auf den Ecken der Elementarzelle, Ti in ihrer Mitte, umgeben von einem Oktaeder aus sechs O-Atomen auf den Flächenmitten; Punktgruppe <i>m</i>3̄<i>m</i>. Kühlt man den Kristall ab, rückt das Ti um etwa 0,1 Å aus der Mitte des Oktaeders heraus (Abb. 11.5). Die Schwerpunkte der positiven und negativen Ladungen fallen dann nicht mehr zusammen: Jede Zelle trägt ein elektrisches Dipolmoment, der Kristall eine <span class="term">spontane Polarisation</span>. Zugleich verformt sich die Zelle mit der Symmetrie einer Streckung entlang dieser Richtung, allerdings nur sehr wenig: Die Winkel ändern sich um Bruchteile eines Grades, viel weniger als in den Abbildungen dieses Kapitels.</p>
+        <p>Je nach Temperatur liegt die Polarisation entlang einer der drei Blickrichtungen des Würfels, genau wie in den drei Fällen dieses Kapitels. Die Verformung allein ergäbe 4/<i>mmm</i>, <i>mmm</i> bzw. 3̄<i>m</i>; die Verschiebung des Ti nimmt zusätzlich alle Operationen weg, die die Polarisationsrichtung umkehren, und führt auf die polaren Punktgruppen (Abb. 11.6). Die Phasen eines BaTiO₃-Einkristalls beim Abkühlen:</p>
         <div class="tabwrap">
           <table class="tab">
             <thead><tr><th>Phase</th><th>Temperatur</th><th>Polarisation entlang</th><th>Punktgruppe</th><th>Verformung wie</th></tr></thead>
             <tbody>
-              <tr><td>kubisch</td><td>über 394 K (121 °C)</td><td>–</td><td><i>m</i>3̄<i>m</i></td><td>Abb. 9.1</td></tr>
-              <tr><td>tetragonal</td><td>279 K bis 394 K (6 °C bis 121 °C)</td><td>⟨100⟩</td><td>4<i>mm</i></td><td>Abb. 9.2</td></tr>
-              <tr><td>orthorhombisch</td><td>181 K bis 279 K (−92 °C bis 6 °C)</td><td>⟨110⟩</td><td><i>mm</i>2</td><td>Abb. 9.4</td></tr>
-              <tr><td>rhomboedrisch</td><td>unter 181 K (−92 °C)</td><td>⟨111⟩</td><td>3<i>m</i></td><td>Abb. 9.3</td></tr>
+              <tr><td>kubisch</td><td>über 394 K (121 °C)</td><td>–</td><td><i>m</i>3̄<i>m</i></td><td>Abb. 11.1</td></tr>
+              <tr><td>tetragonal</td><td>279 K bis 394 K (6 °C bis 121 °C)</td><td>⟨100⟩</td><td>4<i>mm</i></td><td>Abb. 11.2</td></tr>
+              <tr><td>orthorhombisch</td><td>181 K bis 279 K (−92 °C bis 6 °C)</td><td>⟨110⟩</td><td><i>mm</i>2</td><td>Abb. 11.4</td></tr>
+              <tr><td>rhomboedrisch</td><td>unter 181 K (−92 °C)</td><td>⟨111⟩</td><td>3<i>m</i></td><td>Abb. 11.3</td></tr>
             </tbody>
           </table>
         </div>
@@ -1671,7 +1737,7 @@ footer a { color: inherit; }
           <li>BaTiO₃ durchläuft beim Abkühlen genau diese drei polaren Phasen. Erst die niedrigere Symmetrie erlaubt Pyro- und Piezoelektrizität, und sie führt zu Domänen.</li>
         </ul>
       </div>
-      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=9&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
+      <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=11&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
 
       <div class="quellen">
         <h4>Quellen</h4>

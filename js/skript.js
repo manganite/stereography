@@ -106,7 +106,7 @@ function watch3d() {
   figs.forEach((f) => io.observe(f));
 }
 
-// ------------------------------------------------------------------ Projektionsskizze (Kapitel 1)
+// ------------------------------------------------------------------ Projektionsskizze (Kapitel 2)
 // Links ein Schnitt durch die Umkugel (N oben, S unten, Äquatorebene von der Seite), rechts der Blick
 // von oben auf die Projektionsebene. Ein Regler stellt die Poldistanz ρ ein (Borchardt-Ott: obere
 // Halbkugel vom Nordpol, untere vom Südpol aus negativ).

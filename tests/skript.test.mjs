@@ -10,7 +10,7 @@ const html = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
 // Inhalt eines <div class="box …"> bis zum passenden </div>
 function boxes(kind) {
   const out = [];
-  const re = new RegExp(`<div class="box ${kind}">`, 'g');
+  const re = new RegExp(`<div class="box ${kind}"[^>]*>`, 'g');
   let m;
   while ((m = re.exec(html))) {
     let depth = 1;
@@ -31,6 +31,14 @@ test('Vertiefungskästen: Themenzeile und ein Satz zum Bezug vor dem Inhalt', ()
     assert.match(b, /^<div class="box vertiefung">\s*<h4>Vertiefung · <b>[^<]+<\/b><\/h4>/, b.slice(0, 120));
     assert.ok((b.match(/<p>/g) || []).length >= 2, `Bezugssatz und Inhalt fehlen: ${b.slice(0, 120)}`);
   }
+});
+
+test('Grundlagen-Kästen: Kopfzeile „Grundlagen · Thema“, Anker und Legende', () => {
+  const g = boxes('grundlagen');
+  assert.ok(g.length >= 3, `nur ${g.length} Grundlagen-Kästen`);
+  for (const b of g) assert.match(b, /^<div class="box grundlagen" id="[a-z-]+">\s*<h4>Grundlagen · <b>[^<]+<\/b><\/h4>/, b.slice(0, 120));
+  const [a] = boxes('aufbau');
+  assert.ok(a.includes('Grundlagen'));
 });
 
 test('App-Kästen haben die Kopfzeile „In der App“', () => {

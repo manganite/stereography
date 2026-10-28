@@ -79,6 +79,11 @@ section[data-level="vertiefung"] > :is(h2, h3)::after { content: 'Vertiefung'; }
 [data-level="vertiefung"] .box.merke { border-left-color: var(--ax3); }
 [data-level="vertiefung"] .box.merke > h4::after { content: ' · Vertiefung'; }
 .box.bezug { border-left-color: var(--ax3); }
+/* Grundlagen: Grundwissen, das das Skript voraussetzt; Haupttext wie „Merke“ */
+.box.grundlagen { border-left-color: var(--fc3); background: color-mix(in srgb, var(--fc3) 6%, var(--surface)); }
+.box.grundlagen > h4 b { color: var(--ink); font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 0.86rem; }
+.box.grundlagen figure { margin-block: 12px; }
+.box.aufbau dt .swatch.g { background: var(--fc3); }
 .toc .etikett { margin-left: 0.4em; padding: 0 5px; font-size: 0.56rem; vertical-align: 0.15em; }
 /* Ganze Abschnitte als Vertiefung: abgesetzt wie ein Vertiefungskasten */
 section > section[data-level="vertiefung"] {
@@ -112,6 +117,7 @@ figure { margin: 20px 0; }
 .fig-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 20px 0; }
 .fig-row figure { margin: 0; }
 .fig-row3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fig-narrow { max-width: 380px; margin-inline: auto; }
 .fig-cols { grid-auto-flow: column; grid-template-rows: auto auto; }
 .fig-grid5 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0 6px; }
 .fig-grid5 figure { margin: 0; padding: 8px; }
@@ -123,8 +129,17 @@ figure { margin: 20px 0; }
 .tab caption b { color: var(--ink); font-weight: 600; }
 .tab { border-collapse: collapse; font-size: 0.9rem; min-width: 460px; }
 .tab th, .tab td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tab-wrap td:last-child { white-space: normal; min-width: 10em; }
 .tab th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
 .hexfig { max-width: 460px; margin-inline: auto; }
+.achsfig { max-width: 360px; margin-inline: auto; }
+.achsfig svg text { font-family: var(--font-ui); fill: var(--ink); }
+.ma-plane { fill: color-mix(in srgb, var(--accent) 20%, transparent); stroke: var(--accent); stroke-width: 1.6; stroke-linejoin: round; }
+.ma-tick { stroke: var(--ink); stroke-width: 1.4; }
+.ma-pt { fill: var(--accent); }
+.achsfig .ma-t { font-size: 12px; fill: var(--muted); }
+.achsfig .ma-ax { font-style: italic; }
+.achsfig .ma-hkl { font-size: 15px; font-weight: 600; fill: var(--accent); }
 .hexfig svg text { font-family: var(--font-ui); fill: var(--ink); }
 .hx-base { fill: none; stroke: var(--line); stroke-width: 1.2; }
 .hx-a { stroke: var(--ink); stroke-width: 2.2; }
@@ -237,6 +252,7 @@ footer a { color: inherit; }
           <li><a href="#indizes"><span class="nr">1</span>Kristallflächen und Indizes</a>
             <ol>
               <li><a href="#aufstellung">Aufstellung und Indizes</a></li>
+              <li><a href="#indizes-gitter">Indizes und Gitter</a></li>
               <li><a href="#hexachsen">Das hexagonale Achsensystem</a></li>
             </ol>
           </li>
@@ -248,11 +264,19 @@ footer a { color: inherit; }
               <li><a href="#kreise">Kreise, Winkel und das Wulffsche Netz</a></li>
             </ol>
           </li>
-          <li><a href="#punktgruppen"><span class="nr">3</span>Symmetrieoperationen und Punktgruppen</a></li>
+          <li><a href="#punktgruppen"><span class="nr">3</span>Symmetrieoperationen und Punktgruppen</a>
+            <ol>
+              <li><a href="#operationen">Symmetrieoperation und Symmetrieelement</a></li>
+              <li><a href="#drehinversion">Kopplung und Kombination</a></li>
+              <li><a href="#punktgruppe">Punktgruppen</a></li>
+              <li><a href="#kristallsysteme">Kristallsysteme und Kristallklassen</a></li>
+            </ol>
+          </li>
           <li><a href="#symmetrie"><span class="nr">4</span>Symmetriegerüste im Stereogramm</a>
             <ol>
               <li><a href="#elemente">Symmetrieelemente in der Projektion</a></li>
               <li><a href="#abbilden">Wohin ein Symmetrieelement einen Pol bringt</a></li>
+              <li><a href="#symmetriesaetze">Die Symmetriesätze</a></li>
               <li><a href="#bahn">Vom Pol zur Bahn</a></li>
               <li><a href="#speziell">Pole auf Symmetrieelementen</a></li>
             </ol>
@@ -329,6 +353,7 @@ footer a { color: inherit; }
       <p>Der Text ohne Kennzeichnung behandelt, was in der Vorlesung und in den Übungen vorkommt. Vertiefungen zeigen, wie diese Inhalte weitergehen; beim ersten Lesen kann man sie überspringen.</p>
       <dl>
         <dt><span class="swatch v"></span>Vertiefung</dt><dd>Kasten oder Abschnitt, der über die Vorlesung hinausführt. Der erste Satz sagt, woran er anknüpft und wozu man ihn braucht; bei ganzen Kapiteln steht das im Kasten „Bezug zur Vorlesung“.</dd>
+        <dt><span class="swatch g"></span>Grundlagen</dt><dd>Kurz zusammengefasstes Grundwissen, auf dem der Text aufbaut, etwa zu Miller'schen Indizes oder Gruppen. Es gehört zum Haupttext.</dd>
         <dt><span class="swatch"></span>In der App</dt><dd>Hinweis zur Bedienung der App.</dd>
       </dl>
     </div>
@@ -340,7 +365,8 @@ footer a { color: inherit; }
       <div class="box ziele">
         <h4>Lernziele</h4>
         <ul>
-          <li>Flächen mit (<i>hkl</i>) und Richtungen mit [<i>uvw</i>] bezeichnen</li>
+          <li>die Miller'schen Indizes einer Fläche aus ihren Achsenabschnitten bestimmen und Richtungen mit [<i>uvw</i>] bezeichnen</li>
+          <li>erklären, warum eine Fläche ihre Indizes behält, wenn sich das Gitter ändert, und was sich dabei ändert</li>
           <li>das hexagonale Achsensystem beschreiben und Richtungen darin einzeichnen</li>
         </ul>
       </div>
@@ -348,12 +374,102 @@ footer a { color: inherit; }
       <section id="aufstellung">
         <h3>Aufstellung und Indizes</h3>
         <p>Jede Kristallfläche verläuft parallel zu einer Schar von Netzebenen des Kristallgitters. Ihre Lage lässt sich deshalb mit den Miller'schen Indizes (<i>hkl</i>) angeben, jede Kante als Richtung [<i>uvw</i>]. Parallele Gegenflächen gehören zur selben Netzebenenschar, man unterscheidet sie aber als (<i>hkl</i>) und (<i>h̄k̄l̄</i>).</p>
+        <div class="box grundlagen" id="miller">
+          <h4>Grundlagen · <b>Miller'sche Indizes</b></h4>
+          <p>Eine Fläche schneidet die Achsen <i>a</i>, <i>b</i> und <i>c</i> nach <i>m</i>, <i>n</i> und <i>p</i> Achseneinheiten. Ihre Miller'schen Indizes (<i>hkl</i>) sind die kleinsten ganzen Zahlen im Verhältnis der Kehrwerte 1/<i>m</i> : 1/<i>n</i> : 1/<i>p</i>. Die Fläche in Abb. 1.1 schneidet die Achsen bei 2, 1 und 3; die Kehrwerte ½, 1, ⅓ ergeben, mit 6 multipliziert, (362).</p>
+          <figure class="fig-card achsfig">
+            <div class="fig-art">
+            <svg viewBox="40 40 330 280" role="img" aria-label="Fläche mit den Achsenabschnitten 2 auf a, 1 auf b und 3 auf c; Miller-Indizes (362)">
+              <polygon class="ma-plane" points="102.0,268.0 202.0,232.0 150.0,94.0"/>
+              <line class="hx-a" x1="150" y1="232" x2="68.4" y2="293.2" marker-end="url(#maarr)"/>
+              <text class="hx-l ma-ax" x="54.4" y="303.2">a</text>
+              <line class="hx-a" x1="150" y1="232" x2="326.8" y2="232.0" marker-end="url(#maarr)"/>
+              <text class="hx-l ma-ax" x="334.8" y="237.0">b</text>
+              <line class="hx-a" x1="150" y1="232" x2="150.0" y2="61.8" marker-end="url(#maarr)"/>
+              <text class="hx-l ma-ax" x="159.0" y="65.8">c</text>
+              <line class="ma-tick" x1="121.0" y1="244.0" x2="131.0" y2="256.0"/>
+              <line class="ma-tick" x1="202.0" y1="227.0" x2="202.0" y2="237.0"/>
+              <line class="ma-tick" x1="145.0" y1="186.0" x2="155.0" y2="186.0"/>
+              <line class="ma-tick" x1="97.0" y1="262.0" x2="107.0" y2="274.0"/>
+              <line class="ma-tick" x1="254.0" y1="227.0" x2="254.0" y2="237.0"/>
+              <line class="ma-tick" x1="145.0" y1="140.0" x2="155.0" y2="140.0"/>
+              <line class="ma-tick" x1="73.0" y1="280.0" x2="83.0" y2="292.0"/>
+              <line class="ma-tick" x1="306.0" y1="227.0" x2="306.0" y2="237.0"/>
+              <line class="ma-tick" x1="145.0" y1="94.0" x2="155.0" y2="94.0"/>
+              <text class="ma-t" x="111.0" y="262.0">1</text>
+              <text class="ma-t" x="199.0" y="252.0">1</text>
+              <text class="ma-t" x="132.0" y="190.0">1</text>
+              <text class="ma-t" x="87.0" y="280.0">2</text>
+              <text class="ma-t" x="251.0" y="252.0">2</text>
+              <text class="ma-t" x="132.0" y="144.0">2</text>
+              <text class="ma-t" x="63.0" y="298.0">3</text>
+              <text class="ma-t" x="303.0" y="252.0">3</text>
+              <text class="ma-t" x="132.0" y="98.0">3</text>
+              <circle class="ma-pt" cx="102.0" cy="268.0" r="4"/>
+              <circle class="ma-pt" cx="202.0" cy="232.0" r="4"/>
+              <circle class="ma-pt" cx="150.0" cy="94.0" r="4"/>
+              <text class="ma-hkl" x="157.3" y="206.0" text-anchor="middle">(362)</text>
+              <defs><marker id="maarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="hx-head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+            </svg>
+            </div>
+            <figcaption><b>Abb. 1.1</b> Eine Fläche mit den Achsenabschnitten 2<i>a</i>, 1<i>b</i> und 3<i>c</i> hat die Miller'schen Indizes (362) (nach Borchardt-Ott Abb. 3.9).</figcaption>
+          </figure>
+          <ul>
+            <li>Verläuft eine Fläche parallel zu einer Achse, liegt der Achsenabschnitt im Unendlichen, und der Index ist 0: (100) schneidet nur <i>a</i>, (110) verläuft parallel zu <i>c</i>.</li>
+            <li>Ein negativer Index erhält einen Strich über der Ziffer, z. B. (1̄00) für die Gegenfläche von (100).</li>
+            <li>Eine Richtung [<i>uvw</i>] führt vom Ursprung zum Gitterpunkt <i>u</i><i>a</i> + <i>v</i><i>b</i> + <i>w</i><i>c</i>, wieder mit den kleinsten ganzen Zahlen. [100] ist die Richtung von <i>a</i>.</li>
+            <li>{<i>hkl</i>} steht für eine Fläche und alle zu ihr symmetrisch gleichwertigen Flächen (Kapitel 6), ⟨<i>uvw</i>⟩ entsprechend für Richtungen (Kapitel 5).</li>
+          </ul>
+          <p>Je kleiner die Indizes, desto dichter ist die zugehörige Netzebene mit Gitterpunkten besetzt. Kristallflächen haben deshalb meist kleine Indizes (Kapitel 8).</p>
+        </div>
         <p>Man stellt einen Kristall üblicherweise so auf, dass <i>a</i> nach vorn, <i>b</i> nach rechts und <i>c</i> nach oben zeigt.</p>
+      </section>
+
+      <section id="indizes-gitter">
+        <h3>Indizes und Gitter: Was sich ändert und was nicht</h3>
+        <p>Miller'sche Indizes messen nicht in Ångström oder Millimetern, sondern in Einheiten der Achsen des Kristalls. Die Fläche (111) schneidet <i>a</i>, <i>b</i> und <i>c</i> jeweils bei einer Einheit, gleich wie lang diese Einheiten sind. Ändern sich die Längen der Achsen oder die Winkel zwischen ihnen, ändert sich der Massstab mit, und die Indizes bleiben dieselben. Man kann sich das Achsensystem als kariertes Gummituch vorstellen: Zieht man das Tuch in die Länge, bleibt ein Punkt im selben Kästchen, auch wenn sich sein Abstand in Millimetern ändert. Ebenso bezeichnen [100], [010] und [001] immer die Richtungen der drei Achsen, ob der Kristall würfelförmig, quaderförmig oder rhomboedrisch ist.</p>
+        <p>Was sich ändert, sind die Winkel zwischen den Flächen. Abb. 1.2 zeigt die tetragonale Dipyramide {111} bei drei Achsenverhältnissen <i>c</i>/<i>a</i>. Jede ihrer Flächen schneidet die drei Achsen bei einer Einheit, und sie heisst in allen drei Kristallen gleich. Je länger <i>c</i> im Vergleich zu <i>a</i> ist, desto steiler stehen die Flächen: Gegen die Ebene von <i>a</i> und <i>b</i> ist (111) um 42,2° (<i>c</i>/<i>a</i> = 0,64, wie beim Rutil), um 54,7° (<i>c</i>/<i>a</i> = 1) bzw. um 70,5° geneigt (<i>c</i>/<i>a</i> = 2).</p>
+        <div class="fig-row fig-row3">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:e14&amp;ca=0.64&amp;pole=0&amp;kugel=0&amp;ns=0&amp;ebene=0&amp;achsen=1&amp;normalen=0" data-alt="Tetragonale Dipyramide {111} mit c/a = 0,64">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 1.2a</b> <i>c</i>/<i>a</i> = 0,64: flach, (111) um 42,2° geneigt.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:e14&amp;ca=1&amp;pole=0&amp;kugel=0&amp;ns=0&amp;ebene=0&amp;achsen=1&amp;normalen=0" data-alt="Tetragonale Dipyramide {111} mit c/a = 1">
+            <div class="fig-art"></div>
+            <figcaption><b>b</b> <i>c</i>/<i>a</i> = 1: 54,7°, wie beim Oktaeder.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-app="#m=form&amp;sys=tetragonal&amp;f=4/mmm:e14&amp;ca=2&amp;pole=0&amp;kugel=0&amp;ns=0&amp;ebene=0&amp;achsen=1&amp;normalen=0" data-alt="Tetragonale Dipyramide {111} mit c/a = 2">
+            <div class="fig-art"></div>
+            <figcaption><b>c</b> <i>c</i>/<i>a</i> = 2: steil, 70,5°.</figcaption>
+          </figure>
+        </div>
+        <p class="fig-note"><b>Abb. 1.2</b> Die tetragonale Dipyramide {111} bei drei Achsenverhältnissen; die vordere obere Fläche ist jeweils (111). Die Flächen heissen in allen drei Kristallen gleich, aber ihre Neigung ändert sich. Ziehen dreht die Ansicht.</p>
+        <p>Drei Arten von Veränderung muss man deshalb auseinanderhalten:</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Was sich ändert</th><th>Indizes</th><th>Winkel zwischen den Flächen</th></tr></thead>
+            <tbody>
+              <tr><td>Flächen parallel verschoben (Habitus, Kapitel 8)</td><td>gleich</td><td>gleich</td></tr>
+              <tr><td>Kristall gedreht</td><td>gleich</td><td>gleich</td></tr>
+              <tr><td>Gitter: Achsenlängen oder Achsenwinkel</td><td>gleich</td><td>ändern sich</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Im Stereogramm (Kapitel 2) zeigt sich das so: Im ersten Fall bleibt es gleich, im zweiten sieht es anders aus, aber die Winkel zwischen den Polen bleiben (Kapitel 6), und erst im dritten rücken die Pole gegeneinander.</p>
+        <p>Kennt man das Gitter eines Kristalls nicht, legt man die Einheiten auf den Achsen über eine seiner Flächen fest. Eine Fläche, die alle drei Achsen schneidet, meist eine grosse, erhält die Indizes (111); sie heisst <span class="term">Einheitsfläche</span>. Ihre Achsenabschnitte sind die Einheiten auf <i>a</i>, <i>b</i> und <i>c</i> und ergeben das <span class="term">Achsenverhältnis</span> <i>a</i> : <i>b</i> : <i>c</i>, eine Materialkonstante des Kristalls. Alle übrigen Flächen werden auf diese Einheiten bezogen. Am Kristall in Abb. 1.3 sind die grossen Flächen die Einheitsflächen {111}. Eine Fläche der kleineren Dipyramide schneidet die Achsen bei 2<i>a</i>, 2<i>b</i> und ⅔<i>c</i>; die Kehrwerte ½, ½, 3/2 ergeben (113).</p>
+        <figure class="fig-card fig-narrow" data-kind="3d" data-view="oblique" data-app="#m=form&amp;sys=tetragonal&amp;bsp=dipyramiden&amp;pole=0&amp;kugel=0&amp;ns=0&amp;ebene=0&amp;achsen=1&amp;normalen=0" data-alt="Kristall aus den tetragonalen Dipyramiden {111} und {113}">
+          <div class="fig-art"></div>
+          <figcaption><b>Abb. 1.3</b> Kristall aus zwei tetragonalen Dipyramiden (nach Hoffmann Abb. 2.22): Die grossen Flächen {111} sind die Einheitsflächen, die kleinen {113}.</figcaption>
+        </figure>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>Unter „Gitter“ lässt sich <i>c</i>/<i>a</i> verändern. Mit „Indizes (<i>hkl</i>)“ sieht man, dass die Flächen ihre Namen behalten, während sich ihre Neigung ändert.</p>
+        </div>
       </section>
 
       <section id="hexachsen">
         <h3>Das hexagonale Achsensystem</h3>
-        <p>Trigonale und hexagonale Kristalle haben eine 3-, 3̄-, 6- oder 6̄-zählige Hauptachse. Man beschreibt sie mit einem eigenen Achsensystem und legt <i>c</i> parallel zu dieser Hauptachse. Senkrecht dazu liegen <i>a</i> und <i>b</i>, gleich lang und im Winkel von 120° zueinander: <i>a</i> = <i>b</i>, α = β = 90°, γ = 120°. Wegen der Hauptachse gibt es in dieser Ebene noch eine dritte, gleichwertige Achse: Man schreibt <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, je 120° voneinander (Abb. 1.1). Als Richtungen sind das [100], [010] und [1̄1̄0], denn <i>a</i>₁ + <i>a</i>₂ + <i>a</i>₃ = 0.</p>
+        <p>Trigonale und hexagonale Kristalle haben eine 3-, 3̄-, 6- oder 6̄-zählige Hauptachse. Man beschreibt sie mit einem eigenen Achsensystem und legt <i>c</i> parallel zu dieser Hauptachse. Senkrecht dazu liegen <i>a</i> und <i>b</i>, gleich lang und im Winkel von 120° zueinander: <i>a</i> = <i>b</i>, α = β = 90°, γ = 120°. Wegen der Hauptachse gibt es in dieser Ebene noch eine dritte, gleichwertige Achse: Man schreibt <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, je 120° voneinander (Abb. 1.4). Als Richtungen sind das [100], [010] und [1̄1̄0], denn <i>a</i>₁ + <i>a</i>₂ + <i>a</i>₃ = 0.</p>
         <p>Die Richtungen ⟨210⟩ halbieren die Winkel zwischen benachbarten Achsenrichtungen ±<i>a</i>₁, ±<i>a</i>₂, ±<i>a</i>₃: [210] = 2<i>a</i>₁ + <i>a</i>₂ liegt zwischen <i>a</i>₁ und −<i>a</i>₃ und steht senkrecht auf <i>a</i>₂. Genau in der Mitte zwischen <i>a</i>₁ und <i>a</i>₂ liegt dagegen [110] = −<i>a</i>₃, eine Richtung der Familie ⟨100⟩. ⟨100⟩ und ⟨210⟩ sind die 2. und 3. Blickrichtung des hexagonalen Systems (Kapitel 5). Richtungen gibt dieses Skript wie die Vorlesung mit drei Indizes [<i>uvw</i>] an.</p>
         <p>Eine Richtung und die Normale der gleich indizierten Fläche fallen hier im Allgemeinen nicht zusammen (Kapitel 7): Die Fläche (100) ist parallel zu <i>a</i>₂ und <i>c</i>, ihr Pol liegt deshalb nicht auf <i>a</i>₁, sondern in Richtung [210] (im Stereogramm unten, Abb. 9.2).</p>
         <figure class="fig-card hexfig">
@@ -379,14 +495,15 @@ footer a { color: inherit; }
               <defs><marker id="hxarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="hx-head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
             </svg>
           </div>
-          <figcaption><b>Abb. 1.1</b> Hexagonale Achsen, Blick entlang <i>c</i> (wie im Stereogramm der App): <i>a</i>₁, <i>a</i>₂ und <i>a</i>₃ = −(<i>a</i>₁ + <i>a</i>₂) im Winkel von 120°; die Geraden ⟨210⟩ (gestrichelt) halbieren die Winkel zwischen den Achsenrichtungen.</figcaption>
+          <figcaption><b>Abb. 1.4</b> Hexagonale Achsen, Blick entlang <i>c</i> (wie im Stereogramm der App): <i>a</i>₁, <i>a</i>₂ und <i>a</i>₃ = −(<i>a</i>₁ + <i>a</i>₂) im Winkel von 120°; die Geraden ⟨210⟩ (gestrichelt) halbieren die Winkel zwischen den Achsenrichtungen.</figcaption>
         </figure>
       </section>
 
       <div class="box zusammen">
         <h4>Zusammenfassung</h4>
         <ul>
-          <li>Flächen bezeichnet man mit Miller'schen Indizes (<i>hkl</i>), Kanten und andere Richtungen mit [<i>uvw</i>]; parallele Gegenflächen sind (<i>hkl</i>) und (<i>h̄k̄l̄</i>).</li>
+          <li>Flächen bezeichnet man mit Miller'schen Indizes (<i>hkl</i>), den kleinsten ganzen Zahlen im Verhältnis der Kehrwerte ihrer Achsenabschnitte; Kanten und andere Richtungen mit [<i>uvw</i>]. Parallele Gegenflächen sind (<i>hkl</i>) und (<i>h̄k̄l̄</i>).</li>
+          <li>Indizes zählen in Einheiten der Achsen des Kristalls. Ändert sich das Gitter, behalten die Flächen ihre Indizes, aber die Winkel zwischen ihnen ändern sich.</li>
           <li>Hexagonale Achsen: <i>a</i> = <i>b</i>, γ = 120°, <i>c</i> senkrecht dazu entlang der Hauptachse; drei gleichwertige Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃ = −(<i>a</i>₁ + <i>a</i>₂).</li>
         </ul>
       </div>
@@ -395,7 +512,9 @@ footer a { color: inherit; }
       <div class="quellen">
         <h4>Quellen</h4>
         <ul>
-          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 3.3 (Aufstellung, S. 13), 5.1 (Kristallflächen und Netzebenen, S. 33–34), 7.1 (hexagonales P-Gitter, Tab. 7.2, S. 88), 7.2.5 (Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, Richtungen ⟨100⟩ und ⟨210⟩, S. 107–109, Abb. 7.22), Tab. 7.4 (S. 115).</li>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 3.3 (Aufstellung, S. 13), 3.4.2 und 3.4.3 (Gittergerade [<i>uvw</i>], negative Indizes, Miller'sche Indizes, S. 14–17, Abb. 3.9), 5.1 (Kristallflächen und Netzebenen, S. 33–34), 5.7 (Einheitsfläche und Achsenverhältnis, S. 54–55), 6.4.2 (Schreibweisen ⟨<i>uvw</i>⟩ und {<i>hkl</i>}, S. 78), 7.1 (hexagonales P-Gitter, Tab. 7.2, S. 88), 7.2.5 (Achsen <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, Richtungen ⟨100⟩ und ⟨210⟩, S. 107–109, Abb. 7.22), Tab. 7.4 (S. 115).</li>
+          <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 2.2 (Miller-Indices, negative Indices, Netzebenendichte, Einheitsfläche, S. 42–52, Abb. 2.22 und 2.23).</li>
+          <li>Neigung von (111) bei verschiedenen Achsenverhältnissen mit dem Code der App berechnet.</li>
         </ul>
       </div>
     </section>
@@ -539,7 +658,213 @@ footer a { color: inherit; }
     <section id="punktgruppen">
       <h2><span class="nr">3</span>Symmetrieoperationen und Punktgruppen</h2>
       <p class="lead">Die Symmetrie eines Kristalls beschreibt man durch die Operationen, die ihn mit sich selbst zur Deckung bringen. Zusammen bilden sie eine Gruppe, die Punktgruppe des Kristalls.</p>
-      <p class="fig-note">Dieses Kapitel ist in Arbeit: Symmetrieoperationen und Symmetrieelemente, Drehinversionsachsen, Gruppe und Untergruppe, Kristallsysteme und Kristallklassen.</p>
+
+      <div class="box ziele">
+        <h4>Lernziele</h4>
+        <ul>
+          <li>Symmetrieoperation und Symmetrieelement unterscheiden und die Punktsymmetrieoperationen mit ihren Symbolen angeben</li>
+          <li>Kopplung und Kombination unterscheiden und angeben, welche Drehinversionsachsen ein Inversionszentrum oder eine Spiegelebene enthalten</li>
+          <li>Verknüpfungen von Symmetrieoperationen bestimmen und Erzeugende und Untergruppen einer Punktgruppe angeben</li>
+          <li>eine Punktgruppe ihrem Kristallsystem zuordnen</li>
+        </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
+          <li>Operationen, die ein Spiegelbild erzeugen, von Drehungen unterscheiden</li>
+          <li>Drehspiegelachsen in Drehinversionsachsen übersetzen und Schoenflies-Symbole lesen</li>
+        </ul>
+      </div>
+
+      <section id="operationen">
+        <h3>Symmetrieoperation und Symmetrieelement</h3>
+        <p>Ein Würfel, den man um 90° um die Achse durch zwei gegenüberliegende Flächenmitten dreht, sieht danach genauso aus wie vorher. Eine solche Bewegung, die ein Objekt mit sich selbst zur Deckung bringt, heisst <span class="term">Symmetrieoperation</span>. Die Punkte, die dabei am Ort bleiben, bilden das zugehörige <span class="term">Symmetrieelement</span>, hier eine 4-zählige Drehachse. An einem Symmetrieelement können mehrere Operationen wirken: Um dieselbe Achse kann man den Würfel um 90°, 180° oder 270° drehen.</p>
+        <p>Für die äussere Gestalt eines Kristalls kommen nur Operationen in Frage, die mindestens einen Punkt festhalten, die <span class="term">Punktsymmetrieoperationen</span>:</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Operation</th><th>Symmetrieelement</th><th>Symbol</th><th>bleibt am Ort</th></tr></thead>
+            <tbody>
+              <tr><td>Identität (Drehung um 360°)</td><td>–</td><td>1</td><td>jeder Punkt</td></tr>
+              <tr><td>Drehung um 360°/<i>n</i></td><td><i>n</i>-zählige Drehachse</td><td>2, 3, 4, 6</td><td>die Achse</td></tr>
+              <tr><td>Spiegelung</td><td>Spiegelebene</td><td><i>m</i></td><td>die Ebene</td></tr>
+              <tr><td>Inversion (Punktspiegelung)</td><td>Inversionszentrum</td><td>1̄</td><td>das Zentrum</td></tr>
+              <tr><td>Drehinversion</td><td>Drehinversionsachse</td><td>3̄, 4̄, 6̄</td><td>ein Punkt</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Drehachsen gibt es in Kristallen nur als 1-, 2-, 3-, 4- und 6-zählige Achsen. Nur diese Drehungen sind mit einem periodischen Gitter vereinbar: Eine 5-zählige Drehachse etwa erzeugt aus einem Gitterpunkt ein Fünfeck, und daraus lässt sich keine Netzebene aufbauen; ebenso wenig mit einer Zähligkeit über 6. Entsprechend gibt es nur fünf Drehinversionsachsen.</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Eine Symmetrieoperation bringt ein Objekt mit sich selbst zur Deckung; das Symmetrieelement ist die Menge der Punkte, die dabei am Ort bleiben. In Kristallen gibt es nur 1-, 2-, 3-, 4- und 6-zählige Dreh- und Drehinversionsachsen.</p>
+        </div>
+      </section>
+
+      <section id="drehinversion">
+        <h3>Kopplung und Kombination: Drehinversionsachsen</h3>
+        <p>Zwei Symmetrieoperationen lassen sich auf zwei Arten verknüpfen. Bei einer <span class="term">Kombination</span> bleiben beide Operationen erhalten, und jede für sich bringt das Objekt zur Deckung. Bei einer <span class="term">Kopplung</span> führt man beide als <em>einen</em> Vorgang aus: Nur die gekoppelte Operation ist eine Symmetrieoperation, die beiden Teile einzeln müssen es nicht sein.</p>
+        <p>Abb. 3.1 zeigt den Unterschied für eine 4-zählige Drehung und die Inversion. Gekoppelt ergeben sie die <span class="term">Drehinversion</span> 4̄: Drehung um 90° und sofort anschliessend Inversion an einem Punkt der Achse. Ein Pol wird dabei viermal abgebildet und wechselt mit jedem Schritt die Halbkugel; eine 4-zählige Drehachse und ein Inversionszentrum gibt es nicht. Kombiniert dagegen bleiben 4 und 1̄ beide erhalten; sie erzeugen zusätzlich eine Spiegelebene senkrecht zur Achse, und aus einem Pol werden acht (4/<i>m</i>).</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=-4&amp;hand=1" data-alt="Drehinversionsachse 4̄ mit Bahn eines Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 3.1a</b> Kopplung: 4̄. Vier Pole, abwechselnd oben (●) und unten (○).</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4/m&amp;hand=1" data-alt="Punktgruppe 4/m mit Bahn eines Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 3.1b</b> Kombination: 4 und 1̄ bleiben erhalten, dazu kommt <i>m</i> senkrecht zur Achse (4/<i>m</i>). Acht Pole.</figcaption>
+          </figure>
+        </div>
+        <p class="fig-note">Blau: Pole, die aus dem Ausgangspol (gestrichelter Ring) durch eine Drehung hervorgehen; orange: Pole, die durch eine Operation entstehen, die ein Spiegelbild erzeugt (Vertiefung am Ende des Abschnitts „Punktgruppen“).</p>
+        <p>Weil nur 1-, 2-, 3-, 4- und 6-zählige Drehungen vorkommen, gibt es fünf Drehinversionsachsen (Abb. 3.2). Zwei davon sind nichts Neues: 1̄ ist die Inversion, und 2̄ ist eine Spiegelung an der Ebene senkrecht zur Achse. Die übrigen drei enthalten einfachere Elemente:</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Drehinversionsachse</th><th>Pole</th><th>entspricht bzw. enthält</th></tr></thead>
+            <tbody>
+              <tr><td>1̄</td><td>2</td><td>Inversionszentrum</td></tr>
+              <tr><td>2̄</td><td>2</td><td>Spiegelebene senkrecht zur Achse (<i>m</i>)</td></tr>
+              <tr><td>3̄</td><td>6</td><td>3 und 1̄ (3̄ = 3 + 1̄)</td></tr>
+              <tr><td>4̄</td><td>4</td><td>enthält 2, aber weder 4 noch 1̄</td></tr>
+              <tr><td>6̄</td><td>6</td><td>3 und senkrecht dazu <i>m</i> (6̄ = 3/<i>m</i>)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Daraus lassen sich drei Regeln ablesen:</p>
+        <ul>
+          <li>Ungeradzählige Drehinversionsachsen (1̄, 3̄) enthalten ein Inversionszentrum. Bei ihnen ist die Kopplung gleich der Kombination.</li>
+          <li>Geradzählige Drehinversionsachsen enthalten eine Drehachse halber Zähligkeit: 4̄ enthält 2, 6̄ enthält 3.</li>
+          <li>Geradzählige Drehinversionsachsen, deren Zähligkeit nicht durch 4 teilbar ist (2̄, 6̄), enthalten eine Spiegelebene senkrecht zur Achse.</li>
+        </ul>
+        <div class="fig-grid5">
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=-1" data-alt="Drehinversionsachse 1̄">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 3.2a</b> 1̄</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mc" data-alt="Drehinversionsachse 2̄ gleich Spiegelebene senkrecht zur Achse">
+            <div class="fig-art"></div>
+            <figcaption><b>b</b> 2̄ = <i>m</i></figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=-3" data-alt="Drehinversionsachse 3̄">
+            <div class="fig-art"></div>
+            <figcaption><b>c</b> 3̄</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=-4" data-alt="Drehinversionsachse 4̄">
+            <div class="fig-art"></div>
+            <figcaption><b>d</b> 4̄</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=-6" data-alt="Drehinversionsachse 6̄">
+            <div class="fig-art"></div>
+            <figcaption><b>e</b> 6̄</figcaption>
+          </figure>
+        </div>
+        <p class="fig-note"><b>Abb. 3.2</b> Die fünf Drehinversionsachsen, jeweils senkrecht zur Projektionsebene, mit der Bahn eines Pols in allgemeiner Lage. Bei 2̄ (b) ist die Spiegelebene der Grundkreis, bei 6̄ (e) ebenfalls; 3̄ (c) enthält das Inversionszentrum. Die Symbole erklärt Kapitel 4.</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Bei einer Kombination bleiben die einzelnen Operationen erhalten, bei einer Kopplung entsteht eine neue. 1̄ ist die Inversion, 2̄ = <i>m</i>, 3̄ = 3 + 1̄, 6̄ = 3/<i>m</i>; 4̄ enthält 2. Nur ungeradzählige Drehinversionsachsen enthalten ein Inversionszentrum.</p>
+        </div>
+      </section>
+
+      <section id="punktgruppe">
+        <h3>Punktgruppen</h3>
+        <p>Ein Kristall hat meist nicht nur eine Symmetrieoperation, sondern eine ganze Menge davon. Führt man zwei von ihnen nacheinander aus, kommt der Kristall wieder mit sich selbst zur Deckung; das Ergebnis ist also wieder eine seiner Symmetrieoperationen. Und jede Operation lässt sich durch eine andere wieder rückgängig machen. Die Symmetrieoperationen eines Kristalls bilden deshalb eine <span class="term">Gruppe</span>.</p>
+        <div class="box grundlagen" id="gruppe">
+          <h4>Grundlagen · <b>Gruppe</b></h4>
+          <p>Eine Menge von Elementen bildet mit einer Verknüpfung eine Gruppe, wenn gilt:</p>
+          <ul>
+            <li><b>Abgeschlossenheit:</b> Die Verknüpfung zweier Elemente ist wieder ein Element der Menge.</li>
+            <li><b>Assoziativgesetz:</b> (<i>a</i> ∘ <i>b</i>) ∘ <i>c</i> = <i>a</i> ∘ (<i>b</i> ∘ <i>c</i>).</li>
+            <li><b>Neutrales Element:</b> Es gibt ein Element, das jedes andere unverändert lässt.</li>
+            <li><b>Inverses Element:</b> Zu jedem Element gibt es eines, das seine Wirkung aufhebt.</li>
+          </ul>
+          <p>Bei einer Symmetriegruppe sind die Elemente die Symmetrieoperationen, nicht die Symmetrieelemente, und die Verknüpfung ist das Nacheinanderausführen. <i>b</i> ∘ <i>a</i> heisst: zuerst <i>a</i>, dann <i>b</i>. Neutrales Element ist die Identität 1; eine Spiegelung, eine 2-zählige Drehung und die Inversion sind ihr eigenes Inverses. Die Reihenfolge darf nicht vertauscht werden: In <i>mmm</i> spielt sie keine Rolle, in 3<i>m</i> dagegen ergibt eine Spiegelung mit anschliessender Drehung um 120° eine andere Operation als dieselbe Drehung mit anschliessender Spiegelung.</p>
+          <p>Die Zahl der Operationen ist die <span class="term">Ordnung</span> der Gruppe. Oft genügen wenige Operationen, um alle anderen durch Nacheinanderausführen zu erzeugen; sie heissen <span class="term">Erzeugende</span>. 3<i>m</i> hat die Ordnung 6 und wird von der Drehung um 120° und einer Spiegelung erzeugt (Abb. 3.3).</p>
+        </div>
+        <figure class="fig-card fig-narrow" data-kind="stereo" data-app="#m=pg&amp;g=3m1&amp;hand=1" data-alt="Punktgruppe 3m mit Bahn eines Pols">
+          <div class="fig-art"></div>
+          <figcaption><b>Abb. 3.3</b> Die sechs Operationen von 3<i>m</i> bringen den Ausgangspol (gestrichelter Ring) an sechs Stellen: blau durch die Drehungen um 0°, 120° und 240°, orange durch die Spiegelungen an den drei Spiegelebenen.</figcaption>
+        </figure>
+        <p>Die Symmetrieoperationen eines Kristalls lassen alle einen gemeinsamen Punkt fest, den Mittelpunkt des Kristalls; alle seine Symmetrieelemente schneiden sich dort. Eine solche Gruppe heisst <span class="term">Punktgruppe</span>. Ihre Ordnung ist zugleich die Zahl der Pole, die aus einem Pol in allgemeiner Lage entstehen (Kapitel 4).</p>
+        <div class="box grundlagen" id="untergruppe">
+          <h4>Grundlagen · <b>Untergruppe</b></h4>
+          <p>Eine Teilmenge der Operationen einer Gruppe, die für sich allein wieder eine Gruppe ist, heisst <span class="term">Untergruppe</span>; die grössere Gruppe heisst <span class="term">Obergruppe</span>. Die Identität 1 allein ist Untergruppe jeder Gruppe. Lässt man aus <i>mmm</i> (Ordnung 8) Operationen weg, so dass die übrigen noch eine Gruppe bilden, erhält man z. B. die Untergruppen <i>mm</i>2 und 222 (je Ordnung 4). Im Stereogramm zeigt sich das so: Das Symmetriegerüst der Untergruppe ist ein Teil des Gerüsts der Obergruppe, und ein Pol in allgemeiner Lage hat weniger Bilder (Abb. 3.4).</p>
+          <p>Untergruppen kommen im Skript immer wieder vor: Jede Punktgruppe eines Kristallsystems ist eine Untergruppe seiner höchstsymmetrischen Punktgruppe (nächster Abschnitt), und eine Verzerrung senkt die Symmetrie eines Kristalls auf eine Untergruppe (Kapitel 11).</p>
+        </div>
+        <div class="fig-row fig-row3">
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mmm&amp;hand=1" data-alt="Punktgruppe mmm mit Bahn eines Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 3.4a</b> <i>mmm</i>: Ordnung 8.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mm2&amp;hand=1" data-alt="Punktgruppe mm2 mit Bahn eines Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>b</b> Untergruppe <i>mm</i>2: Ordnung 4.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=222&amp;hand=1" data-alt="Punktgruppe 222 mit Bahn eines Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>c</b> Untergruppe 222: Ordnung 4.</figcaption>
+          </figure>
+        </div>
+        <p class="fig-note"><b>Abb. 3.4</b> <i>mmm</i> und zwei ihrer Untergruppen. <i>mm</i>2 behält die beiden senkrechten Spiegelebenen und die 2-zählige Achse entlang <i>c</i>, 222 die drei 2-zähligen Achsen. Die Pole der Untergruppen sind jeweils die Hälfte der Pole von <i>mmm</i>.</p>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Drehung oder Spiegelbild</b></h4>
+          <p>Die Farben in Abb. 3.1, 3.3 und 3.4 unterscheiden zwei Arten von Operationen. Der Unterschied entscheidet darüber, ob es einen Kristall in einer Links- und einer Rechtsform geben kann, wie den Quarz.</p>
+          <p>Eine Drehung bewegt ein Objekt nur: Aus einer rechten Hand wird wieder eine rechte Hand. Spiegelung, Inversion und Drehinversion machen aus einem Objekt dagegen sein Spiegelbild, aus einer rechten eine linke Hand; Bild und Spiegelbild lassen sich durch keine Drehung zur Deckung bringen. Führt man zwei Operationen nacheinander aus, die beide ein Spiegelbild erzeugen, ist das Ergebnis wieder das Original, nur gedreht. Deshalb erzeugen zwei Spiegelungen eine Drehung (Symmetriesatz II, Kapitel 4). In Abb. 3.3 liegen blaue Pole dort, wohin Drehungen den Ausgangspol bringen, orange Pole dort, wohin Spiegelungen ihn bringen. 222 enthält nur Drehungen, alle Pole in Abb. 3.4c sind blau.</p>
+          <div class="box app">
+            <h4>In der App</h4>
+            <p>„Pole nach Händigkeit färben“ unter „Darstellung“ färbt die Pole jeder Punktgruppe so.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="kristallsysteme">
+        <h3>Kristallsysteme und Kristallklassen</h3>
+        <p>Weil nur 1-, 2-, 3-, 4- und 6-zählige Achsen vorkommen und sich die Symmetrieelemente nur auf bestimmte Weisen kombinieren lassen, gibt es genau 32 kristallographische Punktgruppen. Sie heissen auch <span class="term">Kristallklassen</span>: Jeder Kristall gehört nach der Symmetrie seiner Gestalt zu einer von ihnen.</p>
+        <p>Die 32 Punktgruppen verteilen sich auf sieben <span class="term">Kristallsysteme</span>. Alle Kristalle eines Kristallsystems lassen sich auf dasselbe Achsensystem beziehen, und welches das ist, bestimmt die Symmetrie: Eine 4-zählige Achse etwa macht zwei Achsen gleichwertig, also gleich lang. Kennzeichnend für ein System ist deshalb die Zähligkeit seiner Dreh- oder Drehinversionsachsen:</p>
+        <div class="tabwrap">
+          <table class="tab tab-wrap">
+            <thead><tr><th>Kristallsystem</th><th>kennzeichnende Symmetrie</th><th>Achsensystem</th><th>Punktgruppen</th></tr></thead>
+            <tbody>
+              <tr><td>Triklin</td><td>nur 1 oder 1̄</td><td><i>a</i>, <i>b</i>, <i>c</i>; α, β, γ beliebig</td><td>1̄, 1</td></tr>
+              <tr><td>Monoklin</td><td>eine 2 oder <i>m</i></td><td>α = γ = 90°</td><td>2/<i>m</i>, <i>m</i>, 2</td></tr>
+              <tr><td>Orthorhombisch</td><td>drei zueinander senkrechte 2 oder <i>m</i></td><td>α = β = γ = 90°</td><td><i>mmm</i>, <i>mm</i>2, 222</td></tr>
+              <tr><td>Tetragonal</td><td>eine 4 oder 4̄</td><td><i>a</i> = <i>b</i>; α = β = γ = 90°</td><td>4/<i>mmm</i>, 4̄2<i>m</i>, 4<i>mm</i>, 422, 4/<i>m</i>, 4̄, 4</td></tr>
+              <tr><td>Trigonal</td><td>eine 3 oder 3̄</td><td><i>a</i> = <i>b</i>; α = β = 90°, γ = 120°</td><td>3̄<i>m</i>, 3<i>m</i>, 32, 3̄, 3</td></tr>
+              <tr><td>Hexagonal</td><td>eine 6 oder 6̄</td><td><i>a</i> = <i>b</i>; α = β = 90°, γ = 120°</td><td>6/<i>mmm</i>, 6̄<i>m</i>2, 6<i>mm</i>, 622, 6/<i>m</i>, 6̄, 6</td></tr>
+              <tr><td>Kubisch</td><td>vier 3 oder 3̄ entlang ⟨111⟩</td><td><i>a</i> = <i>b</i> = <i>c</i>; α = β = γ = 90°</td><td><i>m</i>3̄<i>m</i>, 4̄3<i>m</i>, 432, <i>m</i>3̄, 23</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Zwei Einträge verdienen einen zweiten Blick. Kubisch ist ein Kristall nicht wegen 4-zähliger Achsen, sondern wegen der vier 3-zähligen Achsen entlang der Raumdiagonalen; 23 und <i>m</i>3̄ haben gar keine 4-zählige Achse. Und trigonale und hexagonale Kristalle haben dasselbe Achsensystem; sie unterscheiden sich durch die Hauptachse. 6̄ und 6̄<i>m</i>2 gehören zum hexagonalen System, obwohl sie als einfache Drehachse nur eine 3-zählige haben.</p>
+        <p>Die erste Punktgruppe jeder Zeile ist die <span class="term">höchstsymmetrische</span> des Systems: Sie hat die Symmetrie, die ein Gitterpunkt im Gitter dieses Systems besitzt. Alle anderen Punktgruppen desselben Systems sind ihre Untergruppen.</p>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>Im Tab „Punktgruppen“ sind die 32 Punktgruppen nach Kristallsystemen geordnet. Die Infobox nennt zu jeder das Kristallsystem und die Ordnung.</p>
+        </div>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Drehspiegelachsen und Schoenflies-Symbole</b></h4>
+          <p>Die Symbole dieses Skripts sind die internationalen nach Hermann und Mauguin. In der Chemie und Physik, etwa für die Symmetrie von Molekülen, sind die Symbole nach Schoenflies verbreitet; die App zeigt sie neben dem Hermann-Mauguin-Symbol an.</p>
+          <p>Statt der Drehinversion verwendet Schoenflies die <span class="term">Drehspiegelung</span> <i>S<sub>n</sub></i>: Drehung um 360°/<i>n</i>, gekoppelt mit einer Spiegelung an der Ebene senkrecht zur Achse. Sie liefert nichts Neues, nur die Zähligkeit kann anders sein: <i>S</i><sub>1</sub> = <i>m</i>, <i>S</i><sub>2</sub> = 1̄, <i>S</i><sub>3</sub> = 6̄, <i>S</i><sub>4</sub> = 4̄, <i>S</i><sub>6</sub> = 3̄. Die einzelnen Symmetrieelemente heissen bei Schoenflies <i>E</i> (Identität), <i>C<sub>n</sub></i> (Drehachse), σ (Spiegelebene), <i>i</i> (Inversionszentrum) und <i>S<sub>n</sub></i> (Drehspiegelachse).</p>
+          <p>Ein Schoenflies-Symbol beschreibt die Anordnung der Elemente um eine Hauptachse: <i>C<sub>n</sub></i> nur eine <i>n</i>-zählige Drehachse; <i>C<sub>nh</sub></i> dazu eine Spiegelebene senkrecht zur Achse (horizontal); <i>C<sub>nv</sub></i> <i>n</i> Spiegelebenen, die die Achse enthalten (vertikal); <i>D<sub>n</sub></i> <i>n</i> 2-zählige Achsen senkrecht zur Hauptachse; <i>D<sub>nh</sub></i> dazu eine horizontale Spiegelebene, <i>D<sub>nd</sub></i> dazu <i>n</i> diagonale Spiegelebenen zwischen den 2-zähligen Achsen; <i>T</i> und <i>O</i> stehen für die kubischen Gruppen des Tetraeders und des Oktaeders. Beispiele: 2/<i>m</i> = <i>C</i><sub>2<i>h</i></sub>, <i>mm</i>2 = <i>C</i><sub>2<i>v</i></sub>, 4<i>mm</i> = <i>C</i><sub>4<i>v</i></sub>, <i>mmm</i> = <i>D</i><sub>2<i>h</i></sub>, 4̄2<i>m</i> = <i>D</i><sub>2<i>d</i></sub>, <i>m</i>3̄<i>m</i> = <i>O<sub>h</sub></i>.</p>
+        </div>
+      </section>
+
+      <div class="box zusammen">
+        <h4>Zusammenfassung</h4>
+        <ul>
+          <li>Eine Symmetrieoperation bringt ein Objekt mit sich selbst zur Deckung; das Symmetrieelement bleibt dabei am Ort. Punktsymmetrieoperationen: 1, Drehung 2, 3, 4, 6, Spiegelung <i>m</i>, Inversion 1̄, Drehinversion 3̄, 4̄, 6̄.</li>
+          <li>Kombination: Die einzelnen Operationen bleiben erhalten. Kopplung: Nur die gekoppelte Operation ist eine Symmetrieoperation. 2̄ = <i>m</i>, 3̄ = 3 + 1̄, 6̄ = 3/<i>m</i>, 4̄ enthält 2.</li>
+          <li>Die Symmetrieoperationen eines Kristalls bilden eine Gruppe, die Punktgruppe. Ihre Ordnung ist die Zahl der Operationen; Erzeugende sind Operationen, aus denen alle anderen folgen; eine Untergruppe ist eine Teilmenge, die selbst eine Gruppe ist.</li>
+          <li>Es gibt 32 Punktgruppen (Kristallklassen) in sieben Kristallsystemen. Das System erkennt man an der Zähligkeit der Dreh- und Drehinversionsachsen, kubische Kristalle an den vier 3-zähligen Achsen.</li>
+        </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
+          <li>Drehungen erhalten die Händigkeit eines Objekts; Spiegelung, Inversion und Drehinversion erzeugen sein Spiegelbild.</li>
+          <li>Drehspiegelachsen sind Drehinversionsachsen anderer Zähligkeit: <i>S</i><sub>3</sub> = 6̄, <i>S</i><sub>4</sub> = 4̄, <i>S</i><sub>6</sub> = 3̄.</li>
+        </ul>
+      </div>
+
+      <div class="quellen">
+        <h4>Quellen</h4>
+        <ul>
+          <li>Borchardt-Ott &amp; Sowa (2018), Kap. 6 (Symmetrieoperation und Symmetrieelement, S. 67–69; mögliche Drehachsen, S. 70–73, Tab. 6.1; Koppelung und Kombination, Abb. 6.13, S. 75–76; Drehinversionsachsen, Abb. 6.14, S. 76–78; Drehspiegelachsen und Punktsymmetrieelemente, S. 78), 8 (Kristallsysteme, Tab. 8.1, S. 125–126), 9.1 (Punktgruppen, Kristallklassen, Untergruppen der höchstsymmetrischen Punktgruppen, Tab. 9.2, Abb. 9.3, S. 127–130; Schönflies-Symbolik, Tab. 9.3, S. 131–132), 9.5 (Bild und Spiegelbild, S. 169), 11.2 (Gruppenaxiome, Ordnung, Untergruppe, Abelsche Gruppen, S. 263–265).</li>
+          <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 3.1–3.2 (Symmetrieoperation und Symmetrieelement, die fünf Punktsymmetrie-Elemente, Drehinversionen und ihre Regeln, Drehspiegelungen, Tab. 3.1, S. 94–108), 3.3.3 (Kristallsystem und Kristallklasse, Tab. 3.3, S. 118–121), 5.2.1 (Händigkeit, Bild und Spiegelbild, S. 170), 6.2.3 (Erzeugendensystem, S. 215), 6.4 (Gruppenbegriff, S. 218–219).</li>
+        </ul>
+      </div>
     </section>
 
     <section id="symmetrie">
@@ -551,6 +876,7 @@ footer a { color: inherit; }
         <ul>
           <li>die Symmetrieelemente einer Punktgruppe ins Stereogramm einzeichnen</li>
           <li>einzeichnen, wohin ein Symmetrieelement einen beliebigen Pol abbildet</li>
+          <li>mit den Symmetriesätzen bestimmen, welches Symmetrieelement zwei gegebene erzeugen</li>
           <li>ein Stereogramm einer Symmetrie zuordnen</li>
         </ul>
       </div>
@@ -603,27 +929,66 @@ footer a { color: inherit; }
         <p class="fig-note"><b>Abb. 4.1</b> Ein Pol in allgemeiner Lage (gestrichelter Ring) und sein Bild unter (a) einem Inversionszentrum, (b) einer 2-zähligen Achse senkrecht zur Projektionsebene, (c) einer 2-zähligen Achse in der Projektionsebene, (d) einer Spiegelebene senkrecht und (e) parallel zur Projektionsebene. Jede Abbildung führt in die App; dort lässt sich der Pol ziehen.</p>
       </section>
 
+      <section id="symmetriesaetze">
+        <h3>Symmetrieelemente erzeugen einander: die Symmetriesätze</h3>
+        <p>Mit den Regeln aus Abb. 4.1 lässt sich am Stereogramm verfolgen, was geschieht, wenn man zwei Symmetrieoperationen nacheinander ausführt. Zwei Fälle kommen so oft vor, dass man sie als Sätze formuliert. Beide beschreiben eine Kombination (Kapitel 3): Die beiden Ausgangselemente bleiben erhalten, und ein drittes kommt hinzu.</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p><b>Symmetriesatz I:</b> Eine geradzählige Drehachse (2, 4 oder 6) und eine Spiegelebene senkrecht dazu erzeugen im Schnittpunkt ein Inversionszentrum.</p>
+          <p><b>Symmetriesatz II:</b> Zwei zueinander senkrechte Spiegelebenen erzeugen in ihrer Schnittgeraden eine (mindestens) 2-zählige Drehachse.</p>
+        </div>
+        <p>Für Satz I liege die 2-zählige Achse in der Projektionsebene, und die Spiegelebene stehe senkrecht zu ihr, also auch senkrecht auf der Projektionsebene (Abb. 4.2). Die Drehung spiegelt das Bild eines Pols an der Achse und bringt ihn auf die andere Halbkugel (Abb. 4.1c). Die Spiegelung spiegelt das Bild danach an ihrer Spur, die senkrecht auf der Achse steht; die Halbkugel bleibt (Abb. 4.1d). An zwei senkrechten Geraden gespiegelt, liegt das Bild gegenüber dem Ausgangspol, und der Pol ist auf der anderen Halbkugel: genau dort, wohin ihn ein Inversionszentrum bringt (Abb. 4.1a).</p>
+        <div class="fig-row fig-row3">
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=2b&amp;hand=1" data-alt="2-zählige Achse in der Projektionsebene">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 4.2a</b> 2 in der Ebene: Spiegelung des Bildes an der Achse, andere Halbkugel.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mb&amp;hand=1" data-alt="Spiegelebene senkrecht zur 2-zähligen Achse">
+            <div class="fig-art"></div>
+            <figcaption><b>b</b> <i>m</i> senkrecht zu 2: Spiegelung an der Spur, gleiche Halbkugel.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=2/mb&amp;hand=1" data-alt="2/m mit Bahn eines Pols">
+            <div class="fig-art"></div>
+            <figcaption><b>c</b> 2/<i>m</i>: Beide zusammen erzeugen 1̄.</figcaption>
+          </figure>
+        </div>
+        <p class="fig-note"><b>Abb. 4.2</b> Symmetriesatz I am Stereogramm. Der Ausgangspol (gestrichelter Ring) und sein Bild unter der Drehung sind blau, Spiegelbilder orange (Kapitel 3). In (c) liegt der vierte Pol gegenüber dem Ausgangspol auf der anderen Halbkugel: Er geht aus ihm durch Inversion hervor. Das Inversionszentrum ist der kleine Kreis in der Mitte.</p>
+        <p>Für Satz II stehen beide Spiegelebenen senkrecht auf der Projektionsebene und senkrecht aufeinander (Abb. 4.3). Jede Spiegelung spiegelt das Bild an ihrer Spur, der Pol bleibt auf seiner Halbkugel. Nach beiden Spiegelungen liegt er gegenüber dem Ausgangspol, auf derselben Halbkugel: Das ist eine Drehung um 180° um die Schnittgerade der beiden Ebenen (Abb. 4.1b). Weil das Spiegelbild eines Spiegelbilds wieder das Original ist, ist dieser Pol blau.</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="stereo" data-dirs="1,2" data-app="#m=pg&amp;g=mm2&amp;hand=1" data-alt="Zwei zueinander senkrechte Spiegelebenen, ohne die erzeugte Achse">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 4.3a</b> Zwei senkrechte Spiegelebenen, die erste wie in Abb. 4.2b: vier Pole.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mm2&amp;hand=1" data-alt="Punktgruppe mm2 mit der erzeugten 2-zähligen Achse">
+            <div class="fig-art"></div>
+            <figcaption><b>b</b> Die erzeugte 2-zählige Achse in der Mitte: <i>mm</i>2.</figcaption>
+          </figure>
+        </div>
+        <p class="fig-note"><b>Abb. 4.3</b> Symmetriesatz II am Stereogramm. (a) zeigt nur die beiden Spiegelebenen: Der vierte Pol entsteht, wenn man den Ausgangspol erst an der einen, dann an der anderen Ebene spiegelt. (b) Er liegt dort, wohin ihn eine Drehung um 180° um die Schnittgerade bringt.</p>
+        <p>Die Sätze gelten in jeder Richtung: Je zwei der drei Elemente erzeugen das dritte. Ein Inversionszentrum auf einer Spiegelebene erzeugt eine 2-zählige Achse senkrecht zu ihr, ein Inversionszentrum auf einer 2-zähligen Achse eine Spiegelebene senkrecht zu ihr. Eine 2-zählige Achse, die in einer Spiegelebene liegt, erzeugt eine zweite Spiegelebene, die die Achse ebenfalls enthält und senkrecht auf der ersten steht. Umgekehrt erzeugen eine Spiegelebene und ein Inversionszentrum nur eine 2-zählige Achse, keine 4- oder 6-zählige.</p>
+        <p>Die Sätze erklären, warum manche Symmetrieelemente in Symbolen fehlen dürfen. 2/<i>m</i> enthält immer ein Inversionszentrum, ohne dass das Symbol es nennt. In <i>mmm</i> erzeugen die drei Spiegelebenen die drei 2-zähligen Achsen (Abb. 4.4); das volle Symbol lautet 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> (Kapitel 5). Und 6̄ = 3/<i>m</i> enthält kein Inversionszentrum, denn Satz I verlangt eine geradzählige Achse.</p>
+      </section>
+
       <section id="bahn">
         <h3>Vom Pol zur Bahn</h3>
         <p>Wendet man alle Symmetrieoperationen einer Punktgruppe auf einen Pol in allgemeiner Lage an, so entsteht seine Bahn: so viele Pole, wie die Gruppe Operationen hat. Das sind die Pole der allgemeinen Form (Kapitel 6).</p>
-        <p>Symmetrieelemente erzeugen einander. Zwei zueinander senkrechte Spiegelebenen erzeugen in ihrer Schnittgeraden eine (mindestens) 2-zählige Drehachse. In <i>mmm</i> entstehen so aus den drei Spiegelebenen die drei 2-zähligen Achsen, und das vollständige Symbol lautet 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> (Abb. 4.2). Ebenso erzeugen eine 2-zählige Achse und ein Inversionszentrum auf ihr eine Spiegelebene senkrecht zur Achse.</p>
-        <p>Bei einer Drehinversionsachse sind Drehung und Inversion zu <em>einer</em> Operation gekoppelt; die einzelnen Operationen müssen dann keine Symmetrieoperationen sein. Abb. 4.3 und 4.4 vergleichen eine 4-zählige Drehachse mit einer 4-zähligen Drehinversionsachse 4̄: Bei 4 liegen alle vier Pole auf derselben Halbkugel, bei 4̄ wechseln sie mit jedem Schritt um 90° die Halbkugel. 4̄ enthält eine 2-zählige Drehachse, aber weder 4 noch ein Inversionszentrum.</p>
+        <p>Abb. 4.4 zeigt die Bahn in <i>mmm</i>: Aus einem Pol werden acht, so viele, wie <i>mmm</i> Operationen hat. Bei einer Drehinversionsachse sind Drehung und Inversion zu <em>einer</em> Operation gekoppelt (Kapitel 3). Abb. 4.5 und 4.6 vergleichen eine 4-zählige Drehachse mit einer 4-zähligen Drehinversionsachse 4̄: Bei 4 liegen alle vier Pole auf derselben Halbkugel, bei 4̄ wechseln sie mit jedem Schritt um 90° die Halbkugel. 4̄ enthält eine 2-zählige Drehachse, aber weder 4 noch ein Inversionszentrum.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-app="#m=pg&amp;g=mmm" data-alt="Symmetriegerüst von mmm in 3D mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.2a</b> <i>mmm</i> in 3D: die drei Spiegelebenen (Scheiben), die 2-zähligen Achsen in ihren Schnittgeraden und die 8 äquivalenten Pole auf der Umkugel. Ziehen dreht die Ansicht.</figcaption>
+            <figcaption><b>Abb. 4.4a</b> <i>mmm</i> in 3D: die drei Spiegelebenen (Scheiben), die 2-zähligen Achsen in ihren Schnittgeraden und die 8 äquivalenten Pole auf der Umkugel. Ziehen dreht die Ansicht.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=mmm" data-alt="Punktgruppe mmm mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.2b</b> <i>mmm</i> im Stereogramm: Drei Spiegelebenen erzeugen drei 2-zählige Achsen; der allgemeine Pol ergibt 8 äquivalente Pole.</figcaption>
+            <figcaption><b>Abb. 4.4b</b> <i>mmm</i> im Stereogramm: Drei Spiegelebenen erzeugen drei 2-zählige Achsen; der allgemeine Pol ergibt 8 äquivalente Pole.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4" data-alt="Punktgruppe 4 mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.3</b> 4: vier Pole auf derselben Halbkugel.</figcaption>
+            <figcaption><b>Abb. 4.5</b> 4: vier Pole auf derselben Halbkugel.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=-4" data-alt="Punktgruppe 4̄ mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.4</b> 4̄: Die Pole wechseln mit jeder Vierteldrehung die Halbkugel.</figcaption>
+            <figcaption><b>Abb. 4.6</b> 4̄: Die Pole wechseln mit jeder Vierteldrehung die Halbkugel.</figcaption>
           </figure>
         </div>
         <div class="box app">
@@ -634,21 +999,21 @@ footer a { color: inherit; }
 
       <section id="speziell">
         <h3>Pole auf Symmetrieelementen</h3>
-        <p>Die Pole spezieller Formen (Kapitel 6) liegen auf Symmetrieelementen. Am Galenit sieht man das, wenn man das Symmetriegerüst von <i>m</i>3̄<i>m</i> unter die Pole legt (Abb. 4.5 und 4.6): Die Pole des Würfels {100} liegen auf den 4-zähligen Achsen, die des Oktaeders {111} auf den 3̄-Achsen und die des Rhombendodekaeders {110} auf den 2-zähligen Achsen. Umgekehrt kann man aus einem Stereogramm von Flächenpolen auf die Symmetrie schliessen, indem man die Drehungen und Spiegelungen sucht, die das Muster der Pole in sich überführen. Eindeutig ist dieser Schluss aber nicht immer (Vertiefung am Ende des Abschnitts).</p>
+        <p>Die Pole spezieller Formen (Kapitel 6) liegen auf Symmetrieelementen. Am Galenit sieht man das, wenn man das Symmetriegerüst von <i>m</i>3̄<i>m</i> unter die Pole legt (Abb. 4.7 und 4.8): Die Pole des Würfels {100} liegen auf den 4-zähligen Achsen, die des Oktaeders {111} auf den 3̄-Achsen und die des Rhombendodekaeders {110} auf den 2-zähligen Achsen. Umgekehrt kann man aus einem Stereogramm von Flächenpolen auf die Symmetrie schliessen, indem man die Drehungen und Spiegelungen sucht, die das Muster der Pole in sich überführen. Eindeutig ist dieser Schluss aber nicht immer (Vertiefung am Ende des Abschnitts).</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=m-3m&amp;obj=0" data-alt="Symmetriegerüst der Punktgruppe m3̄m">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.5</b> Symmetriegerüst von <i>m</i>3̄<i>m</i>, Farben nach Blickrichtung (Kapitel 5).</figcaption>
+            <figcaption><b>Abb. 4.7</b> Symmetriegerüst von <i>m</i>3̄<i>m</i>, Farben nach Blickrichtung (Kapitel 5).</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=galenit&amp;geruest=1&amp;idx=0" data-alt="Galenit über dem Symmetriegerüst von m3̄m">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 4.6</b> Galenit über dem Symmetriegerüst: Würfel {100} auf 4, Oktaeder {111} auf 3̄, Rhombendodekaeder {110} auf 2.</figcaption>
+            <figcaption><b>Abb. 4.8</b> Galenit über dem Symmetriegerüst: Würfel {100} auf 4, Oktaeder {111} auf 3̄, Rhombendodekaeder {110} auf 2.</figcaption>
           </figure>
         </div>
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Grenzen des Schlusses vom Polmuster auf die Punktgruppe</b></h4>
           <p>Wer aus einem Stereogramm die Punktgruppe bestimmt, sollte wissen, wann dieser Schluss nicht eindeutig ist.</p>
-          <p>Sucht man die Symmetrie auf diese Weise, erhält man die Symmetrie des Polmusters, und die kann höher sein als die Punktgruppe des Kristalls: Die Pole eines Würfels in 23 liegen genau wie in <i>m</i>3̄<i>m</i> (Kapitel 6), und selbst die allgemeine Form der Punktgruppe 4, die tetragonale Pyramide, hat ein Polmuster mit Spiegelebenen (Abb. 4.3). Sicher wird die Zuordnung erst, wenn mehrere Formen zusammen oder die Symmetrie der Flächen selbst die höhere Symmetrie ausschliessen; die App zeigt Letztere mit „Flächensymmetrie zeigen“.</p>
+          <p>Sucht man die Symmetrie auf diese Weise, erhält man die Symmetrie des Polmusters, und die kann höher sein als die Punktgruppe des Kristalls: Die Pole eines Würfels in 23 liegen genau wie in <i>m</i>3̄<i>m</i> (Kapitel 6), und selbst die allgemeine Form der Punktgruppe 4, die tetragonale Pyramide, hat ein Polmuster mit Spiegelebenen (Abb. 4.5). Sicher wird die Zuordnung erst, wenn mehrere Formen zusammen oder die Symmetrie der Flächen selbst die höhere Symmetrie ausschliessen; die App zeigt Letztere mit „Flächensymmetrie zeigen“.</p>
         </div>
       </section>
 
@@ -659,6 +1024,7 @@ footer a { color: inherit; }
           <li>1̄: Gegenstelle, andere Halbkugel. 2 senkrecht: Drehung um 180°. 2 in der Ebene: Spiegelung an der Achse, andere Halbkugel. <i>m</i> senkrecht: Spiegelung an der Spur. <i>m</i> in der Ebene: gleiche Stelle, andere Halbkugel.</li>
           <li>Alle Operationen zusammen machen aus einem allgemeinen Pol die Pole der allgemeinen Form. Pole spezieller Formen liegen auf Symmetrieelementen.</li>
           <li>Symmetrieelemente erzeugen einander, z. B. <i>m</i> ⊥ <i>m</i> eine 2-zählige Achse in der Schnittgeraden.</li>
+          <li>Symmetriesatz I: Eine geradzählige Drehachse und eine Spiegelebene senkrecht dazu erzeugen ein Inversionszentrum im Schnittpunkt. Symmetriesatz II: Zwei zueinander senkrechte Spiegelebenen erzeugen eine 2-zählige Achse in der Schnittgeraden. Je zwei der drei Elemente erzeugen das dritte.</li>
         </ul>
         <h5>Zur Vertiefung</h5>
         <ul>
@@ -672,6 +1038,7 @@ footer a { color: inherit; }
         <ul>
           <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 5.4 (Projektion von Symmetrieelementen, S. 43), 6.1–6.4 (Drehachsen und ihre Symbole, Spiegelebene, Inversionszentrum, Koppelung und Drehinversionsachsen, S. 69–78), 7.2 (Symmetriesätze I und II, S. 102, Abb. 7.14, 7.15; Anwendung S. 104), 9.1 (Abb. 9.1, Tab. 9.2, S. 128–129), 9.2 (Galenit, Abb. 9.4, S. 142), Tab. 15.1 und 15.2 (Symbole, S. 354–356); Aufgabe 6.1b (Pol in allgemeiner Lage, S. 79).</li>
           <li>International Tables for Crystallography, Vol. A (2006), Kap. 10.1 (Stereogramme der Punktgruppen).</li>
+          <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 3.2.2 (zwei senkrechte Spiegelebenen erzeugen eine 2-zählige Achse, Abb. 3.10, S. 101), 3.3.2 (2 und <i>m</i> in zwei Blickrichtungen erzeugen eine weitere Spiegelebene, S. 114).</li>
         </ul>
       </div>
     </section>
@@ -765,7 +1132,7 @@ footer a { color: inherit; }
 
       <section id="kurz">
         <h3>Volles und gekürztes Symbol</h3>
-        <p>Einige Symbole sind überbestimmt, weil Symmetrieelemente einander erzeugen (Kapitel 4). In 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> erzeugen die drei zueinander senkrechten Spiegelebenen die 2-zähligen Achsen von selbst; das gekürzte Symbol lautet <i>mmm</i>. Ebenso wird 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> zu 4/<i>mmm</i> und 4/<i>m</i> 3̄ 2/<i>m</i> zu <i>m</i>3̄<i>m</i>. Welche Teile entfallen, ist festgelegt (Borchardt-Ott Tab. 9.2); die 4 in 4/<i>mmm</i> bleibt stehen, weil sie das tetragonale System kennzeichnet, während in <i>m</i>3̄<i>m</i> die 3̄ an zweiter Stelle das kubische System anzeigt. Das gekürzte Symbol behält die Positionen bei: In <i>m</i>3̄<i>m</i> steht das erste <i>m</i> für ⟨100⟩, das zweite für ⟨110⟩. Die App zeigt zu jeder Punktgruppe beide Symbole.</p>
+        <p>Einige Symbole sind überbestimmt, weil Symmetrieelemente einander erzeugen (Symmetriesätze, Kapitel 4). In 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> erzeugen die drei zueinander senkrechten Spiegelebenen die 2-zähligen Achsen von selbst; das gekürzte Symbol lautet <i>mmm</i>. Ebenso wird 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> zu 4/<i>mmm</i> und 4/<i>m</i> 3̄ 2/<i>m</i> zu <i>m</i>3̄<i>m</i>. Welche Teile entfallen, ist festgelegt (Borchardt-Ott Tab. 9.2); die 4 in 4/<i>mmm</i> bleibt stehen, weil sie das tetragonale System kennzeichnet, während in <i>m</i>3̄<i>m</i> die 3̄ an zweiter Stelle das kubische System anzeigt. Das gekürzte Symbol behält die Positionen bei: In <i>m</i>3̄<i>m</i> steht das erste <i>m</i> für ⟨100⟩, das zweite für ⟨110⟩. Die App zeigt zu jeder Punktgruppe beide Symbole.</p>
       </section>
 
       <div class="box zusammen">
@@ -1482,7 +1849,7 @@ footer a { color: inherit; }
       <section id="verzerrung-prinzip">
         <h3>Was bei einer Verzerrung erhalten bleibt</h3>
         <p>Streckt man einen Würfel entlang einer Richtung, so werden alle Abstände in dieser Richtung um einen Faktor <i>s</i> länger (<i>s</i> &gt; 1) oder kürzer (<i>s</i> &lt; 1); quer dazu ändert sich nichts. Die Flächen bleiben eben und behalten ihre Indizes, die Winkel zwischen ihnen ändern sich im Allgemeinen. Welche Symmetrieoperationen des Würfels sind danach noch Symmetrieoperationen des Körpers?</p>
-        <p>Genau die, die die Streckrichtung in sich selbst überführen. Da eine Streckung keinen Richtungssinn hat, bleiben auch die Operationen erhalten, die die Streckrichtung umkehren, darunter das Inversionszentrum. Jede andere Operation brächte die gestreckte Richtung in eine ungestreckte und kann keine Symmetrie mehr sein. Weil das Inversionszentrum erhalten bleibt, gehört zu jeder verbleibenden 2- oder 4-zähligen Achse auch die Spiegelebene senkrecht zu ihr; bleibt von einer Achse nicht einmal die Drehung um 180°, verschwindet auch diese Spiegelebene.</p>
+        <p>Genau die, die die Streckrichtung in sich selbst überführen. Da eine Streckung keinen Richtungssinn hat, bleiben auch die Operationen erhalten, die die Streckrichtung umkehren, darunter das Inversionszentrum. Jede andere Operation brächte die gestreckte Richtung in eine ungestreckte und kann keine Symmetrie mehr sein. Weil das Inversionszentrum erhalten bleibt, gehört zu jeder verbleibenden 2- oder 4-zähligen Achse auch die Spiegelebene senkrecht zu ihr (Symmetriesatz I, Kapitel 4); bleibt von einer Achse nicht einmal die Drehung um 180°, verschwindet auch diese Spiegelebene.</p>
         <p>Die verbleibenden Operationen bilden wieder eine Gruppe, eine <span class="term">Untergruppe</span> der Punktgruppe <i>m</i>3̄<i>m</i> des Würfels; die App nennt sie <span class="term">Restgruppe</span>. Wie gross sie ist, hängt davon ab, entlang welcher Blickrichtung man streckt.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;strahlen=0&amp;normalen=0" data-alt="Würfel in der Umkugel">
@@ -1686,7 +2053,7 @@ footer a { color: inherit; }
           </div>
           <figcaption><b>Abb. 11.5</b> Elementarzelle von BaTiO₃ (Perowskitstruktur), Verzerrung und Verschiebung stark übertrieben. Links kubisch (<i>m</i>3̄<i>m</i>), Mitte entlang <i>c</i> gestreckt, Ti in der Mitte (4/<i>mmm</i>, Doppelpfeil: Streckung ohne Richtungssinn), rechts zusätzlich Ti nach oben verschoben (4<i>mm</i>, Pfeil: Polarisation <i>P</i>). Gestrichelt die Verbindungen vom Ti zu den sechs O des Oktaeders.</figcaption>
         </figure>
-        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 11.6), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 4.2b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 6.2): Oben und unten sind verschieden.</p>
+        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 11.6), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 4.4b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 6.2): Oben und unten sind verschieden.</p>
         <div class="fig-row fig-row3">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4mm" data-alt="Punktgruppe 4mm mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>

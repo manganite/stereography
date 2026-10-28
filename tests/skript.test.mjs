@@ -58,7 +58,7 @@ test('Kapitel 8 und 9 sind Vertiefungen mit Kasten „Bezug zur Vorlesung“', (
 
 test('Vertiefungsabschnitte stehen im Inhaltsverzeichnis', () => {
   const ids = [...html.matchAll(/<section id="([^"]+)" data-level="vertiefung">/g)].map((m) => m[1]);
-  assert.deepEqual(ids, ['hkil', 'lagen', 'verzerrung']);
+  assert.deepEqual(ids, ['aufstellung-pg', 'eigenschaften', 'hkil', 'lagen', 'verzerrung']);
   for (const id of ids) assert.ok(html.includes(`<a href="#${id}">`), id);
 });
 

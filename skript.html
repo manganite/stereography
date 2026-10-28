@@ -289,6 +289,8 @@ footer a { color: inherit; }
               <li><a href="#blick-def">Was ist eine Blickrichtung?</a></li>
               <li><a href="#symbol">Das Hermann-Mauguin-Symbol lesen</a></li>
               <li><a href="#kurz">Volles und gekürztes Symbol</a></li>
+              <li><a href="#aufstellung-pg">Zwei Aufstellungen derselben Punktgruppe</a></li>
+              <li><a href="#eigenschaften">Was die Punktgruppe über den Kristall verrät</a></li>
             </ol>
           </li>
           <li><a href="#formen"><span class="nr">6</span>Kristallformen im Stereogramm</a>
@@ -1059,6 +1061,11 @@ footer a { color: inherit; }
           <li>ein Hermann-Mauguin-Symbol Position für Position lesen</li>
           <li>volles und gekürztes Symbol ineinander überführen</li>
         </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
+          <li>zwei Aufstellungen derselben Punktgruppe unterscheiden, z. B. 321 und 312</li>
+          <li>am Symmetriegerüst ablesen, ob eine Punktgruppe zentrosymmetrisch, enantiomorph oder polar ist, und ihre Laue-Klasse angeben</li>
+        </ul>
       </div>
 
       <section id="blick-def">
@@ -1127,7 +1134,7 @@ footer a { color: inherit; }
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Die 1 als Platzhalter</b></h4>
           <p>Am Ende des Symbols darf eine leere Position wegfallen. Dazwischen geht das nicht, denn sonst wüsste man nicht mehr, welche Position zu welcher Blickrichtung gehört.</p>
-          <p>Steht eine leere Position zwischen besetzten Positionen, schreibt man eine 1 (z. B. 31<i>m</i> gegenüber 3<i>m</i>1).</p>
+          <p>Steht eine leere Position zwischen besetzten Positionen, schreibt man eine 1 (z. B. 31<i>m</i> gegenüber 3<i>m</i>1, siehe „Zwei Aufstellungen derselben Punktgruppe“).</p>
         </div>
         <div class="box app">
           <h4>In der App</h4>
@@ -1140,12 +1147,101 @@ footer a { color: inherit; }
         <p>Einige Symbole sind überbestimmt, weil Symmetrieelemente einander erzeugen (Symmetriesätze, Kapitel 4). In 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> erzeugen die drei zueinander senkrechten Spiegelebenen die 2-zähligen Achsen von selbst; das gekürzte Symbol lautet <i>mmm</i>. Ebenso wird 4/<i>m</i> 2/<i>m</i> 2/<i>m</i> zu 4/<i>mmm</i> und 4/<i>m</i> <span class="ov">3</span> 2/<i>m</i> zu <i>m</i><span class="ov">3</span><i>m</i>. Welche Teile entfallen, ist festgelegt (Borchardt-Ott Tab. 9.2); die 4 in 4/<i>mmm</i> bleibt stehen, weil sie das tetragonale System kennzeichnet, während in <i>m</i><span class="ov">3</span><i>m</i> die <span class="ov">3</span> an zweiter Stelle das kubische System anzeigt. Das gekürzte Symbol behält die Positionen bei: In <i>m</i><span class="ov">3</span><i>m</i> steht das erste <i>m</i> für ⟨100⟩, das zweite für ⟨110⟩. Die App zeigt zu jeder Punktgruppe beide Symbole.</p>
       </section>
 
+      <section id="aufstellung-pg" data-level="vertiefung">
+        <h3>Zwei Aufstellungen derselben Punktgruppe</h3>
+        <p>Die Achsen eines Kristalls sind durch sein Gitter festgelegt (Kapitel 1). Bei einigen Punktgruppen lassen sich die Symmetrieelemente auf zwei Arten zu diesen Achsen anordnen. Man spricht von zwei <span class="term">Aufstellungen</span> der Punktgruppe. Das Symbol zeigt, welche gemeint ist, denn jede Position gehört zu einer Blickrichtung.</p>
+        <p>Ein Beispiel ist die Punktgruppe 32. Im Symbol 321 steht die 2 an zweiter Stelle: Die 2-zähligen Achsen liegen entlang ⟨100⟩, also entlang <i>a</i>₁, <i>a</i>₂ und <i>a</i>₃; die dritte Blickrichtung ⟨210⟩ ist leer und erhält die 1. Im Symbol 312 liegen die 2-zähligen Achsen entlang ⟨210⟩, zwischen den <i>a</i>-Achsen. Das Symmetriegerüst ist dasselbe, nur um 30° um <i>c</i> gedreht (Abb. 5.7).</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=321&amp;achsen=1" data-alt="Punktgruppe 321 mit den hexagonalen Achsen">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.7a</b> 321: 2-zählige Achsen entlang <i>a</i>₁, <i>a</i>₂, <i>a</i>₃.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=312&amp;achsen=1" data-alt="Punktgruppe 312 mit den hexagonalen Achsen">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.7b</b> 312: 2-zählige Achsen zwischen den <i>a</i>-Achsen, entlang ⟨210⟩.</figcaption>
+          </figure>
+        </div>
+        <p>Als Gruppe betrachtet sind 321 und 312 gleich. Für den Kristall sind sie es nicht, denn seine Flächen werden auf die Achsen bezogen. Der Pol von (100) liegt senkrecht zu <i>a</i>₂, also in Richtung [210]. In 312 liegt er damit auf einer 2-zähligen Achse, und die Form {100} hat 3 Flächen, ein trigonales Prisma. In 321 liegt er auf keinem Symmetrieelement, und {100} hat 6 Flächen, ein hexagonales Prisma wie beim Quarz (Kapitel 9). Dasselbe Paar gibt es bei fünf Punktgruppen:</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Punktgruppe</th><th>erste Aufstellung</th><th>zweite Aufstellung</th></tr></thead>
+            <tbody>
+              <tr><td>32</td><td>321: 2 ∥ ⟨100⟩</td><td>312: 2 ∥ ⟨210⟩</td></tr>
+              <tr><td>3<i>m</i></td><td>3<i>m</i>1: <i>m</i> ⊥ ⟨100⟩</td><td>31<i>m</i>: <i>m</i> ⊥ ⟨210⟩</td></tr>
+              <tr><td><span class="ov">3</span><i>m</i></td><td><span class="ov">3</span><i>m</i>1: <i>m</i> ⊥ ⟨100⟩</td><td><span class="ov">3</span>1<i>m</i>: <i>m</i> ⊥ ⟨210⟩</td></tr>
+              <tr><td><span class="ov">4</span>2<i>m</i></td><td><span class="ov">4</span>2<i>m</i>: 2 ∥ ⟨100⟩, <i>m</i> ⊥ ⟨110⟩</td><td><span class="ov">4</span><i>m</i>2: <i>m</i> ⊥ ⟨100⟩, 2 ∥ ⟨110⟩</td></tr>
+              <tr><td><span class="ov">6</span><i>m</i>2</td><td><span class="ov">6</span><i>m</i>2: <i>m</i> ⊥ ⟨100⟩, 2 ∥ ⟨210⟩</td><td><span class="ov">6</span>2<i>m</i>: 2 ∥ ⟨100⟩, <i>m</i> ⊥ ⟨210⟩</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Die beiden Aufstellungen unterscheiden sich jeweils durch eine Drehung um die Hauptachse, um 30° bei den trigonalen und hexagonalen, um 45° bei den tetragonalen Punktgruppen. Bei den trigonalen Punktgruppen unterscheiden sich die beiden Symbole nur durch die Stellung der 1 (Vertiefung „Die 1 als Platzhalter“). Auch die eindeutige Achse <i>b</i> oder <i>c</i> der monoklinen Punktgruppen (Abschnitt „Was ist eine Blickrichtung?“) ist eine Wahl der Aufstellung; ausgeschrieben lautet das Symbol der Punktgruppe 2 dann 121 bzw. 112. Der Gips, ein Beispielkristall der App, ist mit <i>b</i> als eindeutiger Achse aufgestellt.</p>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>Im Modus „Punktgruppen“ bietet die App bei diesen Punktgruppen beide Aufstellungen an; der Tooltip jedes Knopfs sagt, wo die Elemente liegen. Mit „Kristallachsen“ unter „Darstellung“ sieht man, wie das Gerüst zu den Achsen liegt. Im Modus „Kristallformen“ verwendet die App die erste Aufstellung der Tabelle und bei monoklinen Punktgruppen die Achse <i>b</i>.</p>
+        </div>
+      </section>
+
+      <section id="eigenschaften" data-level="vertiefung">
+        <h3>Was die Punktgruppe über den Kristall verrät</h3>
+        <p>Die Infobox der App nennt zu jeder Punktgruppe fünf Eigenschaften: Laue-Klasse, zentrosymmetrisch, enantiomorph, polar und piezoelektrisch. Jede lässt sich am Symmetriegerüst ablesen, und jede sagt etwas darüber, was ein Kristall dieser Punktgruppe zeigen kann. Abb. 5.8 zeigt drei Punktgruppen mit derselben Laue-Klasse, die Pole nach Händigkeit gefärbt (Kapitel 3).</p>
+        <div class="fig-row fig-row3">
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4/mmm&amp;hand=1" data-alt="4/mmm, Pole nach Händigkeit gefärbt">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.8a</b> 4/<i>mmm</i>: zentrosymmetrisch, zu jedem Pol der Gegenpol.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=422&amp;hand=1" data-alt="422, Pole nach Händigkeit gefärbt">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.8b</b> 422: enantiomorph, nur Drehungen, alle Pole blau.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4mm&amp;hand=1" data-alt="4mm, Pole nach Händigkeit gefärbt">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 5.8c</b> 4<i>mm</i>: polar, alle Pole auf der oberen Halbkugel.</figcaption>
+          </figure>
+        </div>
+        <ul>
+          <li><span class="term">Zentrosymmetrisch</span> ist eine Punktgruppe, die das Inversionszentrum <span class="ov">1</span> enthält. Im Stereogramm gehört dann zu jedem Pol der Gegenpol: an der gegenüberliegenden Stelle und auf der anderen Halbkugel (Abb. 5.8a). Das trifft auf 11 der 32 Punktgruppen zu.</li>
+          <li>Nimmt man zu einer Punktgruppe die Inversion hinzu, erhält man eine zentrosymmetrische Punktgruppe, ihre <span class="term">Laue-Klasse</span>. 422, 4<i>mm</i>, <span class="ov">4</span>2<i>m</i> und 4/<i>mmm</i> gehören zur Laue-Klasse 4/<i>mmm</i>. Die 32 Punktgruppen verteilen sich so auf 11 Laue-Klassen (Tabelle). Bedeutung hat das für Messungen, die ein Inversionszentrum nicht erkennen: Die Beugung von Röntgenstrahlen liefert meist ein zentrosymmetrisches Beugungsbild, ob der Kristall zentrosymmetrisch ist oder nicht. Sie zeigt deshalb in der Regel nur die Laue-Klasse.</li>
+          <li><span class="term">Enantiomorph</span> heisst eine Punktgruppe, die nur Drehungen enthält, also nur Operationen erster Art (Kapitel 3). Ein Kristall dieser Punktgruppe und sein Spiegelbild lassen sich durch keine Drehung zur Deckung bringen; es kann ihn in einer Links- und einer Rechtsform geben, wie den Links- und Rechtsquarz (Punktgruppe 32). Im Stereogramm sind alle Pole einer Bahn blau (Abb. 5.8b). Solche Kristalle können optisch aktiv sein: Sie drehen die Ebene von polarisiertem Licht, die Linksform nach links, die Rechtsform um den gleichen Betrag nach rechts.</li>
+          <li><span class="term">Polar</span> heisst eine Punktgruppe, wenn alle Operationen eine Richtung samt ihrem Richtungssinn festhalten: Ein Pfeil entlang dieser Richtung bleibt derselbe Pfeil. In 4<i>mm</i> ist das <i>c</i>; keine Operation bringt einen Pol von oben nach unten (Abb. 5.8c). Am Kristall treten oben und unten deshalb verschiedene Formen auf, wie beim Turmalin (3<i>m</i>). Nur in polaren Punktgruppen kann ein Kristall ein bleibendes elektrisches Dipolmoment haben. Ändert sich die Temperatur, ändert sich das Dipolmoment, und die beiden Enden laden sich entgegengesetzt auf; das heisst <span class="term">Pyroelektrizität</span>. Polar sind die 10 Punktgruppen 1, 2, 3, 4, 6, <i>m</i>, <i>mm</i>2, 3<i>m</i>, 4<i>mm</i> und 6<i>mm</i>. In 1 ist jede Richtung polar, in <i>m</i> jede Richtung in der Spiegelebene.</li>
+          <li><span class="term">Piezoelektrisch</span> heisst ein Kristall, in dem Druck oder Zug elektrische Ladungen erzeugt; umgekehrt verformt ihn eine angelegte elektrische Spannung. Das ist in allen 21 Punktgruppen ohne Inversionszentrum möglich, ausser in 432. In einem zentrosymmetrischen Kristall ist es unmöglich, denn die Inversion kehrt jeden Pfeil um. Quarz ist piezoelektrisch: Eine Quarzplatte senkrecht zu einer <i>a</i>-Achse lädt sich unter Druck entgegengesetzt auf. Darauf beruht die Quarzuhr.</li>
+        </ul>
+        <p>Polar im Sinn der Infobox ist mehr, als dass eine Richtung und ihre Gegenrichtung verschieden sind. Beim Quarz gilt das schon für die 2-zähligen Achsen; Borchardt-Ott nennt solche Achsen <i>polare Achsen</i>. Es gibt aber drei gleichwertige davon, und keine wird von allen Operationen festgehalten. Die Punktgruppe 32 ist deshalb nicht polar: Quarz ist piezoelektrisch, aber nicht pyroelektrisch.</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Laue-Klasse</th><th>weitere Punktgruppen der Laue-Klasse</th></tr></thead>
+            <tbody>
+              <tr><td><span class="ov">1</span></td><td>1 (e, p)</td></tr>
+              <tr><td>2/<i>m</i></td><td>2 (e, p), <i>m</i> (p)</td></tr>
+              <tr><td><i>mmm</i></td><td>222 (e), <i>mm</i>2 (p)</td></tr>
+              <tr><td>4/<i>m</i></td><td>4 (e, p), <span class="ov">4</span></td></tr>
+              <tr><td>4/<i>mmm</i></td><td>422 (e), 4<i>mm</i> (p), <span class="ov">4</span>2<i>m</i></td></tr>
+              <tr><td><span class="ov">3</span></td><td>3 (e, p)</td></tr>
+              <tr><td><span class="ov">3</span><i>m</i></td><td>32 (e), 3<i>m</i> (p)</td></tr>
+              <tr><td>6/<i>m</i></td><td>6 (e, p), <span class="ov">6</span></td></tr>
+              <tr><td>6/<i>mmm</i></td><td>622 (e), 6<i>mm</i> (p), <span class="ov">6</span><i>m</i>2</td></tr>
+              <tr><td><i>m</i><span class="ov">3</span></td><td>23 (e)</td></tr>
+              <tr><td><i>m</i><span class="ov">3</span><i>m</i></td><td>432 (e), <span class="ov">4</span>3<i>m</i></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="fig-note">Die 11 Laue-Klassen sind die 11 zentrosymmetrischen Punktgruppen. Die rechte Spalte enthält die übrigen 21 Punktgruppen, die kein Inversionszentrum haben; e: enantiomorph, p: polar. Alle Punktgruppen der rechten Spalte ausser 432 sind piezoelektrisch.</p>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>Die Infobox einer Punktgruppe zeigt die fünf Eigenschaften; ein Tooltip erklärt „polar“ und „piezoelektrisch“. „Pole nach Händigkeit färben“ unter „Darstellung“ zeigt, ob eine Punktgruppe enantiomorph ist. Die Beispielkristalle Links- und Rechtsquarz zeigen die beiden enantiomorphen Formen, der Turmalin eine polare Punktgruppe mit verschiedenen Formen oben und unten.</p>
+        </div>
+      </section>
+
       <div class="box zusammen">
         <h4>Zusammenfassung</h4>
         <ul>
           <li>Blickrichtungen sind die höchstens drei Klassen nicht gleichwertiger Symmetrierichtungen; sie hängen nur vom Kristallsystem ab.</li>
           <li>Jede Position des Hermann-Mauguin-Symbols gehört zu einer Blickrichtung: Achsen parallel, Spiegelebenen senkrecht zu ihr.</li>
           <li>Das gekürzte Symbol lässt Elemente weg, die von den übrigen erzeugt werden, z. B. <i>mmm</i> für 2/<i>m</i> 2/<i>m</i> 2/<i>m</i>.</li>
+        </ul>
+        <h5>Zur Vertiefung</h5>
+        <ul>
+          <li>Fünf Punktgruppen haben zwei Aufstellungen, die sich durch eine Drehung um die Hauptachse unterscheiden (321 und 312, 3<i>m</i>1 und 31<i>m</i>, …). Sie ergeben für dieselben Indizes verschiedene Formen.</li>
+          <li>Zentrosymmetrisch: enthält <span class="ov">1</span>. Laue-Klasse: Punktgruppe mit hinzugenommener Inversion, 11 Klassen. Enantiomorph: nur Drehungen, Links- und Rechtsform möglich. Polar: eine Richtung samt Richtungssinn bleibt erhalten, Pyroelektrizität möglich. Piezoelektrisch: alle Punktgruppen ohne <span class="ov">1</span> ausser 432.</li>
         </ul>
       </div>
       <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=5&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=5&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=5&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
@@ -1155,6 +1251,8 @@ footer a { color: inherit; }
         <ul>
           <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 6.4.2 (Schreibweise ⟨<i>uvw</i>⟩, S. 78), 7.1 (Blickrichtungen, Tab. 7.3, S. 88–89), 7.2.2–7.2.6 (Symbole der Gitter nach Blickrichtungen, S. 104–111, monoklin 1. und 2. Aufstellung S. 104 Fussnote 6, Abb. 7.19, 7.21, 7.23, 7.24), 9.1 (gekürzte Symbole, Abb. 9.1, Tab. 9.2, S. 128–130), 9.2 (Galenit, S. 131, Abb. 9.4, S. 142).</li>
           <li>International Tables for Crystallography, Vol. A (2006), Teil 2 (Symmetrierichtungen der Gitter), Abschn. 2.2.16.2 (monokline Aufstellungen <i>unique axis b</i> und <i>c</i>, Standard <i>b</i>; frühere Bezeichnungen „1st/2nd setting“).</li>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 9.4 (polare Drehachsen, S. 164), 9.5 (Enantiomorphie, S. 169), 9.6.1–9.6.3 (optische Aktivität, Piezo- und Pyroelektrizität, Quarzplatte Abb. 9.21, Turmalin, S. 169–171).</li>
+          <li>D. Schwarzenbach, <i>Kristallographie</i>, Springer, Berlin (2001), Abschn. 2.5.7 (Laue-Klassen, Friedelsche Regel, S. 60–61), 2.5.9 (internationale Symbole, Aufstellungen 121 und 112, 3<i>m</i>1 und 31<i>m</i>, 321 und 312, S. 63–65).</li>
         </ul>
       </div>
     </section>
@@ -2058,7 +2156,7 @@ footer a { color: inherit; }
           </div>
           <figcaption><b>Abb. 11.5</b> Elementarzelle von BaTiO₃ (Perowskitstruktur), Verzerrung und Verschiebung stark übertrieben. Links kubisch (<i>m</i><span class="ov">3</span><i>m</i>), Mitte entlang <i>c</i> gestreckt, Ti in der Mitte (4/<i>mmm</i>, Doppelpfeil: Streckung ohne Richtungssinn), rechts zusätzlich Ti nach oben verschoben (4<i>mm</i>, Pfeil: Polarisation <i>P</i>). Gestrichelt die Verbindungen vom Ti zu den sechs O des Oktaeders.</figcaption>
         </figure>
-        <p>Diese Punktgruppen sind <span class="term">polar</span>: Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 11.6), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 4.4b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 6.2): Oben und unten sind verschieden.</p>
+        <p>Diese Punktgruppen sind <span class="term">polar</span> (Kapitel 5, „Was die Punktgruppe über den Kristall verrät“): Die beiden Enden der Pfeilrichtung gehen durch keine Symmetrieoperation ineinander über. Mit dieser Richtung als Projektionsrichtung liegen alle Pole einer allgemeinen Form auf derselben Halbkugel (Abb. 11.6), bei Punktgruppen mit Inversionszentrum auf beiden (<i>mmm</i>, Abb. 4.4b). Ein Körper dieser Art ist die tetragonale Pyramide mit Pedion (Abb. 6.2): Oben und unten sind verschieden.</p>
         <div class="fig-row fig-row3">
           <figure class="fig-card" data-kind="stereo" data-app="#m=pg&amp;g=4mm" data-alt="Punktgruppe 4mm mit Bahn eines allgemeinen Pols">
             <div class="fig-art"></div>
@@ -2096,7 +2194,7 @@ footer a { color: inherit; }
           </table>
         </div>
         <p>Beim Aufheizen liegen die Umwandlungstemperaturen einige Kelvin höher, bei 196 K, 285 K und 401 K.</p>
-        <p>Die Symmetrie bestimmt, welche Eigenschaften ein Kristall haben kann. Im kubischen BaTiO₃ hebt das Inversionszentrum jede Polarisation auf; der Kristall ist weder pyroelektrisch noch piezoelektrisch. In den polaren Phasen ist beides möglich: Erwärmen ändert die Polarisation (Pyroelektrizität), Druck erzeugt eine elektrische Spannung, und eine angelegte elektrische Spannung verformt den Kristall (Piezoelektrizität). Beim BaTiO₃ lässt sich die Polarisation zudem durch ein elektrisches Feld umkehren; solche Kristalle heissen <span class="term">ferroelektrisch</span>. BaTiO₃ ist ein wichtiger Werkstoff für Kondensatoren, piezoelektrische Kristalle setzen elektrische in mechanische Signale um und umgekehrt, etwa in Ultraschallgebern. In der App zeigt die Infobox der Punktgruppen, ob eine Gruppe polar und ob sie piezoelektrisch ist: <i>m</i><span class="ov">3</span><i>m</i> nein, 4<i>mm</i>, <i>mm</i>2 und 3<i>m</i> ja.</p>
+        <p>Die Symmetrie bestimmt, welche Eigenschaften ein Kristall haben kann. Im kubischen BaTiO₃ hebt das Inversionszentrum jede Polarisation auf; der Kristall ist weder pyroelektrisch noch piezoelektrisch. In den polaren Phasen ist beides möglich: Erwärmen ändert die Polarisation (Pyroelektrizität), Druck erzeugt eine elektrische Spannung, und eine angelegte elektrische Spannung verformt den Kristall (Piezoelektrizität). Beim BaTiO₃ lässt sich die Polarisation zudem durch ein elektrisches Feld umkehren; solche Kristalle heissen <span class="term">ferroelektrisch</span>. BaTiO₃ ist ein wichtiger Werkstoff für Kondensatoren, piezoelektrische Kristalle setzen elektrische in mechanische Signale um und umgekehrt, etwa in Ultraschallgebern. In der App zeigt die Infobox der Punktgruppen, ob eine Gruppe polar und ob sie piezoelektrisch ist: <i>m</i><span class="ov">3</span><i>m</i> nein, 4<i>mm</i>, <i>mm</i>2 und 3<i>m</i> ja (Kapitel 5).</p>
         <p>Die Symmetrie erklärt auch, warum Domänen entstehen: Die Polarisation kann in der tetragonalen Phase in jede der sechs gleichwertigen Richtungen <span class="sym">±[100]</span>, <span class="sym">±[010]</span>, <span class="sym">±[001]</span> zeigen. Kühlt ein Kristall ab, wählen verschiedene Bereiche verschiedene Richtungen. Es entstehen <span class="term">Domänen</span>, die durch die beim Übergang verlorenen Symmetrieoperationen ineinander übergehen, eine Art Zwillinge. Ihre möglichen Orientierungen zählt man wie oben: 48/8 = 6 tetragonal, 48/4 = 12 orthorhombisch, 48/6 = 8 rhomboedrisch, doppelt so viele wie bei der reinen Streckung (3, 4 bzw. 6), weil die Polarisation auch den Richtungssinn unterscheidet. Ein elektrisches Feld lässt die günstig orientierten Domänen wachsen.</p>
       </section>
 

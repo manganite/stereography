@@ -1,5 +1,5 @@
-// Beispielkristalle: Kombinationen mehrerer Formen derselben Punktgruppe, wie sie in der Vorlesung
-// und den Lehrbüchern vorkommen. hkl mit drei Indizes (hexagonal: h k l, i = −(h+k)).
+// Beispielkristalle: Kombinationen mehrerer Formen derselben Punktgruppe, wie sie in den
+// Lehrbüchern vorkommen. hkl mit drei Indizes (hexagonal: h k l, i = −(h+k)).
 // r: Zentralabstand der Flächen (relativ; nur die Verhältnisse zählen), oder
 // t: Lage über die Achsenabschnitte, Fläche h·x/a + k·y/b + l·z/c = t (t = 1: Einheitsfläche).
 // Die Abstände bestimmen den Habitus und sind nach den Abbildungen gewählt, nicht gemessen;

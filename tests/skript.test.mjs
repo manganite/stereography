@@ -1,5 +1,5 @@
-// Skript: Kennzeichnung von Vorlesungsstoff, Vertiefungen und Hinweisen zur App.
-// Vorlesungsstoff ist unmarkiert; Vertiefungen und App-Hinweise stehen in eigenen Kästen
+// Skript: Kennzeichnung von Grundstoff, Vertiefungen und Hinweisen zur App.
+// Grundstoff ist unmarkiert; Vertiefungen und App-Hinweise stehen in eigenen Kästen
 // bzw. tragen data-level="vertiefung" am Abschnitt.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -47,12 +47,12 @@ test('App-Kästen haben die Kopfzeile „In der App“', () => {
   for (const b of a) assert.match(b, /^<div class="box app">\s*<h4>In der App<\/h4>/);
 });
 
-test('Kapitel 8 und 9 sind Vertiefungen mit Kasten „Bezug zur Vorlesung“', () => {
+test('Kapitel 10 und 11 sind Vertiefungen mit Kasten „Voraussetzungen“', () => {
   for (const id of ['lagen', 'verzerrung']) {
     const start = html.indexOf(`<section id="${id}" data-level="vertiefung">`);
     assert.ok(start >= 0, `${id}: data-level fehlt`);
     const head = html.slice(start, html.indexOf('<div class="box ziele">', start));
-    assert.match(head, /<div class="box bezug">\s*<h4>Bezug zur Vorlesung<\/h4>/, id);
+    assert.match(head, /<div class="box bezug">\s*<h4>Voraussetzungen<\/h4>/, id);
   }
 });
 
@@ -62,12 +62,12 @@ test('Vertiefungsabschnitte stehen im Inhaltsverzeichnis', () => {
   for (const id of ids) assert.ok(html.includes(`<a href="#${id}">`), id);
 });
 
-test('Lernziele und Zusammenfassungen: „Zur Vertiefung“ nur nach dem Vorlesungsteil', () => {
+test('Lernziele und Zusammenfassungen: „Zur Vertiefung“ nur nach dem Grundstoff', () => {
   for (const kind of ['ziele', 'zusammen']) {
     for (const b of boxes(kind)) {
       const i = b.indexOf('<h5>Zur Vertiefung</h5>');
       if (i < 0) continue;
-      assert.ok(b.slice(0, i).includes('<li>'), 'Vorlesungsteil fehlt vor „Zur Vertiefung“');
+      assert.ok(b.slice(0, i).includes('<li>'), 'Grundstoff fehlt vor „Zur Vertiefung“');
       assert.ok(b.slice(i).includes('<li>'), 'leere Vertiefungsliste');
     }
   }

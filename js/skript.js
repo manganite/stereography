@@ -1,4 +1,4 @@
-// Skript zur Vorlesung: Abbildungen aus dem Code der App, Projektionsskizze, Inhaltsverzeichnis.
+// Skript zur App: Abbildungen aus dem Code der App, Projektionsskizze, Inhaltsverzeichnis.
 // Eine Abbildung ist durch die Link-Adresse der App beschrieben (data-app="#m=form&…"); daraus entsteht
 // mit scene.js genau das Stereogramm, das die App für diese Adresse zeigt.
 

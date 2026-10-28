@@ -3,8 +3,8 @@
 
 /** Die drei Stufen (Konzept „Quiz“, Abschnitt 2). */
 export const STUFEN = {
-  1: { name: 'Grundlagen', text: 'Hauptthemen der Vorlesung: ein Begriff, ein Schritt, ein Bild.' },
-  2: { name: 'Anwendung', text: 'Nur Vorlesungsstoff, aber mehrschrittig; auch Randthemen der Vorlesung.' },
+  1: { name: 'Grundlagen', text: 'Hauptthemen des Grundstoffs: ein Begriff, ein Schritt, ein Bild.' },
+  2: { name: 'Anwendung', text: 'Nur Grundstoff, aber mehrschrittig; auch Randthemen.' },
   3: { name: 'Vertiefung', text: 'Zusätzlich die Vertiefungen des Skripts.' },
 };
 

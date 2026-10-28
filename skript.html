@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Skript: Stereographische Projektion</title>
-<meta name="description" content="Skript zur Vorlesung Kristallographie: Indizes, stereographische Projektion, Symmetrie und Punktgruppen, Symmetriegerüste, Blickrichtungen, Kristallformen, Zonen, Tracht und Habitus, trigonale und hexagonale Kristalle.">
+<meta name="description" content="Skript zur Einführung in die Kristallographie: Indizes, stereographische Projektion, Symmetrie und Punktgruppen, Symmetriegerüste, Blickrichtungen, Kristallformen, Zonen, Tracht und Habitus, trigonale und hexagonale Kristalle.">
 <link rel="icon" href="icons/favicon.ico" sizes="any">
 <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -58,7 +58,7 @@ article li { margin-bottom: 4px; }
 .box.merke { border-left-color: var(--accent); }
 .box.merke p { font-weight: 500; }
 .box.zusammen { border-left-color: var(--ax4); }
-/* Vorlesungsstoff ist unmarkiert. Gekennzeichnet werden Vertiefungen (bernsteinfarben) und
+/* Grundstoff ist unmarkiert. Gekennzeichnet werden Vertiefungen (bernsteinfarben) und
    Bedienhinweise zur App (grau, kleiner). */
 .box > h5 { margin: 12px 0 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
 .box.vertiefung { border-left-color: var(--ax3); background: color-mix(in srgb, var(--ax3) 7%, var(--surface)); }
@@ -76,7 +76,7 @@ article li { margin-bottom: 4px; }
   color: var(--muted); border: 1px solid var(--ax3); border-radius: 999px;
 }
 section[data-level="vertiefung"] > :is(h2, h3)::after { content: 'Vertiefung'; }
-/* Ein unmarkierter Merke-Kasten ist immer Vorlesungsstoff */
+/* Ein unmarkierter Merke-Kasten ist immer Grundstoff */
 [data-level="vertiefung"] .box.merke { border-left-color: var(--ax3); }
 [data-level="vertiefung"] .box.merke > h4::after { content: ' · Vertiefung'; }
 .box.bezug { border-left-color: var(--ax3); }
@@ -239,7 +239,7 @@ footer a { color: inherit; }
 <header class="top">
   <div class="brand">
     <h1>Stereographische Projektion</h1>
-    <p>Skript zur Vorlesung Kristallographie</p>
+    <p>Skript zur Einführung in die Kristallographie</p>
   </div>
   <div class="headtools">
     <a class="linkcopy" href="quiz.html">Quiz</a>
@@ -350,7 +350,7 @@ footer a { color: inherit; }
             </ol>
           </li>
         </ol>
-        <p class="toc-foot">Begriffe nach Borchardt-Ott &amp; Sowa, <i>Kristallographie</i> (2018), wie in der Vorlesung.</p>
+        <p class="toc-foot">Begriffe nach Borchardt-Ott &amp; Sowa, <i>Kristallographie</i> (2018).</p>
       </details>
     </div>
   </nav>
@@ -359,9 +359,10 @@ footer a { color: inherit; }
   <article>
     <div class="box aufbau">
       <h4>So ist das Skript aufgebaut</h4>
-      <p>Der Text ohne Kennzeichnung behandelt, was in der Vorlesung und in den Übungen vorkommt. Vertiefungen zeigen, wie diese Inhalte weitergehen; beim ersten Lesen kann man sie überspringen.</p>
+      <p>Skript und App sind aus der Vorlesung Kristallographie an der ETH Zürich entstanden. Sie richten sich an alle, die eine Einführung in die Kristallographie hören oder einen vergleichbaren Hintergrund haben.</p>
+      <p>Der Text ohne Kennzeichnung behandelt den Grundstoff. Vertiefungen zeigen, wie diese Inhalte weitergehen; beim ersten Lesen kann man sie überspringen.</p>
       <dl>
-        <dt><span class="swatch v"></span>Vertiefung</dt><dd>Kasten oder Abschnitt, der über die Vorlesung hinausführt. Der erste Satz sagt, woran er anknüpft und wozu man ihn braucht; bei ganzen Kapiteln steht das im Kasten „Bezug zur Vorlesung“.</dd>
+        <dt><span class="swatch v"></span>Vertiefung</dt><dd>Kasten oder Abschnitt, der über den Grundstoff hinausführt. Der erste Satz sagt, woran er anknüpft und wozu man ihn braucht; bei ganzen Kapiteln steht das im Kasten „Voraussetzungen“.</dd>
         <dt><span class="swatch g"></span>Grundlagen</dt><dd>Kurz zusammengefasstes Grundwissen, auf dem der Text aufbaut, etwa zu Miller'schen Indizes oder Gruppen. Es gehört zum Haupttext.</dd>
         <dt><span class="swatch"></span>In der App</dt><dd>Hinweis zur Bedienung der App.</dd>
       </dl>
@@ -479,7 +480,7 @@ footer a { color: inherit; }
       <section id="hexachsen">
         <h3>Das hexagonale Achsensystem</h3>
         <p>Trigonale und hexagonale Kristalle haben eine 3-, <span class="ov">3</span>-, 6- oder <span class="ov">6</span>-zählige Hauptachse. Man beschreibt sie mit einem eigenen Achsensystem und legt <i>c</i> parallel zu dieser Hauptachse. Senkrecht dazu liegen <i>a</i> und <i>b</i>, gleich lang und im Winkel von 120° zueinander: <i>a</i> = <i>b</i>, α = β = 90°, γ = 120°. Wegen der Hauptachse gibt es in dieser Ebene noch eine dritte, gleichwertige Achse: Man schreibt <i>a</i>₁, <i>a</i>₂, <i>a</i>₃, je 120° voneinander (Abb. 1.4). Als Richtungen sind das [100], [010] und [<span class="ov">1</span><span class="ov">1</span>0], denn <i>a</i>₁ + <i>a</i>₂ + <i>a</i>₃ = 0.</p>
-        <p>Die Richtungen ⟨210⟩ halbieren die Winkel zwischen benachbarten Achsenrichtungen ±<i>a</i>₁, ±<i>a</i>₂, ±<i>a</i>₃: [210] = 2<i>a</i>₁ + <i>a</i>₂ liegt zwischen <i>a</i>₁ und −<i>a</i>₃ und steht senkrecht auf <i>a</i>₂. Genau in der Mitte zwischen <i>a</i>₁ und <i>a</i>₂ liegt dagegen [110] = −<i>a</i>₃, eine Richtung der Familie ⟨100⟩. ⟨100⟩ und ⟨210⟩ sind die 2. und 3. Blickrichtung des hexagonalen Systems (Kapitel 5). Richtungen gibt dieses Skript wie die Vorlesung mit drei Indizes [<i>uvw</i>] an.</p>
+        <p>Die Richtungen ⟨210⟩ halbieren die Winkel zwischen benachbarten Achsenrichtungen ±<i>a</i>₁, ±<i>a</i>₂, ±<i>a</i>₃: [210] = 2<i>a</i>₁ + <i>a</i>₂ liegt zwischen <i>a</i>₁ und −<i>a</i>₃ und steht senkrecht auf <i>a</i>₂. Genau in der Mitte zwischen <i>a</i>₁ und <i>a</i>₂ liegt dagegen [110] = −<i>a</i>₃, eine Richtung der Familie ⟨100⟩. ⟨100⟩ und ⟨210⟩ sind die 2. und 3. Blickrichtung des hexagonalen Systems (Kapitel 5). Richtungen gibt dieses Skript mit drei Indizes [<i>uvw</i>] an.</p>
         <p>Eine Richtung und die Normale der gleich indizierten Fläche fallen hier im Allgemeinen nicht zusammen (Kapitel 7): Die Fläche (100) ist parallel zu <i>a</i>₂ und <i>c</i>, ihr Pol liegt deshalb nicht auf <i>a</i>₁, sondern in Richtung [210] (im Stereogramm unten, Abb. 9.2).</p>
         <figure class="fig-card hexfig">
           <div class="fig-art">
@@ -1080,7 +1081,7 @@ footer a { color: inherit; }
 
       <section id="blick-def">
         <h3>Was ist eine Blickrichtung?</h3>
-        <p>Drehachsen und Normalen von Spiegelebenen können in einem Kristall nur in ganz bestimmten Richtungen liegen. Diese Richtungen bilden höchstens drei Klassen: Innerhalb einer Klasse gehen die Richtungen durch Symmetrieoperationen ineinander über, Richtungen verschiedener Klassen nicht. Diese Klassen symmetrisch nicht äquivalenter Symmetrierichtungen heissen <span class="term">Blickrichtungen</span>. Welche es sind, hängt vom Kristallsystem und dem gewählten Achsensystem ab; trigonale Kristalle werden hier wie in der Vorlesung immer mit hexagonalen Achsen beschrieben:</p>
+        <p>Drehachsen und Normalen von Spiegelebenen können in einem Kristall nur in ganz bestimmten Richtungen liegen. Diese Richtungen bilden höchstens drei Klassen: Innerhalb einer Klasse gehen die Richtungen durch Symmetrieoperationen ineinander über, Richtungen verschiedener Klassen nicht. Diese Klassen symmetrisch nicht äquivalenter Symmetrierichtungen heissen <span class="term">Blickrichtungen</span>. Welche es sind, hängt vom Kristallsystem und dem gewählten Achsensystem ab; trigonale Kristalle werden in diesem Skript immer mit hexagonalen Achsen beschrieben:</p>
         <div class="tabwrap">
           <table class="tab">
             <thead><tr><th>Kristallsystem</th><th>1. Blickrichtung</th><th>2. Blickrichtung</th><th>3. Blickrichtung</th></tr></thead>
@@ -1211,7 +1212,7 @@ footer a { color: inherit; }
         <ul>
           <li><span class="term">Zentrosymmetrisch</span> ist eine Punktgruppe, die das Inversionszentrum <span class="ov">1</span> enthält. Im Stereogramm gehört dann zu jedem Pol der Gegenpol: an der gegenüberliegenden Stelle und auf der anderen Halbkugel (Abb. 5.8a). Das trifft auf 11 der 32 Punktgruppen zu.</li>
           <li>Nimmt man zu einer Punktgruppe die Inversion hinzu, erhält man eine zentrosymmetrische Punktgruppe, ihre <span class="term">Laue-Klasse</span>. 422, 4<i>mm</i>, <span class="ov">4</span>2<i>m</i> und 4/<i>mmm</i> gehören zur Laue-Klasse 4/<i>mmm</i>. Die 32 Punktgruppen verteilen sich so auf 11 Laue-Klassen (Tabelle). Bedeutung hat das für Messungen, die ein Inversionszentrum nicht erkennen: Die Beugung von Röntgenstrahlen liefert meist ein zentrosymmetrisches Beugungsbild, ob der Kristall zentrosymmetrisch ist oder nicht. Sie zeigt deshalb in der Regel nur die Laue-Klasse.</li>
-          <li><span class="term">Enantiomorph</span> oder <span class="term">chiral</span> heisst eine Punktgruppe, die nur Drehungen enthält, also nur Operationen erster Art (Kapitel 3). Beide Wörter meinen dasselbe; für Kristalle ist in der Kristallographie „enantiomorph“ üblich, „chiral“ vor allem in der Chemie und im Englischen. Ein Kristall dieser Punktgruppe und sein Spiegelbild lassen sich durch keine Drehung zur Deckung bringen; es kann ihn in einer Links- und einer Rechtsform geben, wie den Links- und Rechtsquarz (Punktgruppe 32). Im Stereogramm sind alle Pole einer Bahn blau (Abb. 5.8b). Solche Kristalle können optisch aktiv sein: Sie drehen die Ebene von polarisiertem Licht, die Linksform nach links, die Rechtsform um den gleichen Betrag nach rechts. Umgekehrt verrät optische Aktivität noch keine Enantiomorphie: Sie ist auch in den Punktgruppen <i>m</i>, <i>mm</i>2, <span class="ov">4</span> und <span class="ov">4</span>2<i>m</i> möglich, die Spiegelungen bzw. Drehinversionen enthalten. Bei den Raumgruppen werden die Begriffe übrigens enger gebraucht; das folgt in der Vorlesung.</li>
+          <li><span class="term">Enantiomorph</span> oder <span class="term">chiral</span> heisst eine Punktgruppe, die nur Drehungen enthält, also nur Operationen erster Art (Kapitel 3). Beide Wörter meinen dasselbe; für Kristalle ist in der Kristallographie „enantiomorph“ üblich, „chiral“ vor allem in der Chemie und im Englischen. Ein Kristall dieser Punktgruppe und sein Spiegelbild lassen sich durch keine Drehung zur Deckung bringen; es kann ihn in einer Links- und einer Rechtsform geben, wie den Links- und Rechtsquarz (Punktgruppe 32). Im Stereogramm sind alle Pole einer Bahn blau (Abb. 5.8b). Solche Kristalle können optisch aktiv sein: Sie drehen die Ebene von polarisiertem Licht, die Linksform nach links, die Rechtsform um den gleichen Betrag nach rechts. Umgekehrt verrät optische Aktivität noch keine Enantiomorphie: Sie ist auch in den Punktgruppen <i>m</i>, <i>mm</i>2, <span class="ov">4</span> und <span class="ov">4</span>2<i>m</i> möglich, die Spiegelungen bzw. Drehinversionen enthalten. Bei den Raumgruppen werden die Begriffe übrigens enger gebraucht; das gehört zur Strukturkristallographie, etwa mit den enantiomorphen Schraubenachsen 3₁ und 3₂ (Borchardt-Ott &amp; Sowa, Abschn. 10.1).</li>
           <li><span class="term">Polar</span> heisst eine Punktgruppe, wenn alle Operationen eine Richtung samt ihrem Richtungssinn festhalten: Ein Pfeil entlang dieser Richtung bleibt derselbe Pfeil. In 4<i>mm</i> ist das <i>c</i>; keine Operation bringt einen Pol von oben nach unten (Abb. 5.8c). Am Kristall können oben und unten deshalb verschiedene Formen auftreten, wie beim Turmalin (3<i>m</i>). Nur in polaren Punktgruppen kann ein Kristall ein bleibendes elektrisches Dipolmoment haben. Ändert sich die Temperatur, ändert sich das Dipolmoment, und die beiden Enden laden sich entgegengesetzt auf; das heisst <span class="term">Pyroelektrizität</span>. Polar sind die 10 Punktgruppen 1, 2, 3, 4, 6, <i>m</i>, <i>mm</i>2, 3<i>m</i>, 4<i>mm</i> und 6<i>mm</i>. In 1 ist jede Richtung polar, in <i>m</i> jede Richtung in der Spiegelebene.</li>
           <li><span class="term">Piezoelektrisch</span> heisst ein Kristall, in dem Druck oder Zug elektrische Ladungen erzeugt; umgekehrt verformt ihn eine angelegte elektrische Spannung. Das ist in allen 21 Punktgruppen ohne Inversionszentrum möglich, ausser in 432. In einem zentrosymmetrischen Kristall ist es unmöglich, denn die Inversion kehrt jeden Pfeil um. Quarz ist piezoelektrisch: Eine Quarzplatte senkrecht zu einer <i>a</i>-Achse lädt sich unter Druck entgegengesetzt auf. Darauf beruht die Quarzuhr.</li>
         </ul>
@@ -1263,7 +1264,7 @@ footer a { color: inherit; }
           <li>International Tables for Crystallography, Vol. A (2006), Teil 2 (Symmetrierichtungen der Gitter), Abschn. 2.2.16.2 (monokline Aufstellungen <i>unique axis b</i> und <i>c</i>, Standard <i>b</i>; frühere Bezeichnungen „1st/2nd setting“).</li>
           <li>W. Kleber, J. Bohm, D. Klimm, M. Mühlberg, B. Winkler, <i>Einführung in die Kristallographie</i>, 20. Aufl., De Gruyter, Berlin/Boston (2020), Abschn. 1.6 (Enantiomorphie nur in Kristallklassen mit ausschliesslich Drehungen, S. 60), 5.5.8 („Enantiomorphie (Chiralität, ‚Händigkeit‘)“, S. 412).</li>
           <li>International Tables for Crystallography, Vol. A (2006), Abschn. 10.2.1.1 (H. Klapper, Th. Hahn: Enantiomorphie und Chiralität bezeichnen dieselbe Einschränkung, keine Operationen zweiter Art; bei Kristallen ist „Enantiomorphie“ bevorzugt; 11 Kristallklassen, S. 804).</li>
-          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 9.4 (polare Drehachsen, S. 164), 9.5 (Enantiomorphie, „enantiomorph (chiral)“, S. 169), 9.6.1–9.6.3 (optische Aktivität, Piezo- und Pyroelektrizität, Quarzplatte Abb. 9.21, Turmalin, S. 169–171).</li>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 9.4 (polare Drehachsen, S. 164), 9.5 (Enantiomorphie, „enantiomorph (chiral)“, S. 169), 9.6.1–9.6.3 (optische Aktivität, Piezo- und Pyroelektrizität, Quarzplatte Abb. 9.21, Turmalin, S. 169–171), 10.1 (enantiomorphe Schraubenachsen, S. 203).</li>
           <li>D. Schwarzenbach, <i>Kristallographie</i>, Springer, Berlin (2001), Abschn. 2.5.3 (Drehgruppen beschreiben „chirale oder enantiomorphe Objekte“, S. 49), 2.5.7 (Laue-Klassen, Friedelsche Regel, S. 60–61), 2.5.9 (internationale Symbole, Aufstellungen 121 und 112, 3<i>m</i>1 und 31<i>m</i>, 321 und 312, S. 63–65).</li>
         </ul>
       </div>
@@ -1778,7 +1779,7 @@ footer a { color: inherit; }
 
       <section id="rhomboedrisch" data-level="vertiefung">
         <h3>Rhomboedrische Achsen</h3>
-        <p>In der Vorlesung kommen rhomboedrische Achsen erst bei den Bravais-Gittern vor. Am gestreckten Würfel aus Abb. 9.1 lässt sich schon hier zeigen, was sie sind und warum man trigonale Kristalle trotzdem mit hexagonalen Achsen beschreibt.</p>
+        <p>Rhomboedrische Achsen gehören eigentlich zu den Bravais-Gittern und damit zur Strukturkristallographie. Am gestreckten Würfel aus Abb. 9.1 lässt sich schon hier zeigen, was sie sind und warum man trigonale Kristalle trotzdem mit hexagonalen Achsen beschreibt.</p>
         <p>Beim gestreckten Würfel liegt eine andere Wahl der Achsen nahe: seine drei Kanten, die an einer Ecke auf der <span class="ov">3</span>-Achse zusammentreffen. Sie sind gleich lang, schliessen paarweise denselben Winkel α ein, und die 3-zählige Drehung führt sie ineinander über. Das ist das <span class="term">rhomboedrische Achsensystem</span>: <i>a</i> = <i>b</i> = <i>c</i>, α = β = γ ≠ 90°. Beim unverzerrten Würfel sind es die Würfelachsen mit α = 90°, bei einer Streckung um den Faktor 1,3 ist α = 79,2° (Abb. 9.5). Keine der drei Achsen fällt mit einer Drehachse zusammen; die 3-zählige Achse liegt zwischen ihnen, entlang [111].</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;achsen=1&amp;strahlen=0&amp;normalen=0&amp;kugel=0&amp;ebene=0&amp;pole=0" data-alt="Gestreckter Würfel mit seinen Kanten als Achsen a, b, c">
@@ -1804,7 +1805,7 @@ footer a { color: inherit; }
           </table>
         </div>
         <p>In rhomboedrischen Achsen liegt die 3-zählige Achse entlang [111], und das Pinakoid senkrecht zu ihr heisst {111}; in hexagonalen Achsen ist es {001}. Die Indizes der beiden Systeme hängen nicht so einfach zusammen wie (<i>hkl</i>) und (<i>hkil</i>), aber sie bezeichnen dieselben Flächen.</p>
-        <p>Warum verwendet man dann für trigonale Kristalle hexagonale Achsen? Für die Indizes der Flächen könnte man jeden trigonalen Kristall auch rhomboedrisch beschreiben. Beim Gitter ist das anders. Bei manchen trigonalen Kristallen, z. B. beim Calcit, spannen rhomboedrische Achsen eine primitive Elementarzelle des Gitters auf; man spricht von einem <span class="term">rhomboedrischen Gitter</span>. Bei anderen, z. B. beim Quarz, ist das nicht möglich; ihre primitive Elementarzelle hat hexagonale Achsen. Hexagonale Achsen passen dagegen zu allen trigonalen Kristallen, und bei ihnen liegt, wie im tetragonalen und hexagonalen System, die Achse höchster Zähligkeit entlang <i>c</i>. Deshalb gibt es ein trigonales Kristallsystem, aber kein rhomboedrisches: „trigonal“ bezeichnet das Kristallsystem, „rhomboedrisch“ ein Achsensystem und ein Gitter. Manche Bücher, auch Borchardt-Ott, sprechen trotzdem von einem rhomboedrischen Kristallsystem; diese Begriffe werden in der Literatur nicht einheitlich verwendet. Wie man ein rhomboedrisches Gitter mit hexagonalen Achsen beschreibt, mit einer rhomboedrisch zentrierten Zelle, folgt in der Vorlesung bei den Bravais-Gittern.</p>
+        <p>Warum verwendet man dann für trigonale Kristalle hexagonale Achsen? Für die Indizes der Flächen könnte man jeden trigonalen Kristall auch rhomboedrisch beschreiben. Beim Gitter ist das anders. Bei manchen trigonalen Kristallen, z. B. beim Calcit, spannen rhomboedrische Achsen eine primitive Elementarzelle des Gitters auf; man spricht von einem <span class="term">rhomboedrischen Gitter</span>. Bei anderen, z. B. beim Quarz, ist das nicht möglich; ihre primitive Elementarzelle hat hexagonale Achsen. Hexagonale Achsen passen dagegen zu allen trigonalen Kristallen, und bei ihnen liegt, wie im tetragonalen und hexagonalen System, die Achse höchster Zähligkeit entlang <i>c</i>. Deshalb gibt es ein trigonales Kristallsystem, aber kein rhomboedrisches: „trigonal“ bezeichnet das Kristallsystem, „rhomboedrisch“ ein Achsensystem und ein Gitter. Manche Bücher, auch Borchardt-Ott, sprechen trotzdem von einem rhomboedrischen Kristallsystem; diese Begriffe werden in der Literatur nicht einheitlich verwendet. Wie man ein rhomboedrisches Gitter mit hexagonalen Achsen beschreibt, mit einer rhomboedrisch zentrierten Zelle, gehört zu den Bravais-Gittern (Borchardt-Ott &amp; Sowa, Abschn. 7.1, Abb. 7.12).</p>
         <div class="box app">
           <h4>In der App</h4>
           <p>Würfel, Oktaeder oder Rhombendodekaeder unter „Gitter“ mit „Symmetrie brechen“ entlang ⟨111⟩ strecken. Die Infobox nennt zu jeder Form ihre bisherigen, kubischen Indizes, also die rhomboedrischen, und die hexagonalen in drei und vier Ziffern. „Kristallachsen“ unter „Darstellung“ zeigt die rhomboedrischen Achsen.</p>
@@ -1813,7 +1814,7 @@ footer a { color: inherit; }
 
       <section id="hkil" data-level="vertiefung">
         <h3>Vier Indizes für Flächen</h3>
-        <p>Die Vorlesung beschreibt hexagonale Flächen mit drei Indizes. In der Literatur stehen sie oft mit vier; dieser Abschnitt erklärt, woher der vierte kommt und was er zeigt.</p>
+        <p>Dieses Skript beschreibt hexagonale Flächen mit drei Indizes. In der Literatur stehen sie oft mit vier; dieser Abschnitt erklärt, woher der vierte kommt und was er zeigt.</p>
         <p>Mit drei Indizes sieht man gleichwertigen Flächen ihre Gleichwertigkeit nicht an. Die sechs Flächen des hexagonalen Prismas {100} heissen (100), (010), (<span class="ov">1</span>10), (<span class="ov">1</span>00), (0<span class="ov">1</span>0) und (1<span class="ov">1</span>0): Mal steht die 1 vorn, mal in der Mitte, und (<span class="ov">1</span>10) und (1<span class="ov">1</span>0) fallen aus dem Muster.</p>
         <p>Deshalb nimmt man die dritte Achse <i>a</i>₃ hinzu und bildet die <span class="term">Miller-Bravais-Indizes</span> (<i>hkil</i>), bei Borchardt-Ott Bravais-Miller-Indizes. Der zusätzliche Index <i>i</i> bezieht sich auf <i>a</i>₃ und ist durch die beiden anderen festgelegt:</p>
         <p class="formel"><i>h</i> + <i>k</i> + <i>i</i> = 0, also <i>i</i> = −(<i>h</i> + <i>k</i>)</p>
@@ -1831,7 +1832,7 @@ footer a { color: inherit; }
         <p>Beide Schreibweisen beschreiben dieselbe Fläche, der vierte Index macht nur die Symmetrie sichtbar.</p>
         <div class="box app">
           <h4>In der App</h4>
-          <p>Die App verwendet wie die Vorlesung standardmässig drei Indizes; „Vier Indizes (<i>hkil</i>)“ unter „Weitere Optionen“ schaltet auf vier um.</p>
+          <p>Die App verwendet wie das Skript standardmässig drei Indizes; „Vier Indizes (<i>hkil</i>)“ unter „Weitere Optionen“ schaltet auf vier um.</p>
         </div>
       </section>
 
@@ -1855,7 +1856,7 @@ footer a { color: inherit; }
       <div class="quellen">
         <h4>Quellen</h4>
         <ul>
-          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 7.3 (Rhomboeder, Sonderfall Würfel, S. 116), 9.2.2 (Bravais-Miller-Indizes, <i>h</i> + <i>k</i> + <i>i</i> = 0, S. 151, Abb. 9.12; Tab. 9.6, S. 154 f.).</li>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 7.1 (rhomboedrisches Gitter, Abb. 7.12, S. 98), 7.3 (Rhomboeder, Sonderfall Würfel, S. 116), 9.2.2 (Bravais-Miller-Indizes, <i>h</i> + <i>k</i> + <i>i</i> = 0, S. 151, Abb. 9.12; Tab. 9.6, S. 154 f.).</li>
           <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 2.8 (Rhomboeder als gestreckter Würfel, S. 86–87).</li>
           <li>Borchardt-Ott &amp; Sowa (2018), Tab. 9.4 Nr. 18 (Links- und Rechts-Tiefquarz, Punktgruppe 32, S. 138), Abschn. 9.6.1.1 (optische Aktivität von Links- und Rechtsquarz, S. 170).</li>
           <li>W. Kleber, J. Bohm, D. Klimm, M. Mühlberg, B. Winkler, <i>Einführung in die Kristallographie</i>, 20. Aufl., De Gruyter, Berlin/Boston (2020), Abschn. 1.6, Kristallklasse 32 (Formen, Abb. 1.70: Links- und Rechtsquarz mit Indizes; grosses Rhomboeder als {10<span class="ov">1</span>1}; Unterscheidung nach Heaney u. a. (1994); Benennung nicht einheitlich, S. 70–71).</li>
@@ -1870,7 +1871,7 @@ footer a { color: inherit; }
 
     <div class="teil">
       <p class="teil-titel">Vertiefungen</p>
-      <p>Die Kapitel 10 und 11 gehen über die Vorlesung hinaus. Sie bauen auf den Kapiteln 1–9 auf und zeigen, wie deren Inhalte weitergehen; der Kasten „Bezug zur Vorlesung“ am Anfang jedes Kapitels nennt die Anknüpfungspunkte. Die Randlinie links markiert den ganzen Teil.</p>
+      <p>Die Kapitel 10 und 11 gehen über den Grundstoff hinaus. Sie bauen auf den Kapiteln 1–9 auf und zeigen, wie deren Inhalte weitergehen; der Kasten „Voraussetzungen“ am Anfang jedes Kapitels nennt die Anknüpfungspunkte. Die Randlinie links markiert den ganzen Teil.</p>
     </div>
 
     <section id="lagen" data-level="vertiefung">
@@ -1878,8 +1879,8 @@ footer a { color: inherit; }
       <p class="lead">Der Würfel hat 6 Flächen, das Oktaeder 8, das Hexakisoktaeder 48, alle in derselben Punktgruppe <i>m</i><span class="ov">3</span><i>m</i>. Wie viele Flächen eine Form hat, hängt davon ab, wo ihre Pole relativ zu den Symmetrieelementen liegen. Dieses Kapitel bündelt, was dazu in Kapitel 4 und 6 verstreut steht, und bereitet die Punktlagen der Raumgruppen vor.</p>
 
       <div class="box bezug">
-        <h4>Bezug zur Vorlesung</h4>
-        <p>Aus der Vorlesung bekannt sind die Kristallform als Menge gleichwertiger Flächen, ihre Flächenzahl, die Familien gleichwertiger Richtungen ⟨<i>uvw</i>⟩, Untergruppen und die zehn ebenen Punktgruppen. Dieses Kapitel verbindet sie: Die ebenen Punktgruppen treten als Lagesymmetrien auf, und aus der Lagesymmetrie folgt die Flächenzahl. Dieselben Begriffe und Bezeichnungen, Lagesymmetrie, Multiplizität und Wyckoff-Lage, kommen bei den Raumgruppen wieder.</p>
+        <h4>Voraussetzungen</h4>
+        <p>Das Kapitel baut auf der Kristallform als Menge gleichwertiger Flächen und ihrer Flächenzahl (Kapitel 6), den Familien gleichwertiger Richtungen ⟨<i>uvw</i>⟩ (Kapitel 5) und den Untergruppen (Kapitel 3) auf und verbindet sie mit den zehn ebenen Punktgruppen: Diese treten als Lagesymmetrien auf, und aus der Lagesymmetrie folgt die Flächenzahl. Dieselben Begriffe und Bezeichnungen, Lagesymmetrie, Multiplizität und Wyckoff-Lage, kommen bei den Raumgruppen wieder.</p>
       </div>
 
       <div class="box ziele">
@@ -1939,7 +1940,7 @@ footer a { color: inherit; }
         </div>
         <p class="fig-note"><b>Abb. 10.1</b> Die sieben Lagen eines Pols in 4/<i>mmm</i>, jeweils mit Wyckoff-Lage und Lagesymmetrie: (a) allgemeine Lage; (b)–(d) auf einer Spiegelebene: ⊥ ⟨100⟩, ⊥ ⟨110⟩, in der Projektionsebene; (e)–(g) auf einer Drehachse: ⟨100⟩, ⟨110⟩, [001]. Der gestrichelte Ring markiert den Ausgangspol. In der App rastet er beim Ziehen auf den Symmetrieelementen ein, und die Infobox nennt seine Lage.</p>
         <p>Alle Pole mit gleichwertiger Lagesymmetrie, also Pole, die auf genau denselben Sätzen gleichwertiger Symmetrieelemente liegen, bilden eine <span class="term">Wyckoff-Lage</span>. Ein Pol auf einer Spiegelebene .<i>m</i>. von 4/<i>mmm</i> gehört also nur dann zu 8<i>f</i>, wenn er auf keinem weiteren Element liegt; der Pol (001) liegt zwar auch auf diesen Spiegelebenen, hat aber die höhere Lagesymmetrie 4<i>mm</i>. Man bezeichnet eine Wyckoff-Lage mit ihrer Multiplizität und einem Buchstaben, beginnend mit <i>a</i> für die Lage mit der kleinsten Multiplizität (bei gleicher Multiplizität nach der Konvention der International Tables); die allgemeine Lage hat den letzten Buchstaben. In 4/<i>mmm</i> gehört jede der sieben Möglichkeiten zu einer eigenen Wyckoff-Lage, 2<i>a</i> bis 16<i>g</i>. In <i>m</i><span class="ov">3</span><i>m</i> sind es nur sechs. Dort hat die asymmetrische Flächeneinheit die Ecken (100), (110) und (111); zwei ihrer Seiten, von (100) nach (111) und von (111) nach (110), liegen auf gleichwertigen Spiegelebenen ..<i>m</i>, die dritte auf einer Spiegelebene <i>m</i>... Deshalb gehören Trisoktaeder und Deltoidikositetraeder, beide {<i>hhl</i>}, zur selben Wyckoff-Lage 24<i>e</i>.</p>
-        <p>Ein Beispiel aus der Vorlesung sind die beiden tetragonalen Dipyramiden {111} und {113} (Abb. 10.2). Ihre Pole liegen auf denselben diagonalen Spiegelebenen, nur verschieden weit vom Mittelpunkt. Beide Formen gehören zur Wyckoff-Lage 8<i>e</i> mit der Flächensymmetrie ..<i>m</i> und haben deshalb gleich viele Flächen.</p>
+        <p>Ein Beispiel sind die beiden tetragonalen Dipyramiden {111} und {113} aus Kapitel 1 (Abb. 10.2). Ihre Pole liegen auf denselben diagonalen Spiegelebenen, nur verschieden weit vom Mittelpunkt. Beide Formen gehören zur Wyckoff-Lage 8<i>e</i> mit der Flächensymmetrie ..<i>m</i> und haben deshalb gleich viele Flächen.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=tetragonal&amp;bsp=dipyramiden&amp;strahlen=0&amp;normalen=0" data-alt="Zwei tetragonale Dipyramiden in der Umkugel">
             <div class="fig-art"></div>
@@ -2107,11 +2108,11 @@ footer a { color: inherit; }
 
     <section id="verzerrung" data-level="vertiefung">
       <h2><span class="nr">11</span>Symmetrieändernde Verzerrungen</h2>
-      <p class="lead">Verzerrt man einen Kristall, bleibt nur ein Teil seiner Symmetrie erhalten. Am gestreckten Würfel lässt sich im Stereogramm ablesen, welcher Teil das ist. Das Kapitel ist ein Ausblick über den Stoff der Vorlesung hinaus: Am Bariumtitanat zeigt es, dass solche Verzerrungen in realen Kristallen vorkommen und ihnen neue Eigenschaften geben.</p>
+      <p class="lead">Verzerrt man einen Kristall, bleibt nur ein Teil seiner Symmetrie erhalten. Am gestreckten Würfel lässt sich im Stereogramm ablesen, welcher Teil das ist. Das Kapitel ist ein Ausblick über den Grundstoff hinaus: Am Bariumtitanat zeigt es, dass solche Verzerrungen in realen Kristallen vorkommen und ihnen neue Eigenschaften geben.</p>
 
       <div class="box bezug">
-        <h4>Bezug zur Vorlesung</h4>
-        <p>In der Vorlesung wird der Würfel entlang [111] zum Rhomboeder mit der Symmetrie <span class="ov">3</span><i>m</i>, beschrieben mit hexagonalen Achsen; dieser Fall steht in Kapitel 9. Das Kapitel macht daraus ein allgemeines Verfahren für alle drei Blickrichtungen des Würfels. Es nutzt Untergruppen und die Blickrichtungen aus Kapitel 5 und führt zu Phasenumwandlungen und zu Eigenschaften wie Piezo- und Ferroelektrizität.</p>
+        <h4>Voraussetzungen</h4>
+        <p>In Kapitel 9 wird der Würfel entlang [111] zum Rhomboeder mit der Symmetrie <span class="ov">3</span><i>m</i>, beschrieben mit hexagonalen Achsen. Das Kapitel macht daraus ein allgemeines Verfahren für alle drei Blickrichtungen des Würfels. Es nutzt Untergruppen und die Blickrichtungen aus Kapitel 5 und führt zu Phasenumwandlungen und zu Eigenschaften wie Piezo- und Ferroelektrizität.</p>
       </div>
 
       <div class="box ziele">

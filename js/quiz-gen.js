@@ -14,7 +14,7 @@ import { mulVec } from './linalg.js';
 // damit kein HM-Symbol doppelt vorkommt.
 const GERUEST_ALLE = ['1', '-1', '2b', 'mb', '2/mb', '222', 'mm2', 'mmm', '4', '-4', '4/m', '422', '4mm', '-42m', '4/mmm',
   '3', '-3', '321', '3m1', '-3m1', '6', '-6', '6/m', '622', '6mm', '-6m2', '6/mmm', '23', 'm-3', '432', '-43m', 'm-3m'];
-// Stufe 1: Gerüste aus Vorlesung (Folie 64: 2, 2mm; Folie 90: mmm, 4/mmm, 6/mmm, m3̄m) und Skript Kap. 4
+// Stufe 1: Gerüste des Grundstoffs (2, 2mm; mmm, 4/mmm, 6/mmm, m3̄m) und Skript Kap. 4
 // (1̄, 2, m, 4, 4̄); die übrigen sind Stufe 2.
 const GERUEST_STUFE1 = ['2b', 'mb', '-1', 'mm2', 'mmm', '4', '-4', '4/mmm', '6/mmm', 'm-3m'];
 // Ablenker aus demselben Kristallsystem; reicht das nicht, aus diesen Nachbarsystemen
@@ -98,7 +98,7 @@ export const GERUEST = {
       erklaerung: `Das Gerüst enthält ${elementeText(info)} (Kristallsystem ${g.system}).${blick}`,
       skript: 'elemente',
       app: `#m=pg&g=${encodeURIComponent(id)}&obj=0`,
-      quelle: 'Folien 88–91, 102; nach Borchardt-Ott & Sowa (2018), Aufg. 9.9 (S. 180) und Abb. 7.8–7.13',
+      quelle: 'nach Borchardt-Ott & Sowa (2018), Aufg. 9.9 (S. 180) und Abb. 7.8–7.13',
     };
   },
 };
@@ -259,7 +259,7 @@ const ohneArtikel = (t) => t.replace(/^(der|die|das) /, '');
 const musterVon = (k, lage) => (lage ? LAGE_MUSTER[k][lage][0] : KOERPER[k].muster);
 const stereo = (k, lage) => ({ app: `${formHash(k, lage)}&idx=0`, alt: `Stereogramm: ${musterVon(k, lage)}` });
 const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}`, alt: `Räumliche Zeichnung: ${ohneArtikel(KOERPER[k].der)}${lage ? `, [${lage}] senkrecht` : ''}` });
-const QUELLE_FORM = 'Folie 91 (Lernziel); Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
+const QUELLE_FORM = 'Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
 
 export const KOERPER_STEREO = {
   id: 'gen-koerper', kapitel: 6, stufen: [1, 2], status: 'entwurf',
@@ -343,7 +343,7 @@ export const LAGE = {
         + 'Eine andere Projektionsrichtung dreht den Kristall auf der Umkugel: Das Stereogramm sieht anders aus, die Winkel zwischen den Flächennormalen bleiben gleich.',
       skript: 'lage',
       app: formHash(k, lage),
-      quelle: 'Folie 91 (Lernziel); Borchardt-Ott & Sowa (2018), Abschn. 5.6 (Drehung eines Oktaeders, Abb. 5.23, S. 49)',
+      quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.6 (Drehung eines Oktaeders, Abb. 5.23, S. 49)',
     };
     if (richtung === 'k') {
       return {
@@ -478,7 +478,7 @@ export const GERUEST3D = {
       erklaerung: `Das ist das Symmetriegerüst von ${gruppenSymbol(g)}: ${elementeText(info)}. ${darstellungText(info)}`,
       skript: 'elemente',
       app: `#m=pg&g=${encodeURIComponent(id)}&obj=0`,
-      quelle: 'Folien 89–91; nach Borchardt-Ott & Sowa (2018), Abschn. 5.4 (S. 43) und Abb. 7.8–7.13',
+      quelle: 'nach Borchardt-Ott & Sowa (2018), Abschn. 5.4 (S. 43) und Abb. 7.8–7.13',
     };
     if (richtung === 'r') {
       return {

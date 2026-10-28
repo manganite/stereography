@@ -26,6 +26,7 @@ const FILES = [
   'js/scene.js',
   'js/sitesym.js',
   'js/skript.js',
+  'js/skriptlinks.js',
   'js/pointgroups.js',
   'js/quiz.js',
   'js/quiz-bank.js',

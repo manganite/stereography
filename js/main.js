@@ -15,6 +15,7 @@ import { View3D, OBLIQUE } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, setTip, showTipAt, hideTip } from './help.js';
+import { skriptTerm } from './skriptlinks.js';
 import * as S from './scene.js';
 import { snapPole } from './sitesym.js';
 import {
@@ -824,30 +825,25 @@ function updateInfoPG(info, orb, col, classes, pgAngle, site, distinct) {
   setInfo(`
     <div class="info-head">
       <div class="hm-big">${hmHTML(info.hm)}</div>
-      <div class="hm-meta"><span>${info.system[0].toUpperCase() + info.system.slice(1)}${info.setting ? ' · Aufstellung ' + (info.setting.startsWith('Achse') ? info.setting : hmHTML(info.setting)) : ''}</span>
-      <span>Schoenflies ${info.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}</span></div>
+      <div class="hm-meta"><span>${info.system[0].toUpperCase() + info.system.slice(1)}${info.setting ? ` · ${skriptTerm('Aufstellung', 'aufstellung-pg')} ` + (info.setting.startsWith('Achse') ? info.setting : hmHTML(info.setting)) : ''}</span>
+      <span>${skriptTerm('Schoenflies', 'schoenflies')} ${info.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}</span></div>
     </div>
     ${pgAngleBox(info, orb, col, classes, pgAngle, site)}
     <dl class="facts">
-      <div><dt>Volles Symbol</dt><dd>${fullHTML}</dd></div>
-      <div><dt>Ordnung</dt><dd class="num">${info.order}</dd></div>
-      <div><dt>Laue-Klasse</dt><dd>${hmHTML(info.laue)}</dd></div>
-      <div><dt>Zentrosymmetrisch</dt><dd>${yesno(info.centro)}</dd></div>
-      <div><dt>Enantiomorph</dt><dd>${yesno(info.chiral)}</dd></div>
-      <div title="Eine Richtung bleibt unter allen Operationen erhalten; spontane Polarisation (Pyroelektrizität) möglich. 10 Punktgruppen."><dt>Polar</dt><dd>${yesno(info.polar)}</dd></div>
-      <div title="Piezoelektrischer Effekt symmetrieerlaubt: alle 21 Punktgruppen ohne Inversionszentrum ausser 432."><dt>Piezoelektrisch</dt><dd>${yesno(info.piezo)}</dd></div>
-      ${state.pg.showObject ? `<div class="wide"><dt>Lage des Ausgangspols${skriptLink('lage-pol')}</dt><dd>${lage}</dd></div>` : ''}
+      <div><dt>${skriptTerm('Volles Symbol', 'kurz')}</dt><dd>${fullHTML}</dd></div>
+      <div><dt>${skriptTerm('Ordnung', 'gruppe')}</dt><dd class="num">${info.order}</dd></div>
+      <div><dt>${skriptTerm('Laue-Klasse', 'eigenschaften')}</dt><dd>${hmHTML(info.laue)}</dd></div>
+      <div><dt>${skriptTerm('Zentrosymmetrisch', 'eigenschaften')}</dt><dd>${yesno(info.centro)}</dd></div>
+      <div><dt>${skriptTerm('Enantiomorph', 'eigenschaften')}</dt><dd>${yesno(info.chiral)}</dd></div>
+      <div title="Eine Richtung bleibt unter allen Operationen erhalten; spontane Polarisation (Pyroelektrizität) möglich. 10 Punktgruppen."><dt>${skriptTerm('Polar', 'eigenschaften')}</dt><dd>${yesno(info.polar)}</dd></div>
+      <div title="Piezoelektrischer Effekt symmetrieerlaubt: alle 21 Punktgruppen ohne Inversionszentrum ausser 432."><dt>${skriptTerm('Piezoelektrisch', 'eigenschaften')}</dt><dd>${yesno(info.piezo)}</dd></div>
+      ${state.pg.showObject ? `<div class="wide"><dt>${skriptTerm('Lage des Ausgangspols', 'lage-pol')}</dt><dd>${lage}</dd></div>` : ''}
     </dl>
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
     ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
     ${pgPolesOn(state) ? `<p class="note">${lageNote(true)} Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).${snapHint}</p>`
     : state.pg.showObject ? `<p class="note">${lageNote(false)} Die Flächenpole sind ausgeblendet (einblenden unter „Darstellung“); ρ und φ des Ausgangspols lassen sich weiter mit den Reglern einstellen.</p>` : ''}`);
-}
-
-/** Kleiner Link ins Skript (Abschnitt anchor), z. B. hinter einer Zeile der Infobox. */
-function skriptLink(anchor) {
-  return ` <a class="to-skript" href="skript.html#${anchor}" title="Mehr dazu im Skript, Kapitel 10">Skript →</a>`;
 }
 
 function poleAngles(n) {
@@ -879,8 +875,8 @@ function updateInfoPoly(C, col) {
     const f = C.faces[state.selected];
     const { rho, phi } = poleAngles(f.normal);
     sel = `<div class="selbox"><div class="sel-hkl">${hklHTML(f.hkl, hex4)}${f.role === 'aux' ? ' <small>Ergänzungsform</small>' : ''}</div>
-      <dl class="facts"><div><dt>ρ (Poldistanz)</dt><dd class="num">${rhoText(rho, 1)}</dd></div>
-      <div><dt>φ (Azimut ab →, im Uhrzeigersinn)</dt><dd class="num">${Math.hypot(f.normal[0], f.normal[1]) < 1e-6 ? '– (Pol im Zentrum)' : phi.toFixed(1) + '°'}</dd></div></dl></div>`;
+      <dl class="facts"><div><dt>${skriptTerm('ρ (Poldistanz)', 'koordinaten')}</dt><dd class="num">${rhoText(rho, 1)}</dd></div>
+      <div><dt>${skriptTerm('φ (Azimut ab →, im Uhrzeigersinn)', 'koordinaten')}</dt><dd class="num">${Math.hypot(f.normal[0], f.normal[1]) < 1e-6 ? '– (Pol im Zentrum)' : phi.toFixed(1) + '°'}</dd></div></dl></div>`;
   }
   const auxList = C.auxReps.map((a) => {
     const n = auxFormName(C.groupId, a.hkls);
@@ -910,7 +906,7 @@ function updateInfoPoly(C, col) {
       const hexNote = hs
         ? `<p>Die Restgruppe ist trigonal. In hexagonalen Achsen gilt c ∥ ${dirHTML(hs.c, false)}, a₁ ∥ ${dirHTML(hs.a1, false)}, a₂ ∥ ${dirHTML(hs.a2, false)} (Richtungen im kubischen Gitter), c/a = ${hs.ca.toFixed(2).replace('.', ',')}; die Formen dort stehen hinter dem Pfeil.${hs.c.join('') === '111' && state.poly.presetId !== '111' ? ' Mit der Projektionsrichtung [111] blickt man entlang der neuen c-Achse.' : ''}</p>`
         : '';
-      broken = `<div class="warnbox"><strong>Symmetrie erniedrigt: ${hmHTML(g.hm)} → ${hmHTML(C.reduced.hm)}</strong>${ax}
+      broken = `<div class="warnbox"><strong>${skriptTerm('Symmetrie erniedrigt', 'verzerrung-prinzip')}: ${hmHTML(g.hm)} → ${hmHTML(C.reduced.hm)}</strong>${ax}
         ${st ? `<p>${stText}.</p>` : ''}
         <p>${C.orbitsMain.length > 1 ? `Die Form ${brace(e.hkl)} zerfällt in ${C.orbitsMain.length} Formen:` : `Die Form ${brace(e.hkl)} bleibt eine Form der Restsymmetrie:`}</p><ul class="auxlist">${parts}</ul>${hexNote}</div>`;
     } else if (S.breakModeOf(state) === 'stretch' && !st) {
@@ -983,10 +979,10 @@ function updateInfoPoly(C, col) {
     <table class="formtab"><thead><tr><th>Form</th><th>Symbol</th><th>Flächen</th><th>Eigensymmetrie</th></tr></thead><tbody>${rows}</tbody></table>
     ${gone ? '<p class="note">Grau: Form ist bei diesen Abständen ganz oder teilweise weggeschnitten.</p>' : ''}
     <dl class="facts">
-      <div><dt>Habitus</dt><dd>${habitHTML}</dd></div>
-      <div><dt>Flächen insgesamt</dt><dd class="num">${C.faces.filter((f) => !f.hidden).length}</dd></div>
-      <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, false)}</dd></div>
-      <div><dt>Projektionsrichtung</dt><dd>${C.preset.name}</dd></div>
+      <div><dt>${skriptTerm('Habitus', 'habitus-def')}</dt><dd>${habitHTML}</dd></div>
+      <div><dt>${skriptTerm('Flächen insgesamt', 'allgemein')}</dt><dd class="num">${C.faces.filter((f) => !f.hidden).length}</dd></div>
+      <div><dt>${skriptTerm('Gitter', 'indizes-gitter')}</dt><dd>${latticeText(C.lat, C.sys, false)}</dd></div>
+      <div><dt>${skriptTerm('Projektionsrichtung', 'lage')}</dt><dd>${C.preset.name}</dd></div>
     </dl>
     ${ex.note ? `<p class="note">${ex.note.replace(/\{hkl:(-?\d+),(-?\d+),(-?\d+)\}/g, (_, h, k, l) => brace([+h, +k, +l]))}</p>` : ''}
     ${sel}
@@ -1020,14 +1016,14 @@ function updateInfoPoly(C, col) {
     ${broken}
     ${zoneBox}
     <dl class="facts">
-      <div class="wide"><dt>Tracht (auftretende Formen)</dt><dd>${trachtHTML}</dd></div>
-      <div><dt>Habitus</dt><dd>${habitHTML}</dd></div>
-      <div><dt>Flächen der Form</dt><dd class="num">${C.mainHKL.length}</dd></div>
-      <div><dt>Indexmuster (ITA)</dt><dd>{${symText(e.sym, hex4)}}</dd></div>
-      <div><dt>Wyckoff-Lage, Flächensymmetrie${skriptLink('lage-pol')}</dt><dd>${e.mult}<i>${e.wy}</i>, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
-      <div><dt>Eigensymmetrie der Form${C.isReduced ? ' (unverzerrt)' : ''}${skriptLink('eigensymmetrie')}</dt><dd>${hmHTML(formEig(e))}</dd></div>
-      <div><dt>Gitter</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken || !!st)}</dd></div>
-      <div><dt>Projektionsrichtung</dt><dd>${C.preset.name}</dd></div>
+      <div class="wide"><dt>${skriptTerm('Tracht (auftretende Formen)', 'tracht')}</dt><dd>${trachtHTML}</dd></div>
+      <div><dt>${skriptTerm('Habitus', 'habitus-def')}</dt><dd>${habitHTML}</dd></div>
+      <div><dt>${skriptTerm('Flächen der Form', 'allgemein')}</dt><dd class="num">${C.mainHKL.length}</dd></div>
+      <div><dt>${skriptTerm('Indexmuster (ITA)', 'allgemein')}</dt><dd>{${symText(e.sym, hex4)}}</dd></div>
+      <div><dt>${skriptTerm('Wyckoff-Lage, Flächensymmetrie', 'lage-pol')}</dt><dd>${e.mult}<i>${e.wy}</i>, ${hmHTML(e.fs)}${state.poly.faceSym ? ` <span class="muted">(${C.motifsPerFace} Muster je Fläche)</span>` : ''}</dd></div>
+      <div><dt>${skriptTerm('Eigensymmetrie der Form', 'eigensymmetrie')}${C.isReduced ? ' (unverzerrt)' : ''}</dt><dd>${hmHTML(formEig(e))}</dd></div>
+      <div><dt>${skriptTerm('Gitter', 'indizes-gitter')}</dt><dd>${latticeText(C.lat, C.sys, state.poly.broken || !!st)}</dd></div>
+      <div><dt>${skriptTerm('Projektionsrichtung', 'lage')}</dt><dd>${C.preset.name}</dd></div>
     </dl>
     ${twinNote}
     ${sel}

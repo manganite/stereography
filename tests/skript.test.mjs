@@ -28,7 +28,7 @@ test('Vertiefungskästen: Themenzeile und ein Satz zum Bezug vor dem Inhalt', ()
   const v = boxes('vertiefung');
   assert.ok(v.length >= 10, `nur ${v.length} Vertiefungskästen`);
   for (const b of v) {
-    assert.match(b, /^<div class="box vertiefung">\s*<h4>Vertiefung · <b>[^<]+<\/b><\/h4>/, b.slice(0, 120));
+    assert.match(b, /^<div class="box vertiefung"(?: id="[a-z-]+")?>\s*<h4>Vertiefung · <b>[^<]+<\/b><\/h4>/, b.slice(0, 120));
     assert.ok((b.match(/<p>/g) || []).length >= 2, `Bezugssatz und Inhalt fehlen: ${b.slice(0, 120)}`);
   }
 });
@@ -81,4 +81,25 @@ test('Vertiefungskapitel: Trenner „Vertiefungen“ vor Kapitel 8, auch im Inha
 test('Einleitung erklärt die Kennzeichnung', () => {
   const [a] = boxes('aufbau');
   assert.ok(a && a.includes('Vertiefung') && a.includes('In der App'));
+});
+
+// Verweise aus der App ins Skript (js/skriptlinks.js)
+import { SKRIPT_ANCHORS } from '../js/skriptlinks.js';
+const mainJs = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
+
+test('Skript-Verweise der App: Anker existiert und liegt im angegebenen Kapitel', () => {
+  for (const [anchor, kap] of Object.entries(SKRIPT_ANCHORS)) {
+    const at = html.indexOf(`id="${anchor}"`);
+    assert.ok(at > 0, `Anker #${anchor} fehlt im Skript`);
+    const nrs = [...html.slice(0, at).matchAll(/<h2><span class="nr">(\d+)<\/span>/g)];
+    assert.equal(Number(nrs.at(-1)[1]), kap, `#${anchor} liegt nicht in Kapitel ${kap}`);
+  }
+});
+
+test('Infobox: jeder Begriff ist ein Verweis ins Skript', () => {
+  const bare = [...mainJs.matchAll(/<dt>(?!\$\{skriptTerm\()([^<]*)/g)].map((m) => m[1]);
+  assert.deepEqual(bare, [], 'Begriffe ohne Verweis: ' + bare.join(', '));
+  for (const m of mainJs.matchAll(/skriptTerm\('[^']*', '([^']+)'\)/g)) {
+    assert.ok(m[1] in SKRIPT_ANCHORS, `unbekannter Anker ${m[1]}`);
+  }
 });

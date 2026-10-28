@@ -92,7 +92,8 @@ export function frageXML(q, col) {
     return `<answer fraction="${frac}" format="html"><text>${cdata(html(a))}</text>${fb}</answer>`;
   });
   const kap = KAPITEL.find((k) => k.nr === q.kapitel);
-  const allgemein = `<p>${html(q.erklaerung)}</p><p><small>Skript: Kap. ${kap.nr} ${xmlEsc(kap.titel)} · Quelle: ${xmlEsc(q.quelle)}</small></p>`;
+  const ziel = q.lernziel ? `<p><small>Lernziel (Kap. ${kap.nr}): ${html(q.lernziel)}</small></p>` : '';
+  const allgemein = `<p>${html(q.erklaerung)}</p>${ziel}<p><small>Skript: Kap. ${kap.nr} ${xmlEsc(kap.titel)} · Quelle: ${xmlEsc(q.quelle)}</small></p>`;
   return `<question type="multichoice">
 <name><text>${xmlEsc(q.id)}</text></name>
 <questiontext format="html"><text>${cdata(text)}</text>${files.join('')}</questiontext>

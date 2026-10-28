@@ -350,7 +350,7 @@ export const BANK = [
     skript: 'umkugel', app: '#m=form&sys=kubisch&bsp=galenit&w=winkel',
     quelle: 'Skript Kap. 2 (Vertiefung Normalenwinkel und Flächenwinkel); Borchardt-Ott & Sowa (2018), Abschn. 5.4, S. 41',
     pruefung: { art: 'winkel', a: [1, 1, 1], b: [1, 1, -1] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-3-02', stufe: 3, kapitel: 2, typ: 'einfach',
@@ -372,7 +372,7 @@ export const BANK = [
     erklaerung: 'Die Normalen zweier Flächen spannen die Ebene eines Grosskreises auf. Nur dessen Bogen zwischen den Polen ist der Normalenwinkel; ein Bogen auf einem Kleinkreis durch dieselben Pole ist länger und entspricht keinem Winkel zwischen den Normalen. Von Hand dreht man die Pole deshalb mit dem Wulffschen Netz auf denselben Längenkreis.',
     skript: 'kreise', app: '#m=form&sys=kubisch&bsp=galenit&wulff=1',
     quelle: 'Skript Kap. 2 (Vertiefung Kleinkreise, Winkel und das Wulffsche Netz); Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 45–47',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'proj-3-03', stufe: 3, kapitel: 2, typ: 'einfach',
@@ -394,7 +394,7 @@ export const BANK = [
     erklaerung: 'Das zweikreisige Reflexionsgoniometer dreht den Kristall um zwei zueinander senkrechte Achsen, bis eine Fläche das Licht reflektiert. Bei justiertem Kristall zeigen die beiden Kreise direkt φ und ρ des Flächenpols; die Werte lassen sich unmittelbar ins Stereogramm eintragen.',
     skript: 'koordinaten',
     quelle: 'Skript Kap. 2 (Vertiefung Das Reflexionsgoniometer); Borchardt-Ott & Sowa (2018), Abschn. 5.5, S. 43–45 (Abb. 5.15)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 7: Zonen
@@ -1292,7 +1292,7 @@ export const BANK = [
     skript: 'abbilden', app: '#m=pg&g=2/mb&rho=40&az=20',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 7.2.2, S. 104; Skript Kap. 4 (Abb. 4.1) und Kap. 5 (eindeutige Achse)',
     pruefung: { art: 'bahn', soll: '2/mb', gruppen: { '2/mb': [2, 2], '2/mc': [2, 2], mb: [2, 0], '2b': [1, 1] } },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-2-02', stufe: 2, kapitel: 4, typ: 'einfach',
@@ -1315,7 +1315,7 @@ export const BANK = [
     skript: 'bahn', app: '#m=pg&g=2/mc&rho=40&az=20',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 7.2, S. 102 (Symmetriesatz I) und Abschn. 7.2.2, S. 104',
     pruefung: { art: 'zentrum', achse: '2c', spiegel: 'mc' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-2-03', stufe: 2, kapitel: 4, typ: 'text-bild',
@@ -1338,7 +1338,7 @@ export const BANK = [
     skript: 'bahn', app: '#m=pg&g=-4&rho=40&az=20',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 6.1–6.4, S. 69–78; Skript Kap. 4 (Abb. 4.5 und 4.6)',
     pruefung: { art: 'bahn', soll: '-4', gruppen: [['-4', [2, 2]], ['4', [4, 0]], ['4/m', [4, 4]], ['222', [2, 2]]] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-2-04', stufe: 2, kapitel: 4, typ: 'einfach',
@@ -1361,12 +1361,12 @@ export const BANK = [
     skript: 'bahn', app: '#m=pg&g=mmm&rho=40&az=20',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.1, S. 128–129 (Abb. 9.1); Skript Kap. 4 (Abb. 4.4)',
     pruefung: { art: 'bahnStellen', gruppe: 'mmm', oben: 4, unten: 4, stellen: 4 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
-    id: 'sym-2-05', stufe: 2, kapitel: 4, typ: 'einfach',
-    lernziel: 'Alle Operationen zusammen machen aus einem allgemeinen Pol die Pole der allgemeinen Form. Pole spezieller Formen liegen auf Symmetrieelementen.',
-    frage: `Wo liegen in <i>m</i>${o(3)}<i>m</i> die Pole der Form <b>{211}</b>, und wie viele Flächen hat sie?`,
+    id: 'sym-2-05', stufe: 2, kapitel: 6, typ: 'einfach',
+    lernziel: 'allgemeine und spezielle Form unterscheiden',
+    frage: `Wo liegen in <i>m</i>${o(3)}<i>m</i> die Pole der Form <b>{112}</b>, und wie viele Flächen hat sie?`,
     antworten: [
       'Auf Spiegelebenen; 24 Flächen',
       'Auf keinem Symmetrieelement; 48 Flächen',
@@ -1376,14 +1376,14 @@ export const BANK = [
     richtig: [0],
     hinweise: [
       null,
-      `Weil k = l ist, liegt der Pol von (211) auf der Spiegelebene mit der Normalen [0${o(1)}1]. 48 Flächen hat nur die allgemeine Form mit drei verschiedenen, von null verschiedenen Indizes, z. B. {321}.`,
+      '48 Flächen hat nur eine Form mit drei verschiedenen Indizes, z. B. {321}. Bei {112} sind zwei Indizes gleich; das bringt den Pol auf eine Spiegelebene und halbiert die Flächenzahl.',
       'Auf den 2-zähligen Achsen ⟨110⟩ liegen die Pole des Rhombendodekaeders {110}.',
       `Auf den ${o(3)}-Achsen ⟨111⟩ liegen die Pole des Oktaeders {111}.`,
     ],
-    erklaerung: `Weil k = l ist, liegt der Pol von (211) auf der Spiegelebene, die [100] und [011] enthält (Normale [0${o(1)}1]). Auf einer Achse ⟨100⟩, ⟨111⟩ oder ⟨110⟩ liegt er nicht. Die Form ist deshalb speziell und hat weniger Flächen als die allgemeine Form mit 48, nämlich 24.`,
-    skript: 'speziell', app: '#m=form&sys=kubisch&f=m-3m:e43&pole=1&geruest=1',
-    quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2, S. 142–149',
-    pruefung: { art: 'flaechen', gruppe: 'm-3m', system: 'kubisch', hkl: [2, 1, 1], anzahl: 24, allgemein: false, aufAchse: false },
+    erklaerung: `In <i>m</i>${o(3)}<i>m</i> vertauscht die Spiegelung an der Ebene senkrecht zu [1${o(1)}0] die ersten beiden Indizes, aus (<i>hkl</i>) wird (<i>khl</i>). Bei (112) sind diese beiden gleich: Die Spiegelung lässt die Fläche, wie sie ist, ihr Pol liegt also auf der Spiegelebene. Auf einer Drehachse liegt er nicht. Die Form ist deshalb speziell und hat weniger Flächen als die allgemeine Form: Die drei Indizes ergeben nur 3 statt 6 Reihenfolgen, mit den 8 Vorzeichen also 24 statt 48 Flächen.`,
+    skript: 'allgemein', app: '#m=form&sys=kubisch&f=m-3m:e43&pole=1&geruest=1',
+    quelle: 'Skript Kap. 6 (Allgemeine Form, spezielle Form, Grenzform; Pyrit: Spiegelebene vertauscht h und k); Borchardt-Ott & Sowa (2018), Abschn. 9.2, S. 142–149',
+    pruefung: { art: 'flaechen', gruppe: 'm-3m', system: 'kubisch', hkl: [1, 1, 2], anzahl: 24, allgemein: false, aufAchse: false },
     status: 'entwurf',
   },
 
@@ -1404,7 +1404,7 @@ export const BANK = [
     skript: 'speziell', app: '#m=pg&g=4&rho=40&az=20',
     quelle: 'Skript Kap. 4 (Vertiefung Grenzen des Schlusses vom Polmuster auf die Punktgruppe) und Kap. 10 (Abb. 10.6)',
     pruefung: { art: 'musterSpiegel', gruppe: '4' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-3-02', stufe: 3, kapitel: 4, typ: 'einfach',
@@ -1422,42 +1422,24 @@ export const BANK = [
     skript: 'speziell', app: '#m=pg&g=3&rho=40&az=20',
     quelle: 'Skript Kap. 4 (Vertiefung Grenzen des Schlusses vom Polmuster auf die Punktgruppe) und Kap. 10 (Erzeugende Symmetrie und Eigensymmetrie); International Tables Vol. A (2006), Tab. 10.1.2.3',
     pruefung: { art: 'musterSpiegel', gruppe: '3' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-3-03', stufe: 3, kapitel: 4, typ: 'einfach',
     lernziel: 'Das Polmuster einer Form kann höhere Symmetrie haben als die Punktgruppe des Kristalls.',
-    frage: 'Das Tetraeder {111} der Punktgruppe 23 hat vier Pole. Welche Symmetrie hat das Polmuster für sich allein?',
+    frage: `Ein Kristall der Punktgruppe ${o(4)}3<i>m</i> zeigt nur das Tetraeder {111}. Welche Symmetrie hat das Polmuster seiner vier Pole?`,
     antworten: [`${o(4)}3<i>m</i>`, '23', `<i>m</i>${o(3)}<i>m</i>`, `<i>m</i>${o(3)}`],
     richtig: [0],
     hinweise: [
       null,
-      'Das Muster hat mehr Symmetrie: Die Spiegelebenen senkrecht zu ⟨110⟩ führen die vier Tetraederpole ineinander über.',
+      `Das Muster hat alle Operationen von ${o(4)}3<i>m</i>, auch die Spiegelungen an den Ebenen senkrecht zu ⟨110⟩; sie führen die vier Pole ineinander über.`,
       `<i>m</i>${o(3)}<i>m</i> enthält die Inversion; sie würde zu (111) den Pol (${o(1)}${o(1)}${o(1)}) erzeugen, der zum Gegentetraeder gehört.`,
       `Auch <i>m</i>${o(3)} enthält die Inversion und machte aus dem Tetraeder ein Oktaeder.`,
     ],
-    erklaerung: `Die Eigensymmetrie des Tetraeders ist ${o(4)}3<i>m</i>: Zu den 12 Operationen von 23 kommen die Spiegelungen an den Ebenen senkrecht zu ⟨110⟩ und die ${o(4)}-Achsen entlang ⟨100⟩ hinzu, zusammen 24. Ein Inversionszentrum hat das Tetraeder nicht. Ob ein Kristall mit Tetraeder zu 23 oder zu ${o(4)}3<i>m</i> gehört, verrät das Tetraeder allein deshalb nicht; erst eine weitere Form wie {321} (in 23 mit 12, in ${o(4)}3<i>m</i> mit 24 Flächen) oder die Flächensymmetrie entscheidet.`,
-    skript: 'speziell', app: '#m=form&sys=kubisch&f=23:a33&muster=1',
+    erklaerung: `Das Polmuster einer Form hat immer die Eigensymmetrie der Form. Beim Tetraeder ist das ${o(4)}3<i>m</i>, und das ist hier zugleich die Punktgruppe des Kristalls: Muster und Punktgruppe stimmen überein. Anders bei der tetragonalen Pyramide in 4: Ihre Eigensymmetrie 4<i>mm</i> ist höher als die Punktgruppe, und ihr Muster zeigt mehr Symmetrie, als der Kristall hat.`,
+    skript: 'speziell', app: `#m=form&sys=kubisch&f=${encodeURIComponent('-43m:a33')}`,
     quelle: 'Skript Kap. 4 (Vertiefung Grenzen des Schlusses vom Polmuster auf die Punktgruppe) und Kap. 10 (Erzeugende Symmetrie und Eigensymmetrie); International Tables Vol. A (2006), Tab. 10.1.2.3',
-    pruefung: { art: 'musterGruppe', gruppe: '23', pol: [1, 1, 1], eigen: '-43m', nicht: ['m-3m', 'm-3'] },
-    status: 'entwurf',
-  },
-  {
-    id: 'sym-3-04', stufe: 3, kapitel: 4, typ: 'einfach',
-    lernziel: 'Das Polmuster einer Form kann höhere Symmetrie haben als die Punktgruppe des Kristalls.',
-    frage: 'In der Punktgruppe 23 bilden die Flächen {210} ein Pentagondodekaeder mit 12 Flächen. Welche Symmetrie hat sein Polmuster für sich allein?',
-    antworten: [`<i>m</i>${o(3)}`, '23', `<i>m</i>${o(3)}<i>m</i>`, `${o(4)}3<i>m</i>`],
-    richtig: [0],
-    hinweise: [
-      null,
-      `Das Muster hat zusätzlich ein Inversionszentrum: Zu jedem Pol gehört der Gegenpol, z. B. zu (210) der Pol (${o(2)}${o(1)}0).`,
-      `<i>m</i>${o(3)}<i>m</i> würde auch (120) erzeugen, zusammen 24 Pole wie beim Tetrakishexaeder.`,
-      `In ${o(4)}3<i>m</i> führt die Spiegelung senkrecht zu [1${o(1)}0] den Pol (210) in (120) über; dieser Pol gehört nicht zum Muster.`,
-    ],
-    erklaerung: `Das Pentagondodekaeder hat die Eigensymmetrie <i>m</i>${o(3)}, wie beim Pyrit (Kapitel 6): Zu den 12 Operationen von 23 kommen die Inversion und die Spiegelungen an den Ebenen parallel zu den Würfelflächen hinzu, zusammen 24. In 23 liegen die Pole von {210} auf keinem Symmetrieelement; das Pentagondodekaeder ist dort eine Grenzform des tetraedrischen Pentagondodekaeders {<i>hkl</i>}. Aus seinem Polmuster allein lässt sich 23 deshalb nicht von <i>m</i>${o(3)} unterscheiden.`,
-    skript: 'speziell', app: '#m=pg&g=23&rho=90&az=26.57',
-    quelle: 'Skript Kap. 4 (Vertiefung Grenzen des Schlusses vom Polmuster auf die Punktgruppe) und Kap. 10 (Erzeugende Symmetrie und Eigensymmetrie); International Tables Vol. A (2006), Tab. 10.1.2.3; Kap. 6 (Pyrit)',
-    pruefung: { art: 'musterGruppe', gruppe: '23', pol: [2, 1, 0], eigen: 'm-3', nicht: ['m-3m', '-43m'] },
+    pruefung: { art: 'musterGruppe', gruppe: '-43m', pol: [1, 1, 1], eigen: '-43m', nicht: ['m-3m', 'm-3'] },
     status: 'entwurf',
   },
 
@@ -1734,7 +1716,7 @@ export const BANK = [
     skript: 'blick-def', app: '#m=pg&g=2/mb&obj=0',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 7.2.2, S. 104 (mit Fussnote 6); International Tables Vol. A (2006), Abschn. 2.2.16.2; Skript Kap. 5 (Tabelle der Blickrichtungen)',
     pruefung: { art: 'blickrichtungen', gruppe: '2/mb' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-1-04', stufe: 1, kapitel: 5, typ: 'einfach',
@@ -1867,7 +1849,7 @@ export const BANK = [
     skript: 'kurz', app: '#m=pg&g=m-3m&obj=0',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.1, S. 128–130 (Tab. 9.2)',
     pruefung: { art: 'vollSymbol', gruppe: 'm-3m' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-2-02', stufe: 2, kapitel: 5, typ: 'mehrfach',
@@ -1890,7 +1872,7 @@ export const BANK = [
     skript: 'kurz', app: '#m=pg&g=m-3m&obj=0',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.1, S. 128–130 (Tab. 9.2)',
     pruefung: { art: 'elemente', gruppe: 'm-3m', faelle: [['achse', '4', [1, 0, 0]], ['achse', '2', [1, 1, 0]], ['spiegel', null, [1, 1, 1]], ['achse', '6', [1, 1, 1]]] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-2-03', stufe: 2, kapitel: 5, typ: 'bild-text',
@@ -1914,7 +1896,7 @@ export const BANK = [
     skript: 'symbol', app: '#m=pg&g=4mm&obj=0',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 7.1, S. 88–89 (Tab. 7.3)',
     pruefung: { art: 'position', gruppe: '4mm', nr: 2, richtung: '⟨100⟩', symbol: 'm' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-2-04', stufe: 2, kapitel: 5, typ: 'einfach',
@@ -1937,7 +1919,7 @@ export const BANK = [
     skript: 'symbol', app: '#m=pg&g=mm2&obj=0',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 7.1, S. 88–89, und Abschn. 7.2, S. 102',
     pruefung: { art: 'position', gruppe: 'mm2', nr: 3, richtung: '[001]', symbol: '2' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-2-05', stufe: 2, kapitel: 5, typ: 'einfach',
@@ -1955,7 +1937,7 @@ export const BANK = [
     skript: 'kurz', app: '#m=pg&g=m-3&obj=0',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.1, S. 128–130 (Tab. 9.2)',
     pruefung: { art: 'kurzSymbol', gruppe: 'm-3' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ---------------------------------------------------------------- Kapitel 5, Stufe 3 (Vertiefungen)
@@ -1975,7 +1957,7 @@ export const BANK = [
     skript: 'symbol', app: '#m=pg&g=31m&obj=0',
     quelle: 'Skript Kap. 5 (Vertiefung Die 1 als Platzhalter); International Tables Vol. A (2006), Teil 10',
     pruefung: { art: 'position', gruppe: '31m', nr: 3, richtung: '⟨210⟩', symbol: 'm' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-3-02', stufe: 3, kapitel: 5, typ: 'einfach',
@@ -1993,7 +1975,7 @@ export const BANK = [
     skript: 'blick-def', app: '#m=pg&g=6/mmm&obj=0&achsen=1',
     quelle: 'Skript Kap. 5 (Vertiefung Schreibweise in den International Tables); International Tables Vol. A (2006), Teil 2',
     pruefung: { art: 'hexFamilie', gruppe: '6/mmm', position: 3, richtung: [-1, 1, 0] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 1 und 9: Hexagonale Achsen (Stufe 1 und 2: Kapitel 1)
@@ -2157,7 +2139,7 @@ export const BANK = [
     skript: 'hexachsen', app: '#m=pg&g=6/mmm&obj=0&achsen=1',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 7.2.5, S. 107–109 (Abb. 7.22)',
     pruefung: { art: 'hexFamilieMehr', gruppe: '6/mmm', position: 2 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-2-03', stufe: 2, kapitel: 1, typ: 'einfach',
@@ -2175,7 +2157,7 @@ export const BANK = [
     skript: 'hexachsen', app: '#m=pg&g=6/mmm&obj=0&achsen=1',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 7.2.5, S. 107–109 (Abb. 7.22); Skript Kap. 1 (Abb. 1.4)',
     pruefung: { art: 'hexWinkel', a: [2, 1, 0], b: [1, 0, 0] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-2-04', stufe: 2, kapitel: 1, typ: 'einfach',
@@ -2193,7 +2175,7 @@ export const BANK = [
     skript: 'hexachsen', app: '#m=form&sys=hexagonal&f=6/mmm:b25&achsen=1',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 7.2.5, S. 107–109; Skript Kap. 1 (Das hexagonale Achsensystem)',
     pruefung: { art: 'hexPol', hkl: [1, 1, 0], richtung: [1, 1, 0] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ---------------------------------------------------------------- Kapitel 9, Stufe 3 (Vertiefungen)
@@ -2576,19 +2558,19 @@ export const BANK = [
     erklaerung: 'Kehrwerte der Achsenabschnitte in Einheiten der Achsen: 1/2 : 1/3 : 1/6. Mit dem Hauptnenner 6 erweitert ergibt das 3 : 2 : 1, also (321).',
     skript: 'aufstellung', app: '#m=form&sys=kubisch&f=m-3m:f47',
     quelle: "Skript Kap. 1 (Grundlagen · Miller'sche Indizes); Borchardt-Ott & Sowa (2018), Abschn. 3.4.3, S. 15–17",
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'ind-1-02', stufe: 1, kapitel: 1, typ: 'einfach',
     lernziel: "die Miller'schen Indizes einer Fläche aus ihren Achsenabschnitten bestimmen und Richtungen mit [<i>uvw</i>] bezeichnen",
     frage: 'Eine Fläche ist parallel zur Achse <i>c</i> und schneidet <i>a</i> und <i>b</i> jeweils bei 1. Wie lauten ihre Indizes?',
-    antworten: ['(110)', '(111)', '(001)', '(11∞)'],
+    antworten: ['(110)', '(111)', '(001)', '(101)'],
     richtig: [0],
     hinweise: [
       null,
       'Eine Fläche parallel zu <i>c</i> schneidet <i>c</i> nicht; ihr Achsenabschnitt ist unendlich, der Kehrwert 0.',
       '(001) ist parallel zu <i>a</i> und <i>b</i>, also gerade die Fläche senkrecht zu <i>c</i>.',
-      'Indizes sind die Kehrwerte der Achsenabschnitte; der Kehrwert von ∞ ist 0.',
+      'Die 0 steht an der Stelle der Achse, zu der die Fläche parallel ist. Das ist hier <i>c</i>, also die dritte Stelle; (101) wäre parallel zu <i>b</i>.',
     ],
     erklaerung: 'Achsenabschnitte 1, 1, ∞; Kehrwerte 1, 1, 0. Die Fläche ist (110).',
     skript: 'aufstellung', app: '#m=form&sys=tetragonal&f=4/mmm:b10',
@@ -2615,7 +2597,7 @@ export const BANK = [
     erklaerung: 'Die Fläche (111) schneidet die Achsen bei 1<i>a</i>, 1<i>b</i>, 1<i>c</i>, gleich wie lang <i>c</i> ist; deshalb behält sie ihre Indizes. Wird <i>c</i> länger, steht sie steiler, und der Winkel ρ ihres Pols zu <i>c</i> wächst (54,7° bei <i>c</i>/<i>a</i> = 1, 70,5° bei <i>c</i>/<i>a</i> = 2).',
     skript: 'indizes-gitter', app: '#m=form&sys=tetragonal&f=4/mmm:e14&ca=2',
     quelle: 'Skript Kap. 1 (Indizes und Gitter, Abb. 1.2); Winkel mit dem Code der App berechnet',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'ind-2-01', stufe: 2, kapitel: 1, typ: 'einfach',
@@ -2632,7 +2614,7 @@ export const BANK = [
     erklaerung: 'Gleiche Abschnitte in Einheiten der Achsen ergeben immer (111), unabhängig von <i>c</i>/<i>a</i>. Das Achsenverhältnis bestimmt nur, wie steil diese Fläche steht.',
     skript: 'indizes-gitter', app: '#m=form&sys=tetragonal&f=4/mmm:e14&ca=2',
     quelle: 'Skript Kap. 1 (Indizes und Gitter); Schwarzenbach (2001), Abschn. 1.3.2, S. 11–12',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'ind-2-02', stufe: 2, kapitel: 1, typ: 'einfach',
@@ -2649,7 +2631,7 @@ export const BANK = [
     erklaerung: 'Kehrwerte: 1/2 : 1/2 : 3/2. Mit 2 erweitert: 1 : 1 : 3, also (113). Diese Fläche gehört zur flacheren der beiden Dipyramiden im Beispielkristall der App.',
     skript: 'indizes-gitter', app: '#m=form&sys=tetragonal&bsp=dipyramiden',
     quelle: 'Skript Kap. 1 (Indizes und Gitter, Abb. 1.3); Hoffmann (2016), Abb. 2.22 und 2.23, S. 50–51',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   // ---------------------------------------------------------------- Kapitel 3: Symmetrieoperationen und Punktgruppen
   {
@@ -2880,7 +2862,7 @@ export const BANK = [
     erklaerung: 'Symmetriesatz I: Eine geradzählige Drehachse und eine Spiegelebene senkrecht dazu erzeugen ein Inversionszentrum im Schnittpunkt. Am Stereogramm: Drehung um 180° und Spiegelung an der Ebene senkrecht zur Achse bringen einen Pol zusammen an die Gegenstelle auf der anderen Halbkugel, genau dorthin, wohin ihn die Inversion bringt (Abb. 4.2).',
     skript: 'symmetriesaetze', app: '#m=pg&g=2/mb&hand=1',
     quelle: 'Skript Kap. 4 (Die Symmetriesätze, Abb. 4.2); Borchardt-Ott & Sowa (2018), Abschn. 7.2, S. 102 (Abb. 7.14)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'sym-2-06', stufe: 2, kapitel: 4, typ: 'einfach',
@@ -2902,7 +2884,7 @@ export const BANK = [
     erklaerung: `Umkehrung von Symmetriesatz I: Je zwei der drei Elemente 2, <i>m</i> ⊥ 2 und ${o(1)} erzeugen das dritte. Aus <i>m</i> und ${o(1)} folgt die 2-zählige Achse senkrecht zur Ebene; zusammen ist das 2/<i>m</i>.`,
     skript: 'symmetriesaetze', app: '#m=pg&g=2/mb&hand=1',
     quelle: 'Skript Kap. 4 (Die Symmetriesätze); Borchardt-Ott & Sowa (2018), Abschn. 7.2, S. 102 (Abb. 7.14b, c)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   // ---------------------------------------------------------------- Kapitel 5: Aufstellungen, Eigenschaften (Vertiefungen)
   {
@@ -2925,7 +2907,7 @@ export const BANK = [
     erklaerung: 'Jede Position gehört zu einer Blickrichtung: [001], ⟨100⟩, ⟨210⟩. In 312 ist die zweite leer (1), an der dritten steht 2: Die 2-zähligen Achsen liegen entlang ⟨210⟩, zwischen den <i>a</i>-Achsen. Das Gerüst ist das von 321, um 30° gedreht.',
     skript: 'aufstellung-pg', app: '#m=pg&g=312&achsen=1',
     quelle: 'Skript Kap. 5 (Zwei Aufstellungen derselben Punktgruppe, Abb. 5.7); Schwarzenbach (2001), Abschn. 2.5.9, S. 63–65',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-3-04', stufe: 3, kapitel: 5, typ: 'einfach',
@@ -2942,7 +2924,7 @@ export const BANK = [
     erklaerung: `Die Laue-Klasse ist die Punktgruppe mit hinzugenommener Inversion. Aus 3 und ${o(1)} wird ${o(3)}, und die Spiegelebenen bleiben: ${o(3)}<i>m</i>. Zur selben Laue-Klasse gehören 32, 3<i>m</i> und ${o(3)}<i>m</i>.`,
     skript: 'eigenschaften', app: '#m=pg&g=3m1',
     quelle: 'Skript Kap. 5 (Was die Punktgruppe über den Kristall verrät); Schwarzenbach (2001), Abschn. 2.5.7, S. 60–61',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-3-05', stufe: 3, kapitel: 5, typ: 'mehrfach',
@@ -2960,7 +2942,7 @@ export const BANK = [
     erklaerung: 'Polar ist eine Punktgruppe, wenn alle Operationen eine Richtung samt Richtungssinn festhalten. Das sind die 10 Punktgruppen 1, 2, 3, 4, 6, <i>m</i>, <i>mm</i>2, 3<i>m</i>, 4<i>mm</i>, 6<i>mm</i>: eine Achse, höchstens mit Spiegelebenen, die sie enthalten. In <i>m</i> ist jede Richtung in der Spiegelebene polar.',
     skript: 'eigenschaften', app: '#m=pg&g=6mm&hand=1',
     quelle: 'Skript Kap. 5 (Was die Punktgruppe über den Kristall verrät); Borchardt-Ott & Sowa (2018), Abschn. 9.6.3, S. 171',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'blick-3-06', stufe: 3, kapitel: 5, typ: 'einfach',
@@ -2982,7 +2964,7 @@ export const BANK = [
     erklaerung: 'Piezoelektrisch können alle Punktgruppen ohne Inversionszentrum sein ausser 432. Pyroelektrizität verlangt dagegen ein bleibendes Dipolmoment entlang einer Richtung, die alle Operationen festhalten. In 32 ist das keine: Die 2-zähligen Achsen kehren <i>c</i> um, und senkrecht zu <i>c</i> bewegt die 3-zählige Drehung jede Richtung.',
     skript: 'eigenschaften', app: '#m=pg&g=321&hand=1',
     quelle: 'Skript Kap. 5 (Was die Punktgruppe über den Kristall verrät); Borchardt-Ott & Sowa (2018), Abschn. 9.6.2–9.6.3, S. 170–171',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   // ---------------------------------------------------------------- Kapitel 6: Multiplizität, Pyrit
   {

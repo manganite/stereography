@@ -396,10 +396,30 @@ function abstand(a, b) {
   const p = zaehle(a), q = zaehle(b);
   return Object.keys({ ...p, ...q }).reduce((n, k) => n + Math.abs((p[k] || 0) - (q[k] || 0)), 0);
 }
-/** Die drei ähnlichsten Ablenker (bei gleichem Abstand in der Reihenfolge von geruestAblenker), damit keiner auf einen Blick falsch ist. */
+/** Zahl der Symmetrieelemente eines Gerüsts (Achsen, Spiegelebenen, Inversionszentrum). */
+const elementZahl = (info) => Object.values(zaehle(info)).reduce((s, k) => s + k, 0);
+/** Verwandte Kristallsysteme, aus denen Ablenker kommen dürfen, wenn das eigene System zu wenige liefert. */
+const VERWANDT3D = { tetragonal: ['orthorhombisch'], hexagonal: ['trigonal'] };
+/**
+ * Die drei ähnlichsten Ablenker, damit keiner auf einen Blick falsch ist: möglichst höchstens zwei Elemente mehr
+ * oder weniger als das gezeigte Gerüst (ein Gerüst mit deutlich mehr Elementen fällt sofort auf, z. B. 4̄2m neben 4̄),
+ * sortiert nach dem Abstand und bei gleichem Abstand zuerst aus demselben Kristallsystem.
+ */
 function wahl3d(id) {
   const info = buildPointGroup(id);
-  return abl3d(id).map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).slice(0, 3).map((u) => u.x);
+  const g = groupById(id);
+  const n0 = elementZahl(info);
+  const systeme = [g.system, ...(NACHBARN[g.system] || []), ...(VERWANDT3D[g.system] || [])];
+  const pool = [];
+  for (const sys of systeme) for (const x of GERUEST_ALLE.map(groupById)) if (x.system === sys && x.hm !== g.hm && !GERUEST3D_OHNE.includes(x.id) && !pool.includes(x)) pool.push(x);
+  // ein leeres Gerüst (Punktgruppe 1) neben einem mit Elementen fällt ebenso sofort auf
+  const pool2 = pool.filter((x) => n0 === 0 || x.id !== '1');
+  let kand = pool2;
+  for (let tol = 2; tol <= 16; tol++) {
+    kand = pool2.filter((x) => Math.abs(elementZahl(buildPointGroup(x.id)) - n0) <= tol);
+    if (kand.length >= 3) break;
+  }
+  return kand.map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).slice(0, 3).map((u) => u.x);
 }
 
 /** Nach „statt“ (Genitiv): „der 3-zähligen Drehachse“, „der 4-zähligen Drehachsen“. */

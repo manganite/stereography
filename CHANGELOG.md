@@ -22,7 +22,8 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 - **Skript, neuer Kastentyp „Grundlagen“** für Grundwissen, auf dem der Text aufbaut; er gehört zum Haupttext und steht in der Legende „So ist das Skript aufgebaut“.
 
 - **Skript, Kapitel 6, Flächenzahl bestimmen:** am Stereogramm durch Abzählen der Bilder eines Pols und in *m*3̄*m* über die Indizes (Zahl der Reihenfolgen mal 2 je Index ungleich 0), mit Tabelle von {100} bis {321} und dem Hinweis, dass die Regel nur in *m*3̄*m* gilt; neues Lernziel und neue Quizfrage `form-2-08` (Entwurf).
-- **Quiz, drei Fragen zur Eigensymmetrie (Stufe 3, Entwurf):** Polmuster der trigonalen Pyramide in 3 (3*m*), des Tetraeders in 23 (4̄3*m*) und des Pentagondodekaeders {210} in 23 (*m*3̄), nach dem Muster von `sym-3-01`; die Eigensymmetrie prüft ein Test nach (`musterGruppe`).
+- **Quiz, zwei Fragen zur Eigensymmetrie (Stufe 3):** Polmuster der trigonalen Pyramide in 3 (3*m*, mehr Symmetrie als die Punktgruppe) und des Tetraeders in 4̄3*m* (Muster und Punktgruppe stimmen überein), nach dem Muster von `sym-3-01`; die Symmetrie des Musters prüft ein Test nach (`musterGruppe`).
+- **Quiz, Durchsicht der Entwürfe (erster Teil):** 30 Fragen von Thomas geprüft. Überarbeitet nach seinen Anmerkungen: `ind-1-02` (Ablenker (101) statt (11∞)), `sym-2-05` (jetzt {112} wie im Link, Erklärung über die Spiegelung, die zwei gleiche Indizes vertauscht, und die Zählung aus Kap. 6), `sym-3-03` (Tetraeder in seiner Eigensymmetrie 4̄3*m*), Generator `gen-geruest3d` (Ablenker mit ähnlich vielen Symmetrieelementen wie das gezeigte Gerüst).
 - **Quiz, Lernziel in der Rückmeldung:** Nach jeder Antwort nennt die Rückmeldung in kleiner Schrift das Lernziel der Frage mit Kapitel (wörtlich aus dem Skript), damit sich die Frage einordnen lässt; ebenso das allgemeine Feedback im Moodle-Export.
 
 ### Geändert

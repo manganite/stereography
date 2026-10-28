@@ -14,7 +14,7 @@ import { mulVec } from './linalg.js';
 // damit kein HM-Symbol doppelt vorkommt.
 const GERUEST_ALLE = ['1', '-1', '2b', 'mb', '2/mb', '222', 'mm2', 'mmm', '4', '-4', '4/m', '422', '4mm', '-42m', '4/mmm',
   '3', '-3', '321', '3m1', '-3m1', '6', '-6', '6/m', '622', '6mm', '-6m2', '6/mmm', '23', 'm-3', '432', '-43m', 'm-3m'];
-// Stufe 1: Gerüste aus Vorlesung (Folie 64: 2, 2mm; Folie 90: mmm, 4/mmm, 6/mmm, m3̄m) und Skript Kap. 3
+// Stufe 1: Gerüste aus Vorlesung (Folie 64: 2, 2mm; Folie 90: mmm, 4/mmm, 6/mmm, m3̄m) und Skript Kap. 4
 // (1̄, 2, m, 4, 4̄); die übrigen sind Stufe 2.
 const GERUEST_STUFE1 = ['2b', 'mb', '-1', 'mm2', 'mmm', '4', '-4', '4/mmm', '6/mmm', 'm-3m'];
 // Ablenker aus demselben Kristallsystem; reicht das nicht, aus diesen Nachbarsystemen
@@ -41,7 +41,7 @@ export function elementeText(info) {
 
 /**
  * Satz zu Blickrichtungen und Symbol. Positionen ohne Symmetrieelement (Platzhalter 1) werden nicht genannt; sie
- * sind im Skript Vertiefung. Monoklin nennt die Richtung b der Standardaufstellung (Skript Kap. 6). Trigonale Gruppen mit zwei
+ * sind im Skript Vertiefung. Monoklin nennt die Richtung b der Standardaufstellung (Skript Kap. 5). Trigonale Gruppen mit zwei
  * Aufstellungen behalten im gekürzten Symbol die Ziffer 1 (3m1, nicht 3m), wie in ITA.
  */
 function symbolText(g, cls) {
@@ -103,7 +103,7 @@ export const GERUEST = {
   },
 };
 
-// ------------------------------------------------------------------ Flächenzahl und Flächensymmetrie (Kap. 8, Stufe 3)
+// ------------------------------------------------------------------ Flächenzahl und Flächensymmetrie (Kap. 10, Stufe 3)
 // Daten aus dem Formenkatalog (js/forms.js): Wyckoff-Lage, Flächensymmetrie, Flächenzahl je Form; die Tests rechnen
 // Flächenzahl und Flächensymmetrie aus den Gruppenoperationen nach.
 const indizes = (hkl) => `{${hkl.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join('')}}`;
@@ -203,7 +203,7 @@ export const FLAECHENSYM = {
 // Bildangabe "3d#…": feste Zeichnung des Kristalls bzw. Symmetriegerüsts; die Projektionsrichtung ist darin senkrecht.
 const ov = (d) => `<span class="ov">${d}</span>`;
 const PFEIL = 'Die Projektionsrichtung ist in den Zeichnungen senkrecht (Pfeil).';
-/** Regel aus der Zusammenfassung von Kap. 2. */
+/** Regel aus der Zusammenfassung von Kap. 6. */
 const REGEL = 'Flächen parallel zur Projektionsrichtung haben ihre Pole auf dem Grundkreis, Flächen senkrecht dazu im Mittelpunkt.';
 const GRAU = ' Grau: das Pinakoid, mit dem die App das offene Prisma schliesst.';
 
@@ -324,7 +324,7 @@ export const LAGE_MUSTER = {
 const LAGE_ANDERER = { wuerfel: 'oktaeder', oktaeder: 'wuerfel', rhombendodekaeder: 'wuerfel' };
 const LAGEN = ['001', '111', '110'];
 const lageText = (l) => `[${l}]`;
-/** Was die Lage sichtbar macht (Skript Kap. 2, „Andere Projektionsrichtung, gleicher Kristall“). */
+/** Was die Lage sichtbar macht (Skript Kap. 6, „Andere Projektionsrichtung, gleicher Kristall“). */
 const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${ov(3)}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
 
 export const LAGE = {
@@ -446,7 +446,7 @@ export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' &&
   return `Das Gerüst von ${name} hat ${teile.join(' und ')}${minus.length ? `; dafür ${verb} ihm ${und(minus)}` : ''}.`;
 }
 
-/** Wie die Elemente im Stereogramm erscheinen, nur für die Elemente dieses Gerüsts (Skript Kap. 3). */
+/** Wie die Elemente im Stereogramm erscheinen, nur für die Elemente dieses Gerüsts (Skript Kap. 4). */
 function darstellungText(info) {
   const t = [];
   const zAchse = info.axes.find((a) => Math.abs(a.dir[2]) > 1 - 1e-6);

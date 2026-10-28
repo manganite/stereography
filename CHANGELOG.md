@@ -16,6 +16,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 - **Skript, Kapitel 9, Abschnitt „Ein Beispiel: Quarz“:** hexagonales Prisma mit positivem und negativem Rhomboeder in 32, warum das Stereogramm hexagonal aussieht; als Vertiefung Links- und Rechtsquarz.
 - **Skript, Kapitel 11:** ein Absatz zu „Alle Parameter frei“; **Kapitel 2:** Hinweis auf das Werkzeug „Winkel“.
 - **Infobox: Begriffe verlinken ins Skript.** Jede Bezeichnung in der Infobox (Volles Symbol, Ordnung, Laue-Klasse, …, Tracht, Habitus, Gitter, Projektionsrichtung), dazu „Aufstellung“, „Schoenflies“ und „Symmetrie erniedrigt“, führt zum Abschnitt im Skript, der sie erklärt; ein Test prüft, dass jeder Begriff einen Verweis hat und jeder Anker im genannten Kapitel liegt. Die bisherigen Links „Skript →“ sind in diese Verweise aufgegangen.
+- **Quiz: 31 neue Fragen als Entwurf** zu den neuen Themen: Miller'sche Indizes und Indizes und Gitter (Kap. 1), Symmetrieoperationen, Drehinversionsachsen, Gruppe, Untergruppe, Kristallsysteme, Operationen erster und zweiter Art, Drehspiegelachsen (Kap. 3), Symmetriesätze (Kap. 4), Aufstellungen und Eigenschaften der Punktgruppen (Kap. 5), Multiplizität und Pyrit (Kap. 6), Quarz (Kap. 9), alle Gitterparameter frei (Kap. 11). Kapitel 3 und 9 haben dazu Links „Lernziele prüfen“. Die Fragen erscheinen erst nach der Durchsicht ohne den Schalter „Auch ungeprüfte Fragen zeigen“.
 - **Skript, neuer Kastentyp „Grundlagen“** für Grundwissen, auf dem der Text aufbaut; er gehört zum Haupttext und steht in der Legende „So ist das Skript aufgebaut“.
 
 ### Geändert
@@ -24,6 +25,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Behoben
 
+- **Quiz, Quellenangaben:** Verweise auf Kapitel und Abbildungen des Skripts folgen der neuen Kapitelfolge.
 - **Skript, Querstriche:** Negative Indizes und Drehinversionen (1̄, 3̄, (h̄k̄l̄) …) haben ihren Querstrich jetzt genau über der Ziffer wie in der App, auch in den gezeichneten Abbildungen; vorher sass er bei manchen Schriften daneben. Ebenso in „Erste Schritte“ der App.
 
 ## [1.8.1] - 2026-10-26

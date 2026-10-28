@@ -179,6 +179,40 @@ function projectionSketch(fig) {
   projFigures.push({ draw });
 }
 
+// ------------------------------------------------------------------ Querstriche in gezeichneten Abbildungen
+// In SVG-Text sitzt text-decoration: overline auf Höhe der Oberlänge, deutlich zu hoch, und läuft über
+// benachbarte Ziffern durch. Deshalb wie in stereogram.js eigene Striche knapp über jeder Ziffer
+// (<tspan class="ovs">); Lage aus der gerenderten Schrift, Farbe wie der Text.
+function svgBars() {
+  for (const old of document.querySelectorAll('.ovs-bar')) old.remove();
+  for (const text of document.querySelectorAll('figure svg text')) {
+    const marked = [...text.querySelectorAll('tspan.ovs')];
+    if (!marked.length) continue;
+    const cs = getComputedStyle(text);
+    const fs = parseFloat(cs.fontSize);
+    const h = Math.max(1, 0.075 * fs);
+    const base = parseFloat(text.getAttribute('y'));
+    let i = 0;
+    for (const node of text.childNodes) {
+      const n = [...node.textContent].length;
+      if (node.nodeType === 1 && node.classList.contains('ovs')) {
+        for (let k = 0; k < n; k++) {
+          const e = text.getExtentOfChar(i + k);
+          const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          r.setAttribute('class', 'ovs-bar');
+          r.setAttribute('x', (e.x + 0.09 * fs).toFixed(1));
+          r.setAttribute('y', (base - 0.82 * fs - h).toFixed(1));
+          r.setAttribute('width', Math.max(1, e.width - 0.18 * fs).toFixed(1));
+          r.setAttribute('height', h.toFixed(2));
+          r.style.fill = cs.fill;
+          text.after(r);
+        }
+      }
+      i += n;
+    }
+  }
+}
+
 // ------------------------------------------------------------------ Inhaltsverzeichnis
 function initToc() {
   const links = [...document.querySelectorAll('.toc a[href^="#"]')];
@@ -215,8 +249,9 @@ function init() {
   renderFigures();
   watch3d();
   initToc();
+  document.fonts.ready.then(svgBars);
   // Farbschema gewechselt: Abbildungen mit den neuen Farben neu zeichnen
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => renderFigures());
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { renderFigures(); svgBars(); });
 }
 init();
 

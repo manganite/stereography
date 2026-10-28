@@ -8,14 +8,18 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Hinzugefügt
 
-- **Skript, Kapitel 3 „Symmetrieoperationen und Punktgruppen“:** Symmetrieoperation und Symmetrieelement, die Punktsymmetrieoperationen, Kopplung und Kombination am Beispiel 4̄ und 4/*m*, die fünf Drehinversionsachsen mit Stereogrammen und ihren Regeln, Punktgruppen mit den Kästen „Grundlagen · Gruppe“ und „Grundlagen · Untergruppe“ (Bahnen in 3*m*, *mmm*, *mm*2, 222), die 7 Kristallsysteme und 32 Kristallklassen in einer Tabelle; als Vertiefungen „Drehung oder Spiegelbild“ (Farben der Pole) sowie Drehspiegelachsen und Schoenflies-Symbole.
-- **Skript, Kapitel 1:** Kasten „Grundlagen · Miller'sche Indizes“ mit eigener Zeichnung der Achsenabschnitte von (362) und neuer Abschnitt „Indizes und Gitter: Was sich ändert und was nicht“: Die Fläche (111) behält ihre Indizes bei jedem Achsenverhältnis, ihre Neigung ändert sich (tetragonale Dipyramide bei *c*/*a* = 0,64, 1 und 2); Einheitsfläche und Achsenverhältnis am Kristall aus zwei Dipyramiden.
+- **Skript, Kapitel 3 „Symmetrieoperationen und Punktgruppen“:** Symmetrieoperation und Symmetrieelement, die Punktsymmetrieoperationen, Kopplung und Kombination am Beispiel 4̄ und 4/*m*, die fünf Drehinversionsachsen mit Stereogrammen und ihren Regeln, Punktgruppen mit den Kästen „Grundlagen · Gruppe“ und „Grundlagen · Untergruppe“ (Bahnen in 3*m*, *mmm*, *mm*2, 222), die 7 Kristallsysteme und 32 Kristallklassen in einer Tabelle; als Vertiefungen „Operationen erster und zweiter Art“ (Farben der Pole) sowie Drehspiegelachsen und Schoenflies-Symbole.
+- **Skript, Kapitel 1:** Kasten „Grundlagen · Miller'sche Indizes“ mit eigener Zeichnung der Achsenabschnitte von (362) und dem Gesetz der rationalen Indizes und neuer Abschnitt „Indizes und Gitter: Was sich ändert und was nicht“: Die Fläche (111) behält ihre Indizes bei jedem Achsenverhältnis, ihre Neigung ändert sich (tetragonale Dipyramide bei *c*/*a* = 0,64, 1 und 2); Einheitsfläche und Achsenverhältnis am Kristall aus zwei Dipyramiden.
 - **Skript, Kapitel 4, Abschnitt „Die Symmetriesätze“:** Symmetriesatz I und II, jeweils Schritt für Schritt am Stereogramm hergeleitet (2/*m* und *mm*2, Pole nach Händigkeit gefärbt), mit den Umkehrungen und den Folgen für die Symbole. Kapitel 5 und 11 verweisen darauf.
 - **Skript, neuer Kastentyp „Grundlagen“** für Grundwissen, auf dem der Text aufbaut; er gehört zum Haupttext und steht in der Legende „So ist das Skript aufgebaut“.
 
 ### Geändert
 
 - **Skript, neue Kapitelfolge:** Das Skript beginnt mit den Indizes und führt die Symmetrie ein, bevor Formen und HM-Symbole sie brauchen: 1 Kristallflächen und Indizes, 2 Die stereographische Projektion, 3 Symmetrieoperationen und Punktgruppen (neu), 4 Symmetriegerüste, 5 Blickrichtungen, 6 Kristallformen, 7 Zonen, 8 Tracht und Habitus, 9 Trigonale und hexagonale Kristalle, als Vertiefungen 10 Lagen und 11 Verzerrungen. „Aufstellung und Indizes“ und das hexagonale Achsensystem stehen jetzt in Kapitel 1; Kapitel 9 erklärt das Rhomboeder als entlang [111] gestreckten Würfel (3̄*m*, hexagonale Achsen) im Haupttext, Kapitel 11 verweist dorthin. Anker und Links aus App und Quiz bleiben gültig; Kapitel- und Abbildungsnummern, Quiz-Kapitel und Links „Lernziele prüfen“ sind angepasst.
+
+### Behoben
+
+- **Skript, Querstriche:** Negative Indizes und Drehinversionen (1̄, 3̄, (h̄k̄l̄) …) haben ihren Querstrich jetzt genau über der Ziffer wie in der App, auch in den gezeichneten Abbildungen; vorher sass er bei manchen Schriften daneben. Ebenso in „Erste Schritte“ der App.
 
 ## [1.8.1] - 2026-10-26
 

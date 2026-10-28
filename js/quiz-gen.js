@@ -54,11 +54,19 @@ function symbolText(g, cls) {
 }
 
 /** Elemente des Ablenkers im Vergleich zum gezeigten Gerüst: was im Bild fehlt bzw. zusätzlich zu sehen ist. */
+/** Lage einer Spiegelebene aus ihrer Normalen: 'mh' ⊥ c, 'mv' ∥ c, 'mo' schräg. */
+function spiegelLage(n) {
+  const l = Math.hypot(...n), z = Math.abs(n[2]) / l;
+  return z > 1 - 1e-6 ? 'mh' : z < 1e-6 ? 'mv' : 'mo';
+}
+const SPIEGEL = { mh: ['Spiegelebene ⊥ c', 'Spiegelebenen ⊥ c'], mv: ['Spiegelebene ∥ c', 'Spiegelebenen ∥ c'], mo: ['schräge Spiegelebene', 'schräge Spiegelebenen'] };
+const nennenM = (k, n) => `${n === 1 ? 'eine' : ZAHL[n]} ${SPIEGEL[k][n === 1 ? 0 : 1]}`;
 function zaehle(info) {
   const s = elementSummary(info);
   const n = {};
   for (const a of s.axes) n[a.symbol] = (n[a.symbol] || 0) + a.count;
-  if (s.mirrors) n.m = s.mirrors;
+  // Spiegelebenen nach Lage: ⊥ c (Normale ∥ c), ∥ c (Normale ⊥ c), schräg (kubisch)
+  for (const m of info.mirrors) { const k = spiegelLage(m); n[k] = (n[k] || 0) + 1; }
   if (s.centre) n.c = 1;
   return n;
 }
@@ -419,7 +427,25 @@ function wahl3d(id) {
     kand = pool2.filter((x) => Math.abs(elementZahl(buildPointGroup(x.id)) - n0) <= tol);
     if (kand.length >= 3) break;
   }
-  return kand.map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).slice(0, 3).map((u) => u.x);
+  const ordne = (l) => l.map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).map((u) => u.x);
+  const sortiert = ordne(kand), alle = ordne(pool2);
+  // Damit die richtige Antwort nicht als einzige ein Merkmal zeigt: mindestens ein Ablenker mit demselben Symbol
+  // in der Mitte (Achse ∥ c) und einer mit derselben Lage der Spiegelebene ⊥ c (kräftiger Grundkreis oder nicht)
+  const merkmal = (inf) => ({ achse: (inf.axes.find((a) => Math.abs(a.dir[2]) > 1 - 1e-6) || {}).symbol || '', mh: inf.mirrors.some((m) => spiegelLage(m) === 'mh') });
+  const m0 = merkmal(info);
+  const wahl = [];
+  // (notfalls auch ein Gerüst mit bis zu vier Elementen weniger, aber nie mit mehr als zwei Elementen mehr)
+  const weiter = alle.filter((x) => { const n = elementZahl(buildPointGroup(x.id)); return n <= n0 + 2 && n >= n0 - 4; });
+  const nimm = (f, auchWeiter) => {
+    if (wahl.some((y) => f(merkmal(buildPointGroup(y.id))))) return;
+    const passt = (y) => !wahl.includes(y) && f(merkmal(buildPointGroup(y.id)));
+    const x = sortiert.find(passt) || (auchWeiter ? weiter.find(passt) : undefined);
+    if (x) wahl.push(x);
+  };
+  nimm((m) => m.achse === m0.achse, true);
+  nimm((m) => m.mh === m0.mh, true);
+  for (const x of sortiert) if (wahl.length < 3 && !wahl.includes(x)) wahl.push(x);
+  return wahl.slice(0, 3);
 }
 
 /** Nach „statt“ (Genitiv): „der 3-zähligen Drehachse“, „der 4-zähligen Drehachsen“. */
@@ -442,7 +468,12 @@ export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' &&
     else if (A.get(k) !== sym) { const key = `${sym}|${A.get(k)}`; statt.set(key, (statt.get(key) || 0) + 1); }
   }
   for (const [k, sym] of A) if (!B.has(k)) weniger[sym] = (weniger[sym] || 0) + 1;
-  const zm = andere.mirrors.length - gezeigt.mirrors.length;
+  // Spiegelebenen wie Achsen über ihre Normale vergleichen, getrennt nach Lage (⊥ c, ∥ c, schräg)
+  const spiegel = (info) => new Map(info.mirrors.map((m) => [richtung(m), spiegelLage(m)]));
+  const SA = spiegel(gezeigt), SB = spiegel(andere);
+  const mMehr = {}, mWeniger = {};
+  for (const [k, lage] of SB) if (!SA.has(k)) mMehr[lage] = (mMehr[lage] || 0) + 1;
+  for (const [k, lage] of SA) if (!SB.has(k)) mWeniger[lage] = (mWeniger[lage] || 0) + 1;
   const plus = [], minus = [], anders = [];
   for (const sym of ['6', '-6', '4', '-4', '3', '-3', '2']) {
     // gleiche Achse in anderer Richtung (z. B. 2 ∥ b statt 2 ∥ c) nicht als „zusätzlich“ und „fehlt“ zählen
@@ -451,8 +482,12 @@ export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' &&
     if ((mehr[sym] || 0) > n) plus.push(nennen(sym, mehr[sym] - n));
     if ((weniger[sym] || 0) > n) minus.push(nennen(sym, weniger[sym] - n));
   }
-  if (zm > 0) plus.push(`${zm === 1 ? 'eine' : ZAHL[zm]} ${zm === 1 ? 'Spiegelebene' : 'Spiegelebenen'}`);
-  if (zm < 0) minus.push(`${-zm === 1 ? 'eine' : ZAHL[-zm]} ${-zm === 1 ? 'Spiegelebene' : 'Spiegelebenen'}`);
+  for (const k of ['mh', 'mv', 'mo']) {
+    const n = Math.min(mMehr[k] || 0, mWeniger[k] || 0);
+    if (n) anders.push(nennenM(k, n));
+    if ((mMehr[k] || 0) > n) plus.push(nennenM(k, mMehr[k] - n));
+    if ((mWeniger[k] || 0) > n) minus.push(nennenM(k, mWeniger[k] - n));
+  }
   if (andere.centro && !gezeigt.centro) plus.push('ein Inversionszentrum');
   if (!andere.centro && gezeigt.centro) minus.push('ein Inversionszentrum');
   const ersetzt = [...statt].map(([key, n]) => { const [neu, alt] = key.split('|'); return `${nennen(neu, n)} statt ${ACHSE_GEN(alt, n)}`; });

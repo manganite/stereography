@@ -1376,7 +1376,7 @@ export const BANK = [
     richtig: [0],
     hinweise: [
       null,
-      '48 Flächen hat nur eine Form mit drei verschiedenen Indizes, z. B. {321}. Bei {112} sind zwei Indizes gleich; das bringt den Pol auf eine Spiegelebene und halbiert die Flächenzahl.',
+      '48 Flächen hat nur eine Form mit drei verschiedenen, von null verschiedenen Indizes, z. B. {321}. Bei {112} sind zwei Indizes gleich; das bringt den Pol auf eine Spiegelebene und halbiert die Flächenzahl.',
       'Auf den 2-zähligen Achsen ⟨110⟩ liegen die Pole des Rhombendodekaeders {110}.',
       `Auf den ${o(3)}-Achsen ⟨111⟩ liegen die Pole des Oktaeders {111}.`,
     ],
@@ -1432,7 +1432,7 @@ export const BANK = [
     richtig: [0],
     hinweise: [
       null,
-      `Das Muster hat alle Operationen von ${o(4)}3<i>m</i>, auch die Spiegelungen an den Ebenen senkrecht zu ⟨110⟩; sie führen die vier Pole ineinander über.`,
+      `Das Muster hat alle Operationen von ${o(4)}3<i>m</i>, auch die Spiegelungen an den Ebenen senkrecht zu ⟨110⟩: Jede bildet das Muster auf sich ab, zwei Pole liegen auf der Ebene, die beiden anderen tauschen die Plätze.`,
       `<i>m</i>${o(3)}<i>m</i> enthält die Inversion; sie würde zu (111) den Pol (${o(1)}${o(1)}${o(1)}) erzeugen, der zum Gegentetraeder gehört.`,
       `Auch <i>m</i>${o(3)} enthält die Inversion und machte aus dem Tetraeder ein Oktaeder.`,
     ],
@@ -2569,7 +2569,7 @@ export const BANK = [
     hinweise: [
       null,
       'Eine Fläche parallel zu <i>c</i> schneidet <i>c</i> nicht; ihr Achsenabschnitt ist unendlich, der Kehrwert 0.',
-      '(001) ist parallel zu <i>a</i> und <i>b</i>, also gerade die Fläche senkrecht zu <i>c</i>.',
+      '(001) ist parallel zu <i>a</i> und <i>b</i> und schneidet nur <i>c</i>; die gesuchte Fläche schneidet dagegen <i>a</i> und <i>b</i>.',
       'Die 0 steht an der Stelle der Achse, zu der die Fläche parallel ist. Das ist hier <i>c</i>, also die dritte Stelle; (101) wäre parallel zu <i>b</i>.',
     ],
     erklaerung: 'Achsenabschnitte 1, 1, ∞; Kehrwerte 1, 1, 0. Die Fläche ist (110).',

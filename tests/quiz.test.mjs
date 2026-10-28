@@ -648,7 +648,8 @@ test('Hinweise zu Gerüsten: kein Element zugleich „zusätzlich“ und „fehl
     for (const h of q.hinweise.slice(1)) {
       const t = text(h);
       const [vor, nach = ''] = t.split('dafür');
-      const namen = (x) => new Set([...x.matchAll(/\d-zählige Dreh(?:inversions)?achse|Spiegelebene|Inversionszentrum/g)].map((m) => m[0]));
+      // Spiegelebenen nach Lage (⊥ c, ∥ c, schräg) getrennt: „zusätzlich eine Spiegelebene ⊥ c; dafür fehlen vier ∥ c“ ist richtig
+      const namen = (x) => new Set([...x.matchAll(/\d-zählige Dreh(?:inversions)?achse|schräge Spiegelebene|Spiegelebenen? [⊥∥] c|Inversionszentrum/g)].map((m) => m[0].replace('Spiegelebenen', 'Spiegelebene')));
       const A = namen(vor.replace(/an (?:derselben Stelle|denselben Stellen) [^;]*/g, '')), B = namen(nach);
       for (const n of A) assert.ok(!B.has(n), `${t}`);
     }

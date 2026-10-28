@@ -22,6 +22,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 - **Skript, neuer Kastentyp „Grundlagen“** für Grundwissen, auf dem der Text aufbaut; er gehört zum Haupttext und steht in der Legende „So ist das Skript aufgebaut“.
 
 - **Skript, Kapitel 6, Flächenzahl bestimmen:** am Stereogramm durch Abzählen der Bilder eines Pols und in *m*3̄*m* über die Indizes (Zahl der Reihenfolgen mal 2 je Index ungleich 0), mit Tabelle von {100} bis {321} und dem Hinweis, dass die Regel nur in *m*3̄*m* gilt; neues Lernziel und neue Quizfrage `form-2-08` (Entwurf).
+- **Quiz, drei Fragen zur Eigensymmetrie (Stufe 3, Entwurf):** Polmuster der trigonalen Pyramide in 3 (3*m*), des Tetraeders in 23 (4̄3*m*) und des Pentagondodekaeders {210} in 23 (*m*3̄), nach dem Muster von `sym-3-01`; die Eigensymmetrie prüft ein Test nach (`musterGruppe`).
 - **Quiz, Lernziel in der Rückmeldung:** Nach jeder Antwort nennt die Rückmeldung in kleiner Schrift das Lernziel der Frage mit Kapitel (wörtlich aus dem Skript), damit sich die Frage einordnen lässt; ebenso das allgemeine Feedback im Moodle-Export.
 
 ### Geändert

@@ -491,6 +491,13 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
         assert.equal(dot(f, p.achse) === 0, q.richtig.includes(i), `${q.id}: ${text(h)}`);
       });
       assert.deepEqual(flaechenIn(q.antworten[q.richtig[0]])[0], summe, q.id);
+    } else if (p.art === 'musterGruppe') {
+      // Polmuster einer Form: invariant unter der Eigensymmetrie p.eigen, nicht unter den Gruppen p.nicht
+      const l = Math.hypot(...p.pol);
+      const muster = orbit(buildPointGroup(p.gruppe).ops, p.pol.map((x) => x / l)).map((o) => o.p);
+      const invariant = (g) => buildPointGroup(g).ops.every((m) => muster.every((x) => muster.some((y) => vecEq(mulVec(m, x), y))));
+      assert.ok(invariant(p.eigen), `${q.id}: Muster nicht invariant unter ${p.eigen}`);
+      for (const g of p.nicht) assert.ok(!invariant(g), `${q.id}: Muster invariant unter ${g}`);
     } else if (p.art === 'musterSpiegel') {
       // Bahn eines allgemeinen Pols: invariant unter den Spiegelungen an den Ebenen durch c und einen Pol
       const orb = orbit(buildPointGroup(p.gruppe).ops, P0).map((o) => o.p ?? o);

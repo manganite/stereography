@@ -2159,7 +2159,7 @@ export const BANK = [
     skript: 'hkil', app: '#m=form&sys=hexagonal&f=6/mmm:e31&hkil=1',
     quelle: 'Skript Kap. 9 (Vier Indizes für Flächen); Borchardt-Ott & Sowa (2018), Abschn. 9.2.2, S. 151 (Abb. 9.12)',
     pruefung: { art: 'hkil', hkl: [1, 0, 2] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-3-02', stufe: 3, kapitel: 9, typ: 'einfach',
@@ -2181,7 +2181,7 @@ export const BANK = [
     erklaerung: `Mit drei Indizes sieht man gleichwertigen Flächen ihre Gleichwertigkeit nicht an: Die Prismenflächen heissen z. B. (100) und (${o(1)}10). Mit vier Indizes bestehen alle sechs aus denselben Ziffern 1, ${o(1)} und 0 in vertauschter Reihenfolge, etwa (10${o(1)}0) und (${o(1)}100). Der vierte Index macht nur die Symmetrie sichtbar; die Fläche selbst bleibt dieselbe.`,
     skript: 'hkil', app: '#m=form&sys=hexagonal&f=6/mmm:c25&hkil=1',
     quelle: 'Skript Kap. 9 (Vier Indizes für Flächen); Borchardt-Ott & Sowa (2018), Abschn. 9.2.2, S. 151',
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 10: Lagen, Flächensymmetrie und Multiplizität (Stufe 3)
@@ -2598,7 +2598,7 @@ export const BANK = [
     lernziel: 'Symmetrieoperation und Symmetrieelement unterscheiden und die Punktsymmetrieoperationen mit ihren Symbolen angeben',
     frage: 'Was ist ein <b>Symmetrieelement</b>?',
     antworten: [
-      'Der geometrische Ort, der bei einer Symmetrieoperation fest bleibt, z. B. eine Drehachse oder Spiegelebene',
+      'Der geometrische Ort (Punkt, Gerade oder Ebene), an dem eine Symmetrieoperation ausgeführt wird, z. B. eine Drehachse oder Spiegelebene',
       'Die Bewegung, die einen Körper mit sich selbst zur Deckung bringt',
       'Eine Fläche des Kristalls, die bei der Operation an ihrem Ort bleibt',
       'Die Zahl der Operationen einer Punktgruppe',
@@ -2607,13 +2607,13 @@ export const BANK = [
     hinweise: [
       null,
       'Das ist die Symmetrieoperation. Das Symmetrieelement ist der Ort, an dem sie ausgeführt wird und der dabei fest bleibt.',
-      'Symmetrieelemente sind Punkte, Geraden oder Ebenen, keine Kristallflächen; sie gehen auch durch Kristalle ohne passende Fläche.',
+      'Symmetrieelemente sind Punkte, Geraden oder Ebenen durch den Mittelpunkt des Kristalls, keine Kristallflächen.',
       'Das ist die Ordnung der Punktgruppe.',
     ],
     erklaerung: 'Die Symmetrieoperation ist die Abbildung (Drehen, Spiegeln, Invertieren, Drehinvertieren). Das Symmetrieelement ist der geometrische Ort, der dabei an seinem Platz bleibt: Drehachse, Spiegelebene, Inversionszentrum, Drehinversionsachse.',
     skript: 'operationen', app: '#m=pg&g=4/mmm',
     quelle: 'Skript Kap. 3 (Symmetrieoperation und Symmetrieelement); Borchardt-Ott & Sowa (2018), Abschn. 6.1, S. 67–69',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-1-02', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -2630,7 +2630,7 @@ export const BANK = [
     erklaerung: 'Ein Kristall ist aus Gitterbausteinen aufgebaut. Nur 1-, 2-, 3-, 4- und 6-zählige Drehungen bringen ein Gitter mit sich selbst zur Deckung; Fünfecke oder Achtecke füllen eine Ebene nicht lückenlos.',
     skript: 'operationen', app: '#m=pg&g=6/mmm',
     quelle: 'Skript Kap. 3 (Symmetrieoperation und Symmetrieelement); Borchardt-Ott & Sowa (2018), Abschn. 6.2, S. 70–73',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-1-03', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -2647,7 +2647,7 @@ export const BANK = [
     erklaerung: `Drehung um 180° und anschliessende Inversion bringen einen Punkt an die Stelle seines Spiegelbilds an der Ebene senkrecht zur Achse: ${o(2)} = <i>m</i>.`,
     skript: 'drehinversion', app: '#m=pg&g=mc&hand=1',
     quelle: 'Skript Kap. 3 (Kopplung und Kombination, Abb. 3.2); Borchardt-Ott & Sowa (2018), Abschn. 6.4, S. 76–78',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-1-04', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -2664,7 +2664,7 @@ export const BANK = [
     erklaerung: `Bei ungerader Zähligkeit enthält die Drehinversionsachse die Inversion selbst: ${o(3)} = 3 + ${o(1)}. ${o(4)} und ${o(6)} enthalten kein Inversionszentrum.`,
     skript: 'drehinversion', app: '#m=pg&g=-3&hand=1',
     quelle: 'Skript Kap. 3 (Kopplung und Kombination); Borchardt-Ott & Sowa (2018), Abschn. 6.4, S. 76–78',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-1-05', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -2681,7 +2681,7 @@ export const BANK = [
     erklaerung: '<i>mmm</i> = 2/<i>m</i> 2/<i>m</i> 2/<i>m</i> enthält die Identität, drei Drehungen um 180°, drei Spiegelungen und die Inversion: 8 Operationen. Entsprechend hat die allgemeine Form 8 Flächen.',
     skript: 'punktgruppe', app: '#m=pg&g=mmm&hand=1',
     quelle: 'Skript Kap. 3 (Grundlagen · Gruppe, Abb. 3.4); Borchardt-Ott & Sowa (2018), Abschn. 11.2, S. 263–265',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-1-06', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -2693,12 +2693,12 @@ export const BANK = [
       null,
       `${o(6)} = 3/<i>m</i> enthält zwar nur eine 3-zählige Drehachse, ist aber eine 6-zählige Drehinversionsachse; sie gehört zum hexagonalen System.`,
       `Tetragonal kennzeichnet eine 4- oder ${o(4)}-Achse.`,
-      'Monoklin hat nur eine 2-zählige Achse oder Spiegelebene.',
+      'Monoklin hat höchstens eine 2-zählige Achse und eine Spiegelebene senkrecht dazu.',
     ],
-    erklaerung: `Das Kristallsystem richtet sich nach der Zähligkeit der Dreh- oder Drehinversionsachse: eine 6 oder ${o(6)} ist hexagonal. Deshalb sind ${o(6)} und ${o(6)}<i>m</i>2 hexagonal, obwohl sie als Drehungen nur 3-zählige enthalten.`,
+    erklaerung: `Das Kristallsystem richtet sich nach der Zähligkeit der Dreh- oder Drehinversionsachse: eine 6 oder ${o(6)} ist hexagonal. Deshalb sind ${o(6)} und ${o(6)}<i>m</i>2 hexagonal, obwohl ihre höchstzählige Drehachse nur 3-zählig ist.`,
     skript: 'kristallsysteme', app: '#m=pg&g=-6',
     quelle: 'Skript Kap. 3 (Kristallsysteme und Kristallklassen); Borchardt-Ott & Sowa (2018), Kap. 8, Tab. 8.1, S. 125–126',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-1-07', stufe: 1, kapitel: 3, typ: 'einfach',
@@ -2720,7 +2720,7 @@ export const BANK = [
     erklaerung: `Alle fünf kubischen Punktgruppen haben vier 3-zählige Achsen (3 oder ${o(3)}) entlang ⟨111⟩. Deshalb steht im Hermann-Mauguin-Symbol eine 3 oder ${o(3)} an zweiter Stelle.`,
     skript: 'kristallsysteme', app: '#m=pg&g=23',
     quelle: 'Skript Kap. 3 (Kristallsysteme und Kristallklassen); Borchardt-Ott & Sowa (2018), Tab. 9.10, S. 164',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-2-01', stufe: 2, kapitel: 3, typ: 'mehrfach',
@@ -2734,10 +2734,10 @@ export const BANK = [
       null,
       '4<i>mm</i> enthält eine 4-zählige Achse; <i>mmm</i> hat keine. Eine Untergruppe kann nur Operationen enthalten, die schon in der Gruppe sind.',
     ],
-    erklaerung: 'Eine Untergruppe besteht aus Operationen der Gruppe und ist selbst eine Gruppe. <i>mm</i>2 (zwei Spiegelebenen und die Achse dazwischen), 222 (die drei Achsen) und 2/<i>m</i> (eine Achse, die Ebene senkrecht dazu und die Inversion) bestehen aus Operationen von <i>mmm</i>, 4<i>mm</i> nicht.',
+    erklaerung: 'Eine Untergruppe besteht aus Operationen der Gruppe und ist selbst eine Gruppe. <i>mm</i>2 (zwei Spiegelebenen und ihre Schnittgerade als 2-zählige Achse), 222 (die drei Achsen) und 2/<i>m</i> (eine Achse, die Ebene senkrecht dazu und die Inversion) bestehen aus Operationen von <i>mmm</i>, 4<i>mm</i> nicht.',
     skript: 'punktgruppe', app: '#m=pg&g=mmm&hand=1',
     quelle: 'Skript Kap. 3 (Grundlagen · Untergruppe, Abb. 3.4); Borchardt-Ott & Sowa (2018), Abschn. 11.2, S. 263–265',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-2-02', stufe: 2, kapitel: 3, typ: 'einfach',
@@ -2759,12 +2759,12 @@ export const BANK = [
     erklaerung: `Kombination: Jede Operation ist für sich eine Symmetrieoperation. Kopplung: Nur die zusammengesetzte Operation ist eine. In ${o(4)} bringt erst Drehung um 90° und Inversion zusammen den Körper zur Deckung; zweimal ausgeführt ergibt sie die Drehung um 180°, deshalb enthält ${o(4)} eine 2-zählige Achse.`,
     skript: 'drehinversion', app: '#m=pg&g=-4&hand=1',
     quelle: 'Skript Kap. 3 (Kopplung und Kombination, Abb. 3.1); Borchardt-Ott & Sowa (2018), Abschn. 6.4, S. 75–78 (Abb. 6.13)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-3-01', stufe: 3, kapitel: 3, typ: 'einfach',
     lernziel: 'Operationen erster und zweiter Art unterscheiden',
-    frage: 'Ein Körper wird nacheinander an zwei verschiedenen Spiegelebenen gespiegelt. Was für eine Operation ist das Ergebnis?',
+    frage: 'Ein Körper wird nacheinander an zwei verschiedenen Spiegelebenen gespiegelt, die sich schneiden (wie in einer Punktgruppe). Was für eine Operation ist das Ergebnis?',
     antworten: [
       'eine Drehung, also eine Operation erster Art',
       'eine Spiegelung, also eine Operation zweiter Art',
@@ -2781,7 +2781,7 @@ export const BANK = [
     erklaerung: 'Spiegelungen sind Operationen zweiter Art: Sie erzeugen das Spiegelbild. Zwei davon nacheinander geben das Original zurück, nur gedreht, eine Operation erster Art. Die Drehachse ist die Schnittgerade der Ebenen; stehen sie senkrecht, ist es die Drehung um 180° (Symmetriesatz II).',
     skript: 'punktgruppe', app: '#m=pg&g=mm2&hand=1',
     quelle: 'Skript Kap. 3 (Vertiefung Operationen erster und zweiter Art); Schwarzenbach (2001), Abschn. 2.2.3, S. 30–31',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'pg-3-02', stufe: 3, kapitel: 3, typ: 'einfach',
@@ -2798,7 +2798,7 @@ export const BANK = [
     erklaerung: `Drehspiegelachsen liefern dieselben Operationen wie Drehinversionsachsen, nur mit anderer Zähligkeit: <i>S</i><sub>1</sub> = <i>m</i>, <i>S</i><sub>2</sub> = ${o(1)}, <i>S</i><sub>3</sub> = ${o(6)}, <i>S</i><sub>4</sub> = ${o(4)}, <i>S</i><sub>6</sub> = ${o(3)}.`,
     skript: 'kristallsysteme', app: '#m=pg&g=-3',
     quelle: 'Skript Kap. 3 (Vertiefung Drehspiegelachsen und Schoenflies-Symbole); Borchardt-Ott & Sowa (2018), Abschn. 6.4, S. 78',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   // ---------------------------------------------------------------- Kapitel 4: Symmetriesätze
   {
@@ -3025,7 +3025,7 @@ export const BANK = [
   {
     id: 'hex-1-07', stufe: 1, kapitel: 9, typ: 'einfach',
     lernziel: 'den Quarz als Kombination von hexagonalem Prisma und zwei Rhomboedern beschreiben und erklären, warum sein Stereogramm hexagonal aussieht',
-    frage: 'Aus welchen Formen besteht ein typischer Quarzkristall?',
+    frage: 'Aus welchen Formen besteht ein typischer Quarzkristall (Tiefquarz, Punktgruppe 32)?',
     antworten: [
       'hexagonales Prisma {100} und zwei Rhomboeder {101} und {011}',
       'hexagonales Prisma {100} und hexagonale Dipyramide {101}',
@@ -3037,17 +3037,17 @@ export const BANK = [
       null,
       'Die Spitze sieht so aus, aber in 32 sind (101) und (011) nicht gleichwertig: Es sind zwei Rhomboeder mit je sechs Flächen.',
       'Ein Pinakoid tritt am typischen Quarz nicht auf; die Enden sind spitz.',
-      'Das Prisma des Quarzes, {100}, hat in 321 sechs Flächen, und an den Spitzen sitzen zwei Rhomboeder.',
+      'Das Prisma des Quarzes, {100}, hat in 32 sechs Flächen, und an den Spitzen sitzen zwei Rhomboeder.',
     ],
     erklaerung: 'Quarz (32) zeigt ein hexagonales Prisma {100}, an beiden Enden abgeschlossen durch das positive Rhomboeder {101} und das negative Rhomboeder {011}. Zusammen sehen die beiden Rhomboeder wie eine hexagonale Dipyramide aus.',
     skript: 'quarz', app: '#m=form&sys=trigonal&bsp=quarz&ab=1,1.25,1.15,2,2',
     quelle: 'Skript Kap. 9 (Ein Beispiel: Quarz, Abb. 9.2); Folie 43; Kleber u. a. (2020), Einführung in die Kristallographie, Abschn. 1.6, Abb. 1.70, S. 70–71; Borchardt-Ott & Sowa (2018), Tab. 9.4 Nr. 18, S. 138',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-2-05', stufe: 2, kapitel: 9, typ: 'einfach',
     lernziel: 'den Quarz als Kombination von hexagonalem Prisma und zwei Rhomboedern beschreiben und erklären, warum sein Stereogramm hexagonal aussieht',
-    frage: 'Quarz ist trigonal (32). Warum zeigt sein Stereogramm oben sechs gleich weit von <i>c</i> entfernte Pole im Abstand von 60°?',
+    frage: 'Quarz ist trigonal (32). Warum zeigt sein Stereogramm oben sechs gleich weit von <i>c</i> entfernte Pole, die um je 60° um <i>c</i> gegeneinander gedreht sind?',
     antworten: [
       'Die Pole zweier Rhomboeder ergänzen sich: {011} ist gegenüber {101} um 60° gedreht',
       'Quarz hat eine 6-zählige Achse',
@@ -3064,7 +3064,7 @@ export const BANK = [
     erklaerung: 'Jedes Rhomboeder hat oben drei Pole im Abstand von 120°. Die beiden Rhomboeder sind um 60° gegeneinander gedreht und haben bei Quarz denselben Winkel ρ ≈ 51,8° zu <i>c</i>; zusammen ergeben sie sechs Pole. Gleichwertig sind sie nicht, deshalb können ihre Flächen verschieden gross sein.',
     skript: 'quarz', app: '#m=form&sys=trigonal&bsp=quarz&ab=1,1.25,1.15,2,2&geruest=1',
     quelle: 'Skript Kap. 9 (Ein Beispiel: Quarz, Abb. 9.2b); mit den Operationen der App nachgerechnet',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hex-3-03', stufe: 3, kapitel: 9, typ: 'einfach',
@@ -3083,10 +3083,10 @@ export const BANK = [
       'Grosse und kleine Rhomboederflächen zeigen die trigonale Symmetrie, aber nicht die Händigkeit; auch das Spiegelbild hat sie.',
       'Optisch drehen sie die Ebene des polarisierten Lichts entgegengesetzt; am Kristall erkennt man die Händigkeit oft an kleinen Flächen.',
     ],
-    erklaerung: 'Prisma und Rhomboeder sind im Spiegel dieselben. Trigonale Dipyramide und trigonales Trapezoeder treten dagegen als linke oder rechte Form auf. Liegen ihre Flächen links von einer Fläche des positiven Rhomboeders (Blick auf die Prismenfläche darunter, <i>c</i> nach oben), ist es ein Linksquarz.',
+    erklaerung: 'Prisma und Rhomboeder sind im Spiegel dieselben. Das trigonale Trapezoeder gibt es als linke und rechte Form; die trigonale Dipyramide ist für sich nicht chiral, aber im Spiegelbild wechselt ihre Lage zum positiven Rhomboeder von rechts nach links. Liegen ihre Flächen links von einer Fläche des positiven Rhomboeders (Blick auf die Prismenfläche darunter, <i>c</i> nach oben), ist es ein Linksquarz.',
     skript: 'quarz', app: '#m=form&sys=trigonal&bsp=quarz',
     quelle: 'Skript Kap. 9 (Vertiefung Links- und Rechtsquarz); Kleber u. a. (2020), Einführung in die Kristallographie, Abschn. 1.6, Abb. 1.70, S. 70–71; Borchardt-Ott & Sowa (2018), Tab. 9.4 Nr. 18, S. 138',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   // ---------------------------------------------------------------- Kapitel 11: alle Parameter frei
   {
@@ -3109,7 +3109,7 @@ export const BANK = [
   {
     id: 'hex-3-04', stufe: 3, kapitel: 9, typ: 'einfach',
     lernziel: 'das rhomboedrische Achsensystem am gestreckten Würfel beschreiben und begründen, warum man trigonale Kristalle mit hexagonalen Achsen beschreibt',
-    frage: 'Ein Würfel wird entlang [111] zum Rhomboeder gestreckt. Wie heissen seine Flächen in rhomboedrischen Achsen entlang seiner Kanten, und wie in hexagonalen Achsen mit <i>c</i> ∥ [111]?',
+    frage: `Ein Würfel wird entlang [111] zum Rhomboeder gestreckt. Wie heissen seine Flächen in rhomboedrischen Achsen entlang seiner Kanten, und wie in hexagonalen Achsen mit <i>c</i> ∥ [111] und <i>a</i>₁ ∥ [1${o(1)}0] (wie in der App)?`,
     antworten: ['{100} und {101}', '{101} und {100}', '{111} und {001}', '{100} und {100}'],
     richtig: [0],
     hinweise: [
@@ -3121,6 +3121,6 @@ export const BANK = [
     erklaerung: 'Die rhomboedrischen Achsen sind die Kanten des gestreckten Würfels; eine Fläche behält beim Strecken ihre Indizes, die Rhomboederflächen heissen also {100}. In hexagonalen Achsen (<i>c</i> ∥ [111]) heissen dieselben Flächen {101}, wie in der Infobox der App.',
     skript: 'rhomboedrisch', app: '#m=form&sys=kubisch&f=m-3m:a34&str=111,1.3&lage=111&achsen=1',
     quelle: 'Skript Kap. 9 (Vertiefung Rhomboedrische Achsen, Abb. 9.5 und Tabelle); mit der App nachgerechnet; Hoffmann (2016), Abschn. 2.8, S. 85–90',
-    status: 'entwurf',
+    status: 'geprüft',
   },
 ];

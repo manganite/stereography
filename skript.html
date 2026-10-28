@@ -323,6 +323,7 @@ footer a { color: inherit; }
             <ol>
               <li><a href="#rhomboeder">Das Rhomboeder</a></li>
               <li><a href="#quarz">Ein Beispiel: Quarz</a></li>
+              <li><a href="#rhomboedrisch">Rhomboedrische Achsen</a></li>
               <li><a href="#hkil">Vier Indizes für Flächen</a></li>
             </ol>
           </li>
@@ -1700,6 +1701,7 @@ footer a { color: inherit; }
         <h5>Zur Vertiefung</h5>
         <ul>
           <li>Links- und Rechtsquarz unterscheiden</li>
+          <li>das rhomboedrische Achsensystem am gestreckten Würfel beschreiben und begründen, warum man trigonale Kristalle mit hexagonalen Achsen beschreibt</li>
           <li>Miller-Indizes (<i>hkl</i>) in Miller-Bravais-Indizes (<i>hkil</i>) umrechnen und zurück</li>
           <li>begründen, wozu der vierte Index dient</li>
         </ul>
@@ -1728,47 +1730,82 @@ footer a { color: inherit; }
 
       <section id="quarz">
         <h3>Ein Beispiel: Quarz</h3>
-        <p>Quarz (SiO₂) ist trigonal, mit der Punktgruppe 32. Mit hexagonalen Achsen beschrieben ist <i>c</i>/<i>a</i> ≈ 1,10 (<i>a</i> = 4,91 Å, <i>c</i> = 5,40 Å). Ein typischer Quarzkristall ist ein hexagonales Prisma {100}, an beiden Enden durch eine Spitze aus sechs Flächen abgeschlossen (Abb. 9.4a). Die Spitze sieht aus wie eine hexagonale Dipyramide. Sie besteht aber aus zwei verschiedenen Rhomboedern, {101} und {011}.</p>
+        <p>Quarz (SiO₂) ist trigonal, mit der Punktgruppe 32. Mit hexagonalen Achsen beschrieben ist <i>c</i>/<i>a</i> ≈ 1,10 (<i>a</i> = 4,91 Å, <i>c</i> = 5,40 Å). Ein typischer Quarzkristall ist ein hexagonales Prisma {100}, an beiden Enden durch eine Spitze aus sechs Flächen abgeschlossen (Abb. 9.2a). Die Spitze sieht aus wie eine hexagonale Dipyramide. Sie besteht aber aus zwei verschiedenen Rhomboedern, {101} und {011}.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=trigonal&amp;bsp=quarz&amp;ab=1,1.25,1.15,2,2&amp;strahlen=0&amp;normalen=0" data-alt="Quarz: hexagonales Prisma mit zwei Rhomboedern">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.4a</b> Quarz: hexagonales Prisma {100} mit den Rhomboedern {101} und {011}.</figcaption>
+            <figcaption><b>Abb. 9.2a</b> Quarz: hexagonales Prisma {100} mit den Rhomboedern {101} und {011}.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=trigonal&amp;bsp=quarz&amp;ab=1,1.25,1.15,2,2&amp;geruest=1" data-alt="Stereogramm des Quarzes über dem Symmetriegerüst von 32">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.4b</b> Stereogramm dazu über dem Symmetriegerüst von 32: oben sechs Rhomboederpole bei ρ ≈ 51,8°, abwechselnd von {101} und {011}.</figcaption>
+            <figcaption><b>Abb. 9.2b</b> Stereogramm dazu über dem Symmetriegerüst von 32: oben sechs Rhomboederpole bei ρ ≈ 51,8°, abwechselnd von {101} und {011}.</figcaption>
           </figure>
         </div>
-        <p>Jedes der beiden Rhomboeder hat sechs Flächen, drei an jedem Ende, so wie das Rhomboeder in Abb. 9.1; beim Quarz ist es allerdings ein gestauchtes (stumpfes) Rhomboeder. {011} ist gegenüber {101} um 60° um <i>c</i> gedreht. Oben ergänzen sich ihre Pole deshalb zu sechs Polen, alle unter demselben Winkel ρ ≈ 51,8° zu <i>c</i> und je 60° voneinander entfernt (Abb. 9.4b). Die unteren Flächen von {101} liegen genau unter den oberen von {011} und umgekehrt; im Stereogramm steht deshalb jeder Pol als ● im ○. So sieht das Stereogramm hexagonal aus, obwohl Quarz trigonal ist.</p>
-        <p>Gleichwertig sind die beiden Rhomboeder aber nicht: Keine Operation von 32 führt (101) in (011) über. Deshalb dürfen sie verschieden gross sein, und an natürlichen Kristallen sind sie es meist. Man stellt den Kristall üblicherweise so auf, dass das grosse Rhomboeder {101} heisst, das <span class="term">positive Rhomboeder</span>; das kleinere {011} ist das <span class="term">negative Rhomboeder</span>. An einem solchen Kristall wechseln an der Spitze grosse und kleine Flächen ab (Abb. 9.5b); erst dadurch, oder durch weitere kleine Flächen, zeigt die Gestalt die trigonale Symmetrie.</p>
+        <p>Jedes der beiden Rhomboeder hat sechs Flächen, drei an jedem Ende, so wie das Rhomboeder in Abb. 9.1; beim Quarz ist es allerdings ein gestauchtes (stumpfes) Rhomboeder. {011} ist gegenüber {101} um 60° um <i>c</i> gedreht. Oben ergänzen sich ihre Pole deshalb zu sechs Polen, alle unter demselben Winkel ρ ≈ 51,8° zu <i>c</i> und je 60° voneinander entfernt (Abb. 9.2b). Die unteren Flächen von {101} liegen genau unter den oberen von {011} und umgekehrt; im Stereogramm steht deshalb jeder Pol als ● im ○. So sieht das Stereogramm hexagonal aus, obwohl Quarz trigonal ist.</p>
+        <p>Gleichwertig sind die beiden Rhomboeder aber nicht: Keine Operation von 32 führt (101) in (011) über. Deshalb dürfen sie verschieden gross sein, und an natürlichen Kristallen sind sie es meist. Man stellt den Kristall üblicherweise so auf, dass das grosse Rhomboeder {101} heisst, das <span class="term">positive Rhomboeder</span>; das kleinere {011} ist das <span class="term">negative Rhomboeder</span>. An einem solchen Kristall wechseln an der Spitze grosse und kleine Flächen ab (Abb. 9.3b); erst dadurch, oder durch weitere kleine Flächen, zeigt die Gestalt die trigonale Symmetrie.</p>
         <div class="fig-row">
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=trigonal&amp;bsp=quarz&amp;ab=1,1.25,1.15,2,2&amp;gr=1.2&amp;strahlen=0&amp;normalen=0&amp;kugel=0&amp;ebene=0&amp;pole=0" data-alt="Quarz mit gleich grossen Rhomboederflächen">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.5a</b> Beide Rhomboeder gleich gross: Die Spitze sieht hexagonal aus.</figcaption>
+            <figcaption><b>Abb. 9.3a</b> Beide Rhomboeder gleich gross: Die Spitze sieht hexagonal aus.</figcaption>
           </figure>
           <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=trigonal&amp;bsp=quarz&amp;ab=1,1.25,1.27,2,2&amp;gr=1.2&amp;strahlen=0&amp;normalen=0&amp;kugel=0&amp;ebene=0&amp;pole=0" data-alt="Quarz mit kleinerem negativem Rhomboeder">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.5b</b> Negatives Rhomboeder {011} kleiner: Grosse und kleine Flächen wechseln ab.</figcaption>
+            <figcaption><b>Abb. 9.3b</b> Negatives Rhomboeder {011} kleiner: Grosse und kleine Flächen wechseln ab.</figcaption>
           </figure>
         </div>
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Links- und Rechtsquarz</b></h4>
           <p>Quarz gibt es in zwei spiegelbildlichen Formen. Woran man sie erkennt, zeigen kleine zusätzliche Flächen.</p>
-          <p>Die Punktgruppe 32 enthält nur Drehungen; sie ist enantiomorph (Kapitel 5). Ein Quarzkristall und sein Spiegelbild lassen sich deshalb durch keine Drehung zur Deckung bringen: Es gibt <span class="term">Linksquarz</span> und <span class="term">Rechtsquarz</span>. Prisma und Rhomboeder verraten das nicht, denn sie sehen im Spiegel gleich aus. Erkennbar ist es an zwei Formen, die oft als kleine Flächen zwischen Prisma und Rhomboedern auftreten, einer trigonalen Dipyramide und einem trigonalen Trapezoeder. Blickt man von vorn auf die Prismenfläche (100), mit <i>c</i> nach oben, so liegt beim Rechtsquarz eine Fläche des Trapezoeders oben rechts, beim Linksquarz oben links, jeweils neben einer Fläche des positiven Rhomboeders (Abb. 9.6). In vier Indizes heissen diese Flächen beim Rechtsquarz (51<span class="ov">6</span>1), die der Dipyramide (11<span class="ov">2</span>1), beim Linksquarz (6<span class="ov">1</span><span class="ov">5</span>1) und (2<span class="ov">1</span><span class="ov">1</span>1). Welche Form man „links“ und welche „rechts“ nennt, ist eine Konvention und in der Literatur nicht einheitlich; das Skript folgt Kleber. Sind die kleinen Flächen nicht ausgebildet, unterscheidet man die beiden optisch: Sie sind auch im Inneren Spiegelbilder voneinander und drehen die Ebene von polarisiertem Licht in entgegengesetzter Richtung.</p>
+          <p>Die Punktgruppe 32 enthält nur Drehungen; sie ist enantiomorph (Kapitel 5). Ein Quarzkristall und sein Spiegelbild lassen sich deshalb durch keine Drehung zur Deckung bringen: Es gibt <span class="term">Linksquarz</span> und <span class="term">Rechtsquarz</span>. Prisma und Rhomboeder verraten das nicht, denn sie sehen im Spiegel gleich aus. Erkennbar ist es an zwei Formen, die oft als kleine Flächen zwischen Prisma und Rhomboedern auftreten, einer trigonalen Dipyramide und einem trigonalen Trapezoeder. Blickt man von vorn auf die Prismenfläche (100), mit <i>c</i> nach oben, so liegt beim Rechtsquarz eine Fläche des Trapezoeders oben rechts, beim Linksquarz oben links, jeweils neben einer Fläche des positiven Rhomboeders (Abb. 9.4). In vier Indizes heissen diese Flächen beim Rechtsquarz (51<span class="ov">6</span>1), die der Dipyramide (11<span class="ov">2</span>1), beim Linksquarz (6<span class="ov">1</span><span class="ov">5</span>1) und (2<span class="ov">1</span><span class="ov">1</span>1). Welche Form man „links“ und welche „rechts“ nennt, ist eine Konvention und in der Literatur nicht einheitlich; das Skript folgt Kleber. Sind die kleinen Flächen nicht ausgebildet, unterscheidet man die beiden optisch: Sie sind auch im Inneren Spiegelbilder voneinander und drehen die Ebene von polarisiertem Licht in entgegengesetzter Richtung.</p>
           <div class="fig-row">
             <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=trigonal&amp;bsp=quarz&amp;gr=1.2&amp;strahlen=0&amp;normalen=0&amp;kugel=0&amp;ebene=0&amp;pole=0" data-alt="Linksquarz">
               <div class="fig-art"></div>
-              <figcaption><b>Abb. 9.6a</b> Linksquarz, Beispielkristall der App.</figcaption>
+              <figcaption><b>Abb. 9.4a</b> Linksquarz, Beispielkristall der App.</figcaption>
             </figure>
             <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=trigonal&amp;bsp=rechtsquarz&amp;gr=1.2&amp;strahlen=0&amp;normalen=0&amp;kugel=0&amp;ebene=0&amp;pole=0" data-alt="Rechtsquarz">
               <div class="fig-art"></div>
-              <figcaption><b>Abb. 9.6b</b> Rechtsquarz: das Spiegelbild.</figcaption>
+              <figcaption><b>Abb. 9.4b</b> Rechtsquarz: das Spiegelbild.</figcaption>
             </figure>
           </div>
         </div>
         <div class="box app">
           <h4>In der App</h4>
           <p>Unter „Kristallform“ die Beispielkristalle „Linksquarz“ und „Rechtsquarz“ wählen. Unter „Gestalt“ lassen sich die Abstände der Formen ändern, z. B. die beiden Rhomboeder gleich gross machen oder die kleinen Formen entfernen.</p>
+        </div>
+      </section>
+
+      <section id="rhomboedrisch" data-level="vertiefung">
+        <h3>Rhomboedrische Achsen</h3>
+        <p>In der Vorlesung kommen rhomboedrische Achsen erst bei den Bravais-Gittern vor. Am gestreckten Würfel aus Abb. 9.1 lässt sich schon hier zeigen, was sie sind und warum man trigonale Kristalle trotzdem mit hexagonalen Achsen beschreibt.</p>
+        <p>Beim gestreckten Würfel liegt eine andere Wahl der Achsen nahe: seine drei Kanten, die an einer Ecke auf der <span class="ov">3</span>-Achse zusammentreffen. Sie sind gleich lang, schliessen paarweise denselben Winkel α ein, und die 3-zählige Drehung führt sie ineinander über. Das ist das <span class="term">rhomboedrische Achsensystem</span>: <i>a</i> = <i>b</i> = <i>c</i>, α = β = γ ≠ 90°. Beim unverzerrten Würfel sind es die Würfelachsen mit α = 90°, bei einer Streckung um den Faktor 1,3 ist α = 79,2° (Abb. 9.5). Keine der drei Achsen fällt mit einer Drehachse zusammen; die 3-zählige Achse liegt zwischen ihnen, entlang [111].</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;achsen=1&amp;strahlen=0&amp;normalen=0&amp;kugel=0&amp;ebene=0&amp;pole=0" data-alt="Gestreckter Würfel mit seinen Kanten als Achsen a, b, c">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 9.5a</b> Entlang [111] gestreckter Würfel, [111] senkrecht. Die Achsen <i>a</i>, <i>b</i>, <i>c</i> laufen entlang seiner Kanten: rhomboedrische Achsen.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;str=111,1.3&amp;lage=111&amp;achsen=1&amp;geruest=1" data-alt="Stereogramm mit den rhomboedrischen Achsen und dem Symmetriegerüst von 3̄m">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 9.5b</b> Stereogramm dazu: Die Achsen (×) liegen im gleichen Abstand von der <span class="ov">3</span>-Achse, je 120° voneinander entfernt, jede auf einer Spiegelebene.</figcaption>
+          </figure>
+        </div>
+        <p>Weil eine Fläche beim Strecken ihre Indizes behält (Kapitel 1), sind die Würfelindizes nach dem Strecken die rhomboedrischen Indizes. Die Flächen des Rhomboeders heissen {100} wie die des Würfels. In hexagonalen Achsen mit <i>c</i> ∥ [111] heissen dieselben Flächen anders. Streckt man statt des Würfels das Oktaeder oder das Rhombendodekaeder, zerfallen sie in zwei Formen:</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Ausgangsform</th><th>Form in <span class="ov">3</span><i>m</i></th><th>rhomboedrische Achsen</th><th>hexagonale Achsen</th></tr></thead>
+            <tbody>
+              <tr><td>Würfel</td><td>Rhomboeder</td><td>{100}</td><td>{101}</td></tr>
+              <tr><td rowspan="2">Oktaeder</td><td>Pinakoid</td><td>{111}</td><td>{001}</td></tr>
+              <tr><td>Rhomboeder</td><td>{11<span class="ov">1</span>}</td><td>{021}</td></tr>
+              <tr><td rowspan="2">Rhombendodekaeder</td><td>Rhomboeder</td><td>{110}</td><td>{012}</td></tr>
+              <tr><td>hexagonales Prisma</td><td>{1<span class="ov">1</span>0}</td><td>{110}</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>In rhomboedrischen Achsen liegt die 3-zählige Achse entlang [111], und das Pinakoid senkrecht zu ihr heisst {111}; in hexagonalen Achsen ist es {001}. Die Indizes der beiden Systeme hängen also nicht einfach zusammen, aber sie bezeichnen dieselben Flächen.</p>
+        <p>Warum verwendet man dann für trigonale Kristalle hexagonale Achsen? Für die Indizes der Flächen könnte man jeden trigonalen Kristall auch rhomboedrisch beschreiben. Beim Gitter ist das anders. Bei manchen trigonalen Kristallen, z. B. beim Calcit, spannen rhomboedrische Achsen eine primitive Elementarzelle des Gitters auf; man spricht von einem <span class="term">rhomboedrischen Gitter</span>. Bei anderen, z. B. beim Quarz, ist das nicht möglich; ihre primitive Elementarzelle hat hexagonale Achsen. Hexagonale Achsen passen dagegen zu allen trigonalen Kristallen, und bei ihnen liegt, wie im tetragonalen und hexagonalen System, die Achse höchster Zähligkeit entlang <i>c</i>. Deshalb gibt es ein trigonales Kristallsystem, aber kein rhomboedrisches: „trigonal“ bezeichnet das Kristallsystem, „rhomboedrisch“ ein Achsensystem und ein Gitter. Wie man ein rhomboedrisches Gitter mit hexagonalen Achsen beschreibt, mit einer rhomboedrisch zentrierten Zelle, folgt in der Vorlesung bei den Bravais-Gittern.</p>
+        <div class="box app">
+          <h4>In der App</h4>
+          <p>Würfel, Oktaeder oder Rhombendodekaeder unter „Gitter“ mit „Symmetrie brechen“ entlang ⟨111⟩ strecken. Die Infobox nennt zu jeder Form ihre bisherigen, kubischen Indizes, also die rhomboedrischen, und die hexagonalen in drei und vier Ziffern. „Kristallachsen“ unter „Darstellung“ zeigt die rhomboedrischen Achsen.</p>
         </div>
       </section>
 
@@ -1782,11 +1819,11 @@ footer a { color: inherit; }
         <div class="fig-row">
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=hexagonal&amp;f=6/mmm:c25" data-alt="Hexagonales Prisma mit drei Indizes">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.2</b> Hexagonales Prisma {100} mit Pinakoid, drei Indizes (<i>hkl</i>).</figcaption>
+            <figcaption><b>Abb. 9.6</b> Hexagonales Prisma {100} mit Pinakoid, drei Indizes (<i>hkl</i>).</figcaption>
           </figure>
           <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=hexagonal&amp;f=6/mmm:c25&amp;hkil=1" data-alt="Hexagonales Prisma mit vier Indizes">
             <div class="fig-art"></div>
-            <figcaption><b>Abb. 9.3</b> Dieselben Flächen mit vier Indizes (<i>hkil</i>): {10<span class="ov">1</span>0} und {0001}.</figcaption>
+            <figcaption><b>Abb. 9.7</b> Dieselben Flächen mit vier Indizes (<i>hkil</i>): {10<span class="ov">1</span>0} und {0001}.</figcaption>
           </figure>
         </div>
         <p>Beide Schreibweisen beschreiben dieselbe Fläche, der vierte Index macht nur die Symmetrie sichtbar.</p>
@@ -1806,6 +1843,7 @@ footer a { color: inherit; }
         <h5>Zur Vertiefung</h5>
         <ul>
           <li>Quarz ist enantiomorph: Links- und Rechtsquarz sind Spiegelbilder und unterscheiden sich an der Lage kleiner Flächen neben dem positiven Rhomboeder.</li>
+          <li>Rhomboedrische Achsen: <i>a</i> = <i>b</i> = <i>c</i>, α = β = γ ≠ 90°, entlang der Kanten des Rhomboeders; seine Flächen heissen dann {100}. Hexagonale Achsen passen zu allen trigonalen Kristallen, rhomboedrische zum Gitter nur bei rhomboedrischem Gitter (Calcit, nicht Quarz).</li>
           <li>Miller-Bravais-Indizes (<i>hkil</i>) mit <i>i</i> = −(<i>h</i> + <i>k</i>): Bei gleichwertigen Flächen sind <i>h</i>, <i>k</i>, <i>i</i> vertauscht, gegebenenfalls mit umgekehrtem Vorzeichen; <i>l</i> bleibt oder wechselt das Vorzeichen.</li>
           <li>(<i>hkl</i>) → (<i>hkil</i>): <i>i</i> einfügen; (<i>hkil</i>) → (<i>hkl</i>): <i>i</i> weglassen.</li>
         </ul>
@@ -1819,6 +1857,10 @@ footer a { color: inherit; }
           <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 2.8 (Rhomboeder als gestreckter Würfel, S. 86–87).</li>
           <li>Borchardt-Ott &amp; Sowa (2018), Tab. 9.4 Nr. 18 (Links- und Rechts-Tiefquarz, Punktgruppe 32, S. 138), Abschn. 9.6.1.1 (optische Aktivität von Links- und Rechtsquarz, S. 170).</li>
           <li>W. Kleber, J. Bohm, D. Klimm, M. Mühlberg, B. Winkler, <i>Einführung in die Kristallographie</i>, 20. Aufl., De Gruyter, Berlin/Boston (2020), Abschn. 1.6, Kristallklasse 32 (Formen, Abb. 1.70: Links- und Rechtsquarz mit Indizes; grosses Rhomboeder als {10<span class="ov">1</span>1}; Unterscheidung nach Heaney u. a. (1994); Benennung nicht einheitlich, S. 70–71).</li>
+          <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 2.8 (trigonal, rhomboedrisch, hexagonal-R: Rhomboeder aus dem Würfel, Achse höchster Zähligkeit entlang <i>c</i>, warum es ein rhomboedrisches Gitter, aber kein rhomboedrisches Kristallsystem gibt, S. 85–90).</li>
+          <li>D. Schwarzenbach, <i>Kristallographie</i>, Springer, Berlin (2001), Abschn. 2.5.8 (rhomboedrische Achsen im trigonalen System; Terminologie der IUCr: trigonal als Kristallsystem, rhomboedrisch als Achsensystem und Bravais-Gitter; Bild 2.22, S. 62–63), Abschn. 2.9 (Calcit, Raumgruppe <i>R</i><span class="ov">3</span><i>c</i>, S. 91).</li>
+          <li>W. Kleber u. a. (2020), a. a. O., Abschn. 1.1.2 (rhomboedrisches Achsensystem im trigonalen System, S. 12), 1.6.5 (hexagonale und rhomboedrische Achsen im trigonalen System, Gitter hR und hP, S. 68), 1.9.4 (Quarz, Raumgruppe <i>P</i>3<sub>1</sub>2, S. 106).</li>
+          <li>Indizes der Tabelle mit der App nachgerechnet (Streckung entlang [111]).</li>
           <li>Gitterkonstanten wie im Beispielkristall der App; ρ = 51,8° für (101) bei <i>c</i>/<i>a</i> = 1,10 mit der App nachgerechnet.</li>
         </ul>
       </div>

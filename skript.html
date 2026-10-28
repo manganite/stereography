@@ -298,6 +298,7 @@ footer a { color: inherit; }
               <li><a href="#form">Was ist eine Kristallform?</a></li>
               <li><a href="#allgemein">Allgemeine Form, spezielle Form, Grenzform</a></li>
               <li><a href="#lage">Andere Projektionsrichtung</a></li>
+              <li><a href="#pyrit">Pyrit und Galenit</a></li>
             </ol>
           </li>
           <li><a href="#zonen"><span class="nr">7</span>Zonen</a>
@@ -1267,10 +1268,13 @@ footer a { color: inherit; }
           <li>das Stereogramm einfacher Kristallformen zeichnen und ein Stereogramm einem Körper zuordnen</li>
           <li>allgemeine und spezielle Form unterscheiden</li>
           <li>erklären, was sich bei einer anderen Projektionsrichtung am Stereogramm ändert und was gleich bleibt</li>
+          <li>die Multiplizität einfacher Formen angeben und begründen, warum sie von der Punktgruppe abhängt</li>
+          <li>Pyrit und Galenit an ihren Formen unterscheiden</li>
         </ul>
         <h5>Zur Vertiefung</h5>
         <ul>
           <li>Flächensymmetrie und asymmetrische Flächeneinheit erklären und Grenzformen erkennen</li>
+          <li>erklären, warum die Würfelflächen des Pyrits gerieft sein können</li>
         </ul>
       </div>
 
@@ -1337,6 +1341,8 @@ footer a { color: inherit; }
           <h4>Merke</h4>
           <p>Die allgemeine Form hat so viele Flächen, wie die Punktgruppe Operationen hat; ihre Pole liegen auf keinem Symmetrieelement. Die Pole spezieller Formen liegen auf Symmetrieelementen, ihre Flächenzahl ist kleiner.</p>
         </div>
+        <p>Die Flächenzahl einer Form heisst auch ihre <span class="term">Multiplizität</span>. Beim Galenit (Punktgruppe <i>m</i><span class="ov">3</span><i>m</i>, Abb. 6.5) hat der Würfel {100} die Multiplizität 6, das Oktaeder {111} 8 und das Rhombendodekaeder {110} 12; die allgemeine Form {<i>hkl</i>}, das Hexakisoktaeder, hat 48 Flächen. Die Pole von {100} liegen auf den 4-zähligen Achsen, die von {111} auf den <span class="ov">3</span>-Achsen, die von {110} auf den 2-zähligen Achsen entlang ⟨110⟩. Für Richtungen gilt dasselbe: Zur Familie ⟨111⟩ gehören im Würfel 8 Richtungen, die vier Raumdiagonalen mit beiden Richtungssinnen.</p>
+        <p>Welche Flächen gleichwertig sind, entscheidet die Symmetrie, nicht die Form der Indizes. Im Würfel bilden (100), (010), (001) und ihre Gegenflächen eine Form mit 6 Flächen. Ein Quader mit drei verschiedenen Kantenlängen hat nur die Symmetrie <i>mmm</i>; keine Operation führt <i>a</i> in <i>b</i> über. Dieselben sechs Flächen bilden dann drei Formen mit je 2 Flächen, die Pinakoide {100}, {010} und {001}. Dass auch zwei kubische Kristalle mit gleichen Indizes verschiedene Formen haben können, zeigt der Pyrit am Ende des Kapitels.</p>
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Flächensymmetrie, Freiheitsgrade und Grenzformen</b></h4>
           <p>Warum hat eine spezielle Form weniger Flächen, und wie können Formen mit derselben Flächenzahl verschieden angeordnet sein? Dafür braucht man die Flächensymmetrie, die Kapitel 10 ausbaut, und den Begriff der Grenzform.</p>
@@ -1379,6 +1385,64 @@ footer a { color: inherit; }
         </div>
       </section>
 
+      <section id="pyrit">
+        <h3>Gleicher Würfel, andere Symmetrie: Pyrit und Galenit</h3>
+        <p>Pyrit (FeS₂) bildet wie Galenit (PbS) oft Würfel, und beide sind kubisch. Pyrit hat aber die Punktgruppe <i>m</i><span class="ov">3</span>, ausgeschrieben 2/<i>m</i> <span class="ov">3</span>, Galenit <i>m</i><span class="ov">3</span><i>m</i>. <i>m</i><span class="ov">3</span> ist eine Untergruppe von <i>m</i><span class="ov">3</span><i>m</i> (Kapitel 3) mit 24 statt 48 Operationen. Geblieben sind die drei Spiegelebenen senkrecht zu ⟨100⟩, die <span class="ov">3</span>-Achsen entlang ⟨111⟩ und das Inversionszentrum. Die Achsen entlang ⟨100⟩ sind nur noch 2-zählig, und die dritte Blickrichtung ⟨110⟩ ist leer: Die sechs 2-zähligen Achsen und die sechs Spiegelebenen dort fehlen (Abb. 6.8b, vgl. Abb. 5.4–5.6).</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;bsp=pyrit&amp;strahlen=0&amp;normalen=0" data-alt="Pyrit: Würfel mit Pentagondodekaeder">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.8a</b> Pyrit, Beispielkristall der App: Würfel {100} mit Pentagondodekaeder {210}.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;bsp=pyrit&amp;geruest=1&amp;idx=0" data-alt="Stereogramm des Pyrits über dem Symmetriegerüst von m3̄">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.8b</b> Stereogramm dazu über dem Symmetriegerüst von <i>m</i><span class="ov">3</span>: 2-zählige Achsen entlang ⟨100⟩, <span class="ov">3</span>-Achsen, drei Spiegelebenen.</figcaption>
+          </figure>
+        </div>
+        <p>Dem Würfel allein sieht man den Unterschied nicht an. Seine Pole liegen in beiden Punktgruppen auf den Achsen entlang ⟨100⟩, und er hat in beiden 6 Flächen. Anders die zweite Form des Pyrits, {210}. In <i>m</i><span class="ov">3</span><i>m</i> sind (210) und (120) gleichwertig, denn die Spiegelebene senkrecht zu [1<span class="ov">1</span>0] vertauscht <i>h</i> und <i>k</i>. In <i>m</i><span class="ov">3</span> fehlt diese Spiegelebene. Dort hat {210} deshalb nur 12 Flächen und bildet ein <span class="term">Pentagondodekaeder</span> (Abb. 6.9a, b); die Flächen (120), (012), (201) usw. bilden eine zweite, um 90° gedrehte Form {120}. In <i>m</i><span class="ov">3</span><i>m</i> gehören beide zu einer Form, dem Tetrakishexaeder mit 24 Flächen (Abb. 6.9c, d).</p>
+        <div class="fig-row">
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3:c37&amp;strahlen=0&amp;normalen=0" data-alt="Pentagondodekaeder">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.9a</b> {210} in <i>m</i><span class="ov">3</span>: Pentagondodekaeder, 12 Flächen.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3:c37&amp;geruest=1" data-alt="Stereogramm des Pentagondodekaeders über m3̄">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.9b</b> Stereogramm dazu: 12 Pole auf den Spiegelebenen senkrecht zu ⟨100⟩.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:d46&amp;strahlen=0&amp;normalen=0" data-alt="Tetrakishexaeder">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.9c</b> {210} in <i>m</i><span class="ov">3</span><i>m</i>: Tetrakishexaeder, 24 Flächen.</figcaption>
+          </figure>
+          <figure class="fig-card" data-kind="stereo" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:d46&amp;geruest=1" data-alt="Stereogramm des Tetrakishexaeders über m3̄m">
+            <div class="fig-art"></div>
+            <figcaption><b>Abb. 6.9d</b> Stereogramm dazu: zu jedem Pol von {210} der Pol von {120}.</figcaption>
+          </figure>
+        </div>
+        <p>Die Fünfecke des Pentagondodekaeders sind nicht regelmässig: Vier ihrer Kanten sind gleich lang, die fünfte nicht. Ein Körper aus regelmässigen Fünfecken hätte 5-zählige Achsen, und die gibt es in Kristallen nicht (Kapitel 3).</p>
+        <div class="box merke">
+          <h4>Merke</h4>
+          <p>Welche Flächen zu einer Form gehören und wie viele es sind, hängt von der Punktgruppe ab, nicht nur von den Indizes. {210} hat in <i>m</i><span class="ov">3</span> 12 Flächen, in <i>m</i><span class="ov">3</span><i>m</i> 24. Der Würfel hat in allen kubischen Punktgruppen 6 Flächen und verrät die Punktgruppe deshalb nicht.</p>
+        </div>
+        <div class="box vertiefung">
+          <h4>Vertiefung · <b>Die Würfelfläche des Pyrits</b></h4>
+          <p>Auch der Würfel des Pyrits ist nicht ganz derselbe wie der des Galenits. Das zeigt seine Flächensymmetrie (Kapitel 10).</p>
+          <p>In <i>m</i><span class="ov">3</span><i>m</i> geht durch die Würfelfläche (001) eine 4-zählige Achse, und vier Spiegelebenen stehen senkrecht auf ihr: Flächensymmetrie 4<i>m</i>.<i>m</i>. In <i>m</i><span class="ov">3</span> ist die Achse nur 2-zählig, und von den Spiegelebenen bleiben die beiden senkrecht zu [100] und [010]: Flächensymmetrie 2<i>mm</i>.. (Abb. 6.10). Die Fläche ist zwar ein Quadrat, aber ihre Symmetrie ist die eines Rechtecks. Am Kristall sieht man das an der <span class="term">Streifung</span>: Die Würfelflächen des Pyrits sind oft fein gerieft, auf jeder Fläche nur in einer Richtung. Eine 4-zählige Achse würde Riefen in zwei Richtungen verlangen. So lässt sich am Würfel die Punktgruppe <i>m</i><span class="ov">3</span> erkennen.</p>
+          <div class="fig-row">
+            <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3:a34&amp;muster=1&amp;gr=1.2&amp;kugel=0&amp;ebene=0&amp;pole=0&amp;strahlen=0&amp;normalen=0" data-alt="Würfel in m3̄ mit Flächenmuster">
+              <div class="fig-art"></div>
+              <figcaption><b>Abb. 6.10a</b> Würfel in <i>m</i><span class="ov">3</span>: Flächensymmetrie 2<i>mm</i>..</figcaption>
+            </figure>
+            <figure class="fig-card" data-kind="3d" data-view="oblique" data-labels="aus" data-app="#m=form&amp;sys=kubisch&amp;f=m-3m:a34&amp;muster=1&amp;gr=1.2&amp;kugel=0&amp;ebene=0&amp;pole=0&amp;strahlen=0&amp;normalen=0" data-alt="Würfel in m3̄m mit Flächenmuster">
+              <div class="fig-art"></div>
+              <figcaption><b>Abb. 6.10b</b> Würfel in <i>m</i><span class="ov">3</span><i>m</i>: Flächensymmetrie 4<i>m</i>.<i>m</i>.</figcaption>
+            </figure>
+          </div>
+          <div class="box app">
+            <h4>In der App</h4>
+            <p>„Flächensymmetrie zeigen“ trägt auf jede Fläche ein Muster in allgemeiner Lage; seine Symmetrie ist die Flächensymmetrie.</p>
+          </div>
+        </div>
+      </section>
+
       <div class="box zusammen">
         <h4>Zusammenfassung</h4>
         <ul>
@@ -1386,10 +1450,12 @@ footer a { color: inherit; }
           <li>Flächen parallel zur Projektionsrichtung haben ihre Pole auf dem Grundkreis, Flächen senkrecht dazu im Mittelpunkt.</li>
           <li>Allgemeine Form: Pole auf keinem Symmetrieelement, Flächenzahl gleich der Zahl der Symmetrieoperationen. Spezielle Formen: Pole auf Symmetrieelementen, weniger Flächen.</li>
           <li>Eine andere Projektionsrichtung dreht den Kristall auf der Umkugel: Das Stereogramm sieht anders aus, die Winkel zwischen den Flächennormalen bleiben gleich.</li>
+          <li>Die Flächenzahl heisst Multiplizität. Sie hängt von der Punktgruppe ab: {210} hat in <i>m</i><span class="ov">3</span> (Pyrit) 12 Flächen, ein Pentagondodekaeder, in <i>m</i><span class="ov">3</span><i>m</i> 24. Der Würfel hat in allen kubischen Punktgruppen 6 Flächen.</li>
         </ul>
         <h5>Zur Vertiefung</h5>
         <ul>
           <li>Die allgemeine Form hat die Flächensymmetrie 1, spezielle Formen eine höhere. Grenzformen: gleiche Flächenzahl und Flächensymmetrie, andere Anordnung.</li>
+          <li>Die Würfelfläche hat in <i>m</i><span class="ov">3</span> nur die Flächensymmetrie 2<i>mm</i>..; am Pyrit zeigt das die Streifung.</li>
         </ul>
       </div>
       <p class="quizlink">Lernziele prüfen im Quiz: <a href="quiz.html?kap=6&amp;stufe=1" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 1</a> · <a href="quiz.html?kap=6&amp;stufe=2" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 2</a> · <a href="quiz.html?kap=6&amp;stufe=3" target="_blank" rel="noopener" title="Öffnet das Quiz zu diesem Kapitel in einem neuen Tab">Stufe 3</a></p>
@@ -1398,6 +1464,8 @@ footer a { color: inherit; }
         <h4>Quellen</h4>
         <ul>
           <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 5.2 (Kristallform und Tracht, S. 35), 5.4 (Abb. 5.13, S. 43), 5.6 (Drehung eines Oktaeders, Abb. 5.23, S. 49), 9.2 (Kristallform, allgemeine und spezielle Form, Grenzform, asymmetrische Flächeneinheit, S. 142–149, Abb. 9.5–9.9; Flächensymmetrien Tab. 9.5–9.8), 9.1 (Flächenzahl der allgemeinen Form und Ordnung der Gruppe, Abb. 9.3, S. 130), Abb. 15.2 (die 47 Kristallformen, S. 358–360).</li>
+          <li>Borchardt-Ott &amp; Sowa (2018), Tab. 9.4 Nr. 29 (Pyrit mit Streifung auf den Würfelflächen, S. 141), Abschn. 9.4 (Würfel in allen kubischen Punktgruppen, geriefte Würfelflächen des Pyrits, S. 168), 9.7 (regelmässiges Pentagondodekaeder nicht kristallographisch, Tab. 9.13, S. 175–176), Abb. 15.2 Nr. 37 (Pentagondodekaeder, Pyritoeder, S. 360).</li>
+          <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 2.1 (Pyrit: Würfel, Pentagondodekaeder, S. 36–37), 8.3 (Pentagondodekaeder des Pyrits ohne 5-zählige Achsen, S. 271).</li>
         </ul>
       </div>
     </section>

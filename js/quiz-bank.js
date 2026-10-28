@@ -3041,7 +3041,7 @@ export const BANK = [
     ],
     erklaerung: 'Quarz (32) zeigt ein hexagonales Prisma {100}, an beiden Enden abgeschlossen durch das positive Rhomboeder {101} und das negative Rhomboeder {011}. Zusammen sehen die beiden Rhomboeder wie eine hexagonale Dipyramide aus.',
     skript: 'quarz', app: '#m=form&sys=trigonal&bsp=quarz&ab=1,1.25,1.15,2,2',
-    quelle: 'Skript Kap. 9 (Ein Beispiel: Quarz, Abb. 9.4); Folie 43; Bohm u. a. (2020), Will Kleber – Einführung in die Kristallographie, Abschn. 1.6, Abb. 1.70, S. 70–71; Borchardt-Ott & Sowa (2018), Tab. 9.4 Nr. 18, S. 138',
+    quelle: 'Skript Kap. 9 (Ein Beispiel: Quarz, Abb. 9.4); Folie 43; Kleber u. a. (2020), Einführung in die Kristallographie, Abschn. 1.6, Abb. 1.70, S. 70–71; Borchardt-Ott & Sowa (2018), Tab. 9.4 Nr. 18, S. 138',
     status: 'entwurf',
   },
   {
@@ -3085,7 +3085,7 @@ export const BANK = [
     ],
     erklaerung: 'Prisma und Rhomboeder sind im Spiegel dieselben. Trigonale Dipyramide und trigonales Trapezoeder treten dagegen als linke oder rechte Form auf. Liegen ihre Flächen links von einer Fläche des positiven Rhomboeders (Blick auf die Prismenfläche darunter, <i>c</i> nach oben), ist es ein Linksquarz.',
     skript: 'quarz', app: '#m=form&sys=trigonal&bsp=quarz',
-    quelle: 'Skript Kap. 9 (Vertiefung Links- und Rechtsquarz); Bohm u. a. (2020), Will Kleber – Einführung in die Kristallographie, Abschn. 1.6, Abb. 1.70, S. 70–71; Borchardt-Ott & Sowa (2018), Tab. 9.4 Nr. 18, S. 138',
+    quelle: 'Skript Kap. 9 (Vertiefung Links- und Rechtsquarz); Kleber u. a. (2020), Einführung in die Kristallographie, Abschn. 1.6, Abb. 1.70, S. 70–71; Borchardt-Ott & Sowa (2018), Tab. 9.4 Nr. 18, S. 138',
     status: 'entwurf',
   },
   // ---------------------------------------------------------------- Kapitel 11: alle Parameter frei

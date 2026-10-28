@@ -116,7 +116,7 @@ export const EXAMPLES = [
       { hkl: [2, -1, 1], r: 1.33 },  // s, linke trigonale Dipyramide {2-1-11}
       { hkl: [6, -1, 1], r: 1.12 },  // x, linkes trigonales Trapezoeder {6-1-51}
     ],
-    src: 'Formen, Indizes und Händigkeit nach Bohm u. a., Will Kleber – Einführung in die Kristallographie (2020), Abb. 1.70, S. 70–71; Raumgruppe P3₁21; Gitter a = 4,91 Å, c = 5,40 Å',
+    src: 'Formen, Indizes und Händigkeit nach Kleber u. a., Einführung in die Kristallographie (2020), Abb. 1.70, S. 70–71; Raumgruppe P3₁21; Gitter a = 4,91 Å, c = 5,40 Å',
     note: 'Beim Linksquarz liegen die Flächen der trigonalen Dipyramide und des Trapezoeders links von den Flächen des Hauptrhomboeders {hkl:1,0,1} (Blick auf eine Prismenfläche, c nach oben). Dipyramide und Trapezoeder gibt es in 32 je als linke und rechte Form: Die beiden sind Spiegelbilder voneinander und durch keine Operation von 32 verknüpft. Das Trapezoeder ist schon für sich chiral; bei der Dipyramide bezeichnet links/rechts nur die Lage zu {hkl:1,0,1}. Ein unverzwillingter Kristall zeigt nur eine Sorte. Vergleiche „Rechtsquarz“.',
   },
   {
@@ -129,7 +129,7 @@ export const EXAMPLES = [
       { hkl: [1, 1, 1], r: 1.33 },   // s, rechte trigonale Dipyramide {11-21}
       { hkl: [5, 1, 1], r: 1.12 },   // x, rechtes trigonales Trapezoeder {51-61}
     ],
-    src: 'Formen, Indizes und Händigkeit nach Bohm u. a., Will Kleber – Einführung in die Kristallographie (2020), Abb. 1.70, S. 70–71; Raumgruppe P3₂21; Gitter a = 4,91 Å, c = 5,40 Å',
+    src: 'Formen, Indizes und Händigkeit nach Kleber u. a., Einführung in die Kristallographie (2020), Abb. 1.70, S. 70–71; Raumgruppe P3₂21; Gitter a = 4,91 Å, c = 5,40 Å',
     note: 'Beim Rechtsquarz liegen die Flächen der trigonalen Dipyramide und des Trapezoeders rechts von den Flächen des Hauptrhomboeders {hkl:1,0,1} (Blick auf eine Prismenfläche, c nach oben); das Stereogramm ist das Spiegelbild des Linksquarzes. Vergleiche „Linksquarz“.',
   },
   {

@@ -26,7 +26,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Behoben
 
 - **Quiz, Quellenangaben:** Verweise auf Kapitel und Abbildungen des Skripts folgen der neuen Kapitelfolge.
-- **Beispielkristalle Links- und Rechtsquarz, Quelle:** Formen, Indizes und Händigkeit sind jetzt mit Kleber (Bohm u. a. 2020, Abb. 1.70) belegt statt mit Wikipedia; die Indizes waren bereits dieselben.
+- **Beispielkristalle Links- und Rechtsquarz, Quelle:** Formen, Indizes und Händigkeit sind jetzt mit Kleber u. a. (2020), Abb. 1.70, belegt statt mit Wikipedia; die Indizes waren bereits dieselben.
 - **Skript, Querstriche:** Negative Indizes und Drehinversionen (1̄, 3̄, (h̄k̄l̄) …) haben ihren Querstrich jetzt genau über der Ziffer wie in der App, auch in den gezeichneten Abbildungen; vorher sass er bei manchen Schriften daneben. Ebenso in „Erste Schritte“ der App.
 
 ## [1.8.1] - 2026-10-26

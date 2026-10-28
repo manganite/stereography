@@ -21,6 +21,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 - **Quiz: 31 neue Fragen als Entwurf** zu den neuen Themen: Miller'sche Indizes und Indizes und Gitter (Kap. 1), Symmetrieoperationen, Drehinversionsachsen, Gruppe, Untergruppe, Kristallsysteme, Operationen erster und zweiter Art, Drehspiegelachsen (Kap. 3), Symmetriesätze (Kap. 4), Aufstellungen und Eigenschaften der Punktgruppen (Kap. 5), Multiplizität und Pyrit (Kap. 6), Quarz (Kap. 9), alle Gitterparameter frei (Kap. 11). Kapitel 3 und 9 haben dazu Links „Lernziele prüfen“. Die Fragen zu Kapitel 3 und 9 sind durchgesehen und erscheinen im Quiz; die übrigen erscheinen erst nach der Durchsicht ohne den Schalter „Auch ungeprüfte Fragen zeigen“.
 - **Skript, neuer Kastentyp „Grundlagen“** für Grundwissen, auf dem der Text aufbaut; er gehört zum Haupttext und steht in der Legende „So ist das Skript aufgebaut“.
 
+- **Skript, Kapitel 6, Flächenzahl bestimmen:** am Stereogramm durch Abzählen der Bilder eines Pols und in *m*3̄*m* über die Indizes (Zahl der Reihenfolgen mal 2 je Index ungleich 0), mit Tabelle von {100} bis {321} und dem Hinweis, dass die Regel nur in *m*3̄*m* gilt; neues Lernziel und neue Quizfrage `form-2-08` (Entwurf).
 - **Quiz, Lernziel in der Rückmeldung:** Nach jeder Antwort nennt die Rückmeldung in kleiner Schrift das Lernziel der Frage mit Kapitel (wörtlich aus dem Skript), damit sich die Frage einordnen lässt; ebenso das allgemeine Feedback im Moodle-Export.
 
 ### Geändert

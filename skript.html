@@ -1281,6 +1281,7 @@ footer a { color: inherit; }
           <li>allgemeine und spezielle Form unterscheiden</li>
           <li>erklären, was sich bei einer anderen Projektionsrichtung am Stereogramm ändert und was gleich bleibt</li>
           <li>die Multiplizität einfacher Formen angeben und begründen, warum sie von der Punktgruppe abhängt</li>
+          <li>die Flächenzahl einer Form am Stereogramm abzählen und in <i>m</i><span class="ov">3</span><i>m</i> aus den Indizes berechnen</li>
           <li>Pyrit und Galenit an ihren Formen unterscheiden</li>
         </ul>
         <h5>Zur Vertiefung</h5>
@@ -1354,6 +1355,22 @@ footer a { color: inherit; }
           <p>Die allgemeine Form hat so viele Flächen, wie die Punktgruppe Operationen hat; ihre Pole liegen auf keinem Symmetrieelement. Die Pole spezieller Formen liegen auf Symmetrieelementen, ihre Flächenzahl ist kleiner.</p>
         </div>
         <p>Die Flächenzahl einer Form heisst auch ihre <span class="term">Multiplizität</span>. Beim Galenit (Punktgruppe <i>m</i><span class="ov">3</span><i>m</i>, Abb. 6.5) hat der Würfel {100} die Multiplizität 6, das Oktaeder {111} 8 und das Rhombendodekaeder {110} 12; die allgemeine Form {<i>hkl</i>}, das Hexakisoktaeder, hat 48 Flächen. Die Pole von {100} liegen auf den 4-zähligen Achsen, die von {111} auf den <span class="ov">3</span>-Achsen, die von {110} auf den 2-zähligen Achsen entlang ⟨110⟩. Für Richtungen gilt dasselbe: Zur Familie ⟨111⟩ gehören im Würfel 8 Richtungen, die vier Raumdiagonalen mit beiden Richtungssinnen.</p>
+        <p>Die Flächenzahl lässt sich auf zwei Wegen bestimmen. Der erste geht in jeder Punktgruppe: Man trägt einen Pol der Form in das Symmetriegerüst ein, wendet alle Symmetrieoperationen an (Kapitel 4) und zählt die verschiedenen Bilder. Für die tetragonale Dipyramide {111} in 4/<i>mmm</i> (Abb. 6.4b) ergibt das 8 Pole, obwohl die Punktgruppe 16 Operationen hat: Weil der Pol auf einer Spiegelebene liegt, bringen je zwei Operationen ihn an dieselbe Stelle.</p>
+        <p>In <i>m</i><span class="ov">3</span><i>m</i> geht es schneller über die Indizes. Die 48 Operationen dieser Punktgruppe vertauschen die drei Indizes in jeder Reihenfolge und ändern ihre Vorzeichen in jeder Kombination (6 Reihenfolgen mal 8 Vorzeichenkombinationen). Man zählt deshalb, wie viele verschiedene Reihenfolgen die drei Zahlen ergeben (6, wenn alle verschieden sind, 3, wenn zwei gleich sind, 1, wenn alle gleich sind), und multipliziert mit 2 für jeden von null verschiedenen Index, denn nur dessen Vorzeichen kann wechseln:</p>
+        <div class="tabwrap">
+          <table class="tab">
+            <thead><tr><th>Form in <i>m</i><span class="ov">3</span><i>m</i></th><th>Reihenfolgen</th><th>Vorzeichen</th><th>Flächen</th></tr></thead>
+            <tbody>
+              <tr><td>Würfel {100}</td><td>3</td><td>2</td><td>6</td></tr>
+              <tr><td>Oktaeder {111}</td><td>1</td><td>2 · 2 · 2 = 8</td><td>8</td></tr>
+              <tr><td>Rhombendodekaeder {110}</td><td>3</td><td>2 · 2 = 4</td><td>12</td></tr>
+              <tr><td>Deltoidikositetraeder {112}</td><td>3</td><td>8</td><td>24</td></tr>
+              <tr><td>Tetrakishexaeder {210}</td><td>6</td><td>4</td><td>24</td></tr>
+              <tr><td>Hexakisoktaeder {321}</td><td>6</td><td>8</td><td>48</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Die Regel gilt nur für <i>m</i><span class="ov">3</span><i>m</i>. Die übrigen kubischen Punktgruppen enthalten nicht alle Vertauschungen und Vorzeichenwechsel, und eine Form hat dort oft weniger Flächen: {210} im Pyrit (<i>m</i><span class="ov">3</span>) nur 12 (<a href="#pyrit">Gleicher Würfel, andere Symmetrie</a>). Eine Formel für jede Punktgruppe steht in Kapitel 10.</p>
         <p>Welche Flächen gleichwertig sind, entscheidet die Symmetrie, nicht die Form der Indizes. Im Würfel bilden (100), (010), (001) und ihre Gegenflächen eine Form mit 6 Flächen. Ein Quader mit drei verschiedenen Kantenlängen hat nur die Symmetrie <i>mmm</i>; keine Operation führt <i>a</i> in <i>b</i> über. Dieselben sechs Flächen bilden dann drei Formen mit je 2 Flächen, die Pinakoide {100}, {010} und {001}. Dass auch zwei kubische Kristalle mit gleichen Indizes verschiedene Formen haben können, zeigt der Pyrit am Ende des Kapitels.</p>
         <div class="box vertiefung">
           <h4>Vertiefung · <b>Flächensymmetrie, Freiheitsgrade und Grenzformen</b></h4>
@@ -1463,6 +1480,7 @@ footer a { color: inherit; }
           <li>Allgemeine Form: Pole auf keinem Symmetrieelement, Flächenzahl gleich der Zahl der Symmetrieoperationen. Spezielle Formen: Pole auf Symmetrieelementen, weniger Flächen.</li>
           <li>Eine andere Projektionsrichtung dreht den Kristall auf der Umkugel: Das Stereogramm sieht anders aus, die Winkel zwischen den Flächennormalen bleiben gleich.</li>
           <li>Die Flächenzahl heisst Multiplizität. Sie hängt von der Punktgruppe ab: {210} hat in <i>m</i><span class="ov">3</span> (Pyrit) 12 Flächen, ein Pentagondodekaeder, in <i>m</i><span class="ov">3</span><i>m</i> 24. Der Würfel hat in allen kubischen Punktgruppen 6 Flächen.</li>
+          <li>Flächenzahl bestimmen: einen Pol mit allen Operationen abbilden und die Bilder zählen. In <i>m</i><span class="ov">3</span><i>m</i>: Zahl der Reihenfolgen der Indizes (6, 3 oder 1) mal 2 für jeden Index ungleich 0.</li>
         </ul>
         <h5>Zur Vertiefung</h5>
         <ul>

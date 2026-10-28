@@ -270,7 +270,7 @@ const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}`, alt: `Räumlich
 const QUELLE_FORM = 'Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
 
 export const KOERPER_STEREO = {
-  id: 'gen-koerper', kapitel: 6, stufen: [1, 2], status: 'entwurf',
+  id: 'gen-koerper', kapitel: 6, stufen: [1, 2], status: 'geprüft',
   /** k:… Kristall → Stereogramm, s:… Stereogramm → Kristall */
   params: (stufe) => KOERPER_AUFGABEN.filter((a) => a.stufe === stufe).flatMap((a) => [`k:${a.id}`, `s:${a.id}`]),
   make(param) {
@@ -518,7 +518,7 @@ function darstellungText(info) {
 }
 
 export const GERUEST3D = {
-  id: 'gen-geruest3d', kapitel: 4, stufen: [1, 2], status: 'entwurf',
+  id: 'gen-geruest3d', kapitel: 4, stufen: [1, 2], status: 'geprüft',
   /** r:… Zeichnung → Stereogramm, s:… Stereogramm → Zeichnung */
   params: (stufe) => GERUEST.params(stufe).filter((id) => !GERUEST3D_OHNE.includes(id) && abl3d(id).length >= 3).flatMap((id) => [`r:${id}`, `s:${id}`]),
   make(param) {

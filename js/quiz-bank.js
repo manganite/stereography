@@ -920,7 +920,7 @@ export const BANK = [
       'Sie hat 16 Flächen, genauso viele, wie 4/<i>mmm</i> Operationen hat.',
       'Auch spezielle Formen wie die tetragonale Dipyramide {111} haben Pole auf beiden Halbkugeln. Entscheidend ist die Lage zu den Symmetrieelementen.',
     ],
-    erklaerung: 'Gezeigt ist die ditetragonale Dipyramide {211}: 16 Pole, keiner auf einem Symmetrieelement. Sie ist die allgemeine Form von 4/<i>mmm</i>; ihre Flächenzahl ist gleich der Zahl der Operationen.',
+    erklaerung: 'Gezeigt ist die ditetragonale Dipyramide {211}: 16 Pole, keiner auf einem Symmetrieelement. Sie ist eine allgemeine Form von 4/<i>mmm</i>; ihre Flächenzahl ist gleich der Zahl der Operationen.',
     skript: 'allgemein', app: '#m=form&sys=tetragonal&f=4/mmm:g16&geruest=1',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2, S. 143–146 (Abb. 9.7a, S. 145); Skript Abb. 2.3',
     pruefung: { art: 'flaechenzahl', form: '4/mmm:g16', anzahl: 16, ordnung: 16 },
@@ -986,7 +986,7 @@ export const BANK = [
     skript: 'allgemein', app: '#m=form&sys=tetragonal&f=4/mmm:b10',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2, S. 142–149',
     pruefung: { art: 'flaechen', gruppe: '4/mmm', system: 'tetragonal', hkl: [1, 1, 0], anzahl: 4, allgemein: false },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-2-02', stufe: 2, kapitel: 6, typ: 'mehrfach',
@@ -1005,7 +1005,7 @@ export const BANK = [
     skript: 'allgemein', app: '#m=pg&g=4mm&rho=40&az=20',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.1, S. 130 (Abb. 9.3)',
     pruefung: { art: 'ordnungen', gruppen: ['mmm', '4/m', '4mm', '6mm', '222'], anzahl: 8 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-2-03', stufe: 2, kapitel: 6, typ: 'einfach',
@@ -1028,17 +1028,17 @@ export const BANK = [
     skript: 'lage',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 49 (Drehung eines Oktaeders, Abb. 5.23); Skript Kap. 6 (Andere Projektionsrichtung)',
     pruefung: { art: 'drehung', achse: [1, 0, 0], pol: [1, 1, 1] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-2-04', stufe: 2, kapitel: 6, typ: 'einfach',
     lernziel: 'allgemeine und spezielle Form unterscheiden',
     frage: 'In 4/<i>mmm</i> ist die tetragonale Dipyramide {111} eine spezielle Form mit 8 Flächen. Was ist {111} in der Punktgruppe <b>4/<i>m</i></b>?',
     antworten: [
-      'Die allgemeine Form, ebenfalls mit 8 Flächen',
+      'Eine allgemeine Form, ebenfalls mit 8 Flächen',
       'Eine spezielle Form, denn ihre Pole liegen wie in 4/<i>mmm</i> auf Spiegelebenen',
       'Eine spezielle Form mit 4 Flächen',
-      'Die allgemeine Form mit 16 Flächen',
+      'Eine allgemeine Form mit 16 Flächen',
     ],
     richtig: [0],
     hinweise: [
@@ -1047,11 +1047,11 @@ export const BANK = [
       '4 Flächen haben in 4/<i>m</i> nur Formen, deren Pole auf der Spiegelebene senkrecht zu c liegen, die Prismen {hk0}.',
       '4/<i>m</i> hat nur 8 Operationen; mehr Flächen kann eine Form in 4/<i>m</i> nicht haben.',
     ],
-    erklaerung: '4/<i>m</i> hat 8 Operationen: vier Drehungen um c, jede mit und ohne Spiegelung an der Ebene senkrecht zu c. Der Pol von (111) liegt weder auf der 4-zähligen Achse noch auf dieser Spiegelebene, also auf keinem Symmetrieelement: {111} ist hier die allgemeine Form mit 8 Flächen. Die Pole liegen genau wie in 4/<i>mmm</i>. Ob eine Form allgemein oder speziell ist, hängt also von der Punktgruppe ab, nicht nur von den Indizes.',
+    erklaerung: '4/<i>m</i> hat 8 Operationen: vier Drehungen um c, jede mit und ohne Spiegelung an der Ebene senkrecht zu c. Der Pol von (111) liegt weder auf der 4-zähligen Achse noch auf dieser Spiegelebene, also auf keinem Symmetrieelement: {111} ist hier eine allgemeine Form mit 8 Flächen, eine tetragonale Dipyramide. Die Pole liegen genau wie in 4/<i>mmm</i>. Ob eine Form allgemein oder speziell ist, hängt also von der Punktgruppe ab, nicht nur von den Indizes.',
     skript: 'allgemein', app: '#m=pg&g=4/m&rho=54.74&az=45',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2, S. 142–149',
     pruefung: { art: 'flaechen', gruppe: '4/m', system: 'tetragonal', hkl: [1, 1, 1], anzahl: 8, allgemein: true },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-2-05', stufe: 2, kapitel: 6, typ: 'einfach',
@@ -1073,7 +1073,7 @@ export const BANK = [
     erklaerung: 'Zeigen alle Normalen nach oben, so begrenzt keine Fläche der Form den Körper nach unten. Solche Formen sind offen, z. B. die tetragonale Pyramide {101} (Abb. 2.2 im Skript); am Kristall schliesst eine weitere Form wie das Pedion (00<span class="ov">1</span>) den Körper ab.',
     skript: 'form', app: '#m=form&sys=tetragonal&f=4mm:c8',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.2, S. 35; Skript Kap. 6 (Abb. 6.2)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ---------------------------------------------------------------- Kapitel 6, Stufe 3 (Vertiefungen)
@@ -1427,16 +1427,16 @@ export const BANK = [
   {
     id: 'sym-3-03', stufe: 3, kapitel: 4, typ: 'einfach',
     lernziel: 'Das Polmuster einer Form kann höhere Symmetrie haben als die Punktgruppe des Kristalls.',
-    frage: `Ein Kristall der Punktgruppe ${o(4)}3<i>m</i> zeigt nur das Tetraeder {111}. Welche Symmetrie hat das Polmuster seiner vier Pole?`,
+    frage: 'Welche Symmetrie hat das Polmuster der vier Pole des Tetraeders {111}?',
     antworten: [`${o(4)}3<i>m</i>`, '23', `<i>m</i>${o(3)}<i>m</i>`, `<i>m</i>${o(3)}`],
     richtig: [0],
     hinweise: [
       null,
-      `Das Muster hat alle Operationen von ${o(4)}3<i>m</i>, auch die Spiegelungen an den Ebenen senkrecht zu ⟨110⟩: Jede bildet das Muster auf sich ab, zwei Pole liegen auf der Ebene, die beiden anderen tauschen die Plätze.`,
+      `23 enthält nur Drehungen. Das Muster hat mehr Symmetrie, z. B. die Spiegelungen an den Ebenen senkrecht zu ⟨110⟩: Jede bildet das Muster auf sich ab, zwei Pole liegen auf der Ebene, die beiden anderen tauschen die Plätze.`,
       `<i>m</i>${o(3)}<i>m</i> enthält die Inversion; sie würde zu (111) den Pol (${o(1)}${o(1)}${o(1)}) erzeugen, der zum Gegentetraeder gehört.`,
       `Auch <i>m</i>${o(3)} enthält die Inversion und machte aus dem Tetraeder ein Oktaeder.`,
     ],
-    erklaerung: `Das Polmuster einer Form hat immer die Eigensymmetrie der Form. Beim Tetraeder ist das ${o(4)}3<i>m</i>, und das ist hier zugleich die Punktgruppe des Kristalls: Muster und Punktgruppe stimmen überein. Anders bei der tetragonalen Pyramide in 4: Ihre Eigensymmetrie 4<i>mm</i> ist höher als die Punktgruppe, und ihr Muster zeigt mehr Symmetrie, als der Kristall hat.`,
+    erklaerung: `Das Polmuster einer Form hat immer die Eigensymmetrie der Form, gleich in welcher Punktgruppe der Kristall vorliegt. Beim Tetraeder ist das ${o(4)}3<i>m</i>: die Drehungen von 23, dazu die Spiegelungen an den Ebenen senkrecht zu ⟨110⟩ und die ${o(4)}-Achsen entlang ⟨100⟩, zusammen 24 Operationen; ein Inversionszentrum hat es nicht. Gehört der Kristall zu ${o(4)}3<i>m</i>, stimmen Muster und Punktgruppe überein. Gehört er zu 23, hat das Muster mehr Symmetrie als der Kristall, wie die tetragonale Pyramide in 4 (Muster 4<i>mm</i>).`,
     skript: 'speziell', app: `#m=form&sys=kubisch&f=${encodeURIComponent('-43m:a33')}`,
     quelle: 'Skript Kap. 4 (Vertiefung Grenzen des Schlusses vom Polmuster auf die Punktgruppe) und Kap. 10 (Erzeugende Symmetrie und Eigensymmetrie); International Tables Vol. A (2006), Tab. 10.1.2.3',
     pruefung: { art: 'musterGruppe', gruppe: '-43m', pol: [1, 1, 1], eigen: '-43m', nicht: ['m-3m', 'm-3'] },
@@ -2575,7 +2575,7 @@ export const BANK = [
     erklaerung: 'Achsenabschnitte 1, 1, ∞; Kehrwerte 1, 1, 0. Die Fläche ist (110).',
     skript: 'aufstellung', app: '#m=form&sys=tetragonal&f=4/mmm:b10',
     quelle: "Skript Kap. 1 (Grundlagen · Miller'sche Indizes); Borchardt-Ott & Sowa (2018), Abschn. 3.4.3, S. 15–17",
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'ind-1-03', stufe: 1, kapitel: 1, typ: 'einfach',
@@ -2982,10 +2982,10 @@ export const BANK = [
     erklaerung: 'Zu {110} gehören alle Flächen mit zwei Indizes ±1 und einer 0: drei Stellen für die 0, je vier Vorzeichenkombinationen, zusammen 12. Die Pole liegen auf den 2-zähligen Achsen entlang ⟨110⟩.',
     skript: 'allgemein', app: '#m=form&sys=kubisch&f=m-3m:c40',
     quelle: 'Skript Kap. 6 (Multiplizität)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
-    id: 'form-1-11', stufe: 1, kapitel: 6, typ: 'einfach',
+    id: 'form-2-09', stufe: 2, kapitel: 6, typ: 'einfach',
     lernziel: 'Pyrit und Galenit an ihren Formen unterscheiden',
     frage: `Pyrit (<i>m</i>${o(3)}) und Galenit (<i>m</i>${o(3)}<i>m</i>) bilden beide Würfel. An welcher Form unterscheidet man sie?`,
     antworten: [
@@ -3004,7 +3004,7 @@ export const BANK = [
     erklaerung: `In <i>m</i>${o(3)}<i>m</i> sind (210) und (120) gleichwertig, und {210} ist das Tetrakishexaeder mit 24 Flächen. In <i>m</i>${o(3)} fehlt die Spiegelung, die <i>h</i> und <i>k</i> vertauscht: {210} hat nur 12 Flächen, das Pentagondodekaeder des Pyrits.`,
     skript: 'pyrit', app: '#m=form&sys=kubisch&bsp=pyrit&geruest=1',
     quelle: 'Skript Kap. 6 (Pyrit und Galenit, Abb. 6.9); Hoffmann (2016), Abschn. 2.1, S. 36–37',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-2-06', stufe: 2, kapitel: 6, typ: 'einfach',
@@ -3021,10 +3021,10 @@ export const BANK = [
     erklaerung: `Welche Flächen gleichwertig sind, bestimmt die Symmetrie. In <i>mmm</i> gehören nur (100) und (${o(1)}00) zusammen, ebenso (010) und (0${o(1)}0), (001) und (00${o(1)}): drei Pinakoide.`,
     skript: 'allgemein', app: '#m=form&sys=kubisch&f=m-3m:a34&br=1&ba=1.2&ca=0.8',
     quelle: 'Skript Kap. 6 (Multiplizität, Würfel und Quader)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
-    id: 'form-2-07', stufe: 2, kapitel: 6, typ: 'einfach',
+    id: 'form-3-04', stufe: 3, kapitel: 6, typ: 'einfach',
     lernziel: 'Pyrit und Galenit an ihren Formen unterscheiden',
     frage: `Warum ist (120) in der Punktgruppe <i>m</i>${o(3)} nicht gleichwertig zu (210)?`,
     antworten: [
@@ -3043,7 +3043,7 @@ export const BANK = [
     erklaerung: `In <i>m</i>${o(3)} ändern die Spiegelebenen senkrecht zu ⟨100⟩ Vorzeichen, die ${o(3)}-Achsen vertauschen die Indizes zyklisch. (120) erreicht man so nicht; dazu braucht es die Spiegelung senkrecht zu [1${o(1)}0], die nur <i>m</i>${o(3)}<i>m</i> hat. {120} ist in <i>m</i>${o(3)} ein zweites, um 90° gedrehtes Pentagondodekaeder.`,
     skript: 'pyrit', app: '#m=form&sys=kubisch&f=m-3:c37&geruest=1',
     quelle: 'Skript Kap. 6 (Pyrit und Galenit); mit den Operationen der App nachgerechnet',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-2-08', stufe: 2, kapitel: 6, typ: 'einfach',
@@ -3061,7 +3061,7 @@ export const BANK = [
     skript: 'allgemein', app: '#m=form&sys=kubisch&f=m-3m:e43',
     quelle: 'Skript Kap. 6 (Allgemeine Form, spezielle Form, Grenzform: Flächenzahl in m3̄m)',
     pruefung: { art: 'flaechenzahl', form: 'm-3m:e43', anzahl: 24, ordnung: 48 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-3-03', stufe: 3, kapitel: 6, typ: 'einfach',

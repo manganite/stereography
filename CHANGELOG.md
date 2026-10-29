@@ -6,6 +6,24 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.9.1] - 2026-10-29
+
+Quiz und Skript besser aufeinander abgestimmt: Abbildungsverweise im Quiz korrigiert, Projektionsformel und Symbollegende im Skript, Stufe 3 als Stoffstufe erklärt.
+
+### Hinzugefügt
+
+- **Skript, Kapitel 2:** die Formel *r* = *R* · tan(ρ/2) für den Abstand eines Bildpunkts vom Mittelpunkt, begründet am Strahl zum Südpol in Abb. 2.1, mit Beispiel (ρ = 45° → *r* ≈ 0,41 *R*). Bisher stand sie nur in der Erklärung einer Quizfrage.
+- **Skript, Kapitel 4:** Übersicht aller Symbole im Stereogramm (Drehachsen, Drehachsen mit Inversionszentrum, Drehinversionsachsen 3̄, 4̄, 6̄, Inversionszentrum, Spiegelebene, Pole oben, unten und übereinander), gezeichnet mit demselben Code wie die App.
+- **Test:** Verweise der Quizfragen auf Abbildungen des Skripts müssen existieren und im Kapitel der Frage liegen, ausser die Angabe nennt ausdrücklich ein anderes Kapitel.
+
+### Geändert
+
+- **Quiz, Startseite und README:** Ein Satz erklärt, dass Stufe 3 mehr Stoff bedeutet (die Vertiefungen des Skripts), nicht unbedingt schwierigere Fragen.
+
+### Behoben
+
+- **Quiz, Abbildungsverweise:** 17 Verweise in 16 Fragen zeigten noch auf die Abbildungsnummern vor der Neuordnung der Kapitel (z. B. `zon-2-05` „Abb. 4.4“ statt 7.4, `sym-1-03` „Abb. 3.1e“ statt 4.1e, `form-1-08` „Abb. 2.5–2.7“ statt 6.5–6.7). Hinweis aus einer externen Durchsicht mit ChatGPT.
+
 ## [1.9.0] - 2026-10-29
 
 Skript neu geordnet und erweitert (elf Kapitel, darunter neu Symmetrieoperationen und Punktgruppen, Symmetriesätze, Pyrit, Quarz, rhomboedrische Achsen und die interaktive Abb. 8.5 zum Wachstum), ohne Verweise auf die Vorlesung verständlich; Infobox der App verlinkt jeden Begriff ins Skript; alle Quizfragen durchgesehen und geprüft, mit Lernziel in der Rückmeldung.
@@ -219,7 +237,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.9.1...HEAD
+[1.9.1]: https://github.com/manganite/stereography/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/manganite/stereography/compare/v1.8.1...v1.9.0
 [1.8.1]: https://github.com/manganite/stereography/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/manganite/stereography/compare/v1.7.0...v1.8.0

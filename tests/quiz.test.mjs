@@ -846,3 +846,28 @@ test('Seite: Kapitel mit Namen, Schalter unter der Auswahl, Stand für die gewä
   assert.match(js, /stand\(KANDS\.filter\(\(k\) => k\.stufe <= wahl\.stufe\)/);
   assert.match(html, /Ihr Stand · <span id="stand-stufe">/);
 });
+
+test('Fragen: Abbildungsverweise aufs Skript existieren und liegen im Kapitel der Frage', () => {
+  // Nach der Neuordnung der Kapitel (1.9.0) zeigten alte Nummern auf falsche Abbildungen. Ein Verweis
+  // auf eine Skript-Abbildung muss existieren und im Kapitel der Frage liegen, ausser der Abschnitt der
+  // Angabe nennt ausdrücklich ein anderes Kapitel („Skript Kap. 11 (Abb. 11.2)“). Verweise auf Bücher
+  // (Borchardt-Ott, Kleber, Hoffmann …) stehen in der Quelle ohne „Skript“ und werden übergangen.
+  const html = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
+  const abb = new Set([...html.matchAll(/<b>Abb\. (\d+\.\d+)([a-z]?)<\/b>/g)].flatMap((m) => [m[1], m[1] + m[2]]));
+  const fehler = [];
+  for (const q of BANK) {
+    const texte = [q.frage, q.erklaerung, ...(q.hinweise || [])].filter(Boolean);
+    const quelle = (q.quelle || '').split(';').filter((t) => /Skript/.test(t));
+    for (const t of [...texte, ...quelle]) {
+      for (const m of t.matchAll(/Abb\. (\d+)\.(\d+)([a-z]?)/g)) {
+        const davor = t.slice(Math.max(0, m.index - 60), m.index), danach = t.slice(m.index, m.index + 40);
+        if (/Borchardt|Kleber|Hoffmann|Schwarzenbach|Tables/.test(davor) && !/Skript|Skr/.test(davor + danach)) continue;
+        const nr = `${m[1]}.${m[2]}${m[3]}`;
+        if (!abb.has(nr) && !abb.has(`${m[1]}.${m[2]}`)) { fehler.push(`${q.id}: Abb. ${nr} fehlt im Skript`); continue; }
+        const kap = Number(m[1]);
+        if (kap !== q.kapitel && !new RegExp(`Kap(?:itel|\\.) ${kap}\\b`).test(t)) fehler.push(`${q.id} (Kap. ${q.kapitel}): Abb. ${nr} aus Kap. ${kap}`);
+      }
+    }
+  }
+  assert.deepEqual(fehler, []);
+});

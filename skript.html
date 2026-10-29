@@ -238,6 +238,9 @@ footer a { color: inherit; }
   .fig-grid5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   article h2 { font-size: 1.45rem; }
 }
+.symlegende { list-style: none; padding: 0; margin: 12px 0 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 18px; }
+.symlegende li { display: flex; align-items: center; gap: 10px; font-size: 0.92rem; line-height: 1.3; }
+.symlegende .sym { flex: none; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
 </style>
 </head>
 <body>
@@ -587,7 +590,7 @@ footer a { color: inherit; }
           <figcaption><b>Abb. 2.1</b> Links ein Schnitt durch die Umkugel: Die Normale der Fläche (dunkel) trifft die Kugel im Flächenpol P; der Strahl zum Südpol (bei Polen der unteren Halbkugel zum Nordpol) schneidet die Äquatorebene im Bildpunkt P′. Rechts derselbe Bildpunkt im Stereogramm. Mit dem Regler wandert der Pol über die Kugel.</figcaption>
         </figure>
 
-        <p>Am Regler lässt sich ablesen: Ein Pol am Nordpol landet im Mittelpunkt des Stereogramms, ein Pol auf dem Äquator auf dem Grundkreis. Dazwischen rücken die Bildpunkte nicht gleichmässig nach aussen. Ein Schritt von 10° Poldistanz ist am Rand fast doppelt so lang wie in der Mitte. Abstände im Stereogramm sind deshalb kein direktes Mass für Winkel.</p>
+        <p>Am Regler lässt sich ablesen: Ein Pol am Nordpol landet im Mittelpunkt des Stereogramms, ein Pol auf dem Äquator auf dem Grundkreis. Dazwischen rücken die Bildpunkte nicht gleichmässig nach aussen. Ein Schritt von 10° Poldistanz ist am Rand fast doppelt so lang wie in der Mitte. Abstände im Stereogramm sind deshalb kein direktes Mass für Winkel. Genau gilt für den Abstand <i>r</i> des Bildpunkts vom Mittelpunkt <i>r</i> = <i>R</i> · tan(ρ/2), mit dem Radius <i>R</i> des Grundkreises: Der Strahl zum Südpol in Abb. 2.1 schliesst mit der Achse der Kugel den halben Winkel ρ/2 ein. Ein Pol mit ρ = 45° liegt also bei <i>r</i> ≈ 0,41 <i>R</i>, noch nicht auf halbem Weg zum Grundkreis.</p>
         <p>Abb. 2.2 zeigt die Konstruktion für einen ganzen Kristall, den Galenit (PbS) mit Würfel, Oktaeder und Rhombendodekaeder. Jede Fläche hat ihre Normale und ihren Pol; die Projektionsstrahlen führen zum Süd- bzw. Nordpol. Abb. 2.3 ist das fertige Stereogramm. Die Flächen (111) oben und (11<span class="ov">1</span>) unten liegen genau übereinander, deshalb erscheint ihr Bild als Punkt im Kreis.</p>
 
         <div class="fig-row">
@@ -670,7 +673,7 @@ footer a { color: inherit; }
       <div class="quellen">
         <h4>Quellen</h4>
         <ul>
-          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 3.3 (Aufstellung, S. 13), 5.3 (Gesetz der Winkelkonstanz, S. 38–39), 5.4 (Stereographische Projektion, S. 40–43, Abb. 5.9–5.12), 5.5 (Reflexionsgoniometer, S. 43–45, Abb. 5.15), 5.6 (Wulffsches Netz, Winkelkoordinaten, Kreis- und Winkeltreue, S. 45–47, Abb. 5.16–5.19).</li>
+          <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 3.3 (Aufstellung, S. 13), 5.3 (Gesetz der Winkelkonstanz, S. 38–39), 5.4 (Stereographische Projektion, S. 40–43, Abb. 5.9–5.12), 5.5 (Reflexionsgoniometer, S. 43–45, Abb. 5.15), 5.6 (Wulffsches Netz, Winkelkoordinaten, Kreis- und Winkeltreue, S. 45–47, Abb. 5.16–5.19), 5.8 (Abb. 5.33, S. 56: mathematische Beziehung der Projektion).</li>
           <li>Winkelkoordinaten des Galenits: Borchardt-Ott &amp; Sowa (2018), Aufgabe 5.13, Tab. 5.2 (S. 63–64).</li>
         </ul>
       </div>
@@ -909,11 +912,29 @@ footer a { color: inherit; }
         <h3>Symmetrieelemente in der Projektion</h3>
         <p>Für Symmetrieelemente weicht man vom Prinzip der Flächenpole ab. Man projiziert bei Drehachsen und Drehinversionsachsen die Punkte, an denen sie die Umkugel durchstossen, und bei Spiegelebenen den Grosskreis, in dem sie die Kugel schneiden. Das ergibt:</p>
         <ul>
-          <li><span class="term">Drehachse senkrecht zur Projektionsebene:</span> ein Symbol im Mittelpunkt. Die Symbole sind eine Linse für 2-zählige, ein Dreieck für 3-zählige, ein Quadrat für 4-zählige und ein Sechseck für 6-zählige Drehachsen; Drehinversionsachsen haben eigene Symbole.</li>
+          <li><span class="term">Drehachse senkrecht zur Projektionsebene:</span> ein Symbol im Mittelpunkt. Die Symbole sind eine Linse für 2-zählige, ein Dreieck für 3-zählige, ein Quadrat für 4-zählige und ein Sechseck für 6-zählige Drehachsen; Drehinversionsachsen haben eigene Symbole (Übersicht unten).</li>
           <li><span class="term">Drehachse in der Projektionsebene:</span> zwei Symbole an gegenüberliegenden Stellen des Grundkreises, in der App mit einer dünnen Linie verbunden.</li>
           <li><span class="term">Geneigte Drehachse</span> (z. B. die 3-zähligen Achsen ⟨111⟩ im Würfel): Symbole im Inneren des Grundkreises.</li>
           <li><span class="term">Spiegelebene:</span> ein kräftiger Grosskreis. Enthält sie die Projektionsrichtung, ist es eine Gerade durch den Mittelpunkt; liegt sie geneigt, ein Kreisbogen; liegt sie in der Projektionsebene, ist sie der kräftig gezeichnete Grundkreis. Im Symmetriegerüst zeichnet man von einer geneigten Spiegelebene nur einen Bogen; bei Zonenkreisen zeigt die App auch die untere Hälfte, gestrichelt (Kapitel 7).</li>
           <li><span class="term">Inversionszentrum:</span> ein kleiner Kreis im Mittelpunkt.</li>
+        </ul>
+        <p>Die Symbole im Überblick, gezeichnet wie in der App (nach den International Tables):</p>
+        <ul class="symlegende" aria-label="Symbole im Stereogramm">
+          <li><span class="sym" data-sym="2"></span><span>2-zählige Drehachse</span></li>
+          <li><span class="sym" data-sym="3"></span><span>3-zählige Drehachse</span></li>
+          <li><span class="sym" data-sym="4"></span><span>4-zählige Drehachse</span></li>
+          <li><span class="sym" data-sym="6"></span><span>6-zählige Drehachse</span></li>
+          <li><span class="sym" data-sym="2" data-centre></span><span>2-zählige Achse mit Inversionszentrum (2/<i>m</i>)</span></li>
+          <li><span class="sym" data-sym="4" data-centre></span><span>4-zählige Achse mit Inversionszentrum (4/<i>m</i>)</span></li>
+          <li><span class="sym" data-sym="6" data-centre></span><span>6-zählige Achse mit Inversionszentrum (6/<i>m</i>)</span></li>
+          <li><span class="sym" data-sym="-3"></span><span><span class="ov">3</span>: Dreieck mit Inversionszentrum</span></li>
+          <li><span class="sym" data-sym="-4"></span><span><span class="ov">4</span>: offenes Quadrat mit Linse</span></li>
+          <li><span class="sym" data-sym="-6"></span><span><span class="ov">6</span> = 3/<i>m</i>: offenes Sechseck mit Dreieck</span></li>
+          <li><span class="sym" data-sym="z"></span><span>Inversionszentrum <span class="ov">1</span></span></li>
+          <li><span class="sym" data-sym="m"></span><span>Spiegelebene (<span class="ov">2</span> = <i>m</i>)</span></li>
+          <li><span class="sym" data-sym="po"></span><span>Pol der oberen Halbkugel</span></li>
+          <li><span class="sym" data-sym="pu"></span><span>Pol der unteren Halbkugel</span></li>
+          <li><span class="sym" data-sym="pb"></span><span>zwei Pole übereinander, oben und unten</span></li>
         </ul>
         <p>Das Stereogramm aller Symmetrieelemente einer Punktgruppe ist ihr <span class="term">Symmetriegerüst</span>. Die Legende der App erklärt jedes Symbol, das gerade zu sehen ist.</p>
       </section>
@@ -1061,7 +1082,7 @@ footer a { color: inherit; }
         <h4>Quellen</h4>
         <ul>
           <li>Borchardt-Ott &amp; Sowa (2018), Abschn. 5.4 (Projektion von Symmetrieelementen, S. 43), 6.1–6.4 (Drehachsen und ihre Symbole, Spiegelebene, Inversionszentrum, Koppelung und Drehinversionsachsen, S. 69–78), 7.2 (Symmetriesätze I und II, S. 102, Abb. 7.14, 7.15; Anwendung S. 104), 9.1 (Abb. 9.1, Tab. 9.2, S. 128–129), 9.2 (Galenit, Abb. 9.4, S. 142), Tab. 15.1 und 15.2 (Symbole, S. 354–356); Aufgabe 6.1b (Pol in allgemeiner Lage, S. 79).</li>
-          <li>International Tables for Crystallography, Vol. A (2006), Kap. 10.1 (Stereogramme der Punktgruppen).</li>
+          <li>International Tables for Crystallography, Vol. A (2006), Kap. 1.4 (graphische Symbole der Symmetrieelemente) und Kap. 10.1 (Stereogramme der Punktgruppen).</li>
           <li>F. Hoffmann, <i>Faszination Kristalle und Symmetrie</i>, Springer Fachmedien, Wiesbaden (2016), Abschn. 3.2.2 (zwei senkrechte Spiegelebenen erzeugen eine 2-zählige Achse, Abb. 3.10, S. 101), 3.3.2 (2 und <i>m</i> in zwei Blickrichtungen erzeugen eine weitere Spiegelebene, S. 114).</li>
         </ul>
       </div>

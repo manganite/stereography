@@ -2,7 +2,7 @@
 // Eine Abbildung ist durch die Link-Adresse der App beschrieben (data-app="#m=form&…"); daraus entsteht
 // mit scene.js genau das Stereogramm, das die App für diese Adresse zeigt.
 
-import { buildSVG } from './stereogram.js';
+import { buildSVG, symbolIcon } from './stereogram.js';
 import { palette, pgScene, crystalAxesFor, polyCrystal, polyScene, stateForHash as stateFor, stereoForHash as stereoFor } from './scene.js';
 import { koerperSVG } from './bild3d.js';
 import { hklHTML } from './format.js';
@@ -89,6 +89,26 @@ function renderFigures() {
   }
   for (const f of projFigures) f.draw();
   for (const f of wachsFigures) f.draw();
+  symbolLegende(col);
+}
+
+// ------------------------------------------------------------------ Symbollegende (Kap. 4)
+// Die Symbole zeichnet derselbe Code wie das Stereogramm der App (symbolIcon); Pole, Spiegelebene und
+// Inversionszentrum wie in der Legende der App.
+function symbolLegende(col) {
+  const ink = col.ink, paper = col.paper;
+  const icol = { ...col, axis: ink, paper };
+  const EXTRA = {
+    z: `<svg viewBox="-10 -10 20 20" width="20" height="20" aria-hidden="true"><circle r="4.2" fill="${paper}" stroke="${ink}" stroke-width="1.4"/></svg>`,
+    m: `<svg viewBox="0 0 26 10" width="26" height="10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="${ink}" stroke-width="3.2" stroke-linecap="round"/></svg>`,
+    po: `<svg viewBox="-8 -8 16 16" width="16" height="16" aria-hidden="true"><circle r="4.5" fill="${ink}"/></svg>`,
+    pu: `<svg viewBox="-8 -8 16 16" width="16" height="16" aria-hidden="true"><circle r="6" fill="none" stroke="${ink}" stroke-width="1.6"/></svg>`,
+    pb: `<svg viewBox="-8 -8 16 16" width="16" height="16" aria-hidden="true"><circle r="6.5" fill="none" stroke="${ink}" stroke-width="1.6"/><circle r="3.6" fill="${ink}"/></svg>`,
+  };
+  for (const el of document.querySelectorAll('.symlegende .sym')) {
+    const s = el.dataset.sym;
+    el.innerHTML = EXTRA[s] || symbolIcon(s, 'centre' in el.dataset, icol, 26);
+  }
 }
 
 function watch3d() {

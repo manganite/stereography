@@ -266,7 +266,10 @@ const formHash = (k, lage) => `#m=form&${KOERPER[k].form}${lage && lage !== '001
 const ohneArtikel = (t) => t.replace(/^(der|die|das) /, '');
 const musterVon = (k, lage) => (lage ? LAGE_MUSTER[k][lage][0] : KOERPER[k].muster);
 const stereo = (k, lage) => ({ app: `${formHash(k, lage)}&idx=0`, alt: `Stereogramm: ${musterVon(k, lage)}` });
-const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}`, alt: `Räumliche Zeichnung: ${ohneArtikel(KOERPER[k].der)}${lage ? `, [${lage}] senkrecht` : ''}` });
+/** Steilerer Blick (45° von oben, 30° gedreht), wo sonst die Zähligkeit um die Projektionsrichtung nicht zu sehen ist. */
+const STEIL = { rhombendodekaeder: ['001', '111'] };
+const blickVon = (k, lage) => (STEIL[k] && STEIL[k].includes(lage || '001') ? '&blick=45,30' : '');
+const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}${blickVon(k, lage)}`, alt: `Räumliche Zeichnung: ${ohneArtikel(KOERPER[k].der)}${lage ? `, [${lage}] senkrecht` : ''}` });
 const QUELLE_FORM = 'Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
 
 export const KOERPER_STEREO = {

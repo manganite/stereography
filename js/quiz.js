@@ -263,6 +263,9 @@ function zeigeRueckmeldung(q, ok) {
   $('warum').innerHTML = warum.join('');
   $('erklaerung').innerHTML = q.erklaerung;
   const kap = KAPITEL.find((k) => k.nr === q.kapitel);
+  // Lernziel der Frage (wörtlich aus dem Skript), damit sich die Frage einordnen lässt
+  $('lernziel').hidden = !q.lernziel;
+  $('lernziel').innerHTML = q.lernziel ? `<b>Lernziel (Kap. ${kap.nr}):</b> ${q.lernziel}` : '';
   const links = [`<a href="skript.html#${q.skript || kap.anker}" target="_blank" rel="noopener" title="Öffnet in einem neuen Tab; das Quiz bleibt hier offen">Im Skript nachlesen</a>`];
   if (q.app) links.push(`<a href="index.html${q.app}" target="_blank" rel="noopener" title="Öffnet in einem neuen Tab; das Quiz bleibt hier offen">In der App öffnen</a>`);
   $('links').innerHTML = links.join('');

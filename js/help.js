@@ -6,7 +6,7 @@ export const TIPS = {
   // Kopfzeile
   'tab-pg': 'Symmetriegerüste der 32 Punktgruppen und wie ihre Operationen einen Pol vervielfältigen.',
   'tab-poly': 'Kristallformen und Beispielkristalle: Flächen, ihre Pole im Stereogramm und der Kristall in 3D.',
-  'skript-link': 'Skript zur Vorlesung: Projektion, Kristallformen, Symmetriegerüste, Zonen, Tracht und Habitus, Blickrichtungen, hexagonale Achsen.',
+  'skript-link': 'Skript zur App: Indizes, Projektion, Symmetrie und Punktgruppen, Symmetriegerüste, Blickrichtungen, Kristallformen, Zonen, Tracht und Habitus, trigonale und hexagonale Kristalle.',
   'copy-link': 'Link auf genau diese Ansicht in die Zwischenablage kopieren, z. B. für Folien.',
   'help-open': 'Erste Schritte: kurze Einführung in die App.',
   // Punktgruppen
@@ -17,7 +17,7 @@ export const TIPS = {
   'pg-theta': 'Poldistanz ρ: Winkel des Ausgangspols vom Nordpol, also vom Zentrum des Stereogramms. Negative Werte: untere Halbkugel, vom Südpol gezählt.',
   'pg-phi': 'Azimut φ: Drehwinkel um die Projektionsrichtung, ab dem rechten Rand im Uhrzeigersinn.',
   // Kristallformen
-  'ex-select': 'Kristalle aus Vorlesung und Lehrbuch: mehrere Formen derselben Punktgruppe, jede in eigener Farbe.',
+  'ex-select': 'Kristalle aus Lehrbüchern: mehrere Formen derselben Punktgruppe, jede in eigener Farbe.',
   'sys-select': 'Bestimmt das Achsensystem und die Punktgruppen, deren Formen zur Auswahl stehen.',
   'form-select': 'Eine Form ist die Menge der Flächen, die die Operationen der Punktgruppe aus einer Fläche erzeugen.',
   'preset-select': 'Welche Kristallrichtung zum Betrachter zeigt. Das Stereogramm dreht sich mit, die Winkel zwischen den Polen bleiben gleich.',

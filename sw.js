@@ -1,7 +1,7 @@
 // Service Worker: hält alle Dateien der App für den Offline-Betrieb vor (z. B. im Hörsaal ohne WLAN).
 // Je Version ein eigener Cache; eine neue Version wird beim nächsten Öffnen geladen, alte Caches
 // werden entfernt. VERSION muss mit js/version.js übereinstimmen (tests/release.test.mjs).
-const VERSION = '1.8.1';
+const VERSION = '1.9.0';
 const CACHE = `stereogramm-${VERSION}`;
 const FILES = [
   './',
@@ -26,6 +26,7 @@ const FILES = [
   'js/scene.js',
   'js/sitesym.js',
   'js/skript.js',
+  'js/skriptlinks.js',
   'js/pointgroups.js',
   'js/quiz.js',
   'js/quiz-bank.js',

@@ -287,8 +287,8 @@ select {
 .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 16px; margin: 0; }
 .facts div { border-top: 1px solid var(--line); padding-top: 5px; }
 .facts dt { font-size: 0.75rem; color: var(--muted); }
-.facts dt .to-skript { margin-left: 0.4em; color: var(--accent); text-decoration: none; white-space: nowrap; }
-.facts dt .to-skript:hover { text-decoration: underline; }
+.skript-term { color: inherit; text-decoration: underline dotted; text-underline-offset: 2px; }
+.skript-term:hover { color: var(--accent); text-decoration-style: solid; }
 .facts dd { margin: 0; font-weight: 500; }
 .facts .wide { grid-column: 1 / -1; }
 .num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
@@ -399,9 +399,9 @@ footer a { color: inherit; }
         <li><b>Kristall wählen.</b> Der Galenit (PbS) steht im Zentrum einer Kugel; jede Fläche hat eine Normale. <button class="linkbtn" type="button" data-step="1">Galenit laden</button></li>
         <li><b>Fläche antippen.</b> Eine Fläche in der 3D-Ansicht antippen: Ihr Pol im Stereogramm leuchtet auf, und umgekehrt. <button class="linkbtn" type="button" data-step="2">Fläche (001) zeigen</button></li>
         <li><b>Projektion verfolgen.</b> Die Normale trifft die Kugel im Flächenpol; der Strahl zum Südpol schneidet die Äquatorebene im Punkt des Stereogramms. Pol oben: Punkt, unten: Kreis. <button class="linkbtn" type="button" data-step="3">Seitlich ansehen</button></li>
-        <li><b>Symmetrie erkennen.</b> Das Symmetriegerüst von m3̄m erklärt, warum die Pole so liegen. Im Tab „Punktgruppen“ wirkt es auf einen einzelnen Pol. <button class="linkbtn" type="button" data-step="4">Gerüst einblenden</button></li>
+        <li><b>Symmetrie erkennen.</b> Das Symmetriegerüst von m<span class="ov">3</span>m erklärt, warum die Pole so liegen. Im Tab „Punktgruppen“ wirkt es auf einen einzelnen Pol. <button class="linkbtn" type="button" data-step="4">Gerüst einblenden</button></li>
       </ol>
-      <p class="intro-foot">Begriffe wie in der Vorlesung (Borchardt-Ott, Abschn. 5.4). <span class="only-fine">Tooltips erklären jedes Bedienelement.</span><span class="only-coarse">Das ⓘ neben den Überschriften erklärt die Bedienelemente.</span> Wieder öffnen mit „?“ oben.</p>
+      <p class="intro-foot">Begriffe nach Borchardt-Ott &amp; Sowa, <i>Kristallographie</i> (2018), Abschn. 5.4. <span class="only-fine">Tooltips erklären jedes Bedienelement.</span><span class="only-coarse">Das ⓘ neben den Überschriften erklärt die Bedienelemente.</span> Wieder öffnen mit „?“ oben.</p>
     </section>
     <div class="prim card">
       <section id="ctl-pg" class="stack">
@@ -580,7 +580,7 @@ footer a { color: inherit; }
   <section class="info card" id="info" aria-live="polite"></section>
 </main>
 
-<footer>Konventionen nach International Tables for Crystallography, Vol. A: a zeigt nach unten, b nach rechts, c zum Betrachter. Pole oberhalb der Projektionsebene als Punkt, unterhalb als Kreis. Hexagonale Achsen mit drei Indizes (hkl), wahlweise Miller-Bravais (hkil). <span id="app-version"></span></footer>
+<footer>Konventionen nach International Tables for Crystallography, Vol. A: a zeigt nach unten, b nach rechts, c zum Betrachter. Pole oberhalb der Projektionsebene als Punkt, unterhalb als Kreis. Hexagonale Achsen mit drei Indizes (hkl), wahlweise Miller-Bravais (hkil). Entstanden aus der Vorlesung Kristallographie an der ETH Zürich. <span id="app-version"></span></footer>
 
 <script type="module" src="js/main.js"></script>
 </body>

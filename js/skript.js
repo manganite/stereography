@@ -1,9 +1,10 @@
-// Skript zur Vorlesung: Abbildungen aus dem Code der App, Projektionsskizze, Inhaltsverzeichnis.
+// Skript zur App: Abbildungen aus dem Code der App, Projektionsskizze, Inhaltsverzeichnis.
 // Eine Abbildung ist durch die Link-Adresse der App beschrieben (data-app="#m=form&…"); daraus entsteht
 // mit scene.js genau das Stereogramm, das die App für diese Adresse zeigt.
 
 import { buildSVG } from './stereogram.js';
-import { palette, pgScene, crystalAxesFor, stateForHash as stateFor, stereoForHash as stereoFor } from './scene.js';
+import { palette, pgScene, crystalAxesFor, polyCrystal, polyScene, stateForHash as stateFor, stereoForHash as stereoFor } from './scene.js';
+import { koerperSVG } from './bild3d.js';
 import { hklHTML } from './format.js';
 import { VERSION } from './version.js';
 
@@ -87,6 +88,7 @@ function renderFigures() {
     if (fig.dataset.kind === '3d') { if (views3d.has(fig)) render3d(fig, col); } else renderStereo(fig, col);
   }
   for (const f of projFigures) f.draw();
+  for (const f of wachsFigures) f.draw();
 }
 
 function watch3d() {
@@ -106,7 +108,7 @@ function watch3d() {
   figs.forEach((f) => io.observe(f));
 }
 
-// ------------------------------------------------------------------ Projektionsskizze (Kapitel 1)
+// ------------------------------------------------------------------ Projektionsskizze (Kapitel 2)
 // Links ein Schnitt durch die Umkugel (N oben, S unten, Äquatorebene von der Seite), rechts der Blick
 // von oben auf die Projektionsebene. Ein Regler stellt die Poldistanz ρ ein (Borchardt-Ott: obere
 // Halbkugel vom Nordpol, untere vom Südpol aus negativ).
@@ -179,6 +181,81 @@ function projectionSketch(fig) {
   projFigures.push({ draw });
 }
 
+// ------------------------------------------------------------------ Wachstum (Kapitel 8)
+// Galenit aus Würfel {100} und Oktaeder {111}, anfangs gleich weit vom Mittelpunkt. Beide Formen verschieben sich
+// parallel mit konstanter Geschwindigkeit, eine doppelt so schnell wie die andere; der Regler stellt die Zeit ein.
+// Das Oktaeder verschwindet, sobald sein Abstand das √3-Fache des Würfelabstands erreicht (Würfelecke), der Würfel,
+// sobald sein Abstand das √3-Fache des Oktaederabstands erreicht. Das Rhombendodekaeder des Galenits bleibt weg.
+const wachsFigures = [];
+const WACHS = { okt: { k: 2, T: 4, schnell: 'Oktaeder', langsam: 'Würfel' }, wue: { k: 0.5, T: 4, schnell: 'Würfel', langsam: 'Oktaeder' } };
+const zahl = (x) => x.toFixed(2).replace('.', ',');
+function wachstumFigur(fig) {
+  const art3 = fig.querySelector('.w-3d'), artS = fig.querySelector('.w-st');
+  const input = fig.querySelector('input[type="range"]'), out = fig.querySelector('output');
+  const wahl = [...fig.querySelectorAll('input[type="radio"]')];
+  const R0 = 1.45; // Abstand des Oktaeders im Beispiel Galenit (examples.js), Würfel 1
+  const draw = () => {
+    const col = palette();
+    const fall = WACHS[(wahl.find((x) => x.checked) || {}).value || 'okt'];
+    const t = (Number(input.value) / 100) * fall.T;
+    const dW = 1 + (fall.k < 1 ? 2 : 1) * t, dO = 1 + (fall.k < 1 ? 1 : 2) * t; // die schnellere Form doppelt so schnell
+    const st = stateFor('#m=form&sys=kubisch&bsp=galenit&idx=0');
+    st.poly.exScale.galenit = [1, dO / dW / R0, 10];
+    const C = polyCrystal(st, col);
+    art3.innerHTML = `<svg viewBox="0 0 520 520" role="img" aria-label="Galenit aus Würfel und Oktaeder">${koerperSVG('', col, { state: st })}</svg>`;
+    artS.innerHTML = `<svg viewBox="0 0 520 520" role="img" aria-label="Stereogramm dazu">${buildSVG(polyScene(st, C, col).scene).inner}</svg>`;
+    const n = (form) => C.faces.filter((x) => x.form === form && !x.hidden).length;
+    const nW = n(0), nO = n(1);
+    const verh = `Abstand vom Mittelpunkt, Oktaeder : Würfel = ${zahl(dO / dW)} : 1`;
+    const weg = !nO ? 'Das Oktaeder ist verschwunden: Der Kristall ist ein Würfel, und im Stereogramm fehlen die Pole von {111}.'
+      : !nW ? 'Der Würfel ist verschwunden: Der Kristall ist ein Oktaeder, und im Stereogramm fehlen die Pole von {100}.'
+        : `Flächen: ${nW} des Würfels, ${nO} des Oktaeders. ${fall.schnell === 'Oktaeder' ? 'Das Oktaeder verschwindet bei 1,73 : 1 (√3)' : 'Der Würfel verschwindet bei 0,58 : 1 (1/√3)'}.`;
+    const schnell = fall.schnell === 'Oktaeder' ? 'Oktaederflächen' : 'Würfelflächen';
+    const langsam = fall.langsam === 'Würfel' ? 'Würfelflächen' : 'Oktaederflächen';
+    const stand = t === 0 ? `Start: beide Formen gleich weit vom Mittelpunkt. Mit dem Regler schieben sich die ${schnell} doppelt so schnell nach aussen wie die ${langsam}.`
+      : `Die ${schnell} haben sich doppelt so weit nach aussen verschoben wie die ${langsam}.`;
+    out.textContent = `${stand} ${verh}. ${weg}`;
+  };
+  input.addEventListener('input', draw);
+  wahl.forEach((x) => x.addEventListener('change', () => { input.value = 0; draw(); }));
+  draw();
+  wachsFigures.push({ draw });
+}
+
+// ------------------------------------------------------------------ Querstriche in gezeichneten Abbildungen
+// In SVG-Text sitzt text-decoration: overline auf Höhe der Oberlänge, deutlich zu hoch, und läuft über
+// benachbarte Ziffern durch. Deshalb wie in stereogram.js eigene Striche knapp über jeder Ziffer
+// (<tspan class="ovs">); Lage aus der gerenderten Schrift, Farbe wie der Text.
+function svgBars() {
+  for (const old of document.querySelectorAll('.ovs-bar')) old.remove();
+  for (const text of document.querySelectorAll('figure svg text')) {
+    const marked = [...text.querySelectorAll('tspan.ovs')];
+    if (!marked.length) continue;
+    const cs = getComputedStyle(text);
+    const fs = parseFloat(cs.fontSize);
+    const h = Math.max(1, 0.075 * fs);
+    const base = parseFloat(text.getAttribute('y'));
+    let i = 0;
+    for (const node of text.childNodes) {
+      const n = [...node.textContent].length;
+      if (node.nodeType === 1 && node.classList.contains('ovs')) {
+        for (let k = 0; k < n; k++) {
+          const e = text.getExtentOfChar(i + k);
+          const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          r.setAttribute('class', 'ovs-bar');
+          r.setAttribute('x', (e.x + 0.09 * fs).toFixed(1));
+          r.setAttribute('y', (base - 0.82 * fs - h).toFixed(1));
+          r.setAttribute('width', Math.max(1, e.width - 0.18 * fs).toFixed(1));
+          r.setAttribute('height', h.toFixed(2));
+          r.style.fill = cs.fill;
+          text.after(r);
+        }
+      }
+      i += n;
+    }
+  }
+}
+
 // ------------------------------------------------------------------ Inhaltsverzeichnis
 function initToc() {
   const links = [...document.querySelectorAll('.toc a[href^="#"]')];
@@ -212,11 +289,13 @@ function initToc() {
 function init() {
   document.querySelectorAll('[data-version]').forEach((el) => { el.textContent = VERSION; });
   document.querySelectorAll('figure.proj').forEach(projectionSketch);
+  document.querySelectorAll('figure.wachs').forEach(wachstumFigur);
   renderFigures();
   watch3d();
   initToc();
+  document.fonts.ready.then(svgBars);
   // Farbschema gewechselt: Abbildungen mit den neuen Farben neu zeichnen
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => renderFigures());
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { renderFigures(); svgBars(); });
 }
 init();
 

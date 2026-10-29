@@ -22,7 +22,17 @@ const f = (x) => (Math.round(x * 100) / 100).toString();
 /** Bildangabe einer räumlichen Zeichnung? */
 export const istRaum = (spec) => typeof spec === 'string' && spec.startsWith('3d#');
 /** Link-Adresse der App zu einer Bildangabe (räumlich oder Stereogramm). */
-export const appHash = (spec) => (istRaum(spec) ? spec.slice(2) : spec);
+export const appHash = (spec) => (istRaum(spec) ? spec.slice(2).replace(/&blick=[^&]*/, '') : spec);
+/**
+ * Anderer Blickwinkel aus der Bildangabe: "&blick=45,30" heisst 45° von oben, 30° aus a herausgedreht. Für Körper,
+ * deren Zähligkeit um die Projektionsrichtung sonst nicht zu erkennen wäre (Rhombendodekaeder mit [111] senkrecht).
+ */
+function blickAus(spec) {
+  const m = /&blick=([\d.]+),([\d.]+)/.exec(spec);
+  if (!m) return undefined;
+  const R = Math.PI / 180, h = Number(m[1]) * R, d = Number(m[2]) * R;
+  return [Math.cos(h) * Math.cos(d), -Math.cos(h) * Math.sin(d), Math.sin(h)];
+}
 
 /** Parallelprojektion: Bildschirmachsen rechts (r), oben (u) und Tiefe zur Kamera (d). */
 function kamera(blick = BLICK) {
@@ -71,10 +81,11 @@ function ring(n, rho, P, N = 120) {
 // ------------------------------------------------------------------ Kristall
 /**
  * Kristall einer Link-Adresse als SVG (Inhalt eines viewBox 0 0 520 520).
- * opt: { ebene: true } Projektionsebene (Ring) und Blickpfeil; { blick } andere Kamerarichtung.
+ * opt: { ebene: true } Projektionsebene (Ring) und Blickpfeil; { blick } andere Kamerarichtung; { state } fertiger
+ * Zustand statt der Link-Adresse (Skript, Abb. „Wachstum“: Abstände ausserhalb des Bereichs der Link-Adresse).
  */
 export function koerperSVG(hash, col, opt = {}) {
-  const st = stateForHash(hash);
+  const st = opt.state || stateForHash(hash);
   const C = polyCrystal(st, col);
   const k = kamera(opt.blick);
   const faces = C.faces.filter((x) => !x.hidden);
@@ -174,6 +185,7 @@ export function geruestSVG(hash, col, opt = {}) {
 /** Räumliche Zeichnung zu einer Bildangabe "3d#…" (Kristall oder Symmetriegerüst), Inhalt des viewBox. */
 export function raumInner(spec, col, opt = {}) {
   const hash = appHash(spec);
+  if (!opt.blick && blickAus(spec)) opt = { ...opt, blick: blickAus(spec) };
   const svg = stateForHash(hash).mode === 'pg' ? geruestSVG(hash, col, opt) : koerperSVG(hash, col, opt);
   // kleine Antwortbilder: Linien kräftiger, damit sie verkleinert lesbar bleiben
   return opt.klein ? svg.replace(/stroke-width="([\d.]+)"/g, (m, w) => `stroke-width="${f(w * 1.7)}"`).replace(/stroke-dasharray="([\d.]+) ([\d.]+)"/g, (m, a, b) => `stroke-dasharray="${f(a * 1.7)} ${f(b * 1.7)}"`) : svg;

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Quiz: Stereographische Projektion</title>
-<meta name="description" content="Übungsquiz zur Vorlesung Kristallographie: Multiple-Choice-Fragen zu stereographischer Projektion, Kristallformen, Symmetriegerüsten und Zonen, in drei Stufen.">
+<meta name="description" content="Übungsquiz zur stereographischen Projektion: Multiple-Choice-Fragen zu stereographischer Projektion, Kristallformen, Symmetriegerüsten und Zonen, in drei Stufen.">
 <link rel="icon" href="icons/favicon.ico" sizes="any">
 <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -111,6 +111,8 @@ fieldset.card { margin-inline: 0; min-width: 0; }
 .rueck .links a { color: var(--accent); font-weight: 500; }
 .rueck .links a::after { content: ' →'; }
 .rueck .quelle { font-size: 0.78rem; color: var(--muted); margin: 8px 0 0; }
+.rueck .lernziel { font-size: 0.84rem; color: var(--muted); }
+.rueck .lernziel b { font-weight: 600; }
 
 /* Auswertung */
 .ergebnis { font-family: var(--font-display); font-size: 2.2rem; font-weight: 600; margin: 4px 0 2px; }
@@ -134,7 +136,7 @@ footer a { color: inherit; }
 <header class="top">
   <div class="brand">
     <h1>Stereographische Projektion</h1>
-    <p>Quiz zur Vorlesung Kristallographie</p>
+    <p>Quiz zur Einführung in die Kristallographie</p>
   </div>
   <div class="headtools">
     <a class="linkcopy" href="skript.html">Skript</a>
@@ -207,6 +209,7 @@ footer a { color: inherit; }
       <h3 id="urteil"></h3>
       <div class="warum" id="warum"></div>
       <p id="erklaerung"></p>
+      <p class="lernziel" id="lernziel"></p>
       <p class="links" id="links"></p>
       <p class="quelle" id="quelle"></p>
       <div class="aktionen"><button class="btn" type="button" id="weiter">Weiter</button></div>
@@ -232,7 +235,7 @@ footer a { color: inherit; }
 </main>
 
 <footer>
-  <p>Stereographische Projektion, Version <span data-version></span> · Quellen je Frage (Borchardt-Ott &amp; Sowa 2018, Folien der Vorlesung) · <a href="https://github.com/manganite/stereography">Quelltext auf GitHub</a></p>
+  <p>Stereographische Projektion, Version <span data-version></span> · Quellen je Frage (Skript, Borchardt-Ott &amp; Sowa 2018 und weitere Lehrbücher) · <a href="https://github.com/manganite/stereography">Quelltext auf GitHub</a></p>
 </footer>
 <script type="module" src="js/quiz.js"></script>
 </body>

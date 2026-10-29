@@ -14,7 +14,7 @@ import { mulVec } from './linalg.js';
 // damit kein HM-Symbol doppelt vorkommt.
 const GERUEST_ALLE = ['1', '-1', '2b', 'mb', '2/mb', '222', 'mm2', 'mmm', '4', '-4', '4/m', '422', '4mm', '-42m', '4/mmm',
   '3', '-3', '321', '3m1', '-3m1', '6', '-6', '6/m', '622', '6mm', '-6m2', '6/mmm', '23', 'm-3', '432', '-43m', 'm-3m'];
-// Stufe 1: Gerüste aus Vorlesung (Folie 64: 2, 2mm; Folie 90: mmm, 4/mmm, 6/mmm, m3̄m) und Skript Kap. 3
+// Stufe 1: Gerüste des Grundstoffs (2, 2mm; mmm, 4/mmm, 6/mmm, m3̄m) und Skript Kap. 4
 // (1̄, 2, m, 4, 4̄); die übrigen sind Stufe 2.
 const GERUEST_STUFE1 = ['2b', 'mb', '-1', 'mm2', 'mmm', '4', '-4', '4/mmm', '6/mmm', 'm-3m'];
 // Ablenker aus demselben Kristallsystem; reicht das nicht, aus diesen Nachbarsystemen
@@ -41,7 +41,7 @@ export function elementeText(info) {
 
 /**
  * Satz zu Blickrichtungen und Symbol. Positionen ohne Symmetrieelement (Platzhalter 1) werden nicht genannt; sie
- * sind im Skript Vertiefung. Monoklin nennt die Richtung b der Standardaufstellung (Skript Kap. 6). Trigonale Gruppen mit zwei
+ * sind im Skript Vertiefung. Monoklin nennt die Richtung b der Standardaufstellung (Skript Kap. 5). Trigonale Gruppen mit zwei
  * Aufstellungen behalten im gekürzten Symbol die Ziffer 1 (3m1, nicht 3m), wie in ITA.
  */
 function symbolText(g, cls) {
@@ -54,11 +54,19 @@ function symbolText(g, cls) {
 }
 
 /** Elemente des Ablenkers im Vergleich zum gezeigten Gerüst: was im Bild fehlt bzw. zusätzlich zu sehen ist. */
+/** Lage einer Spiegelebene aus ihrer Normalen: 'mh' ⊥ c, 'mv' ∥ c, 'mo' schräg. */
+function spiegelLage(n) {
+  const l = Math.hypot(...n), z = Math.abs(n[2]) / l;
+  return z > 1 - 1e-6 ? 'mh' : z < 1e-6 ? 'mv' : 'mo';
+}
+const SPIEGEL = { mh: ['Spiegelebene ⊥ c', 'Spiegelebenen ⊥ c'], mv: ['Spiegelebene ∥ c', 'Spiegelebenen ∥ c'], mo: ['schräge Spiegelebene', 'schräge Spiegelebenen'] };
+const nennenM = (k, n) => `${n === 1 ? 'eine' : ZAHL[n]} ${SPIEGEL[k][n === 1 ? 0 : 1]}`;
 function zaehle(info) {
   const s = elementSummary(info);
   const n = {};
   for (const a of s.axes) n[a.symbol] = (n[a.symbol] || 0) + a.count;
-  if (s.mirrors) n.m = s.mirrors;
+  // Spiegelebenen nach Lage: ⊥ c (Normale ∥ c), ∥ c (Normale ⊥ c), schräg (kubisch)
+  for (const m of info.mirrors) { const k = spiegelLage(m); n[k] = (n[k] || 0) + 1; }
   if (s.centre) n.c = 1;
   return n;
 }
@@ -72,7 +80,7 @@ export function geruestAblenker(id) {
 }
 
 export const GERUEST = {
-  id: 'gen-geruest', kapitel: 3, stufen: [1, 2], status: 'geprüft',
+  id: 'gen-geruest', kapitel: 4, stufen: [1, 2], status: 'geprüft',
   params: (stufe) => (stufe === 1 ? GERUEST_STUFE1 : GERUEST_ALLE.filter((id) => !GERUEST_STUFE1.includes(id))),
   /** Ablenker deterministisch aus dem Parameter (die Reihenfolge mischt quiz-core.js). */
   make(id) {
@@ -98,12 +106,12 @@ export const GERUEST = {
       erklaerung: `Das Gerüst enthält ${elementeText(info)} (Kristallsystem ${g.system}).${blick}`,
       skript: 'elemente',
       app: `#m=pg&g=${encodeURIComponent(id)}&obj=0`,
-      quelle: 'Folien 88–91, 102; nach Borchardt-Ott & Sowa (2018), Aufg. 9.9 (S. 180) und Abb. 7.8–7.13',
+      quelle: 'nach Borchardt-Ott & Sowa (2018), Aufg. 9.9 (S. 180) und Abb. 7.8–7.13',
     };
   },
 };
 
-// ------------------------------------------------------------------ Flächenzahl und Flächensymmetrie (Kap. 8, Stufe 3)
+// ------------------------------------------------------------------ Flächenzahl und Flächensymmetrie (Kap. 10, Stufe 3)
 // Daten aus dem Formenkatalog (js/forms.js): Wyckoff-Lage, Flächensymmetrie, Flächenzahl je Form; die Tests rechnen
 // Flächenzahl und Flächensymmetrie aus den Gruppenoperationen nach.
 const indizes = (hkl) => `{${hkl.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join('')}}`;
@@ -128,7 +136,7 @@ function enthalten(e, x) {
 }
 
 export const FLAECHENZAHL = {
-  id: 'gen-flaechenzahl', kapitel: 8, stufen: [3], status: 'entwurf',
+  id: 'gen-flaechenzahl', kapitel: 10, stufen: [3], status: 'geprüft',
   params: () => SPEZIELL.map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechenzahl'].includes(id)),
   make(id) {
     const e = entryById(id);
@@ -165,8 +173,45 @@ export const FLAECHENZAHL = {
 
 /** Flächensymmetrie wählen: Gruppen mit mindestens vier verschiedenen speziellen Flächensymmetrien. */
 const FS_GRUPPEN = [...new Set(SPEZIELL.map((e) => e.pg))].filter((pg) => new Set(SPEZIELL.filter((e) => e.pg === pg).map((e) => e.fs)).size >= 4);
+/**
+ * Symmetrieelemente durch den Pol einer Form, nach Blickrichtung: die Drehachse entlang der Flächennormalen (bei
+ * Drehinversionsachsen ihr Drehanteil: 4̄ → 2, 3̄ und 6̄ → 3) und die Spiegelebenen, die die Normale enthalten.
+ */
+function elementeAmPol(e) {
+  const info = buildPointGroup(e.pg);
+  const klassen = symmetryDirections(info);
+  const p = poleOfHKL(SYSTEM_OF[e.pg], e.hkl);
+  const nd = (v, w) => Math.abs(v[0] * w[0] + v[1] * w[1] + v[2] * w[2]) / Math.hypot(...v) / Math.hypot(...w);
+  const DREH = { 2: 2, 3: 3, 4: 4, 6: 6, '-3': 3, '-4': 2, '-6': 3 };
+  return klassen.map((c, i) => {
+    const achse = info.axes.find((a) => a.cls === i && DREH[a.symbol] && nd(a.dir, p) > 1 - 1e-6);
+    const spiegel = info.mirrors.filter((m, j) => info.mirrorCls[j] === i && nd(m, p) < 1e-6).length;
+    return { label: c.label, n: achse ? DREH[achse.symbol] : 0, sym: achse ? achse.symbol : '', spiegel };
+  });
+}
+/** Erklärung, wie man die Flächensymmetrie am Stereogramm abliest. */
+function ablesenText(e) {
+  const el = elementeAmPol(e);
+  const n = Math.max(0, ...el.map((x) => x.n)), sp = el.reduce((s, x) => s + x.spiegel, 0);
+  const ax = el.find((x) => x.n);
+  // Drehinversionsachse (3̄, 4̄, 6̄): im Stereogramm ihr Symbol; den Pol hält nur ihr Drehanteil fest
+  const inv = ax && ax.sym.startsWith('-');
+  const achsName = (x) => (x.sym.startsWith('-') ? `die ${ov(x.sym.slice(1))}-Achse entlang der Flächennormalen (den Pol hält davon nur die ${x.n}-zählige Drehung fest)` : `die ${x.n}-zählige Achse entlang der Flächennormalen`);
+  // Spiegelebene ⊥ c durch den Pol: im Stereogramm der kräftige Grundkreis
+  const info = buildPointGroup(e.pg), p = poleOfHKL(SYSTEM_OF[e.pg], e.hkl);
+  const gk = info.mirrors.some((m) => Math.abs(m[2]) > (1 - 1e-6) * Math.hypot(...m)) && info.ops.every((o) => Math.abs(mulVec(o, p)[2]) < 1e-6);
+  const linien = sp === 1 ? 'einer Spiegellinie' : `${ZAHL[sp]} Spiegellinien`;
+  const bild = [n ? (inv ? `auf dem Symbol einer ${ov(ax.sym.slice(1))}-Achse` : `auf dem Symbol einer ${n}-zähligen Achse`) : '', sp ? `auf ${linien}${gk ? (sp === 1 ? ', dem kräftigen Grundkreis' : ' (eine davon ist der kräftige Grundkreis)') : ''}` : ''].filter(Boolean);
+  const teile = el.filter((x) => x.n || x.spiegel).map((x) => `zu ${x.label} ${[x.n ? achsName(x) : '', x.spiegel ? `${x.spiegel === 1 ? 'eine Spiegelebene' : `${ZAHL[x.spiegel]} Spiegelebenen`}` : ''].filter(Boolean).join(' und ')}`);
+  const leer = el.filter((x) => !x.n && !x.spiegel).map((x) => x.label);
+  // mehrere Spiegelebenen derselben Blickrichtung, die die Achse durch den Pol ineinander überführt: im Symbol nur ein m
+  const einmal = n >= 3 && el.some((x) => x.spiegel > 1)
+    ? ` Spiegelebenen derselben Blickrichtung, die die ${n}-zählige Drehung ineinander überführt, sind gleichwertig und stehen im Symbol nur einmal.` : '';
+  return `Im Stereogramm liegt jeder Pol der Form ${und(bild)}. Diese Elemente gehen durch die Fläche: ${und(teile)}${leer.length ? `; zu ${und(leer)} keines` : ''}.${einmal}`;
+}
+
 export const FLAECHENSYM = {
-  id: 'gen-flaechensym', kapitel: 8, stufen: [3], status: 'entwurf',
+  id: 'gen-flaechensym', kapitel: 10, stufen: [3], status: 'geprüft',
   params: () => SPEZIELL.filter((e) => FS_GRUPPEN.includes(e.pg)).map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechensym'].includes(id)),
   make(id) {
     const e = entryById(id);
@@ -191,7 +236,7 @@ export const FLAECHENSYM = {
       antworten: [hmHTML(e.fs), ...abl.map((x) => hmHTML(x.fs))],
       richtig: [0],
       hinweise: [null, ...abl.map(hinweis)],
-      erklaerung: `Das orientierte Symbol nennt je Blickrichtung (${labels}) die Symmetrieelemente, die durch die Fläche gehen; ein Punkt steht für keines. Für ${indizes(e.hkl)} ergibt das ${hmHTML(e.fs)} mit ${k} Operationen, also ${n}/${k} = ${e.mult} Flächen (Wyckoff-Lage ${e.mult}<i>${e.wy}</i>).`,
+      erklaerung: `${ablesenText(e)} Das orientierte Symbol schreibt sie je Blickrichtung (${labels}) an eine Stelle, ein Punkt steht für keines: ${hmHTML(e.fs)} mit ${k} Operationen, also ${n}/${k} = ${e.mult} Flächen (Wyckoff-Lage ${e.mult}<i>${e.wy}</i>).`,
       skript: 'lagesymbol',
       app: `#m=form&sys=${sys}&f=${encodeURIComponent(e.id)}&geruest=1&muster=1`,
       quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150, Tab. 9.5–9.8 (S. 152–157); International Tables Vol. A (2006), Tab. 10.1.2.2',
@@ -203,7 +248,7 @@ export const FLAECHENSYM = {
 // Bildangabe "3d#…": feste Zeichnung des Kristalls bzw. Symmetriegerüsts; die Projektionsrichtung ist darin senkrecht.
 const ov = (d) => `<span class="ov">${d}</span>`;
 const PFEIL = 'Die Projektionsrichtung ist in den Zeichnungen senkrecht (Pfeil).';
-/** Regel aus der Zusammenfassung von Kap. 2. */
+/** Regel aus der Zusammenfassung von Kap. 6. */
 const REGEL = 'Flächen parallel zur Projektionsrichtung haben ihre Pole auf dem Grundkreis, Flächen senkrecht dazu im Mittelpunkt.';
 const GRAU = ' Grau: das Pinakoid, mit dem die App das offene Prisma schliesst.';
 
@@ -258,11 +303,14 @@ const formHash = (k, lage) => `#m=form&${KOERPER[k].form}${lage && lage !== '001
 const ohneArtikel = (t) => t.replace(/^(der|die|das) /, '');
 const musterVon = (k, lage) => (lage ? LAGE_MUSTER[k][lage][0] : KOERPER[k].muster);
 const stereo = (k, lage) => ({ app: `${formHash(k, lage)}&idx=0`, alt: `Stereogramm: ${musterVon(k, lage)}` });
-const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}`, alt: `Räumliche Zeichnung: ${ohneArtikel(KOERPER[k].der)}${lage ? `, [${lage}] senkrecht` : ''}` });
-const QUELLE_FORM = 'Folie 91 (Lernziel); Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
+/** Steilerer Blick (45° von oben, 30° gedreht), wo sonst die Zähligkeit um die Projektionsrichtung nicht zu sehen ist. */
+const STEIL = { rhombendodekaeder: ['001', '111'] };
+const blickVon = (k, lage) => (STEIL[k] && STEIL[k].includes(lage || '001') ? '&blick=45,30' : '');
+const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}${blickVon(k, lage)}`, alt: `Räumliche Zeichnung: ${ohneArtikel(KOERPER[k].der)}${lage ? `, [${lage}] senkrecht` : ''}` });
+const QUELLE_FORM = 'Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
 
 export const KOERPER_STEREO = {
-  id: 'gen-koerper', kapitel: 2, stufen: [1, 2], status: 'entwurf',
+  id: 'gen-koerper', kapitel: 6, stufen: [1, 2], status: 'geprüft',
   /** k:… Kristall → Stereogramm, s:… Stereogramm → Kristall */
   params: (stufe) => KOERPER_AUFGABEN.filter((a) => a.stufe === stufe).flatMap((a) => [`k:${a.id}`, `s:${a.id}`]),
   make(param) {
@@ -323,12 +371,19 @@ export const LAGE_MUSTER = {
 };
 const LAGE_ANDERER = { wuerfel: 'oktaeder', oktaeder: 'wuerfel', rhombendodekaeder: 'wuerfel' };
 const LAGEN = ['001', '111', '110'];
+/**
+ * Zeichnungen, die sich in der festen Ansicht kaum unterscheiden: der Würfel mit [111] und mit [110] senkrecht
+ * (in beiden Fällen oben eine Ecke bzw. Kante zwischen zwei sichtbaren Flächen). Sie stehen nie zusammen in einer Frage;
+ * statt der zweiten Lage kommt das Rhombendodekaeder in derselben Lage (Entscheidung Thomas).
+ */
+const AEHNLICH = { wuerfel: [['111', '110']] };
+export const aehnlich = (k, a, b) => (AEHNLICH[k] || []).some(([p, q]) => (p === a && q === b) || (p === b && q === a));
 const lageText = (l) => `[${l}]`;
-/** Was die Lage sichtbar macht (Skript Kap. 2, „Andere Projektionsrichtung, gleicher Kristall“). */
+/** Was die Lage sichtbar macht (Skript Kap. 6, „Andere Projektionsrichtung, gleicher Kristall“). */
 const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${ov(3)}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
 
 export const LAGE = {
-  id: 'gen-lage', kapitel: 2, stufen: [2], status: 'entwurf',
+  id: 'gen-lage', kapitel: 6, stufen: [2], status: 'geprüft',
   params: () => Object.keys(LAGE_MUSTER).flatMap((k) => LAGEN.flatMap((l) => [`k:${k}:${l}`, `s:${k}:${l}`])),
   make(param) {
     const [richtung, k, lage] = param.split(':');
@@ -343,7 +398,7 @@ export const LAGE = {
         + 'Eine andere Projektionsrichtung dreht den Kristall auf der Umkugel: Das Stereogramm sieht anders aus, die Winkel zwischen den Flächennormalen bleiben gleich.',
       skript: 'lage',
       app: formHash(k, lage),
-      quelle: 'Folie 91 (Lernziel); Borchardt-Ott & Sowa (2018), Abschn. 5.6 (Drehung eines Oktaeders, Abb. 5.23, S. 49)',
+      quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.6 (Drehung eines Oktaeders, Abb. 5.23, S. 49)',
     };
     if (richtung === 'k') {
       return {
@@ -356,14 +411,16 @@ export const LAGE = {
           `Das ist das Stereogramm ${KOERPER[x].des} in derselben Lage: ${muster(x, lage)}.`],
       };
     }
+    const lagenZ = andere.reduce((acc, l) => ([lage, ...acc].some((m) => aehnlich(k, m, l)) ? acc : [...acc, l]), []);
+    const koerperZ = [x, ...(lagenZ.length < andere.length ? ['rhombendodekaeder'] : [])];
     return {
       ...gemeinsam,
       frage: `Welche Zeichnung zeigt den Kristall in der Lage, zu der dieses Stereogramm gehört? ${PFEIL}`,
       bild: stereo(k, lage).app,
       bildAlt: stereo(k, lage).alt,
-      antworten: [zeichnung(k, lage), ...andere.map((l) => zeichnung(k, l)), zeichnung(x, lage)],
-      hinweise: [null, ...andere.map((l) => `Das ist ${e.der} mit ${lageText(l)} als Projektionsrichtung (in der Zeichnung senkrecht). Stereogramm dazu: ${muster(k, l)}.`),
-        `Das ist ${KOERPER[x].der} in derselben Lage. Stereogramm dazu: ${muster(x, lage)}.`],
+      antworten: [zeichnung(k, lage), ...lagenZ.map((l) => zeichnung(k, l)), ...koerperZ.map((y) => zeichnung(y, lage))],
+      hinweise: [null, ...lagenZ.map((l) => `Das ist ${e.der} mit ${lageText(l)} als Projektionsrichtung (in der Zeichnung senkrecht). Stereogramm dazu: ${muster(k, l)}.`),
+        ...koerperZ.map((y) => `Das ist ${KOERPER[y].der} in derselben Lage. Stereogramm dazu: ${muster(y, lage)}.`)],
     };
   },
 };
@@ -396,10 +453,48 @@ function abstand(a, b) {
   const p = zaehle(a), q = zaehle(b);
   return Object.keys({ ...p, ...q }).reduce((n, k) => n + Math.abs((p[k] || 0) - (q[k] || 0)), 0);
 }
-/** Die drei ähnlichsten Ablenker (bei gleichem Abstand in der Reihenfolge von geruestAblenker), damit keiner auf einen Blick falsch ist. */
+/** Zahl der Symmetrieelemente eines Gerüsts (Achsen, Spiegelebenen, Inversionszentrum). */
+const elementZahl = (info) => Object.values(zaehle(info)).reduce((s, k) => s + k, 0);
+/** Verwandte Kristallsysteme, aus denen Ablenker kommen dürfen, wenn das eigene System zu wenige liefert. */
+const VERWANDT3D = { tetragonal: ['orthorhombisch'], hexagonal: ['trigonal'] };
+/**
+ * Die drei ähnlichsten Ablenker, damit keiner auf einen Blick falsch ist: möglichst höchstens zwei Elemente mehr
+ * oder weniger als das gezeigte Gerüst (ein Gerüst mit deutlich mehr Elementen fällt sofort auf, z. B. 4̄2m neben 4̄),
+ * sortiert nach dem Abstand und bei gleichem Abstand zuerst aus demselben Kristallsystem.
+ */
 function wahl3d(id) {
   const info = buildPointGroup(id);
-  return abl3d(id).map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).slice(0, 3).map((u) => u.x);
+  const g = groupById(id);
+  const n0 = elementZahl(info);
+  const systeme = [g.system, ...(NACHBARN[g.system] || []), ...(VERWANDT3D[g.system] || [])];
+  const pool = [];
+  for (const sys of systeme) for (const x of GERUEST_ALLE.map(groupById)) if (x.system === sys && x.hm !== g.hm && !GERUEST3D_OHNE.includes(x.id) && !pool.includes(x)) pool.push(x);
+  // ein leeres Gerüst (Punktgruppe 1) neben einem mit Elementen fällt ebenso sofort auf
+  const pool2 = pool.filter((x) => n0 === 0 || x.id !== '1');
+  let kand = pool2;
+  for (let tol = 2; tol <= 16; tol++) {
+    kand = pool2.filter((x) => Math.abs(elementZahl(buildPointGroup(x.id)) - n0) <= tol);
+    if (kand.length >= 3) break;
+  }
+  const ordne = (l) => l.map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).map((u) => u.x);
+  const sortiert = ordne(kand), alle = ordne(pool2);
+  // Damit die richtige Antwort nicht als einzige ein Merkmal zeigt: mindestens ein Ablenker mit demselben Symbol
+  // in der Mitte (Achse ∥ c) und einer mit derselben Lage der Spiegelebene ⊥ c (kräftiger Grundkreis oder nicht)
+  const merkmal = (inf) => ({ achse: (inf.axes.find((a) => Math.abs(a.dir[2]) > 1 - 1e-6) || {}).symbol || '', mh: inf.mirrors.some((m) => spiegelLage(m) === 'mh') });
+  const m0 = merkmal(info);
+  const wahl = [];
+  // (notfalls auch ein Gerüst mit bis zu vier Elementen weniger, aber nie mit mehr als zwei Elementen mehr)
+  const weiter = alle.filter((x) => { const n = elementZahl(buildPointGroup(x.id)); return n <= n0 + 2 && n >= n0 - 4; });
+  const nimm = (f, auchWeiter) => {
+    if (wahl.some((y) => f(merkmal(buildPointGroup(y.id))))) return;
+    const passt = (y) => !wahl.includes(y) && f(merkmal(buildPointGroup(y.id)));
+    const x = sortiert.find(passt) || (auchWeiter ? weiter.find(passt) : undefined);
+    if (x) wahl.push(x);
+  };
+  nimm((m) => m.achse === m0.achse, true);
+  nimm((m) => m.mh === m0.mh, true);
+  for (const x of sortiert) if (wahl.length < 3 && !wahl.includes(x)) wahl.push(x);
+  return wahl.slice(0, 3);
 }
 
 /** Nach „statt“ (Genitiv): „der 3-zähligen Drehachse“, „der 4-zähligen Drehachsen“. */
@@ -422,7 +517,12 @@ export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' &&
     else if (A.get(k) !== sym) { const key = `${sym}|${A.get(k)}`; statt.set(key, (statt.get(key) || 0) + 1); }
   }
   for (const [k, sym] of A) if (!B.has(k)) weniger[sym] = (weniger[sym] || 0) + 1;
-  const zm = andere.mirrors.length - gezeigt.mirrors.length;
+  // Spiegelebenen wie Achsen über ihre Normale vergleichen, getrennt nach Lage (⊥ c, ∥ c, schräg)
+  const spiegel = (info) => new Map(info.mirrors.map((m) => [richtung(m), spiegelLage(m)]));
+  const SA = spiegel(gezeigt), SB = spiegel(andere);
+  const mMehr = {}, mWeniger = {};
+  for (const [k, lage] of SB) if (!SA.has(k)) mMehr[lage] = (mMehr[lage] || 0) + 1;
+  for (const [k, lage] of SA) if (!SB.has(k)) mWeniger[lage] = (mWeniger[lage] || 0) + 1;
   const plus = [], minus = [], anders = [];
   for (const sym of ['6', '-6', '4', '-4', '3', '-3', '2']) {
     // gleiche Achse in anderer Richtung (z. B. 2 ∥ b statt 2 ∥ c) nicht als „zusätzlich“ und „fehlt“ zählen
@@ -431,8 +531,12 @@ export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' &&
     if ((mehr[sym] || 0) > n) plus.push(nennen(sym, mehr[sym] - n));
     if ((weniger[sym] || 0) > n) minus.push(nennen(sym, weniger[sym] - n));
   }
-  if (zm > 0) plus.push(`${zm === 1 ? 'eine' : ZAHL[zm]} ${zm === 1 ? 'Spiegelebene' : 'Spiegelebenen'}`);
-  if (zm < 0) minus.push(`${-zm === 1 ? 'eine' : ZAHL[-zm]} ${-zm === 1 ? 'Spiegelebene' : 'Spiegelebenen'}`);
+  for (const k of ['mh', 'mv', 'mo']) {
+    const n = Math.min(mMehr[k] || 0, mWeniger[k] || 0);
+    if (n) anders.push(nennenM(k, n));
+    if ((mMehr[k] || 0) > n) plus.push(nennenM(k, mMehr[k] - n));
+    if ((mWeniger[k] || 0) > n) minus.push(nennenM(k, mWeniger[k] - n));
+  }
   if (andere.centro && !gezeigt.centro) plus.push('ein Inversionszentrum');
   if (!andere.centro && gezeigt.centro) minus.push('ein Inversionszentrum');
   const ersetzt = [...statt].map(([key, n]) => { const [neu, alt] = key.split('|'); return `${nennen(neu, n)} statt ${ACHSE_GEN(alt, n)}`; });
@@ -446,7 +550,7 @@ export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' &&
   return `Das Gerüst von ${name} hat ${teile.join(' und ')}${minus.length ? `; dafür ${verb} ihm ${und(minus)}` : ''}.`;
 }
 
-/** Wie die Elemente im Stereogramm erscheinen, nur für die Elemente dieses Gerüsts (Skript Kap. 3). */
+/** Wie die Elemente im Stereogramm erscheinen, nur für die Elemente dieses Gerüsts (Skript Kap. 4). */
 function darstellungText(info) {
   const t = [];
   const zAchse = info.axes.find((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
@@ -463,7 +567,7 @@ function darstellungText(info) {
 }
 
 export const GERUEST3D = {
-  id: 'gen-geruest3d', kapitel: 3, stufen: [1, 2], status: 'entwurf',
+  id: 'gen-geruest3d', kapitel: 4, stufen: [1, 2], status: 'geprüft',
   /** r:… Zeichnung → Stereogramm, s:… Stereogramm → Zeichnung */
   params: (stufe) => GERUEST.params(stufe).filter((id) => !GERUEST3D_OHNE.includes(id) && abl3d(id).length >= 3).flatMap((id) => [`r:${id}`, `s:${id}`]),
   make(param) {
@@ -478,7 +582,7 @@ export const GERUEST3D = {
       erklaerung: `Das ist das Symmetriegerüst von ${gruppenSymbol(g)}: ${elementeText(info)}. ${darstellungText(info)}`,
       skript: 'elemente',
       app: `#m=pg&g=${encodeURIComponent(id)}&obj=0`,
-      quelle: 'Folien 89–91; nach Borchardt-Ott & Sowa (2018), Abschn. 5.4 (S. 43) und Abb. 7.8–7.13',
+      quelle: 'nach Borchardt-Ott & Sowa (2018), Abschn. 5.4 (S. 43) und Abb. 7.8–7.13',
     };
     if (richtung === 'r') {
       return {

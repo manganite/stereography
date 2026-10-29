@@ -1,7 +1,7 @@
 // Service Worker: hält alle Dateien der App für den Offline-Betrieb vor (z. B. im Hörsaal ohne WLAN).
 // Je Version ein eigener Cache; eine neue Version wird beim nächsten Öffnen geladen, alte Caches
 // werden entfernt. VERSION muss mit js/version.js übereinstimmen (tests/release.test.mjs).
-const VERSION = '1.9.1';
+const VERSION = '1.10.0';
 const CACHE = `stereogramm-${VERSION}`;
 const FILES = [
   './',
@@ -73,8 +73,11 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   // Seitenaufrufe (auch mit Suchparametern) liefern ihre Seite, sonst index.html; alles andere aus dem Cache, sonst Netz
-  const page = PAGES.find((p) => new URL(req.url).pathname.endsWith('/' + p));
-  const key = req.mode === 'navigate' ? page || 'index.html' : req;
+  const path = new URL(req.url).pathname;
+  const page = PAGES.find((p) => path.endsWith('/' + p));
+  // Dateien wie skript.pdf kommen aus dem Netz, nicht als index.html
+  const datei = /\.[a-z0-9]+$/i.test(path) && !path.endsWith('.html');
+  const key = req.mode === 'navigate' && !datei ? page || 'index.html' : req;
   event.respondWith(
     caches.open(CACHE)
       .then((c) => c.match(key, { ignoreSearch: true }))

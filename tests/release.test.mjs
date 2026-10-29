@@ -44,3 +44,15 @@ test('Deployment: der Schritt „Assemble site“ kopiert jede Datei der Offline
   for (const p of listed) assert.ok(copied.includes(p.split('/')[0]), `wird nicht veröffentlicht: ${p}`);
   assert.ok(copied.includes('sw.js'), 'sw.js');
 });
+
+test('Skript als PDF: Werkzeug, Link im Skript, Erzeugen bei Deploy und Release', () => {
+  const tool = read('tools/skript-pdf.mjs');
+  assert.match(tool, /outline: true/);
+  assert.match(read('skript.html'), /<a class="linkcopy" href="skript\.pdf"/);
+  assert.match(read('.github/workflows/deploy.yml'), /node tools\/skript-pdf\.mjs _site\/skript\.pdf/);
+  const rel = read('.github/workflows/release.yml');
+  assert.match(rel, /node tools\/skript-pdf\.mjs "Stereographische-Projektion-Skript-\$\{GITHUB_REF_NAME\}\.pdf"/);
+  assert.match(rel, /files: Stereographische-Projektion-Skript-\$\{\{ github\.ref_name \}\}\.pdf/);
+  // Der Service Worker liefert Dateien wie skript.pdf aus dem Netz, nicht die Startseite
+  assert.match(sw, /const datei = /);
+});

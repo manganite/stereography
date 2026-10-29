@@ -22,3 +22,26 @@ jobs:
         run: for f in js/*.js sw.js tests/*.mjs; do node --check "$f"; done
       - name: Tests (Punktgruppen, Formenkatalog, Beispiele, Release-Konsistenz)
         run: node --test tests/*.test.mjs
+
+  # PDF-Fassung des Skripts wie bei Deploy und Release, damit Fehler vor dem Tag auffallen
+  pdf:
+    # Playwright 1.52 kennt die Systempakete von Ubuntu 24.04; ubuntu-latest wechselt auf Ubuntu 26
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.52.0
+          npx playwright install --with-deps chromium
+      - name: Skript als PDF
+        run: node tools/skript-pdf.mjs skript.pdf
+      - name: PDF als Artefakt
+        uses: actions/upload-artifact@v4
+        with:
+          name: skript-pdf
+          path: skript.pdf

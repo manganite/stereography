@@ -22,7 +22,8 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04 wegen Playwright 1.52 (Skript-PDF); ubuntu-latest wechselt auf Ubuntu 26
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,6 +50,15 @@ jobs:
         run: |
           mkdir _site
           cp -r index.html skript.html quiz.html manifest.webmanifest sw.js LICENSE js lib icons css _site/
+      # PDF-Fassung des Skripts (tools/skript-pdf.mjs), verlinkt im Kopf des Skripts
+      - name: Install Playwright
+        continue-on-error: true
+        run: |
+          npm install --no-save playwright@1.52.0
+          npx playwright install --with-deps chromium
+      - name: Skript als PDF
+        continue-on-error: true
+        run: node tools/skript-pdf.mjs _site/skript.pdf
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

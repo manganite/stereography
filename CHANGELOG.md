@@ -6,6 +6,18 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-10-29
+
+Das Skript gibt es jetzt auch als PDF: auf der Seite (Link „PDF“ im Kopf des Skripts) und als Anhang jedes Releases.
+
+### Hinzugefügt
+
+- **Skript als PDF:** `tools/skript-pdf.mjs` erzeugt eine PDF-Fassung (A4) mit Inhaltsverzeichnis, Lesezeichen, Kopf- und Fusszeile; 3D-Ansichten als Bilder, interaktive Abbildungen in einem festen Zustand mit Hinweis auf die Online-Version, Links in App und Quiz zeigen auf die veröffentlichte Seite. Bei jedem Release legt `deploy.yml` sie als `skript.pdf` auf die Seite (Link „PDF“ im Kopf des Skripts) und `release.yml` an das Release; die CI erzeugt es bei jedem Pull Request zur Kontrolle (Artefakt `skript-pdf`).
+
+### Behoben
+
+- **Offline-Speicher:** Aufrufe von Dateien wie `skript.pdf` lieferten die Startseite der App statt der Datei.
+
 ## [1.9.1] - 2026-10-29
 
 Quiz und Skript besser aufeinander abgestimmt: Abbildungsverweise im Quiz korrigiert, Projektionsformel und Symbollegende im Skript, Stufe 3 als Stoffstufe erklärt.
@@ -237,7 +249,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.9.1...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/manganite/stereography/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/manganite/stereography/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/manganite/stereography/compare/v1.8.1...v1.9.0
 [1.8.1]: https://github.com/manganite/stereography/compare/v1.8.0...v1.8.1

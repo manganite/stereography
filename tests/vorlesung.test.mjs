@@ -12,7 +12,13 @@ const files = [
   ...readdirSync(new URL('js/', root)).filter((f) => f.endsWith('.js')).map((f) => `js/${f}`),
 ];
 const HERKUNFT = /Vorlesung Kristallographie an der ETH Zürich/g;
-const VERWEIS = /Vorlesung|\bÜbungen\b|\bFolien? \d/;
+// Wortgrenzen Unicode-fähig: \b sieht „Ü“ nicht als Wortzeichen, \bÜbungen\b fände „siehe Übungen“ nicht.
+const VERWEIS = /Vorlesung|(?<![\p{L}\p{N}_])Übungen(?![\p{L}\p{N}_])|(?<![\p{L}\p{N}_])Folien? \d/u;
+
+test('das Suchmuster erkennt Verweise, auch mit Umlaut am Wortanfang', () => {
+  for (const s of ['siehe Vorlesung', 'Übungen', 'siehe Übungen, Blatt 3', '(Übungen)', 'Folie 12', 'Folien 3–5']) assert.match(s, VERWEIS, s);
+  for (const s of ['Übungsblatt', 'Bild für Folien kopieren', 'Kopierfolie 2']) assert.doesNotMatch(s, VERWEIS, s);
+});
 
 test('keine Verweise auf Vorlesung, Übungen oder Folien', () => {
   const funde = [];

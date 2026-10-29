@@ -2474,7 +2474,7 @@ export const BANK = [
     ],
     erklaerung: `Die Polarisation kann in jede der sechs gleichwertigen Richtungen ±[100], ±[010], ±[001] zeigen. Gezählt wie die Flächen einer Form: 48 Operationen von <i>m</i>${o(3)}<i>m</i> geteilt durch 8 Operationen von 4<i>mm</i> = 6. Beim Abkühlen wählen verschiedene Bereiche verschiedene Richtungen; sie gehen durch die verlorenen Operationen ineinander über.`,
     skript: 'batio3', app: '#m=pg&g=m-3m&rho=0&az=0',
-    quelle: 'Skript Kap. 11 (Ein Beispiel aus der Natur); K. Aizu, Phys. Rev. B 2, 754 (1970), S. 755–757; Hoffmann (2016), Abschn. 7.5.2, S. 259–261',
+    quelle: 'Skript Kap. 11 (Ein reales Beispiel: Bariumtitanat); K. Aizu, Phys. Rev. B 2, 754 (1970), S. 755–757; Hoffmann (2016), Abschn. 7.5.2, S. 259–261',
     pruefung: { art: 'domaenen', richtung: [0, 0, 1], pfeil: true, anzahl: 6 },
     status: 'geprüft',
   },

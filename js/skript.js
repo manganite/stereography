@@ -210,7 +210,11 @@ function wachstumFigur(fig) {
     const weg = !nO ? 'Das Oktaeder ist verschwunden: Der Kristall ist ein Würfel, und im Stereogramm fehlen die Pole von {111}.'
       : !nW ? 'Der Würfel ist verschwunden: Der Kristall ist ein Oktaeder, und im Stereogramm fehlen die Pole von {100}.'
         : `Flächen: ${nW} des Würfels, ${nO} des Oktaeders. ${fall.schnell === 'Oktaeder' ? 'Das Oktaeder verschwindet bei 1,73 : 1 (√3)' : 'Der Würfel verschwindet bei 0,58 : 1 (1/√3)'}.`;
-    out.textContent = `Die ${fall.schnell === 'Oktaeder' ? 'Oktaederflächen' : 'Würfelflächen'} haben sich doppelt so weit nach aussen verschoben wie die ${fall.langsam === 'Würfel' ? 'Würfelflächen' : 'Oktaederflächen'}. ${verh}. ${weg}`;
+    const schnell = fall.schnell === 'Oktaeder' ? 'Oktaederflächen' : 'Würfelflächen';
+    const langsam = fall.langsam === 'Würfel' ? 'Würfelflächen' : 'Oktaederflächen';
+    const stand = t === 0 ? `Start: beide Formen gleich weit vom Mittelpunkt. Mit dem Regler schieben sich die ${schnell} doppelt so schnell nach aussen wie die ${langsam}.`
+      : `Die ${schnell} haben sich doppelt so weit nach aussen verschoben wie die ${langsam}.`;
+    out.textContent = `${stand} ${verh}. ${weg}`;
   };
   input.addEventListener('input', draw);
   wahl.forEach((x) => x.addEventListener('change', () => { input.value = 0; draw(); }));

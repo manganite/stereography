@@ -24,7 +24,7 @@ export const EXAMPLES = [
       { hkl: [2, 1, 0], r: 1.08 },
     ],
     src: 'Hoffmann, S. 36–37 (Würfel, Pentagondodekaeder)',
-    note: 'Der Würfel hat hier nur die Flächensymmetrie mm2 (nicht 4mm wie beim Galenit); sichtbar mit „Flächensymmetrie zeigen“.',
+    note: 'Der Würfel hat hier nur die Flächensymmetrie 2mm.. (nicht 4m.m wie beim Galenit); sichtbar mit „Flächensymmetrie zeigen“.',
   },
   {
     id: 'dipyramiden', name: 'Zwei tetragonale Dipyramiden', sys: 'tetragonal', pg: '4/mmm',

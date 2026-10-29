@@ -186,21 +186,28 @@ function elementeAmPol(e) {
   return klassen.map((c, i) => {
     const achse = info.axes.find((a) => a.cls === i && DREH[a.symbol] && nd(a.dir, p) > 1 - 1e-6);
     const spiegel = info.mirrors.filter((m, j) => info.mirrorCls[j] === i && nd(m, p) < 1e-6).length;
-    return { label: c.label, n: achse ? DREH[achse.symbol] : 0, spiegel };
+    return { label: c.label, n: achse ? DREH[achse.symbol] : 0, sym: achse ? achse.symbol : '', spiegel };
   });
 }
 /** Erklärung, wie man die Flächensymmetrie am Stereogramm abliest. */
 function ablesenText(e) {
   const el = elementeAmPol(e);
   const n = Math.max(0, ...el.map((x) => x.n)), sp = el.reduce((s, x) => s + x.spiegel, 0);
+  const ax = el.find((x) => x.n);
+  // Drehinversionsachse (3̄, 4̄, 6̄): im Stereogramm ihr Symbol; den Pol hält nur ihr Drehanteil fest
+  const inv = ax && ax.sym.startsWith('-');
+  const achsName = (x) => (x.sym.startsWith('-') ? `die ${ov(x.sym.slice(1))}-Achse entlang der Flächennormalen (den Pol hält davon nur die ${x.n}-zählige Drehung fest)` : `die ${x.n}-zählige Achse entlang der Flächennormalen`);
   // Spiegelebene ⊥ c durch den Pol: im Stereogramm der kräftige Grundkreis
   const info = buildPointGroup(e.pg), p = poleOfHKL(SYSTEM_OF[e.pg], e.hkl);
   const gk = info.mirrors.some((m) => Math.abs(m[2]) > (1 - 1e-6) * Math.hypot(...m)) && info.ops.every((o) => Math.abs(mulVec(o, p)[2]) < 1e-6);
   const linien = sp === 1 ? 'einer Spiegellinie' : `${ZAHL[sp]} Spiegellinien`;
-  const bild = [n ? `auf dem Symbol einer ${n}-zähligen Achse` : '', sp ? `auf ${linien}${gk ? (sp === 1 ? ', dem kräftigen Grundkreis' : ' (eine davon ist der kräftige Grundkreis)') : ''}` : ''].filter(Boolean);
-  const teile = el.filter((x) => x.n || x.spiegel).map((x) => `zu ${x.label} ${[x.n ? `die ${x.n}-zählige Achse entlang der Flächennormalen` : '', x.spiegel ? `${x.spiegel === 1 ? 'eine Spiegelebene' : `${ZAHL[x.spiegel]} Spiegelebenen`}` : ''].filter(Boolean).join(' und ')}`);
+  const bild = [n ? (inv ? `auf dem Symbol einer ${ov(ax.sym.slice(1))}-Achse` : `auf dem Symbol einer ${n}-zähligen Achse`) : '', sp ? `auf ${linien}${gk ? (sp === 1 ? ', dem kräftigen Grundkreis' : ' (eine davon ist der kräftige Grundkreis)') : ''}` : ''].filter(Boolean);
+  const teile = el.filter((x) => x.n || x.spiegel).map((x) => `zu ${x.label} ${[x.n ? achsName(x) : '', x.spiegel ? `${x.spiegel === 1 ? 'eine Spiegelebene' : `${ZAHL[x.spiegel]} Spiegelebenen`}` : ''].filter(Boolean).join(' und ')}`);
   const leer = el.filter((x) => !x.n && !x.spiegel).map((x) => x.label);
-  return `Im Stereogramm liegt jeder Pol der Form ${und(bild)}. Diese Elemente gehen durch die Fläche: ${und(teile)}${leer.length ? `; zu ${und(leer)} keines` : ''}.`;
+  // mehrere Spiegelebenen derselben Blickrichtung, die die Achse durch den Pol ineinander überführt: im Symbol nur ein m
+  const einmal = n >= 3 && el.some((x) => x.spiegel > 1)
+    ? ` Spiegelebenen derselben Blickrichtung, die die ${n}-zählige Drehung ineinander überführt, sind gleichwertig und stehen im Symbol nur einmal.` : '';
+  return `Im Stereogramm liegt jeder Pol der Form ${und(bild)}. Diese Elemente gehen durch die Fläche: ${und(teile)}${leer.length ? `; zu ${und(leer)} keines` : ''}.${einmal}`;
 }
 
 export const FLAECHENSYM = {

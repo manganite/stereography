@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { BANK } from '../js/quiz-bank.js';
 import {
   GENERATOREN, GERUEST, GERUEST_ALLE, GERUEST_STUFE1, FLAECHENZAHL, FLAECHENSYM,
-  KOERPER, KOERPER_STEREO, LAGE, LAGE_MUSTER, GERUEST3D, GERUEST3D_OHNE,
+  KOERPER, KOERPER_STEREO, LAGE, LAGE_MUSTER, GERUEST3D, GERUEST3D_OHNE, aehnlich,
 } from '../js/quiz-gen.js';
 import { istRaum, appHash, raumInner, raumSVG } from '../js/bild3d.js';
 import {
@@ -692,11 +692,16 @@ test('Generatoren mit Bildantworten: gültige Fragen, richtige Antwort passt zum
   for (const q of erzeugt(GERUEST3D)) {
     for (const x of q.antworten) assert.ok(!GERUEST3D_OHNE.includes(decodeURIComponent(new URLSearchParams(appHash(x.app).slice(1)).get('g'))), q.id);
   }
-  // Lage: drei Lagen desselben Kristalls und ein anderer Kristall in der gefragten Lage
+  // Lage: drei Lagen desselben Kristalls und ein anderer Kristall in der gefragten Lage; bei Zeichnungen, die sich
+  // kaum unterscheiden (Würfel [111]/[110]), statt der zweiten Lage ein weiterer Kristall in der gefragten Lage
   for (const q of erzeugt(LAGE)) {
-    const lagen = q.antworten.map((x) => stateForHash(appHash(x.app)).poly.presetId);
-    assert.deepEqual(new Set(lagen.slice(0, 3)).size, 3, q.id);
-    assert.equal(lagen[3], lagen[0], q.id);
+    const st = q.antworten.map((x) => stateForHash(appHash(x.app)));
+    const lagen = st.map((s) => s.poly.presetId), formen = st.map((s) => currentEntryId(s));
+    const gleich = lagen.filter((l) => l === lagen[0]).length;
+    assert.equal(new Set(lagen).size, 5 - gleich, q.id);
+    for (let i = 1; i < 4; i++) for (let j = 0; j < i; j++) {
+      if (istRaum(q.antworten[0].app) && formen[i] === formen[j] && formen[i] === 'm-3m:a34') assert.ok(!aehnlich('wuerfel', lagen[i], lagen[j]), `${q.id}: Würfel [${lagen[i]}] und [${lagen[j]}] zusammen`);
+    }
   }
 });
 

@@ -334,6 +334,13 @@ export const LAGE_MUSTER = {
 };
 const LAGE_ANDERER = { wuerfel: 'oktaeder', oktaeder: 'wuerfel', rhombendodekaeder: 'wuerfel' };
 const LAGEN = ['001', '111', '110'];
+/**
+ * Zeichnungen, die sich in der festen Ansicht kaum unterscheiden: der Würfel mit [111] und mit [110] senkrecht
+ * (in beiden Fällen oben eine Ecke bzw. Kante zwischen zwei sichtbaren Flächen). Sie stehen nie zusammen in einer Frage;
+ * statt der zweiten Lage kommt das Rhombendodekaeder in derselben Lage (Entscheidung Thomas).
+ */
+const AEHNLICH = { wuerfel: [['111', '110']] };
+export const aehnlich = (k, a, b) => (AEHNLICH[k] || []).some(([p, q]) => (p === a && q === b) || (p === b && q === a));
 const lageText = (l) => `[${l}]`;
 /** Was die Lage sichtbar macht (Skript Kap. 6, „Andere Projektionsrichtung, gleicher Kristall“). */
 const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${ov(3)}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
@@ -367,14 +374,16 @@ export const LAGE = {
           `Das ist das Stereogramm ${KOERPER[x].des} in derselben Lage: ${muster(x, lage)}.`],
       };
     }
+    const lagenZ = andere.reduce((acc, l) => ([lage, ...acc].some((m) => aehnlich(k, m, l)) ? acc : [...acc, l]), []);
+    const koerperZ = [x, ...(lagenZ.length < andere.length ? ['rhombendodekaeder'] : [])];
     return {
       ...gemeinsam,
       frage: `Welche Zeichnung zeigt den Kristall in der Lage, zu der dieses Stereogramm gehört? ${PFEIL}`,
       bild: stereo(k, lage).app,
       bildAlt: stereo(k, lage).alt,
-      antworten: [zeichnung(k, lage), ...andere.map((l) => zeichnung(k, l)), zeichnung(x, lage)],
-      hinweise: [null, ...andere.map((l) => `Das ist ${e.der} mit ${lageText(l)} als Projektionsrichtung (in der Zeichnung senkrecht). Stereogramm dazu: ${muster(k, l)}.`),
-        `Das ist ${KOERPER[x].der} in derselben Lage. Stereogramm dazu: ${muster(x, lage)}.`],
+      antworten: [zeichnung(k, lage), ...lagenZ.map((l) => zeichnung(k, l)), ...koerperZ.map((y) => zeichnung(y, lage))],
+      hinweise: [null, ...lagenZ.map((l) => `Das ist ${e.der} mit ${lageText(l)} als Projektionsrichtung (in der Zeichnung senkrecht). Stereogramm dazu: ${muster(k, l)}.`),
+        ...koerperZ.map((y) => `Das ist ${KOERPER[y].der} in derselben Lage. Stereogramm dazu: ${muster(y, lage)}.`)],
     };
   },
 };

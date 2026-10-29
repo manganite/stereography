@@ -12,7 +12,7 @@ Das Skript gibt es jetzt auch als PDF: auf der Seite (Link „PDF“ im Kopf des
 
 ### Hinzugefügt
 
-- **Skript als PDF:** `tools/skript-pdf.mjs` erzeugt eine PDF-Fassung (A4) mit Inhaltsverzeichnis, Lesezeichen, Kopf- und Fusszeile; 3D-Ansichten als Bilder, interaktive Abbildungen in einem festen Zustand mit Hinweis auf die Online-Version, Links in App und Quiz zeigen auf die veröffentlichte Seite. Bei jedem Release legt `deploy.yml` sie als `skript.pdf` auf die Seite (Link „PDF“ im Kopf des Skripts) und `release.yml` an das Release.
+- **Skript als PDF:** `tools/skript-pdf.mjs` erzeugt eine PDF-Fassung (A4) mit Inhaltsverzeichnis, Lesezeichen, Kopf- und Fusszeile; 3D-Ansichten als Bilder, interaktive Abbildungen in einem festen Zustand mit Hinweis auf die Online-Version, Links in App und Quiz zeigen auf die veröffentlichte Seite. Bei jedem Release legt `deploy.yml` sie als `skript.pdf` auf die Seite (Link „PDF“ im Kopf des Skripts) und `release.yml` an das Release; die CI erzeugt es bei jedem Pull Request zur Kontrolle (Artefakt `skript-pdf`).
 
 ### Behoben
 

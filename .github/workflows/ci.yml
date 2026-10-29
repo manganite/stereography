@@ -25,7 +25,8 @@ jobs:
 
   # PDF-Fassung des Skripts wie bei Deploy und Release, damit Fehler vor dem Tag auffallen
   pdf:
-    runs-on: ubuntu-latest
+    # Playwright 1.52 kennt die Systempakete von Ubuntu 24.04; ubuntu-latest wechselt auf Ubuntu 26
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4

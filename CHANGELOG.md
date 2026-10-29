@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-10-29
+
+Skript neu geordnet und erweitert (elf Kapitel, darunter neu Symmetrieoperationen und Punktgruppen, Symmetriesätze, Pyrit, Quarz, rhomboedrische Achsen und die interaktive Abb. 8.5 zum Wachstum), ohne Verweise auf die Vorlesung verständlich; Infobox der App verlinkt jeden Begriff ins Skript; alle Quizfragen durchgesehen und geprüft, mit Lernziel in der Rückmeldung.
+
 ### Hinzugefügt
 
 - **Skript, Kapitel 3 „Symmetrieoperationen und Punktgruppen“:** Symmetrieoperation und Symmetrieelement, die Punktsymmetrieoperationen, Kopplung und Kombination am Beispiel 4̄ und 4/*m*, die fünf Drehinversionsachsen mit Stereogrammen und ihren Regeln, Punktgruppen mit den Kästen „Grundlagen · Gruppe“ und „Grundlagen · Untergruppe“ (Bahnen in 3*m*, *mmm*, *mm*2, 222), die 7 Kristallsysteme und 32 Kristallklassen in einer Tabelle; als Vertiefungen „Operationen erster und zweiter Art“ (Farben der Pole) sowie Drehspiegelachsen und Schoenflies-Symbole.
@@ -215,7 +219,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.8.1...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/manganite/stereography/compare/v1.8.1...v1.9.0
 [1.8.1]: https://github.com/manganite/stereography/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/manganite/stereography/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/manganite/stereography/compare/v1.6.0...v1.7.0

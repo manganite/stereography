@@ -213,6 +213,11 @@ figure.proj svg { max-width: 650px; margin-inline: auto; }
 .slider { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; align-items: center; margin-top: 10px; font-size: 0.9rem; }
 .slider input { width: 100%; accent-color: var(--accent); }
 .slider output { grid-column: 1 / -1; color: var(--muted); font-size: 0.86rem; min-height: 2.6em; }
+.w-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: center; }
+.w-row svg { display: block; width: 100%; height: auto; }
+.w-wahl { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.w-wahl label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+.wachs .slider output { min-height: 4em; }
 
 footer { max-width: 1180px; margin: 32px auto 0; color: var(--muted); font-size: 0.78rem; }
 footer a { color: inherit; }
@@ -1674,7 +1679,7 @@ footer a { color: inherit; }
       <section id="wachstum">
         <h3>Wie der Habitus entsteht</h3>
         <p>Ein Kristall wächst, indem sich auf seinen Flächen neue Netzebenen anlagern; die Flächen verschieben sich dabei parallel. Wie schnell sich eine Fläche nach aussen schiebt, ist ihre <span class="term">Wachstumsgeschwindigkeit</span>. Sie ist anisotrop, also für nicht gleichwertige Flächen verschieden, und hängt von Temperatur, Druck und Übersättigung ab.</p>
-        <p>Langsam wachsende Flächen werden dabei immer grösser, schnell wachsende kleiner, bis sie ganz verschwinden können. Welche Flächen am Ende auftreten und wie gross sie sind, hängt also vom Verhältnis der Wachstumsgeschwindigkeiten ab. In der Regel sind es niedrig indizierte Flächen, deren Netzebenen dicht mit Bausteinen besetzt sind; je grösser die Indizes, desto dünner sind die Netzebenen in der Regel besetzt und desto schneller wächst die Fläche meist. Am Kaliumalaun hat man die Wachstumsgeschwindigkeiten gemessen: Relativ zu {111} wachsen {110} 4,8-mal, {001} 5,3-mal, {221} 9,5-mal und {112} 11-mal so schnell, und übrig bleibt das Oktaeder {111}. Dass hier nicht der Würfel übrig bleibt, zeigt, dass die Regel nur eine Tendenz ist; mit einem Zusatz von Borax wächst Alaun sogar als Würfel. Wächst das Prisma langsam und das Pinakoid schnell, wird der Kristall prismatisch; im umgekehrten Fall tafelig.</p>
+        <p>Langsam wachsende Flächen werden dabei immer grösser, schnell wachsende kleiner, bis sie ganz verschwinden können. Welche Flächen am Ende auftreten und wie gross sie sind, hängt also vom Verhältnis der Wachstumsgeschwindigkeiten ab. In der Regel sind es niedrig indizierte Flächen, deren Netzebenen dicht mit Bausteinen besetzt sind; je grösser die Indizes, desto dünner sind die Netzebenen in der Regel besetzt und desto schneller wächst die Fläche meist. Am Kaliumalaun hat man die Wachstumsgeschwindigkeiten gemessen: Relativ zu {111} wachsen {110} 4,8-mal, {001} 5,3-mal, {221} 9,5-mal und {112} 11-mal so schnell, und übrig bleibt das Oktaeder {111}. Dass hier nicht der Würfel übrig bleibt, zeigt, dass die Regel nur eine Tendenz ist. Die konkreten Bedingungen, unter denen ein Kristall wächst, können die Rangfolge ändern; aus einer Lösung mit etwas Borax wächst Alaun sogar als Würfel. Wächst das Prisma langsam und das Pinakoid schnell, wird der Kristall prismatisch; im umgekehrten Fall tafelig.</p>
       </section>
 
       <section id="habitus-stereo">
@@ -1684,7 +1689,19 @@ footer a { color: inherit; }
           <div class="fig-art"></div>
           <figcaption><b>Abb. 8.4</b> Stereogramm der drei Kristalle aus Abb. 8.1–8.3: sechs Prismenpole auf dem Grundkreis, das Pinakoid im Mittelpunkt.</figcaption>
         </figure>
-        <div class="box app">
+                <p>Abb. 8.5 zeigt, wie eine Form beim Wachstum verschwindet. Ein Galenit aus Würfel und Oktaeder beginnt mit beiden Formen gleich weit vom Mittelpunkt; dann schiebt sich eine Form doppelt so schnell nach aussen wie die andere. Die schnellere wird immer kleiner. Sobald sie verschwunden ist, fehlen ihre Pole auch im Stereogramm.</p>
+        <figure class="fig-card wachs" id="fig-wachstum">
+          <div class="fig-art w-row"><div class="w-3d"></div><div class="w-st"></div></div>
+          <div class="slider">
+            <span>Schneller wächst</span>
+            <span class="w-wahl"><label><input type="radio" name="w-fall" value="okt" checked> das Oktaeder</label> <label><input type="radio" name="w-fall" value="wue"> der Würfel</label></span>
+            <label for="w-zeit">Wachstum</label>
+            <input type="range" id="w-zeit" min="0" max="100" step="1" value="0">
+            <output for="w-zeit" aria-live="polite"></output>
+          </div>
+          <figcaption><b>Abb. 8.5</b> Galenit aus Würfel {100} (blau) und Oktaeder {111} (rot), anfangs gleich weit vom Mittelpunkt. Links der Kristall, auf gleiche Grösse gebracht, rechts sein Stereogramm. Mit dem Regler wachsen die Flächen; die gewählte Form schiebt sich doppelt so schnell nach aussen. Die Winkel zwischen den Flächen bleiben gleich, bis eine Form verschwindet.</figcaption>
+        </figure>
+<div class="box app">
           <h4>In der App</h4>
           <p>Der Habitus lässt sich unter „Gestalt“ verändern, über den Abstand der Ergänzungsformen oder bei Beispielkristallen über die Abstände der Formen. Die Infobox nennt den Habitus. Die App bestimmt ihn aus den drei Hauptausdehnungen des Körpers <i>L</i>₁ ≥ <i>L</i>₂ ≥ <i>L</i>₃: Ist <i>L</i>₃/<i>L</i>₁ mindestens 2/3, gilt der Kristall als isometrisch; sonst als prismatisch, wenn eine Richtung herausragt, oder als planar, wenn eine Richtung zurückbleibt. Diese Grenze ist eine Festlegung der App, keine Definition aus der Literatur; die Grundtypen selbst sind fliessend.</p>
         </div>

@@ -211,7 +211,7 @@ function ablesenText(e) {
 }
 
 export const FLAECHENSYM = {
-  id: 'gen-flaechensym', kapitel: 10, stufen: [3], status: 'entwurf',
+  id: 'gen-flaechensym', kapitel: 10, stufen: [3], status: 'geprüft',
   params: () => SPEZIELL.filter((e) => FS_GRUPPEN.includes(e.pg)).map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechensym'].includes(id)),
   make(id) {
     const e = entryById(id);

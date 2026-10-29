@@ -829,7 +829,9 @@ test('Seite: Schalter „Auch ungeprüfte Fragen zeigen“ für alle, im Browser
   assert.match(js, /localStorage\.getItem\(ENTWURF\) === '1'/);
   assert.match(js, /localStorage\.setItem\(ENTWURF/);
   // ohne Schalter nur geprüfte Fragen, mit Schalter alle
-  const ohne = kandidaten(BANK, GENERATOREN, {}), mit = kandidaten(BANK, GENERATOREN, { entwurf: true });
+  // (alle Fragen sind inzwischen geprüft; deshalb eine künstliche Entwurfsfrage dazu)
+  const bank = [...BANK, { ...BANK[0], id: 'test-entwurf', status: 'entwurf' }];
+  const ohne = kandidaten(bank, GENERATOREN, {}), mit = kandidaten(bank, GENERATOREN, { entwurf: true });
   assert.ok(ohne.every((k) => (k.frage ? k.frage.status : k.gen.status) === 'geprüft'));
   assert.ok(mit.length > ohne.length);
 });

@@ -81,10 +81,11 @@ function ring(n, rho, P, N = 120) {
 // ------------------------------------------------------------------ Kristall
 /**
  * Kristall einer Link-Adresse als SVG (Inhalt eines viewBox 0 0 520 520).
- * opt: { ebene: true } Projektionsebene (Ring) und Blickpfeil; { blick } andere Kamerarichtung.
+ * opt: { ebene: true } Projektionsebene (Ring) und Blickpfeil; { blick } andere Kamerarichtung; { state } fertiger
+ * Zustand statt der Link-Adresse (Skript, Abb. „Wachstum“: Abstände ausserhalb des Bereichs der Link-Adresse).
  */
 export function koerperSVG(hash, col, opt = {}) {
-  const st = stateForHash(hash);
+  const st = opt.state || stateForHash(hash);
   const C = polyCrystal(st, col);
   const k = kamera(opt.blick);
   const faces = C.faces.filter((x) => !x.hidden);

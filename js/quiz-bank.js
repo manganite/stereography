@@ -1651,11 +1651,11 @@ export const BANK = [
       'Langsam wachsende Flächen werden gross, nicht klein; schnell wachsende werden kleiner und verschwinden.',
       'Umgekehrt: Schnell wachsende Flächen werden kleiner und verschwinden; übrig bleiben die langsam wachsenden.',
     ],
-    erklaerung: 'Welche Flächen am Ende auftreten, hängt vom Verhältnis der Wachstumsgeschwindigkeiten ab: Die langsam wachsenden werden grösser, die schnell wachsenden verschwinden. Hoch indizierte Flächen wie {421} wachsen in der Regel schnell. Als Grund sieht man den Aufbau des Kristalls: Netzebenen mit kleinen Indizes sind meist dicht mit Bausteinen besetzt, solche mit grossen Indizes wie {421} dünn (die genaue Rangfolge hängt vom Gittertyp ab), und dicht besetzte Flächen treten erfahrungsgemäss bevorzugt auf. Das ist eine Regel, kein Gesetz: Übersättigung und Zusätze in der Lösung können die Rangfolge ändern. Gemessen hat man die Geschwindigkeiten z. B. am Kaliumalaun: Relativ zu {111} wachsen {110} 4,8-mal, {001} 5,3-mal, {221} 9,5-mal und {112} 11-mal so schnell; übrig bleibt das Oktaeder {111}.',
+    erklaerung: 'Welche Flächen am Ende auftreten, hängt vom Verhältnis der Wachstumsgeschwindigkeiten ab: Die langsam wachsenden werden grösser, die schnell wachsenden verschwinden. Hoch indizierte Flächen wie {421} wachsen in der Regel schnell. Als Grund sieht man den Aufbau des Kristalls: Netzebenen mit kleinen Indizes sind meist dicht mit Bausteinen besetzt, solche mit grossen Indizes wie {421} dünn (die genaue Rangfolge hängt vom Gittertyp ab), und dicht besetzte Flächen treten erfahrungsgemäss bevorzugt auf. Das ist eine Regel, kein Gesetz: Die konkreten Bedingungen, unter denen ein Kristall wächst, können die Rangfolge ändern. Gemessen hat man die Geschwindigkeiten z. B. am Kaliumalaun: Relativ zu {111} wachsen {110} 4,8-mal, {001} 5,3-mal, {221} 9,5-mal und {112} 11-mal so schnell; übrig bleibt das Oktaeder {111}.',
     skript: 'wachstum', app: '#m=form&sys=kubisch&bsp=galenit',
     quelle: 'Skript Kap. 8 (Wie der Habitus entsteht); Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 38; Kleber u. a. (2020), Abschn. 1.9.4, S. 102–106 (Besetzungsdichte der Netzebenen), und Abschn. 4.3, S. 280–281 (Abb. 4.12, Kaliumalaun)',
     pruefung: { art: 'flaechen', gruppe: 'm-3m', system: 'kubisch', hkl: [4, 2, 1], anzahl: 48, allgemein: true },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 5: Blickrichtungen
@@ -2278,7 +2278,7 @@ export const BANK = [
     skript: 'multiplizitaet', app: `#m=form&sys=kubisch&f=${encodeURIComponent('-43m:a33')}&muster=1`,
     quelle: 'Skript Kap. 10 (Abb. 10.3); Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150, Tab. 9.5–9.8 (S. 152–157)',
     pruefung: { art: 'flaechen', gruppe: '-43m', system: 'kubisch', hkl: [1, 1, 1], anzahl: 4, allgemein: false },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'lag-3-04', stufe: 3, kapitel: 10, typ: 'einfach',
@@ -2355,7 +2355,7 @@ export const BANK = [
     skript: 'lage-pol', app: '#m=form&sys=kubisch&f=m-3m:d46&geruest=1',
     quelle: 'Skript Kap. 10 (Die Lage eines Pols, Tabelle der Wyckoff-Lagen); International Tables Vol. A (2006), Tab. 10.1.2.2',
     pruefung: { art: 'wyckoff', formen: ['m-3m:e42', 'm-3m:e43', 'm-3m:d46'], lagen: ['e', 'e', 'd'], anzahl: 24 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'lag-3-08', stufe: 3, kapitel: 10, typ: 'einfach',

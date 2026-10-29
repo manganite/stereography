@@ -1604,7 +1604,7 @@ export const BANK = [
       'Die Flächen verschieben sich beim Wachstum nur parallel; ihre Normalen und damit ihre Pole bleiben, wo sie sind.',
     ],
     erklaerung: 'Langsam wachsende Flächen werden grösser, schnell wachsende kleiner, bis sie ganz verschwinden können. Hier rücken die Oktaederflächen im Verhältnis immer weiter nach aussen; sie werden schmaler, und der Kristall nähert sich dem Würfel. Sobald der Abstand der Oktaederflächen das √3-Fache des Abstands der Würfelflächen erreicht, liegen die Würfelecken innerhalb der Oktaederflächen, und diese verschwinden. Solange Oktaederflächen vorhanden sind, bleibt das Stereogramm gleich; verschwinden sie, ändert sich die Tracht von {100}, {111} zu {100}, und ihre Pole fallen weg.',
-    skript: 'wachstum', app: '#m=form&sys=kubisch&bsp=galenit&ab=1,0.69,2',
+    skript: 'form-verschwindet', app: '#m=form&sys=kubisch&bsp=galenit&ab=1,0.69,2',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 36–39 (Abb. 5.6)',
     pruefung: { art: 'wachstum', abstand: [1, 1], geschwindigkeit: [1, 2] },
     status: 'geprüft',

@@ -136,7 +136,7 @@ function enthalten(e, x) {
 }
 
 export const FLAECHENZAHL = {
-  id: 'gen-flaechenzahl', kapitel: 10, stufen: [3], status: 'entwurf',
+  id: 'gen-flaechenzahl', kapitel: 10, stufen: [3], status: 'geprüft',
   params: () => SPEZIELL.map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechenzahl'].includes(id)),
   make(id) {
     const e = entryById(id);
@@ -173,6 +173,36 @@ export const FLAECHENZAHL = {
 
 /** Flächensymmetrie wählen: Gruppen mit mindestens vier verschiedenen speziellen Flächensymmetrien. */
 const FS_GRUPPEN = [...new Set(SPEZIELL.map((e) => e.pg))].filter((pg) => new Set(SPEZIELL.filter((e) => e.pg === pg).map((e) => e.fs)).size >= 4);
+/**
+ * Symmetrieelemente durch den Pol einer Form, nach Blickrichtung: die Drehachse entlang der Flächennormalen (bei
+ * Drehinversionsachsen ihr Drehanteil: 4̄ → 2, 3̄ und 6̄ → 3) und die Spiegelebenen, die die Normale enthalten.
+ */
+function elementeAmPol(e) {
+  const info = buildPointGroup(e.pg);
+  const klassen = symmetryDirections(info);
+  const p = poleOfHKL(SYSTEM_OF[e.pg], e.hkl);
+  const nd = (v, w) => Math.abs(v[0] * w[0] + v[1] * w[1] + v[2] * w[2]) / Math.hypot(...v) / Math.hypot(...w);
+  const DREH = { 2: 2, 3: 3, 4: 4, 6: 6, '-3': 3, '-4': 2, '-6': 3 };
+  return klassen.map((c, i) => {
+    const achse = info.axes.find((a) => a.cls === i && DREH[a.symbol] && nd(a.dir, p) > 1 - 1e-6);
+    const spiegel = info.mirrors.filter((m, j) => info.mirrorCls[j] === i && nd(m, p) < 1e-6).length;
+    return { label: c.label, n: achse ? DREH[achse.symbol] : 0, spiegel };
+  });
+}
+/** Erklärung, wie man die Flächensymmetrie am Stereogramm abliest. */
+function ablesenText(e) {
+  const el = elementeAmPol(e);
+  const n = Math.max(0, ...el.map((x) => x.n)), sp = el.reduce((s, x) => s + x.spiegel, 0);
+  // Spiegelebene ⊥ c durch den Pol: im Stereogramm der kräftige Grundkreis
+  const info = buildPointGroup(e.pg), p = poleOfHKL(SYSTEM_OF[e.pg], e.hkl);
+  const gk = info.mirrors.some((m) => Math.abs(m[2]) > (1 - 1e-6) * Math.hypot(...m)) && info.ops.every((o) => Math.abs(mulVec(o, p)[2]) < 1e-6);
+  const linien = sp === 1 ? 'einer Spiegellinie' : `${ZAHL[sp]} Spiegellinien`;
+  const bild = [n ? `auf dem Symbol einer ${n}-zähligen Achse` : '', sp ? `auf ${linien}${gk ? (sp === 1 ? ', dem kräftigen Grundkreis' : ' (eine davon ist der kräftige Grundkreis)') : ''}` : ''].filter(Boolean);
+  const teile = el.filter((x) => x.n || x.spiegel).map((x) => `zu ${x.label} ${[x.n ? `die ${x.n}-zählige Achse entlang der Flächennormalen` : '', x.spiegel ? `${x.spiegel === 1 ? 'eine Spiegelebene' : `${ZAHL[x.spiegel]} Spiegelebenen`}` : ''].filter(Boolean).join(' und ')}`);
+  const leer = el.filter((x) => !x.n && !x.spiegel).map((x) => x.label);
+  return `Im Stereogramm liegt jeder Pol der Form ${und(bild)}. Diese Elemente gehen durch die Fläche: ${und(teile)}${leer.length ? `; zu ${und(leer)} keines` : ''}.`;
+}
+
 export const FLAECHENSYM = {
   id: 'gen-flaechensym', kapitel: 10, stufen: [3], status: 'entwurf',
   params: () => SPEZIELL.filter((e) => FS_GRUPPEN.includes(e.pg)).map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechensym'].includes(id)),
@@ -199,7 +229,7 @@ export const FLAECHENSYM = {
       antworten: [hmHTML(e.fs), ...abl.map((x) => hmHTML(x.fs))],
       richtig: [0],
       hinweise: [null, ...abl.map(hinweis)],
-      erklaerung: `Das orientierte Symbol nennt je Blickrichtung (${labels}) die Symmetrieelemente, die durch die Fläche gehen; ein Punkt steht für keines. Für ${indizes(e.hkl)} ergibt das ${hmHTML(e.fs)} mit ${k} Operationen, also ${n}/${k} = ${e.mult} Flächen (Wyckoff-Lage ${e.mult}<i>${e.wy}</i>).`,
+      erklaerung: `${ablesenText(e)} Das orientierte Symbol schreibt sie je Blickrichtung (${labels}) an eine Stelle, ein Punkt steht für keines: ${hmHTML(e.fs)} mit ${k} Operationen, also ${n}/${k} = ${e.mult} Flächen (Wyckoff-Lage ${e.mult}<i>${e.wy}</i>).`,
       skript: 'lagesymbol',
       app: `#m=form&sys=${sys}&f=${encodeURIComponent(e.id)}&geruest=1&muster=1`,
       quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150, Tab. 9.5–9.8 (S. 152–157); International Tables Vol. A (2006), Tab. 10.1.2.2',

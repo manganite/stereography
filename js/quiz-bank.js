@@ -774,7 +774,7 @@ export const BANK = [
     skript: 'schnitt', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,${-1},1`,
     quelle: 'Skript Kap. 7 (Vertiefung Die Komplikationsregel); Borchardt-Ott & Sowa (2018), Abschn. 5.7, S. 50–53',
     pruefung: { art: 'komplikation', achse: [0, -1, 1], aus: [[1, 0, 0], [0, 1, 1]] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 6: Kristallformen im Stereogramm
@@ -1607,7 +1607,7 @@ export const BANK = [
     skript: 'wachstum', app: '#m=form&sys=kubisch&bsp=galenit&ab=1,0.69,2',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 36–39 (Abb. 5.6)',
     pruefung: { art: 'wachstum', abstand: [1, 1], geschwindigkeit: [1, 2] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hab-2-02', stufe: 2, kapitel: 8, typ: 'mehrfach',
@@ -1632,7 +1632,7 @@ export const BANK = [
     skript: 'habitus-def', app: '#m=form&sys=hexagonal&f=6/mmm:c25&abstand=0.3',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.2, S. 35 (Abb. 5.2), und 5.3, S. 38',
     pruefung: { art: 'gleichesBild', hashes: ['#m=form&sys=hexagonal&f=6/mmm:c25&abstand=0.3', '#m=form&sys=hexagonal&f=6/mmm:c25&abstand=2.5'] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'hab-2-03', stufe: 2, kapitel: 8, typ: 'einfach',
@@ -1651,9 +1651,9 @@ export const BANK = [
       'Langsam wachsende Flächen werden gross, nicht klein; schnell wachsende werden kleiner und verschwinden.',
       'Umgekehrt: Schnell wachsende Flächen werden kleiner und verschwinden; übrig bleiben die langsam wachsenden.',
     ],
-    erklaerung: 'Welche Flächen am Ende auftreten, hängt vom Verhältnis der Wachstumsgeschwindigkeiten ab: Die langsam wachsenden haben den Vorrang, die schnell wachsenden verschwinden. Die Flächen, die übrig bleiben, sind in der Regel niedrig indiziert, und ihre Netzebenen sind dicht mit Bausteinen besetzt.',
+    erklaerung: 'Welche Flächen am Ende auftreten, hängt vom Verhältnis der Wachstumsgeschwindigkeiten ab: Die langsam wachsenden werden grösser, die schnell wachsenden verschwinden. Hoch indizierte Flächen wie {421} wachsen in der Regel schnell. Der Grund liegt im Gitter: Je kleiner die Indizes, desto dichter sind die Netzebenen mit Bausteinen besetzt; die Netzebenen von {421} sind dagegen dünn besetzt. Dicht besetzte Netzebenen wachsen langsam und begrenzen deshalb den Kristall. Gemessen hat man das z. B. am Kaliumalaun: Relativ zu {111} wachsen {110} 4,8-mal, {221} 9,5-mal und {112} 11-mal so schnell; übrig bleibt das Oktaeder {111}.',
     skript: 'wachstum', app: '#m=form&sys=kubisch&bsp=galenit',
-    quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 38',
+    quelle: 'Skript Kap. 8 (Wie der Habitus entsteht); Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 38; Kleber u. a. (2020), Abschn. 1.9, S. 102–103 (Besetzungsdichte der Netzebenen), und Abschn. 4.3, S. 280 (Abb. 4.12, Kaliumalaun)',
     pruefung: { art: 'flaechen', gruppe: 'm-3m', system: 'kubisch', hkl: [4, 2, 1], anzahl: 48, allgemein: true },
     status: 'entwurf',
   },
@@ -2242,7 +2242,7 @@ export const BANK = [
     skript: 'lage-pol', app: '#m=pg&g=4/mmm&rho=0&az=0',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150; Skript Kap. 10 (Abb. 10.1g)',
     pruefung: { art: 'lagesym', gruppe: '4/mmm', system: 'tetragonal', richtung: [0, 0, 1], symbol: '4mm' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'lag-3-02', stufe: 3, kapitel: 10, typ: 'einfach',
@@ -2260,12 +2260,12 @@ export const BANK = [
     skript: 'lage-pol', app: `#m=pg&g=${encodeURIComponent('-4')}&rho=0&az=0`,
     quelle: 'Skript Kap. 10 (Die Lage eines Pols); Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150',
     pruefung: { art: 'lagesym', gruppe: '-4', system: 'tetragonal', richtung: [0, 0, 1], symbol: '2' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'lag-3-03', stufe: 3, kapitel: 10, typ: 'einfach',
     lernziel: 'erklären, warum dieselbe Form in verschiedenen Punktgruppen verschiedene Flächensymmetrie, aber gleiche Flächenzahl haben kann',
-    frage: `Das Oktaeder {111} hat in <i>m</i>${o(3)}<i>m</i> (48 Operationen) die Flächensymmetrie .3<i>m</i>. In ${o(4)}3<i>m</i> (24 Operationen) hat {111} dieselbe Flächensymmetrie. Wie viele Flächen hat die Form dort?`,
+    frage: `Die Form {111} hat in <i>m</i>${o(3)}<i>m</i> (48 Operationen) die Flächensymmetrie .3<i>m</i>. In ${o(4)}3<i>m</i> (24 Operationen) hat {111} dieselbe Flächensymmetrie. Wie viele Flächen hat die Form dort?`,
     antworten: ['4', '8', '2', '24'],
     richtig: [0],
     hinweise: [
@@ -2274,7 +2274,7 @@ export const BANK = [
       '.3<i>m</i> hat 6 Operationen (drei Drehungen, drei Spiegelungen), nicht 12.',
       `So viele Flächen hat nur die allgemeine Form von ${o(4)}3<i>m</i> mit der Flächensymmetrie 1.`,
     ],
-    erklaerung: `Flächenzahl = Ordnung der Punktgruppe / Ordnung der Flächensymmetrie = 24/6 = 4: ein Tetraeder. Weil die Flächensymmetrie gleich bleibt, die Gruppe aber halb so gross ist, halbiert sich die Flächenzahl; die Gegenflächen bilden das Gegentetraeder {${o(1)}${o(1)}${o(1)}}.`,
+    erklaerung: `Flächenzahl = Ordnung der Punktgruppe / Ordnung der Flächensymmetrie = 24/6 = 4. In <i>m</i>${o(3)}<i>m</i> sind es 48/6 = 8 Flächen: Dort ist {111} das Oktaeder. In ${o(4)}3<i>m</i> ist die Gruppe halb so gross, die Flächensymmetrie aber gleich; deshalb halbiert sich die Flächenzahl, und {111} ist ein Tetraeder. Die übrigen vier Flächen des Oktaeders bilden dort eine eigene Form, das Gegentetraeder {${o(1)}${o(1)}${o(1)}}.`,
     skript: 'multiplizitaet', app: `#m=form&sys=kubisch&f=${encodeURIComponent('-43m:a33')}&muster=1`,
     quelle: 'Skript Kap. 10 (Abb. 10.3); Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150, Tab. 9.5–9.8 (S. 152–157)',
     pruefung: { art: 'flaechen', gruppe: '-43m', system: 'kubisch', hkl: [1, 1, 1], anzahl: 4, allgemein: false },
@@ -2296,7 +2296,7 @@ export const BANK = [
     skript: 'multiplizitaet', app: '#m=form&sys=kubisch&f=23:b34&muster=1',
     quelle: 'Skript Kap. 10 (Abb. 10.3); Borchardt-Ott & Sowa (2018), Tab. 9.5–9.8 (S. 152–157); International Tables Vol. A (2006), Tab. 10.1.2.2',
     pruefung: { art: 'katalog', form: '23:b34', fs: '2..' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'lag-3-05', stufe: 3, kapitel: 10, typ: 'einfach',
@@ -2314,7 +2314,7 @@ export const BANK = [
     skript: 'richtungen', app: '#m=pg&g=23&rho=54.74&az=45',
     quelle: 'Skript Kap. 10 (Abb. 10.4); International Tables Vol. A (2006), Abschn. 10.1.2.2',
     pruefung: { art: 'richtungszahl', gruppe: '23', richtung: [1, 1, 1], gerade: false, anzahl: 4 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'lag-3-06', stufe: 3, kapitel: 10, typ: 'einfach',
@@ -2332,7 +2332,7 @@ export const BANK = [
     skript: 'richtungen', app: '#m=pg&g=m-3m&rho=90&az=45',
     quelle: 'Skript Kap. 10 (Richtungen)',
     pruefung: { art: 'richtungszahl', gruppe: 'm-3m', richtung: [1, 1, 0], gerade: true, anzahl: 6 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'lag-3-07', stufe: 3, kapitel: 10, typ: 'einfach',
@@ -2351,7 +2351,7 @@ export const BANK = [
       'Die Flächen sind verschieden geformt: gleichschenklige Dreiecke beim Trisoktaeder, Deltoide beim Deltoidikositetraeder.',
       '(210) liegt auf keiner Drehachse, sondern auf der Spiegelebene senkrecht zu [001] (<i>m</i>..).',
     ],
-    erklaerung: 'Bei {hhl} ist h = k: Die Pole liegen auf den Spiegelebenen senkrecht zu ⟨110⟩ (Flächensymmetrie ..<i>m</i>). Bei {0kl} ist h = 0: Die Pole liegen auf den Spiegelebenen senkrecht zu ⟨100⟩ (<i>m</i>..). Beide Lagen haben die Lagesymmetrie <i>m</i> und 24 Pole, aber die Spiegelebenen gehören zu verschiedenen Klassen. Eine Wyckoff-Lage fasst die Pole mit gleichwertiger Lagesymmetrie zusammen.',
+    erklaerung: `Bei (221) und (112) sind zwei Indizes gleich. Die Spiegelung an der Ebene senkrecht zu [1${o(1)}0] vertauscht die ersten beiden Indizes und lässt diese Flächen deshalb, wie sie sind: Ihre Pole liegen auf einer Spiegelebene senkrecht zu einer Richtung ⟨110⟩ (Flächensymmetrie ..<i>m</i>). Bei (210) ist dagegen der dritte Index 0. Die Spiegelung an der Ebene senkrecht zu [001] ändert nur das Vorzeichen des dritten Index und lässt (210) deshalb, wie sie ist: Der Pol liegt auf einer Spiegelebene senkrecht zu einer Richtung ⟨100⟩ (<i>m</i>..). Beide Lagen haben die Lagesymmetrie <i>m</i> und 24 Pole, aber die Spiegelebenen gehören zu verschiedenen Blickrichtungen. Eine Wyckoff-Lage fasst nur Pole mit gleichwertiger Lagesymmetrie zusammen.`,
     skript: 'lage-pol', app: '#m=form&sys=kubisch&f=m-3m:d46&geruest=1',
     quelle: 'Skript Kap. 10 (Die Lage eines Pols, Tabelle der Wyckoff-Lagen); International Tables Vol. A (2006), Tab. 10.1.2.2',
     pruefung: { art: 'wyckoff', formen: ['m-3m:e42', 'm-3m:e43', 'm-3m:d46'], lagen: ['e', 'e', 'd'], anzahl: 24 },
@@ -2378,27 +2378,27 @@ export const BANK = [
     skript: 'eigensymmetrie', app: '#m=form&sys=kubisch&f=23:b34&muster=1',
     quelle: 'Skript Kap. 10 (Erzeugende Symmetrie und Eigensymmetrie, Abb. 10.3b); Borchardt-Ott & Sowa (2018), Abschn. 9.2.4, Tab. 9.9 (S. 159); International Tables Vol. A (2006), Abschn. 10.1.2.2',
     pruefung: { art: 'eigen', form: '23:b34', eig: 'm-3m' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 11: Symmetrieändernde Verzerrungen (Stufe 3)
   {
-    id: 'verz-3-01', stufe: 3, kapitel: 11, typ: 'einfach',
-    lernziel: 'die Restgruppe eines entlang ⟨100⟩, ⟨111⟩ oder ⟨110⟩ gestreckten Würfels bestimmen',
+    id: 'hex-2-06', stufe: 2, kapitel: 9, typ: 'einfach',
+    lernziel: `das Rhomboeder als entlang [111] gestreckten Würfel beschreiben und seine Punktgruppe ${o(3)}<i>m</i> angeben`,
     frage: `Ein Würfel (<i>m</i>${o(3)}<i>m</i>) wird entlang der Raumdiagonalen <b>[111]</b> gestreckt. Welche Punktgruppe bleibt?`,
     antworten: [`${o(3)}<i>m</i>`, '3<i>m</i>', '4/<i>mmm</i>', '<i>mmm</i>'],
     richtig: [0],
     hinweise: [
       null,
-      `3<i>m</i> ist polar. Eine Streckung hat aber keinen Richtungssinn: Das Inversionszentrum bleibt, und mit ihm die ${o(3)}-Achse.`,
+      `3<i>m</i> hat kein Inversionszentrum. Eine Streckung hat aber keinen Richtungssinn: Das Inversionszentrum des Würfels bleibt, und mit ihm die ${o(3)}-Achse.`,
       'Das ist die Restgruppe bei Streckung entlang ⟨100⟩. Entlang [111] gehen alle 4-zähligen Achsen verloren.',
       'Das ist die Restgruppe bei Streckung entlang ⟨110⟩.',
     ],
     erklaerung: `Erhalten bleiben die Operationen, die die Gerade [111] in sich überführen: die ${o(3)}-Achse entlang [111] und die drei 2-zähligen Achsen senkrecht dazu, entlang [1${o(1)}0], [01${o(1)}] und [${o(1)}01], mit den Spiegelebenen senkrecht zu ihnen. Das ist ${o(3)} 2/<i>m</i> = ${o(3)}<i>m</i> mit 12 Operationen; aus dem Würfel wird ein Rhomboeder.`,
-    skript: 'streck-111', app: '#m=form&sys=kubisch&f=m-3m:a34&str=111,1.3&lage=111',
-    quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 7.3, S. 116; Hoffmann (2016), Abschn. 2.8, S. 86–87',
+    skript: 'rhomboeder', app: '#m=form&sys=kubisch&f=m-3m:a34&str=111,1.3&lage=111',
+    quelle: 'Skript Kap. 9 (Rhomboeder); Borchardt-Ott & Sowa (2018), Abschn. 7.3, S. 116; Hoffmann (2016), Abschn. 2.8, S. 86–87',
     pruefung: { art: 'restgruppe', richtung: [1, 1, 1], pfeil: false, gruppe: '-3m1' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'verz-3-02', stufe: 3, kapitel: 11, typ: 'einfach',
@@ -2416,11 +2416,11 @@ export const BANK = [
     skript: 'streck-110', app: '#m=form&sys=kubisch&f=m-3m:a34&str=110,1.3&lage=110',
     quelle: 'Skript Kap. 11 (Streckung entlang ⟨110⟩); Borchardt-Ott & Sowa (2018), Abschn. 9.1, Tab. 9.2, S. 127–130',
     pruefung: { art: 'restgruppe', richtung: [1, 1, 0], pfeil: false, gruppe: 'mmm' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
-    id: 'verz-3-03', stufe: 3, kapitel: 11, typ: 'einfach',
-    lernziel: 'im Stereogramm erkennen, in welche Formen eine Form bei der Verzerrung zerfällt',
+    id: 'form-2-10', stufe: 2, kapitel: 6, typ: 'einfach',
+    lernziel: 'die Multiplizität einfacher Formen angeben und begründen, warum sie von der Punktgruppe abhängt',
     frage: 'Ein Würfel wird entlang <b>[001]</b> gestreckt. In welche Formen zerfällt er?',
     antworten: [
       'Pinakoid {001} und tetragonales Prisma {100}',
@@ -2436,10 +2436,10 @@ export const BANK = [
       'Die 4-zählige Achse entlang [001] führt (100) und (010) ineinander über; die vier Seitenflächen bleiben eine Form.',
     ],
     erklaerung: `Die Restgruppe ist 4/<i>mmm</i>. Die Flächen (001) und (00${o(1)}) senkrecht zur Streckrichtung werden durch keine Operation in die übrigen überführt: ein Pinakoid. Die vier Flächen parallel zur Streckrichtung gehen durch die 4-zählige Achse ineinander über: ein tetragonales Prisma. Die Pole liegen wie vorher; geändert hat sich, welche Pole gleichwertig sind.`,
-    skript: 'streck-100', app: '#m=form&sys=kubisch&f=m-3m:a34&str=001,1.3',
-    quelle: 'Skript Kap. 11 (Abb. 11.2); Borchardt-Ott & Sowa (2018), Abschn. 11.5.1.1, S. 272–276',
+    skript: 'allgemein', app: '#m=form&sys=kubisch&f=m-3m:a34&str=001,1.3',
+    quelle: 'Skript Kap. 6 (Würfel und Quader) und Kap. 11 (Abb. 11.2); Borchardt-Ott & Sowa (2018), Abschn. 11.5.1.1, S. 272–276',
     pruefung: { art: 'zerfall', richtung: [0, 0, 1], hkl: [1, 0, 0], teile: [2, 4] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'verz-3-04', stufe: 3, kapitel: 11, typ: 'einfach',
@@ -2462,7 +2462,7 @@ export const BANK = [
     skript: 'streck-111', app: '#m=form&sys=kubisch&f=m-3m:b35&str=111,1.3&lage=111',
     quelle: 'Skript Kap. 11 (Streckung entlang ⟨111⟩)',
     pruefung: { art: 'zerfall', richtung: [1, 1, 1], hkl: [1, 1, 1], teile: [2, 6] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'verz-3-05', stufe: 3, kapitel: 11, typ: 'einfach',
@@ -2480,7 +2480,7 @@ export const BANK = [
     skript: 'polar', app: '#m=pg&g=4mm&rho=40&az=20',
     quelle: 'Skript Kap. 11 (Streckung oder Polarisation); Hoffmann (2016), Abschn. 7.5.5, S. 263–264',
     pruefung: { art: 'restgruppe', richtung: [0, 0, 1], pfeil: true, gruppe: '4mm' },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'verz-3-06', stufe: 3, kapitel: 11, typ: 'mehrfach',
@@ -2499,7 +2499,7 @@ export const BANK = [
     skript: 'polar', app: '#m=pg&g=mm2&rho=40&az=20',
     quelle: 'Skript Kap. 11 (Abb. 11.6); Borchardt-Ott & Sowa (2018), Abschn. 9.4, S. 164–172',
     pruefung: { art: 'polar', gruppen: ['4mm', 'mm2', '3m1', '4/mmm', '422'] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'verz-3-07', stufe: 3, kapitel: 11, typ: 'einfach',
@@ -2517,7 +2517,7 @@ export const BANK = [
     skript: 'batio3', app: '#m=pg&g=m-3m&rho=0&az=0',
     quelle: 'Skript Kap. 11 (Ein Beispiel aus der Natur); K. Aizu, Phys. Rev. B 2, 754 (1970), S. 755–757; Hoffmann (2016), Abschn. 7.5.2, S. 259–261',
     pruefung: { art: 'domaenen', richtung: [0, 0, 1], pfeil: true, anzahl: 6 },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'verz-3-08', stufe: 3, kapitel: 11, typ: 'einfach',
@@ -2539,7 +2539,7 @@ export const BANK = [
     erklaerung: 'Eine Streckung hat keinen Richtungssinn: Die Inversion bringt die Streckrichtung in ihre Gegenrichtung, und die gestreckte Gerade bleibt dieselbe. Eine Polarisation ist ein Pfeil; die Inversion dreht ihn um. Deshalb sind die Restgruppen einer Polarisation polar und haben kein Inversionszentrum.',
     skript: 'polar', app: '#m=pg&g=4mm&rho=40&az=20',
     quelle: 'Skript Kap. 11 (Streckung oder Polarisation, Abb. 11.5)',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   // ================================================================ Ergänzungen zur Neuordnung des Skripts (Entwürfe)
   // ---------------------------------------------------------------- Kapitel 1: Miller'sche Indizes, Indizes und Gitter
@@ -3078,7 +3078,7 @@ export const BANK = [
     erklaerung: `Durch (100) geht in <i>m</i>${o(3)} eine 2-zählige Achse, und die Spiegelebenen senkrecht zu [010] und [001] stehen senkrecht auf der Fläche: 2<i>mm</i>.. (Schreibweise der International Tables). Alle drei Elemente gehören zur Blickrichtung ⟨100⟩, der ersten Stelle des orientierten Symbols; die beiden Punkte heissen, dass durch die Fläche kein Element der Blickrichtungen ⟨111⟩ und ⟨110⟩ geht. Die Fläche hat die Symmetrie eines Rechtecks; die Riefen auf den Würfelflächen des Pyrits verlaufen deshalb in nur einer Richtung.`,
     skript: 'pyrit', app: '#m=form&sys=kubisch&f=m-3:a34&muster=1',
     quelle: 'Skript Kap. 6 (Vertiefung Die Würfelfläche des Pyrits); Borchardt-Ott & Sowa (2018), S. 168 und Tab. 9.4 Nr. 29, S. 141',
-    status: 'entwurf',
+    status: 'geprüft',
   },
   // ---------------------------------------------------------------- Kapitel 9: Quarz
   {
@@ -3149,8 +3149,8 @@ export const BANK = [
   },
   // ---------------------------------------------------------------- Kapitel 11: alle Parameter frei
   {
-    id: 'verz-3-09', stufe: 3, kapitel: 11, typ: 'einfach',
-    lernziel: 'Bei einer Verzerrung bleiben nur die Symmetrieoperationen erhalten, die auch die Verzerrung unverändert lassen; die neue Punktgruppe ist eine Untergruppe der alten.',
+    id: 'form-2-11', stufe: 2, kapitel: 6, typ: 'einfach',
+    lernziel: 'die Multiplizität einfacher Formen angeben und begründen, warum sie von der Punktgruppe abhängt',
     frage: `Ein Würfel (<i>m</i>${o(3)}<i>m</i>) wird so verzerrt, dass <i>a</i>, <i>b</i> und <i>c</i> verschieden lang sind, die Winkel aber 90° bleiben. Welche Punktgruppe bleibt?`,
     antworten: ['<i>mmm</i>', '4/<i>mmm</i>', '2/<i>m</i>', `${o(1)}`],
     richtig: [0],
@@ -3161,9 +3161,9 @@ export const BANK = [
       `Nur ${o(1)} bleibt, wenn alle Längen und Winkel verschieden sind.`,
     ],
     erklaerung: 'Erhalten bleiben die Operationen, die das verzerrte Gitter in sich überführen. Bei drei verschiedenen, senkrechten Achsen sind das die Drehungen um 180° um die Achsen, die Spiegelungen senkrecht zu ihnen und die Inversion: <i>mmm</i>.',
-    skript: 'streck-110', app: '#m=form&sys=kubisch&f=m-3m:a34&br=1&ba=1.2&ca=0.8',
-    quelle: 'Skript Kap. 11 (Absatz zu allen Gitterparametern); mit der App nachgerechnet; Schwarzenbach (2001), Abschn. 2.5.8, S. 61',
-    status: 'entwurf',
+    skript: 'allgemein', app: '#m=form&sys=kubisch&f=m-3m:a34&br=1&ba=1.2&ca=0.8',
+    quelle: 'Skript Kap. 6 (Würfel und Quader) und Kap. 11 (Absatz zu allen Gitterparametern); mit der App nachgerechnet; Schwarzenbach (2001), Abschn. 2.5.8, S. 61',
+    status: 'geprüft',
   },
   {
     id: 'hex-3-04', stufe: 3, kapitel: 9, typ: 'einfach',

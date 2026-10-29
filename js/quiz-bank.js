@@ -756,7 +756,7 @@ export const BANK = [
     skript: 'zonenkreis', app: `#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=1,${-1},1`,
     quelle: 'Skript Kap. 7 (Vertiefung Zonenpol und Zonenkreis konstruieren); Borchardt-Ott & Sowa (2018), Abschn. 5.6, S. 47–48 (Abb. 5.20)',
     pruefung: { art: 'zonenpol90', achse: [1, -1, 1], flaechen: [[1, 1, 0], [0, 1, 1], [-1, 0, 1]] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'zon-3-02', stufe: 3, kapitel: 7, typ: 'einfach',
@@ -1098,7 +1098,7 @@ export const BANK = [
     skript: 'allgemein', app: '#m=pg&g=4&rho=90&az=20',
     quelle: 'Skript Kap. 6 (Vertiefung Flächensymmetrie, Freiheitsgrade und Grenzformen); Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, S. 142–150',
     pruefung: { art: 'flaechen', gruppe: '4', system: 'tetragonal', hkl: [2, 1, 0], anzahl: 4, allgemein: true },
-    status: 'entwurf',
+    status: 'geprüft',
   },
   {
     id: 'form-3-02', stufe: 3, kapitel: 6, typ: 'einfach',
@@ -1116,7 +1116,7 @@ export const BANK = [
     skript: 'allgemein', app: '#m=pg&g=4/mmm&obj=0',
     quelle: 'Skript Kap. 6 (Vertiefung Flächensymmetrie, Freiheitsgrade und Grenzformen); Borchardt-Ott & Sowa (2018), Abschn. 9.2.1, Gl. 9.1, S. 142–150',
     pruefung: { art: 'ordnungen', gruppen: ['4/mmm'], anzahl: 16, nurOrdnung: true },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 4: Symmetriegerüste im Stereogramm
@@ -1384,7 +1384,7 @@ export const BANK = [
     skript: 'allgemein', app: '#m=form&sys=kubisch&f=m-3m:e43&pole=1&geruest=1',
     quelle: 'Skript Kap. 6 (Allgemeine Form, spezielle Form, Grenzform; Pyrit: Spiegelebene vertauscht h und k); Borchardt-Ott & Sowa (2018), Abschn. 9.2, S. 142–149',
     pruefung: { art: 'flaechen', gruppe: 'm-3m', system: 'kubisch', hkl: [1, 1, 2], anzahl: 24, allgemein: false, aufAchse: false },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ---------------------------------------------------------------- Kapitel 4, Stufe 3 (Vertiefungen)
@@ -1440,7 +1440,7 @@ export const BANK = [
     skript: 'speziell', app: `#m=form&sys=kubisch&f=${encodeURIComponent('-43m:a33')}`,
     quelle: 'Skript Kap. 4 (Vertiefung Grenzen des Schlusses vom Polmuster auf die Punktgruppe) und Kap. 10 (Erzeugende Symmetrie und Eigensymmetrie); International Tables Vol. A (2006), Tab. 10.1.2.3',
     pruefung: { art: 'musterGruppe', gruppe: '-43m', pol: [1, 1, 1], eigen: '-43m', nicht: ['m-3m', 'm-3'] },
-    status: 'entwurf',
+    status: 'geprüft',
   },
 
   // ================================================================ Kapitel 8: Tracht und Habitus
@@ -3075,7 +3075,7 @@ export const BANK = [
       `Das ist die Flächensymmetrie in 23. In <i>m</i>${o(3)} stehen zusätzlich zwei Spiegelebenen senkrecht auf der Fläche.`,
       `In <i>m</i>${o(3)} gibt es keine 4-zähligen Achsen.`,
     ],
-    erklaerung: `Durch (100) geht in <i>m</i>${o(3)} eine 2-zählige Achse, und die Spiegelebenen senkrecht zu [010] und [001] stehen senkrecht auf der Fläche: 2<i>mm</i>.. Die Fläche hat die Symmetrie eines Rechtecks; die Riefen auf den Würfelflächen des Pyrits verlaufen deshalb in nur einer Richtung.`,
+    erklaerung: `Durch (100) geht in <i>m</i>${o(3)} eine 2-zählige Achse, und die Spiegelebenen senkrecht zu [010] und [001] stehen senkrecht auf der Fläche: 2<i>mm</i>.. (Schreibweise der International Tables). Alle drei Elemente gehören zur Blickrichtung ⟨100⟩, der ersten Stelle des orientierten Symbols; die beiden Punkte heissen, dass durch die Fläche kein Element der Blickrichtungen ⟨111⟩ und ⟨110⟩ geht. Die Fläche hat die Symmetrie eines Rechtecks; die Riefen auf den Würfelflächen des Pyrits verlaufen deshalb in nur einer Richtung.`,
     skript: 'pyrit', app: '#m=form&sys=kubisch&f=m-3:a34&muster=1',
     quelle: 'Skript Kap. 6 (Vertiefung Die Würfelfläche des Pyrits); Borchardt-Ott & Sowa (2018), S. 168 und Tab. 9.4 Nr. 29, S. 141',
     status: 'entwurf',

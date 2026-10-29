@@ -346,7 +346,7 @@ const lageText = (l) => `[${l}]`;
 const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${ov(3)}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
 
 export const LAGE = {
-  id: 'gen-lage', kapitel: 6, stufen: [2], status: 'entwurf',
+  id: 'gen-lage', kapitel: 6, stufen: [2], status: 'geprüft',
   params: () => Object.keys(LAGE_MUSTER).flatMap((k) => LAGEN.flatMap((l) => [`k:${k}:${l}`, `s:${k}:${l}`])),
   make(param) {
     const [richtung, k, lage] = param.split(':');

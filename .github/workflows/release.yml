@@ -45,10 +45,25 @@ jobs:
             echo "$NOTES"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # PDF-Fassung des Skripts als Anhang des Release
+      - name: Install Playwright
+        continue-on-error: true
+        run: |
+          npm install --no-save playwright@1.52.0
+          npx playwright install --with-deps chromium
+      - name: Skript als PDF
+        continue-on-error: true
+        run: node tools/skript-pdf.mjs "Stereographische-Projektion-Skript-${GITHUB_REF_NAME}.pdf"
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.ref_name }}
           body: ${{ steps.changelog.outputs.notes }}
+          files: Stereographische-Projektion-Skript-${{ github.ref_name }}.pdf
+          fail_on_unmatched_files: false
           draft: false
           prerelease: false

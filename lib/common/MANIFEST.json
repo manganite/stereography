@@ -1,8 +1,8 @@
 {
   "name": "crystallography-common",
   "version": "0.1.0",
-  "tag": null,
-  "commit": null,
+  "tag": "v0.1.0",
+  "commit": "09cf257c956bc275065eff201e7360acf241cdbf",
   "files": {
     "lib/common/css/app.css": "9710ce4604e7fc82c24fd65f365513a181f0097dcccee5a266e471aa44c70445",
     "lib/common/css/base.css": "48000b7d494db36a6456613482b79419f5eb034026eb51ae0a40347ecaa9da2b",

@@ -1,0 +1,153 @@
+/* Skript: links das Inhaltsverzeichnis (angeheftet wie die Seitenleiste der App), rechts der Text in
+   Lesebreite. Kästen, Kennzeichnung der Vertiefungen, Abbildungsrahmen, Tabellen. Abbildungen zeichnet jede App selbst. */
+body { font-size: 16px; line-height: 1.6; }
+.headtools { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.page {
+  max-width: 1180px; margin-inline: auto; display: grid; gap: 28px;
+  grid-template-columns: 240px minmax(0, 1fr); align-items: start;
+}
+.toc { position: sticky; top: 12px; max-height: calc(100dvh - 24px); overflow-y: auto; scrollbar-width: thin; }
+.toc .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.toc summary {
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600;
+  list-style: none; cursor: default;
+}
+.toc summary::-webkit-details-marker { display: none; }
+.toc ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 2px; font-size: 0.9rem; line-height: 1.35; }
+.toc ol ol { margin: 2px 0 6px 1.6em; font-size: 0.84rem; }
+.toc a { display: block; padding: 4px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; }
+.toc a:hover { background: var(--paper); }
+.toc a[aria-current="true"] { background: var(--paper); color: var(--accent); font-weight: 600; box-shadow: inset 2px 0 0 var(--accent); }
+.toc .nr { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 0.35em; }
+.toc .todo { display: block; padding: 4px 8px; color: var(--muted); }
+.toc .todo small { display: block; font-size: 0.75rem; }
+.toc-foot { margin: 12px 0 0; font-size: 0.78rem; color: var(--muted); }
+article { min-width: 0; max-width: 780px; }
+article > header { margin-bottom: 28px; }
+article h1, article h2, article h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; text-wrap: balance; }
+article h2 { font-size: 1.7rem; margin: 0 0 14px; }
+article > section + section { margin-top: 64px; }
+article h2 .nr { color: var(--muted); margin-right: 0.3em; }
+article h3 { font-size: 1.22rem; margin: 34px 0 8px; }
+article p, article li { max-width: 70ch; }
+article p { margin: 0 0 12px; }
+article ul { padding-left: 1.3em; margin: 0 0 12px; }
+article li { margin-bottom: 4px; }
+.lead { font-size: 1.05rem; color: var(--muted); }
+.box { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--surface); border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
+.box > h4 { margin: 0 0 6px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
+.box > :last-child { margin-bottom: 0; }
+.box.ziele { border-left-color: var(--ax2); }
+.box.merke { border-left-color: var(--accent); }
+.box.merke p { font-weight: 500; }
+.box.zusammen { border-left-color: var(--ax4); }
+/* Grundstoff ist unmarkiert. Gekennzeichnet werden Vertiefungen (bernsteinfarben) und
+   Bedienhinweise zur App (grau, kleiner). */
+.box > h5 { margin: 12px 0 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
+.box.vertiefung { border-left-color: var(--ax3); background: color-mix(in srgb, var(--ax3) 7%, var(--surface)); }
+.box.vertiefung > h4 b { color: var(--ink); font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 0.86rem; }
+.box.vertiefung figure { margin-block: 12px; }
+.box.app { border-left-color: var(--line); background: transparent; font-size: 0.9rem; padding: 8px 14px; }
+.box.app > h4 { margin-bottom: 2px; }
+.box.aufbau dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; margin: 8px 0 0; font-size: 0.92rem; }
+.box.aufbau dd { margin: 0; }
+.box.aufbau dt .swatch { display: inline-block; width: 4px; height: 1.1em; vertical-align: -0.2em; margin-right: 6px; border-radius: 2px; background: var(--line); }
+.box.aufbau dt .swatch.v { background: var(--ax3); }
+.etikett, section[data-level="vertiefung"] > :is(h2, h3)::after {
+  display: inline-block; margin-left: 0.6em; padding: 2px 7px; vertical-align: 0.25em;
+  font: 600 0.62rem/1.3 var(--font-ui); text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); border: 1px solid var(--ax3); border-radius: 999px;
+}
+section[data-level="vertiefung"] > :is(h2, h3)::after { content: 'Vertiefung'; }
+/* Ein unmarkierter Merke-Kasten ist immer Grundstoff */
+[data-level="vertiefung"] .box.merke { border-left-color: var(--ax3); }
+[data-level="vertiefung"] .box.merke > h4::after { content: ' · Vertiefung'; }
+.box.bezug { border-left-color: var(--ax3); }
+/* Grundlagen: Grundwissen, das das Skript voraussetzt; Haupttext wie „Merke“ */
+.box.grundlagen { border-left-color: var(--fc3); background: color-mix(in srgb, var(--fc3) 6%, var(--surface)); }
+.box.grundlagen > h4 b { color: var(--ink); font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 0.86rem; }
+.box.grundlagen figure { margin-block: 12px; }
+.box.aufbau dt .swatch.g { background: var(--fc3); }
+.toc .etikett { margin-left: 0.4em; padding: 0 5px; font-size: 0.56rem; vertical-align: 0.15em; }
+/* Ganze Abschnitte als Vertiefung: abgesetzt wie ein Vertiefungskasten */
+section > section[data-level="vertiefung"] {
+  border: 1px solid var(--line); border-left: 4px solid var(--ax3); border-radius: 8px;
+  background: color-mix(in srgb, var(--ax3) 7%, var(--surface)); padding: 2px 16px 14px; margin: 30px 0;
+}
+section > section[data-level="vertiefung"] > h3 { margin-top: 14px; }
+/* Vertiefungskapitel: Trenner davor und durchgehende Randlinie */
+.teil {
+  margin: 56px 0 32px; padding: 16px 20px; border-radius: 8px; border: 1px solid var(--ax3);
+  background: color-mix(in srgb, var(--ax3) 13%, var(--surface));
+}
+.teil .teil-titel { margin: 0 0 4px; font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; }
+.teil p:last-child { margin-bottom: 0; }
+article > section[data-level="vertiefung"] { border-left: 4px solid var(--ax3); padding-left: 20px; padding-bottom: 8px; }
+article > section[data-level="vertiefung"] + section[data-level="vertiefung"] { margin-top: 0; padding-top: 40px; }
+.toc .toc-teil { margin-top: 8px; padding: 10px 8px 2px; border-top: 1px solid var(--line); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.09em; font-weight: 600; color: var(--muted); }
+.toc li.vertiefung { border-left: 3px solid var(--ax3); border-radius: 2px; }
+@media (max-width: 719px) {
+  article > section[data-level="vertiefung"] { padding-left: 12px; }
+}
+.term { font-weight: 600; }
+/* Querstriche (.ov aus base.css): in Überschriften (Source Serif) etwas tiefer; in SVG als Überstrich */
+article :is(h2, h3), .formel, .teil-titel { --ovt: 0.22em; }
+.ovs { text-decoration: none; }
+.sym { font-family: var(--font-ui); white-space: nowrap; }
+.quizlink { margin: 14px 0 0; font-size: 0.92rem; color: var(--muted); }
+.quizlink a { font-weight: 600; color: var(--accent); }
+.quellen { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+.quellen h4 { margin: 0 0 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; font-weight: 600; }
+.quellen ul { padding-left: 1.2em; margin: 0; }
+.quellen li { max-width: none; }
+/* Abbildungen */
+figure { margin: 20px 0; }
+.fig-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 20px 0; }
+.fig-row figure { margin: 0; }
+.fig-row3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fig-narrow { max-width: 380px; margin-inline: auto; }
+.fig-cols { grid-auto-flow: column; grid-template-rows: auto auto; }
+.fig-grid5 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0 6px; }
+.fig-grid5 figure { margin: 0; padding: 8px; }
+.fig-grid5 figcaption { font-size: 0.8rem; margin-top: 4px; }
+.fig-note { font-size: 0.86rem; color: var(--muted); }
+.fig-note b { color: var(--ink); }
+.tabwrap { overflow-x: auto; margin: 12px 0 16px; }
+.tab caption { caption-side: top; text-align: left; font-size: 0.86rem; color: var(--muted); padding-bottom: 6px; white-space: normal; }
+.tab caption b { color: var(--ink); font-weight: 600; }
+.tab { border-collapse: collapse; font-size: 0.9rem; min-width: 460px; }
+.tab th, .tab td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tab-wrap td:last-child { white-space: normal; min-width: 10em; }
+.tab th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+.formel { font-size: 1.15rem; text-align: center; margin: 14px 0; font-family: var(--font-display); }
+.schema { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
+.schema p { margin: 2px 0; }
+.fig-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.fig-art { background: var(--paper); border-radius: 8px; }
+.fig-art svg { display: block; width: 100%; height: auto; }
+figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+figcaption b { color: var(--ink); font-weight: 600; }
+.to-app { white-space: nowrap; color: var(--accent); font-weight: 500; }
+.to-app::after { content: ' →'; }
+.fig-err { padding: 16px; color: var(--muted); font-size: 0.9rem; }
+.slider { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; align-items: center; margin-top: 10px; font-size: 0.9rem; }
+.slider input { width: 100%; accent-color: var(--accent); }
+.slider output { grid-column: 1 / -1; color: var(--muted); font-size: 0.86rem; min-height: 2.6em; }
+footer { max-width: 1180px; margin: 32px auto 0; color: var(--muted); font-size: 0.78rem; }
+footer a { color: inherit; }
+/* iPad hochkant und Telefon: Inhaltsverzeichnis oben, einklappbar */
+@media (max-width: 899px) {
+  .page { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .toc { position: static; max-height: none; }
+  .toc summary { cursor: pointer; }
+  .toc summary::after { content: ' ▾'; }
+  .toc details[open] summary::after { content: ' ▴'; }
+}
+@media (max-width: 719px) {
+  .brand p { display: none; }
+  .brand { flex: 1; }
+  .fig-row, .fig-row3 { grid-template-columns: minmax(0, 1fr); }
+  .fig-cols { grid-auto-flow: row; grid-template-rows: none; }
+  .fig-grid5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  article h2 { font-size: 1.45rem; }
+}

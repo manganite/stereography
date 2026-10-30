@@ -1,16 +1,17 @@
-// Skript zur App: Abbildungen aus dem Code der App, Projektionsskizze, Inhaltsverzeichnis.
+// Skript zur App: Abbildungen aus dem Code der App, Projektionsskizze, Wachstumsfigur, Symbollegende.
+// Inhaltsverzeichnis, App-Links und Nachladen kommen aus lib/common/js/skript-kern.js.
 // Eine Abbildung ist durch die Link-Adresse der App beschrieben (data-app="#m=form&…"); daraus entsteht
 // mit scene.js genau das Stereogramm, das die App für diese Adresse zeigt.
 
 import { buildSVG, symbolIcon } from './stereogram.js';
 import { palette, pgScene, crystalAxesFor, polyCrystal, polyScene, stateForHash as stateFor, stereoForHash as stereoFor } from './scene.js';
 import { koerperSVG } from './bild3d.js';
-import { hklHTML } from './format.js';
+import { hklHTML } from '../lib/common/js/format.js';
 import { VERSION } from './version.js';
+import { appLink, nachladen, querstriche, inhaltsverzeichnis } from '../lib/common/js/skript-kern.js';
+import { versionEintragen, offline } from '../lib/common/js/seite.js';
 
 const deg = Math.PI / 180;
-
-const appLink = (hash) => 'index.html' + hash;
 
 function renderStereo(fig, col) {
   const dirs = fig.dataset.dirs ? fig.dataset.dirs.split(',').map(Number) : null;
@@ -21,13 +22,12 @@ function renderStereo(fig, col) {
 
 // 3D-Abbildungen: three.js erst laden, wenn eine solche Abbildung in Sicht kommt. Jede Ansicht braucht einen
 // eigenen WebGL-Kontext, und Browser halten nur wenige (Safari auf iPhone/iPad etwa 8) gleichzeitig; das Skript
-// hat mehr 3D-Abbildungen. Deshalb leben nur Ansichten in der Nähe des sichtbaren Bereichs; beim Verlassen wird
-// der Kontext freigegeben und die Kameraposition gemerkt.
+// hat mehr 3D-Abbildungen. Deshalb leben nur Ansichten in der Nähe des sichtbaren Bereichs (nachladen aus
+// skript-kern.js); beim Verlassen wird der Kontext freigegeben und die Kameraposition gemerkt.
 const views3d = new Map();
-const live3d = new Set();
 const cams3d = new Map();
+let lazy3d = { lebt: () => false };
 function release3d(fig) {
-  live3d.delete(fig);
   const v = views3d.get(fig);
   if (!v) return;
   cams3d.set(fig, v.camera.position.clone());
@@ -36,7 +36,7 @@ function release3d(fig) {
 }
 async function render3d(fig, col) {
   const { View3D } = await import('./view3d.js');
-  if (!live3d.has(fig)) return; // inzwischen aus dem Bild gescrollt
+  if (!lazy3d.lebt(fig)) return; // inzwischen aus dem Bild gescrollt
   let v = views3d.get(fig);
   if (!v) {
     const box = fig.querySelector('.fig-art');
@@ -71,20 +71,10 @@ async function render3d(fig, col) {
   }, null, labels);
 }
 
-function addAppLink(fig) {
-  const cap = fig.querySelector('figcaption');
-  if (!cap || cap.querySelector('.to-app')) return;
-  const a = document.createElement('a');
-  a.className = 'to-app';
-  a.href = appLink(fig.dataset.app);
-  a.textContent = fig.closest('.fig-grid5') ? 'App' : 'In der App öffnen';
-  cap.append(' ', a);
-}
-
 function renderFigures() {
   const col = palette();
   for (const fig of document.querySelectorAll('figure[data-app]')) {
-    addAppLink(fig);
+    appLink(fig, 'index.html');
     if (fig.dataset.kind === '3d') { if (views3d.has(fig)) render3d(fig, col); } else renderStereo(fig, col);
   }
   for (const f of projFigures) f.draw();
@@ -109,23 +99,6 @@ function symbolLegende(col) {
     const s = el.dataset.sym;
     el.innerHTML = EXTRA[s] || symbolIcon(s, 'centre' in el.dataset, icol, 26);
   }
-}
-
-function watch3d() {
-  const figs = [...document.querySelectorAll('figure[data-kind="3d"]')];
-  if (!figs.length) return;
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (!e.isIntersecting) { release3d(e.target); continue; }
-      if (live3d.has(e.target)) continue;
-      live3d.add(e.target);
-      render3d(e.target, palette()).catch((err) => {
-        e.target.querySelector('.fig-art').innerHTML = '<p class="fig-err">Die 3D-Ansicht konnte nicht geladen werden.</p>';
-        console.error(err);
-      });
-    }
-  }, { rootMargin: '300px 0px' });
-  figs.forEach((f) => io.observe(f));
 }
 
 // ------------------------------------------------------------------ Projektionsskizze (Kapitel 2)
@@ -242,84 +215,26 @@ function wachstumFigur(fig) {
   wachsFigures.push({ draw });
 }
 
-// ------------------------------------------------------------------ Querstriche in gezeichneten Abbildungen
-// In SVG-Text sitzt text-decoration: overline auf Höhe der Oberlänge, deutlich zu hoch, und läuft über
-// benachbarte Ziffern durch. Deshalb wie in stereogram.js eigene Striche knapp über jeder Ziffer
-// (<tspan class="ovs">); Lage aus der gerenderten Schrift, Farbe wie der Text.
-function svgBars() {
-  for (const old of document.querySelectorAll('.ovs-bar')) old.remove();
-  for (const text of document.querySelectorAll('figure svg text')) {
-    const marked = [...text.querySelectorAll('tspan.ovs')];
-    if (!marked.length) continue;
-    const cs = getComputedStyle(text);
-    const fs = parseFloat(cs.fontSize);
-    const h = Math.max(1, 0.075 * fs);
-    const base = parseFloat(text.getAttribute('y'));
-    let i = 0;
-    for (const node of text.childNodes) {
-      const n = [...node.textContent].length;
-      if (node.nodeType === 1 && node.classList.contains('ovs')) {
-        for (let k = 0; k < n; k++) {
-          const e = text.getExtentOfChar(i + k);
-          const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          r.setAttribute('class', 'ovs-bar');
-          r.setAttribute('x', (e.x + 0.09 * fs).toFixed(1));
-          r.setAttribute('y', (base - 0.82 * fs - h).toFixed(1));
-          r.setAttribute('width', Math.max(1, e.width - 0.18 * fs).toFixed(1));
-          r.setAttribute('height', h.toFixed(2));
-          r.style.fill = cs.fill;
-          text.after(r);
-        }
-      }
-      i += n;
-    }
-  }
-}
-
-// ------------------------------------------------------------------ Inhaltsverzeichnis
-function initToc() {
-  const links = [...document.querySelectorAll('.toc a[href^="#"]')];
-  const byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
-  const secs = [...document.querySelectorAll('main section[id]')].filter((s) => byId.has(s.id));
-  if (!secs.length) return;
-  // Vertiefungen im Inhaltsverzeichnis kennzeichnen; die Einstufung steht nur am Abschnitt (data-level)
-  for (const s of secs) {
-    if (s.dataset.level !== 'vertiefung') continue;
-    // ganze Kapitel: Randlinie am Eintrag (unter der Zwischenüberschrift „Vertiefungen“)
-    if (s.parentElement.tagName === 'ARTICLE') { byId.get(s.id).parentElement.classList.add('vertiefung'); continue; }
-    const tag = document.createElement('span');
-    tag.className = 'etikett';
-    tag.textContent = 'Vertiefung';
-    byId.get(s.id).append(tag);
-  }
-  const io = new IntersectionObserver(() => {
-    // aktueller Abschnitt: der letzte, dessen Anfang oberhalb der Bildschirmmitte liegt
-    let cur = secs[0];
-    for (const s of secs) if (s.getBoundingClientRect().top < window.innerHeight * 0.35) cur = s;
-    for (const a of links) a.removeAttribute('aria-current');
-    byId.get(cur.id)?.setAttribute('aria-current', 'true');
-  }, { threshold: [0, 1], rootMargin: '0px 0px -60% 0px' });
-  secs.forEach((s) => io.observe(s));
-  // Telefon: Inhaltsverzeichnis nach Auswahl schliessen
-  const det = document.querySelector('.toc details');
-  if (det && window.matchMedia('(max-width: 899px)').matches) det.open = false;
-  for (const a of links) a.addEventListener('click', () => { if (det && window.matchMedia('(max-width: 899px)').matches) det.open = false; });
+function watch3d() {
+  lazy3d = nachladen([...document.querySelectorAll('figure[data-kind="3d"]')], {
+    zeigen: (fig) => render3d(fig, palette()),
+    freigeben: release3d,
+    fehlertext: 'Die 3D-Ansicht konnte nicht geladen werden.',
+  });
 }
 
 function init() {
-  document.querySelectorAll('[data-version]').forEach((el) => { el.textContent = VERSION; });
+  versionEintragen(VERSION);
   document.querySelectorAll('figure.proj').forEach(projectionSketch);
   document.querySelectorAll('figure.wachs').forEach(wachstumFigur);
   renderFigures();
   watch3d();
-  initToc();
-  document.fonts.ready.then(svgBars);
+  inhaltsverzeichnis();
+  document.fonts.ready.then(querstriche);
   // Farbschema gewechselt: Abbildungen mit den neuen Farben neu zeichnen
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { renderFigures(); svgBars(); });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { renderFigures(); querstriche(); });
 }
 init();
 
 // Offline wie die App (derselbe Service Worker, auch wenn das Skript zuerst geöffnet wird)
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
-  navigator.serviceWorker.register('sw.js').catch(() => { /* ohne Offline-Betrieb weiter */ });
-}
+offline();

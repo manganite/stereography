@@ -10,6 +10,7 @@ const root = new URL('../', import.meta.url);
 const files = [
   'index.html', 'skript.html', 'quiz.html', 'README.md',
   ...readdirSync(new URL('js/', root)).filter((f) => f.endsWith('.js')).map((f) => `js/${f}`),
+  ...readdirSync(new URL('lib/common/js/', root)).filter((f) => f.endsWith('.js')).map((f) => `lib/common/js/${f}`),
 ];
 const HERKUNFT = /Vorlesung Kristallographie an der ETH Zürich/g;
 // Wortgrenzen Unicode-fähig: \b sieht „Ü“ nicht als Wortzeichen, \bÜbungen\b fände „siehe Übungen“ nicht.

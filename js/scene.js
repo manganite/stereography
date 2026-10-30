@@ -8,7 +8,7 @@ import {
   STRETCH_DIRS, stretchDir, constrainLattice, latticeFromParams, stretchLattice, paramsOfLattice,
 } from './polyhedra.js';
 import { CATALOG, formEig, entryById } from './forms.js';
-import { hklParts } from './format.js';
+import { hklParts } from '../lib/common/js/format.js';
 import { normalize, mulVec } from './linalg.js';
 import { exampleById } from './examples.js';
 import { siteOf, distinctPoles } from './sitesym.js';

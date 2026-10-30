@@ -22,9 +22,9 @@ test('Service Worker: Offline-Liste deckt alle Dateien der App ab', () => {
     const p = join(dir, f);
     return statSync(join(ROOT, p)).isDirectory() ? walk(p) : [p];
   });
-  const app = ['index.html', 'skript.html', 'manifest.webmanifest', ...['js', 'css', 'lib', 'icons'].flatMap(walk)]
+  const app = ['index.html', 'skript.html', 'quiz.html', 'manifest.webmanifest', ...['js', 'lib', 'icons'].flatMap(walk)]
     .map((p) => relative('.', p).split('\\').join('/'))
-    .filter((p) => !p.endsWith('.txt'));
+    .filter((p) => !p.endsWith('.txt') && p !== 'lib/common/MANIFEST.json');
   for (const p of app) assert.ok(listed.includes(p), `fehlt in sw.js: ${p}`);
   for (const p of listed) if (p !== './') assert.ok(existsSync(join(ROOT, p)), `existiert nicht: ${p}`);
 });
@@ -46,8 +46,8 @@ test('Deployment: der Schritt „Assemble site“ kopiert jede Datei der Offline
 });
 
 test('Skript als PDF: Werkzeug, Link im Skript, Erzeugen bei Deploy und Release', () => {
-  const tool = read('tools/skript-pdf.mjs');
-  assert.match(tool, /outline: true/);
+  assert.match(read('tools/common/skript-pdf.mjs'), /outline: true/);
+  assert.match(read('tools/skript-pdf.mjs'), /from '\.\/common\/skript-pdf\.mjs'/);
   assert.match(read('skript.html'), /<a class="linkcopy" href="skript\.pdf"/);
   assert.match(read('.github/workflows/deploy.yml'), /node tools\/skript-pdf\.mjs _site\/skript\.pdf/);
   const rel = read('.github/workflows/release.yml');

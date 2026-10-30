@@ -1,6 +1,9 @@
-/* Gemeinsame Grundlage von App (index.html) und Skript (skript.html): Farben (hell/dunkel),
-   Schriften, Grundtypografie und Kopfzeile. */
-/* .theme-light: helle Farben auch im Dunkelmodus (Export als Bild, siehe lightPalette in scene.js) */
+/* Gemeinsame Grundlage aller Seiten der App-Familie (App, Skript, Quiz): Farben (hell/dunkel),
+   Schriften, Grundtypografie und Kopfzeile. Seitentypen ergänzen app.css, skript.css bzw. quiz.css. */
+/* .theme-light: helle Farben auch im Dunkelmodus (z. B. für den Export als Bild: die App liest die Farben
+   über getComputedStyle an einem Element mit dieser Klasse). */
+/* Farben der Symmetrie (für alle Apps gleich): ax2–ax6 Drehachsen nach Zähligkeit, dir1–dir3 die
+   Blickrichtungen (Positionen im Hermann-Mauguin-Symbol), fc0–fc7 Farben für Formen bzw. Objekte. */
 :root, .theme-light {
   --bg: #eceff2;
   --surface: #f8f9fb;

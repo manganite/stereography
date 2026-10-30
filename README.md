@@ -83,14 +83,12 @@ Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Mod
 
 | Datei | Inhalt |
 |---|---|
-| `index.html` | Oberfläche und Gestaltung der App |
+| `index.html` | Oberfläche der App und Gestaltung, soweit sie nur diese App betrifft |
 | `skript.html`, `js/skript.js` | Skript; Abbildungen über `js/scene.js` aus Link-Adressen der App |
-| `quiz.html`, `js/quiz.js` | Quiz: Auswahl, Fragen mit Rückmeldung, Auswertung |
-| `js/quiz-core.js` | Quiz ohne Seite: Ziehen nach Stufe und Kapitel, Mischen, Auswerten, Fortschritt |
+| `quiz.html`, `js/quiz.js` | Quiz: Fragen, Kapitel (`js/quiz-kapitel.js`) und Bilder dieser App; Ablauf aus `lib/common/` |
 | `js/quiz-bank.js`, `js/quiz-gen.js` | Handgeschriebene Fragen (mit Quelle und Prüfstatus) und Generatoren für erzeugte Fragen |
 | `js/bild3d.js` | Feste räumliche Zeichnungen (SVG) von Kristallen und Symmetriegerüsten für Quiz und Moodle-Export |
 | `tools/moodle-export.mjs` | Export der geprüften Fragen als Moodle-XML |
-| `css/base.css` | Farben (hell/dunkel), Schriften und Kopfzeile, gemeinsam für App, Skript und Quiz |
 | `js/pointgroups.js` | Generatoren der Punktgruppen, Gruppenerzeugung, automatische Bestimmung der Symmetrieelemente |
 | `js/forms.js` | Formenkatalog nach ITA Tab. 10.1.2.2/10.1.2.3 |
 | `js/sitesym.js` | Lage eines Pols: Einrasten, Lagesymmetrie, Multiplizität, Wyckoff-Lage |
@@ -100,16 +98,27 @@ Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Mod
 | `js/view3d.js` | 3D-Ansicht (three.js) |
 | `js/scene.js` | Zustand, Link-Adresse und Szenen des Stereogramms (gemeinsam für App, Skript und Quiz) |
 | `js/main.js` | Bedienung der App |
-| `js/help.js` | Tooltip-Texte, Tooltips und ⓘ-Erklärungen |
+| `js/hilfetexte.js` | Texte der Tooltips und ⓘ-Erklärungen |
 | `js/version.js` | Versionsnummer der App |
 | `sw.js` | Service Worker für den Offline-Betrieb |
 | `tests/` | Automatische Tests (Node, ohne Abhängigkeiten) |
-| `js/format.js`, `js/linalg.js` | Hilfsfunktionen (Symbole, Indizes, Vektoren) |
+| `js/linalg.js` | Vektoren und Matrizen |
 | `manifest.webmanifest`, `icons/` | Favicon und Homescreen-Icons (iPad/iPhone: Teilen → Zum Home-Bildschirm; Android: Menü → Zum Startbildschirm hinzufügen) |
-| `lib/fonts/` | Schriften IBM Plex Sans, IBM Plex Mono und Source Serif 4 (WOFF2, nur benötigte Schnitte, aus den npm-Paketen `@fontsource/*`), SIL Open Font License 1.1, siehe `lib/fonts/LICENSE-*.txt`. Selbst gehostet, damit die App ohne Verbindung zu Google auskommt. |
+| `lib/common/`, `tools/common/` | Gemeinsame Grundlage der App-Familie aus [crystallography-common](https://github.com/manganite/crystallography-common), als Kopie mit fester Version (`lib/common/MANIFEST.json`): Stile (`base.css`, `app.css`, `skript.css`, `quiz.css`), Schriften, Hilfen, Quiz, Skript-Bausteine, Formatierung, Werkzeuge. Nicht von Hand ändern; siehe unten. |
+| `lib/common/fonts/` | Schriften IBM Plex Sans, IBM Plex Mono und Source Serif 4 (WOFF2, nur benötigte Schnitte, aus den npm-Paketen `@fontsource/*`), SIL Open Font License 1.1, siehe `lib/common/fonts/LICENSE-*.txt`. Selbst gehostet, damit die App ohne Verbindung zu Google auskommt. |
 | `lib/three.bundle.js` | three.js r186 mit OrbitControls und CSS2DRenderer (MIT-Lizenz, siehe `lib/three-LICENSE.txt`) |
 
 Die Flächenzahl jeder Katalogform wird beim Erzeugen mit der Multiplizität aus ITA verglichen (alle 115 stimmen überein); ebenso die Flächensymmetrie jeder Form mit dem berechneten Stabilisator der Fläche. Die Symmetrieelemente werden nicht von Hand eingetragen, sondern aus den Gruppenelementen berechnet (Drehachsen aus Spur und Eigenvektor, Spiegelebenen und Drehinversionsachsen aus −R).
+
+### Gemeinsame Grundlage
+
+Die App gehört zu einer Familie von Lern-Apps mit gleichem Aussehen, gleicher Bedienung und gleich aufgebautem Skript und Quiz. Was sich teilen lässt, liegt in [crystallography-common](https://github.com/manganite/crystallography-common), dort steht auch der [Leitfaden](https://github.com/manganite/crystallography-common/blob/main/LEITFADEN.md). Die App enthält davon eine Kopie mit fester Version; eine neue Version übernimmt man von einem Release-Tag:
+
+```bash
+node tools/common/sync.mjs ../crystallography-common
+```
+
+`tests/common.test.mjs` prüft, dass die Kopie dem Manifest entspricht. Änderungen an gemeinsamen Dateien gehören nach crystallography-common, nicht in die Kopie.
 
 ### Tests
 
@@ -117,7 +126,7 @@ Die Flächenzahl jeder Katalogform wird beim Erzeugen mit der Multiplizität aus
 node --test tests/*.test.mjs
 ```
 
-Geprüft werden die Gruppenordnungen aller 40 Punktgruppen-Einträge, die Zuordnung der Symmetrieelemente zu den Blickrichtungen, die Flächenzahl aller 115 Formen gegen ITA, geschlossene Polyeder (Euler-Charakteristik 2), die Beispielkristalle, Lagen und Streckungen, die Abbildungen des Skripts und die Kennzeichnung der Vertiefungen, die Quizfragen (Pflichtfelder, Lernziel wörtlich im Skript, nachgerechnete Antworten, verschiedene Antwortbilder, Höchstanteile beim Ziehen, Moodle-Export) sowie die Release-Konsistenz (Version, Changelog, Offline-Liste). Dieselben Tests laufen bei jedem Pull Request in GitHub Actions.
+Geprüft werden die Gruppenordnungen aller 40 Punktgruppen-Einträge, die Zuordnung der Symmetrieelemente zu den Blickrichtungen, die Flächenzahl aller 115 Formen gegen ITA, geschlossene Polyeder (Euler-Charakteristik 2), die Beispielkristalle, Lagen und Streckungen, die Abbildungen des Skripts und die Kennzeichnung der Vertiefungen, die Quizfragen (Pflichtfelder, Lernziel wörtlich im Skript, nachgerechnete Antworten, verschiedene Antwortbilder, Höchstanteile beim Ziehen, Moodle-Export) sowie die Release-Konsistenz (Version, Changelog, Offline-Liste) und die Kopie der gemeinsamen Dateien. Dieselben Tests laufen bei jedem Pull Request in GitHub Actions.
 
 ### Versionen und Releases
 
@@ -143,4 +152,4 @@ Wer die App in Lehre oder Publikationen nennt, findet die Angaben in [`CITATION.
 
 ## Lizenz
 
-Die App steht unter der MIT-Lizenz (`LICENSE`). Die mitgelieferte Bibliothek three.js steht ebenfalls unter der MIT-Lizenz, mit eigenem Copyright-Vermerk der three.js-Autoren in `lib/three-LICENSE.txt`. Dieser Vermerk muss nach den Lizenzbedingungen mit der Bibliothek weitergegeben werden. Die Schriften in `lib/fonts/` stehen unter der SIL Open Font License 1.1 (Lizenztexte liegen bei).
+Die App steht unter der MIT-Lizenz (`LICENSE`). Die mitgelieferte Bibliothek three.js steht ebenfalls unter der MIT-Lizenz, mit eigenem Copyright-Vermerk der three.js-Autoren in `lib/three-LICENSE.txt`. Dieser Vermerk muss nach den Lizenzbedingungen mit der Bibliothek weitergegeben werden. Die Schriften in `lib/common/fonts/` stehen unter der SIL Open Font License 1.1 (Lizenztexte liegen bei).

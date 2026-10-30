@@ -9,12 +9,14 @@ import {
 } from './polyhedra.js';
 import { CATALOG, formName, formEig, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
-import { hmHTML, hmText, hklHTML, indices } from './format.js';
+import { hmHTML, hmText, hklHTML, indices } from '../lib/common/js/format.js';
 import { normalize } from './linalg.js';
 import { View3D, OBLIQUE } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
-import { initHelp, setTip, showTipAt, hideTip } from './help.js';
+import { initHelp, setTip, showTipAt, hideTip } from '../lib/common/js/help.js';
+import { TIPS, SECTIONS, LABELS } from './hilfetexte.js';
+import { offline } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
 import * as S from './scene.js';
 import { snapPole } from './sitesym.js';
@@ -582,7 +584,7 @@ function embeddedFonts() {
   if (!fontCss) {
     const faces = [['400', 'normal', 'latin-400-normal'], ['400', 'italic', 'latin-400-italic'], ['600', 'normal', 'latin-600-normal']];
     fontCss = Promise.all(faces.map(async ([w, st, file]) => {
-      const blob = await (await fetch(`lib/fonts/ibm-plex-sans-${file}.woff2`)).blob();
+      const blob = await (await fetch(`lib/common/fonts/ibm-plex-sans-${file}.woff2`)).blob();
       const url = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob); });
       return `@font-face{font-family:'IBM Plex Sans';font-style:${st};font-weight:${w};src:url(${url}) format('woff2');}`;
     })).then((x) => x.join('')).catch(() => '');
@@ -1278,7 +1280,7 @@ function setMode(mode) {
 
 function init() {
   buildGroupPicker();
-  initHelp();
+  initHelp({ tips: TIPS, sections: SECTIONS, labels: LABELS });
   refreshPolyControls();
 
   bindCheck('pg-elements', state.pg, 'showElements');
@@ -1579,11 +1581,4 @@ init();
 }
 // Service Worker nur auf HTTPS (GitHub Pages), lokal zum Testen mit ?sw. Nach einem Update übernimmt
 // die neue Version beim nächsten Öffnen; die Seite lädt dann einmal neu (Zustand bleibt gespeichert).
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || new URLSearchParams(location.search).has('sw'))) {
-  const hadController = !!navigator.serviceWorker.controller;
-  let reloaded = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (hadController && !reloaded) { reloaded = true; location.reload(); }
-  });
-  navigator.serviceWorker.register('sw.js').catch(() => { /* ohne Offline-Betrieb weiter */ });
-}
+offline({ lokal: true, neuLaden: true });

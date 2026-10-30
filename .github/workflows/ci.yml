@@ -19,8 +19,8 @@ jobs:
         with:
           node-version: 22
       - name: Syntax check
-        run: for f in js/*.js sw.js tests/*.mjs; do node --check "$f"; done
-      - name: Tests (Punktgruppen, Formenkatalog, Beispiele, Release-Konsistenz)
+        run: for f in js/*.js lib/common/js/*.js sw.js tests/*.mjs tools/*.mjs tools/common/*.mjs; do node --check "$f"; done
+      - name: Tests (Punktgruppen, Formenkatalog, Beispiele, Quiz, Release-Konsistenz, gemeinsame Dateien)
         run: node --test tests/*.test.mjs
 
   # PDF-Fassung des Skripts wie bei Deploy und Release, damit Fehler vor dem Tag auffallen

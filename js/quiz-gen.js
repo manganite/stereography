@@ -3,7 +3,7 @@
 // Die Frage hat denselben Aufbau wie in quiz-bank.js (ohne id, stufe, kapitel, status; die setzt quiz-core.js).
 
 import { POINT_GROUPS, groupById, buildPointGroup, symmetryDirections, elementSummary } from './pointgroups.js';
-import { hmHTML } from './format.js';
+import { hmHTML } from '../lib/common/js/format.js';
 import { CATALOG, entryById } from './forms.js';
 import { SYSTEM_OF } from './polyhedra.js';
 import { poleOfHKL, stabilizer } from './sitesym.js';

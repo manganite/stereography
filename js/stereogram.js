@@ -4,7 +4,7 @@
 // Spiegelebenen: kräftige Linien (Grosskreise); Spiegelebene ⊥ z: kräftiger Grundkreis.
 
 import { cross, normalize, dot, scale } from './linalg.js';
-import { hklParts } from './format.js';
+import { hklParts } from '../lib/common/js/format.js';
 
 export const SIZE = 520;
 export const C = SIZE / 2;

@@ -9,15 +9,16 @@ import {
 } from '../js/quiz-gen.js';
 import { istRaum, appHash, raumInner, raumSVG } from '../js/bild3d.js';
 import {
-  KAPITEL, kandidaten, zaehlen, ziehen, stellen, pruefen, rng, GEN_ANTEIL, GEN_GESAMT,
+  kandidaten, zaehlen, ziehen, stellen, pruefen, rng, GEN_ANTEIL, GEN_GESAMT,
   leererFortschritt, fortschrittAus, vermerken, stand,
-} from '../js/quiz-core.js';
+} from '../lib/common/js/quiz-core.js';
+import { KAPITEL, SPEICHER } from '../js/quiz-kapitel.js';
 import { createState, applyHashTo, stereoForHash, stateForHash, currentEntryId } from '../js/scene.js';
 import { buildSVG } from '../js/stereogram.js';
 import { groupById, POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart } from '../js/pointgroups.js';
 import { CATALOG, formEig } from '../js/forms.js';
 import { poleOfHKL, stabilizer } from '../js/sitesym.js';
-import { hmHTML } from '../js/format.js';
+import { hmHTML } from '../lib/common/js/format.js';
 import { moodleXML } from '../tools/moodle-export.mjs';
 import { project, C as SC, R as SR } from '../js/stereogram.js';
 import { latticeFromParams, LATTICE_DEFAULTS, orientationPresets, orientationMatrix, identifyGroup } from '../js/polyhedra.js';
@@ -806,14 +807,14 @@ test('Skript: „Lernziele prüfen“ am Ende jedes Kapitels führt ins Quiz mit
     for (const st of [1, 2, 3]) if (n[nr]?.[st]) assert.ok(ziele.some(([, s0]) => s0 === st), `Kap. ${nr}: Link Stufe ${st} fehlt`);
     assert.ok(!/<a (?![^>]*target="_blank")/.test(l), `Kap. ${nr}: neuer Tab`);
   });
-  const js = readFileSync(new URL('../js/quiz.js', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../lib/common/js/quiz-seite.js', import.meta.url), 'utf8');
   assert.match(js, /START\.get\('kap'\)/);
   assert.match(js, /START\.get\('stufe'\)/);
 });
 
 test('Seite: Links aus dem Quiz ins Skript und in die App öffnen einen neuen Tab', () => {
-  const js = readFileSync(new URL('../js/quiz.js', import.meta.url), 'utf8');
-  const links = [...js.matchAll(/<a href="(?:skript|index)\.html[^>]*>/g)].map((m) => m[0]);
+  const js = readFileSync(new URL('../lib/common/js/quiz-seite.js', import.meta.url), 'utf8');
+  const links = [...js.matchAll(/<a href="\$\{(?:skript|app)\}[^>]*>/g)].map((m) => m[0]);
   assert.ok(links.length >= 3);
   for (const a of links) assert.match(a, /target="_blank" rel="noopener"/, a);
   // laufendes Quiz: gesichert nach Start, Auswahl, Antwort und Weiter; gelöscht mit der Auswertung
@@ -823,7 +824,7 @@ test('Seite: Links aus dem Quiz ins Skript und in die App öffnen einen neuen Ta
 
 test('Seite: Schalter „Auch ungeprüfte Fragen zeigen“ für alle, im Browser gemerkt, ?entwurf schaltet ein', () => {
   const html = readFileSync(new URL('../quiz.html', import.meta.url), 'utf8');
-  const js = readFileSync(new URL('../js/quiz.js', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../lib/common/js/quiz-seite.js', import.meta.url), 'utf8');
   assert.match(html, /<input type="checkbox" id="entwurf-schalter">/);
   assert.match(js, /let entwurf = START\.has\('entwurf'\);/);
   assert.match(js, /localStorage\.getItem\(ENTWURF\) === '1'/);
@@ -838,7 +839,7 @@ test('Seite: Schalter „Auch ungeprüfte Fragen zeigen“ für alle, im Browser
 
 test('Seite: Kapitel mit Namen, Schalter unter der Auswahl, Stand für die gewählte Stufe', () => {
   const html = readFileSync(new URL('../quiz.html', import.meta.url), 'utf8');
-  const js = readFileSync(new URL('../js/quiz.js', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../lib/common/js/quiz-seite.js', import.meta.url), 'utf8');
   for (const k of KAPITEL) assert.ok(typeof k.kurz === 'string' && k.kurz.length > 3 && k.kurz.length <= 25, `Kap. ${k.nr}`);
   assert.match(js, /\$\{k\.nr\} \$\{k\.kurz\}/);
   // Schalter nach der Auswahl und ausserhalb des Formulars (bleibt erreichbar, wenn noch keine Frage geprüft ist)

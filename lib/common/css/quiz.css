@@ -1,0 +1,112 @@
+/* Quiz: eine Spalte in Lesebreite. Bilder in Fragen und Antworten zeichnet jede App mit ihrem eigenen Code. */
+body { font-size: 16px; line-height: 1.55; }
+.headtools { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.quiz { max-width: 760px; margin-inline: auto; }
+.quiz h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.7rem; letter-spacing: -0.01em; line-height: 1.2; margin: 6px 0 10px; }
+.lead { color: var(--muted); margin: 0 0 20px; max-width: 70ch; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin: 0 0 16px; }
+.card > h3 { margin: 0 0 10px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
+.hint { font-size: 0.86rem; color: var(--muted); margin: 8px 0 0; }
+.vorschau { margin: -4px 0 20px; padding: 0 2px; }
+.vorschau .hint { margin: 2px 0 0 28px; }
+.schalter { display: flex; gap: 10px; align-items: center; font-size: 0.92rem; cursor: pointer; }
+.schalter input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+.leer p { margin: 0; }
+fieldset.card { margin-inline: 0; min-width: 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Auswahl: Stufen als Karten, Kapitel als Schalter, Anzahl als Segmente */
+.stufen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.stufe { position: relative; display: block; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; background: var(--paper); cursor: pointer; }
+.stufe input { position: absolute; opacity: 0; pointer-events: none; }
+.stufe .nr { font: 600 0.72rem/1 var(--font-ui); text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.stufe b { display: block; font-size: 1.02rem; margin: 4px 0 2px; }
+.stufe span.t { display: block; font-size: 0.84rem; color: var(--muted); line-height: 1.4; }
+.stufe .n { display: block; margin-top: 6px; font-size: 0.78rem; color: var(--muted); }
+.stufe:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.stufe:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.stufe:has(input:disabled) { opacity: 0.5; cursor: default; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; background: var(--paper); cursor: pointer; font-size: 0.9rem; }
+.chip input { accent-color: var(--accent); margin: 0; }
+.chip:has(input:checked) { border-color: var(--accent); }
+.chip:has(input:disabled) { opacity: 0.45; cursor: default; }
+.chip small { color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; padding: 3px; background: var(--paper); }
+.seg label { cursor: pointer; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg span { display: inline-block; padding: 5px 16px; border-radius: 6px; color: var(--muted); font-weight: 500; }
+.seg input:checked + span { background: var(--ink); color: var(--paper); }
+.seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.btn { border: 0; border-radius: 8px; padding: 10px 20px; font-weight: 600; cursor: pointer; background: var(--accent); color: var(--paper); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn.zweit { background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-weight: 500; }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 0.86rem; text-decoration: underline; text-underline-offset: 2px; }
+.stand { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 0.9rem; }
+.stand li { display: grid; grid-template-columns: minmax(0, 1fr) 120px auto; gap: 10px; align-items: center; }
+.bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--ax2); }
+.stand .z { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.82rem; min-width: 7.5em; text-align: right; }
+/* Frage */
+.kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 0.84rem; color: var(--muted); }
+.kopf .fort { flex: 1 1 100%; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; margin-bottom: 6px; }
+.kopf .fort i { display: block; height: 100%; background: var(--accent); transition: width 0.2s; }
+.tag { border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; font-size: 0.76rem; }
+.tag.entwurf { border-color: var(--ax3); }
+.abbrechen { margin-left: auto; }
+.frage { font-size: 1.12rem; font-weight: 500; margin: 14px 0 12px; max-width: 70ch; }
+.mehrfach-hinweis { font-size: 0.84rem; color: var(--muted); margin: -6px 0 10px; }
+.bild { max-width: 380px; margin: 0 auto 14px; }
+.fig-art { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
+.fig-art svg { display: block; width: 100%; height: auto; }
+.antworten { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.antworten.bilder { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.antwort {
+  width: 100%; display: grid; grid-template-columns: 2em minmax(0, 1fr); gap: 10px; align-items: start; text-align: left;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--paper); padding: 10px 12px; cursor: pointer; line-height: 1.45;
+}
+.antwort:hover:not(:disabled) { border-color: var(--muted); }
+.antwort .bu {
+  display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 50%; border: 1px solid var(--line);
+  font-size: 0.82rem; font-weight: 600; color: var(--muted);
+}
+.antworten.mehrfach .bu { border-radius: 5px; }
+.antwort[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.antwort[aria-pressed="true"] .bu { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+.antwort:disabled { cursor: default; }
+.antwort.richtig { border-color: var(--ax2); box-shadow: inset 0 0 0 1px var(--ax2); background: color-mix(in srgb, var(--ax2) 9%, var(--paper)); }
+.antwort.richtig .bu { background: var(--ax2); border-color: var(--ax2); color: var(--paper); }
+.antwort.falsch { border-color: var(--ax6); box-shadow: inset 0 0 0 1px var(--ax6); background: color-mix(in srgb, var(--ax6) 8%, var(--paper)); }
+.antwort.falsch .bu { background: var(--ax6); border-color: var(--ax6); color: var(--paper); }
+.antwort.verpasst { border-style: dashed; border-color: var(--ax2); }
+.antworten.bilder .antwort { grid-template-columns: minmax(0, 1fr); padding: 8px; }
+.antworten.bilder .antwort .bu { position: absolute; margin: 4px; }
+.antworten.bilder .antwort { position: relative; }
+.antworten.bilder .fig-art { border: 0; }
+.aktionen { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+.rueck { margin-top: 16px; border: 1px solid var(--line); border-left: 4px solid var(--ax2); border-radius: 8px; background: var(--surface); padding: 12px 16px; }
+.rueck.falsch { border-left-color: var(--ax6); }
+.rueck h3 { margin: 0 0 6px; font-size: 1rem; }
+.rueck p { margin: 0 0 8px; max-width: 70ch; }
+.rueck .warum { font-size: 0.94rem; }
+.rueck .links { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.9rem; margin: 10px 0 0; }
+.rueck .links a { color: var(--accent); font-weight: 500; }
+.rueck .links a::after { content: ' →'; }
+.rueck .quelle { font-size: 0.78rem; color: var(--muted); margin: 8px 0 0; }
+.rueck .lernziel { font-size: 0.84rem; color: var(--muted); }
+.rueck .lernziel b { font-weight: 600; }
+/* Auswertung */
+.ergebnis { font-family: var(--font-display); font-size: 2.2rem; font-weight: 600; margin: 4px 0 2px; }
+.falschliste { margin: 0; padding-left: 1.2em; }
+.falschliste li { margin-bottom: 8px; }
+.falschliste a { color: var(--accent); font-size: 0.86rem; white-space: nowrap; }
+footer { max-width: 760px; margin: 32px auto 0; color: var(--muted); font-size: 0.78rem; }
+footer a { color: inherit; }
+@media (max-width: 719px) {
+  .brand p { display: none; }
+  .brand { flex: 1; }
+  .stufen { grid-template-columns: minmax(0, 1fr); }
+  .stand li { grid-template-columns: minmax(0, 1fr) 70px; }
+  .stand .z { grid-column: 1 / -1; text-align: left; margin-top: -6px; }
+  .quiz h2 { font-size: 1.45rem; }
+}

@@ -8,7 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
-- **Gemeinsame Grundlage:** Stile, Schriften, Hilfen, Quiz-Ablauf, Bausteine des Skripts, Formatierung der Symbole und die Werkzeuge für PDF und Moodle stammen jetzt aus [crystallography-common](https://github.com/manganite/crystallography-common) v0.1.0, der gemeinsamen Grundlage der geplanten Geschwister-Apps. Die App enthält davon eine Kopie mit fester Version in `lib/common/` und `tools/common/`; `tests/common.test.mjs` prüft sie. Für Studierende ändert sich nichts: App, Skript und Quiz sehen genau so aus wie vorher (berechnete Stile und Lage aller Elemente in 51 Ansichten vor und nach dem Umbau verglichen, das Skript-PDF hat denselben Text), der Moodle-Export ist byte-gleich, und der gespeicherte Stand im Quiz bleibt erhalten.
+- **Gemeinsame Grundlage:** Stile, Schriften, Hilfen, Quiz-Ablauf, Bausteine des Skripts, Formatierung der Symbole und die Werkzeuge für PDF und Moodle stammen jetzt aus [crystallography-common](https://github.com/manganite/crystallography-common) v0.1.1, der gemeinsamen Grundlage der geplanten Geschwister-Apps. Die App enthält davon eine Kopie mit fester Version in `lib/common/` und `tools/common/`; `tests/common.test.mjs` prüft sie. Für Studierende ändert sich nichts: App, Skript und Quiz sehen genau so aus wie vorher (berechnete Stile und Lage aller Elemente in 51 Ansichten vor und nach dem Umbau verglichen, das Skript-PDF hat denselben Text), der Moodle-Export ist byte-gleich, und der gespeicherte Stand im Quiz bleibt erhalten.
 
 ## [1.10.0] - 2026-10-29
 

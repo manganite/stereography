@@ -3,7 +3,7 @@
 
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { extname, join, normalize, resolve } from 'node:path';
+import { extname, isAbsolute, normalize, relative, resolve, sep } from 'node:path';
 
 export const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
@@ -16,8 +16,10 @@ export function server(root) {
   root = resolve(root);
   const srv = createServer(async (req, res) => {
     const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^([/\\])+/, '');
-    const file = join(root, path || 'index.html');
-    if (!file.startsWith(root)) { res.writeHead(403).end(); return; }
+    const file = resolve(root, path || 'index.html');
+    // nur Dateien innerhalb von root (auch kein Nachbarordner mit gleichem Namensanfang wie root-privat)
+    const rel = relative(root, file);
+    if (rel === '..' || rel.startsWith('..' + sep) || isAbsolute(rel)) { res.writeHead(403).end(); return; }
     try {
       const data = await readFile(file);
       res.writeHead(200, { 'Content-Type': MIME[extname(file)] || 'application/octet-stream' }).end(data);

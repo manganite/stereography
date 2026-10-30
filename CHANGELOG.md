@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-10-30
+
+Die App steht jetzt auf einer gemeinsamen Grundlage mit den geplanten Geschwister-Apps; für Studierende sieht alles aus wie bisher.
+
 ### Geändert
 
 - **Gemeinsame Grundlage:** Stile, Schriften, Hilfen, Quiz-Ablauf, Bausteine des Skripts, Formatierung der Symbole und die Werkzeuge für PDF und Moodle stammen jetzt aus [crystallography-common](https://github.com/manganite/crystallography-common) v0.1.1, der gemeinsamen Grundlage der geplanten Geschwister-Apps. Die App enthält davon eine Kopie mit fester Version in `lib/common/` und `tools/common/`; `tests/common.test.mjs` prüft sie. Für Studierende ändert sich nichts: App, Skript und Quiz sehen genau so aus wie vorher (berechnete Stile und Lage aller Elemente in 51 Ansichten vor und nach dem Umbau verglichen, das Skript-PDF hat denselben Text), der Moodle-Export ist byte-gleich, und der gespeicherte Stand im Quiz bleibt erhalten.
@@ -253,7 +257,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/manganite/stereography/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/manganite/stereography/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/manganite/stereography/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/manganite/stereography/compare/v1.8.1...v1.9.0

@@ -5,8 +5,9 @@
 // festhält. Diese Operationen bilden seine Lagesymmetrie (bei Flächen: Flächensymmetrie); die Zahl
 // der äquivalenten Pole ist Ordnung der Gruppe / Ordnung der Lagesymmetrie. Die Wyckoff-Lage fasst
 // alle Pole zusammen, deren Lagesymmetrien zueinander konjugiert sind. Buchstabe und orientiertes
-// Symbol stammen aus dem Formkatalog (forms.js, nach ITA); für die Aufstellungen ohne Katalog
-// (monoklin Achse c, 312, 31m, 3̄1m, 4̄m2, 6̄2m) stehen sie in ALT_SETTINGS.
+// Symbol stammen aus dem Formkatalog (forms.js, nach ITA); für die Aufstellungen monoklin Achse c, 312,
+// 31m, 3̄1m, 4̄m2 und 6̄2m stehen sie in ALT_SETTINGS. Die Aufstellungen B (312 … 6̄2m) haben inzwischen auch
+// Katalogeinträge; die Lagentabelle hier bleibt als unabhängige Angabe nach ITA, gegen die die Tests sie prüfen.
 
 import { mulVec, dot, normalize, scale, sub, inverse, transpose, fromColumns, rotation, mul, matEq } from './linalg.js';
 import { buildPointGroup, latticeToCart, groupById } from './pointgroups.js';
@@ -20,7 +21,7 @@ export const SNAP_MIRROR = 3 * deg;
 const ON_TOL = 1e-4;
 
 /**
- * Aufstellungen ohne eigenen Katalog: Standardaufstellung und Wyckoff-Lagen nach ITA Tab. 10.1.2.2
+ * Aufstellungen, deren Lagen aus der Standardaufstellung abgeleitet werden: Standardaufstellung und Wyckoff-Lagen nach ITA Tab. 10.1.2.2
  * (Buchstabe → orientiertes Symbol). Die Buchstaben stimmen mit der Standardaufstellung überein,
  * in den Symbolen sind die Positionen der 2. und 3. Blickrichtung vertauscht.
  */

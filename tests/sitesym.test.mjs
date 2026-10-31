@@ -59,10 +59,10 @@ test('Katalog: Pol jeder Form ergibt deren Wyckoff-Lage und Flächensymmetrie (I
     assert.equal(s.mult, e.mult, `${e.pg} {${e.hkl}}`);
     n++;
   }
-  assert.equal(n, 115);
+  assert.equal(n, 134);
 });
 
-test('Aufstellungen ohne Katalog: Lagen nach ITA Tab. 10.1.2.2', () => {
+test('Aufstellungen mit eigener Lagentabelle (ALT_SETTINGS): Lagen nach ITA Tab. 10.1.2.2', () => {
   const list = (id) => wyckoffPositions(id).map((r) => `${r.mult}${r.wy} ${r.fs}`).join(' | ');
   assert.equal(list('312'), '6c 1 | 3b ..2 | 2a 3..');
   assert.equal(list('31m'), '6c 1 | 3b ..m | 1a 3.m');

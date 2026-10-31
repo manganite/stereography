@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Skript, Kapitel 5 („Was die Punktgruppe über den Kristall verrät“):** die 11 enantiomorphen Punktgruppen ausdrücklich genannt; ein Absatz zu den Überschneidungen (zentrosymmetrisch schliesst enantiomorph und polar aus; 1, 2, 3, 4, 6 sind beides; 4̄, 4̄2m, 6̄, 6̄m2, 4̄3m keines von beiden); das Pedion als Kennzeichen der polaren Punktgruppen (nur dort möglich, Flächensymmetrie gleich der Punktgruppe) mit Abb. 5.9 (Pedion in 4 und 4mm mit Flächenmuster). Zusammenfassung, App-Kasten und Quellen (Borchardt-Ott Abschn. 9.2.1, 9.5, 9.6.1.2; ITA Tab. 10.1.2.2) ergänzt.
+
 ## [1.11.0] - 2026-10-30
 
 Die App steht jetzt auf einer gemeinsamen Grundlage mit den geplanten Geschwister-Apps; für Studierende sieht alles aus wie bisher.

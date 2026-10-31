@@ -118,8 +118,8 @@ const indizes = (hkl) => `{${hkl.map((x) => (x < 0 ? `<span class="ov">${-x}</sp
 const ORDNUNG = (id) => buildPointGroup(id).ops.length;
 /** Symbol der Punktgruppe; trigonal mit Aufstellung (3m1, 31m), damit die Positionen der Flächensymmetrie lesbar sind. */
 const gruppenSymbol = (g) => hmHTML(g.system === 'trigonal' && g.setting ? g.setting : g.hm);
-/** Formen mit spezieller Lage (Flächensymmetrie ≠ 1) in Gruppen mit mindestens 8 Operationen. */
-const SPEZIELL = CATALOG.filter((e) => e.fs !== '1' && e.mult > 1 && ORDNUNG(e.pg) >= 8);
+/** Formen mit spezieller Lage (Flächensymmetrie ≠ 1) in Gruppen mit mindestens 8 Operationen; nur Aufstellung A, wie geprüft. */
+const SPEZIELL = CATALOG.filter((e) => e.fs !== '1' && e.mult > 1 && ORDNUNG(e.pg) >= 8 && !e.aufst);
 /** Varianten, die eine handgeschriebene Frage schon stellt (lag-3-01, lag-3-03). */
 const SCHON_GEFRAGT = { 'gen-flaechenzahl': ['-43m:a33'], 'gen-flaechensym': ['4/mmm:a2'] };
 

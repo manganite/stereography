@@ -15,10 +15,22 @@ function euler(faces) {
   return V - E + faces.length;
 }
 
-test('115 Formen, je 47 Formtypen benannt', () => {
-  assert.equal(CATALOG.length, 115);
+test('134 Formen (115 in Aufstellung A, 19 in Aufstellung B), je 47 Formtypen benannt', () => {
+  assert.equal(CATALOG.length, 134);
+  assert.equal(CATALOG.filter((e) => e.aufst === 'B').length, 19);
   assert.equal(Object.keys(FORM_TYPES).length, 47);
-  assert.equal(new Set(CATALOG.map((e) => e.id)).size, 115, 'eindeutige Kennungen');
+  assert.equal(new Set(CATALOG.map((e) => e.id)).size, 134, 'eindeutige Kennungen');
+});
+
+test('Aufstellung B: dieselben Wyckoff-Lagen, Formtypen und Flächenzahlen wie Aufstellung A', () => {
+  const PAARE = { 312: '321', '31m': '3m1', '-31m': '-3m1', '-4m2': '-42m', '-62m': '-6m2' };
+  const sig = (pg) => CATALOG.filter((e) => e.pg === pg).map((e) => `${e.wy}:${e.type}:${e.mult}`).join(' ');
+  for (const [b, a] of Object.entries(PAARE)) {
+    assert.ok(CATALOG.some((e) => e.pg === b), b);
+    assert.ok(CATALOG.filter((e) => e.pg === b).every((e) => e.aufst === 'B'), b);
+    assert.ok(CATALOG.filter((e) => e.pg === a).every((e) => !e.aufst), a);
+    assert.equal(sig(b), sig(a), `${b} wie ${a}`);
+  }
 });
 
 test('Flächenzahl jeder Form = Multiplizität nach ITA', () => {
@@ -37,14 +49,15 @@ test('jede Form ergibt einen geschlossenen Körper (Euler = 2), keine Hauptfläc
   }
 });
 
-test('reduzierte Formliste ohne Flächensymmetrie: 67 Formen', () => {
+test('reduzierte Formliste ohne Flächensymmetrie: 78 Formen (67 in Aufstellung A)', () => {
   const EIG_SAME = { '-62m': '-6m2', '-4m2': '-42m' };
   const norm = (s) => EIG_SAME[s] || s;
   const listed = CATALOG.filter((e) => {
     const g = groupOf(e.pg);
     return e.mult === buildPointGroup(g.id).order || norm(formEig(e)) === norm(g.hm);
   });
-  assert.equal(listed.length, 67);
+  assert.equal(listed.length, 78);
+  assert.equal(listed.filter((e) => !e.aufst).length, 67);
 });
 
 test('Flächenform der kubischen Formen passt zum Namen (Drei- bzw. Vierecke)', () => {

@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-10-31
+
+Kristallformen in beiden Aufstellungen, Blick der 3D-Konstruktion im Link und im Skript mehr zu enantiomorphen und polaren Punktgruppen samt Pedion.
+
 ### Hinzugefügt
 
 - **Kristallformen in beiden Aufstellungen:** Der Modus „Kristallformen“ bietet jetzt auch die Aufstellung B an: 312, 31m, 3̄1m, 4̄m2 und 6̄2m mit ihren 19 Formen nach ITA Tab. 10.1.2.2 (gleiche Wyckoff-Lagen und Formtypen wie in Aufstellung A, Indizes gedreht, z. B. trigonales Prisma {100} in 312, trigonale Pyramide {hh2̄hl} und Pedion in 31m). Formauswahl, Infobox und Verzerrungshinweise nennen bei diesen Punktgruppen das vollständige Symbol, Formauswahl und Infobox auch die Aufstellung (z. B. „Punktgruppe 312 (D3), Aufstellung B“). So lassen sich etwa 3m1 und 31m auch an ihren Formen vergleichen. Der Katalog umfasst damit 134 Formen (ohne Flächensymmetrie 78 in der Auswahl). Die aus dem Katalog erzeugten Quizfragen bleiben auf die Aufstellung A beschränkt; Quiz und Moodle-Export sind unverändert.
@@ -267,7 +271,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/manganite/stereography/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/manganite/stereography/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/manganite/stereography/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/manganite/stereography/compare/v1.9.0...v1.9.1

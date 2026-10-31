@@ -502,6 +502,7 @@ function updateViews(dirs, col) {
     const d = dirs[Number(viewKey.slice(1))];
     if (!d || angleBetween(d.dir, viewVec) > 1e-4) viewKey = null; // andere Richtung: Kamera bleibt, Markierung weg
   }
+  if (!viewKey || viewKey === 'oblique') state.blick = 0; // der Link nennt nur einen Blick entlang einer Blickrichtung
   const box = $('view-dirs');
   const html = dirs.map((d, k) => {
     const dc = state.view.dirColors && d.pos >= 0 ? ` style="--dc:${col.dir[d.pos]}"` : '';
@@ -525,7 +526,9 @@ function selectView(key) {
     view3d.setViewDir(d.dir);
   }
   viewKey = key;
+  state.blick = key === 'oblique' ? 0 : Number(key.slice(1)) + 1;
   updateViews(viewList, palette());
+  save();
 }
 /** Seitliche Ansicht (Richtung ⊥ Projektionsrichtung), sonst die erste Blickrichtung. */
 const sideViewKey = () => { const k = viewList.findIndex((d) => d.along === 'side'); return 'd' + Math.max(0, k); };
@@ -1250,6 +1253,7 @@ view3d.controls.addEventListener('change', () => {
   if (angleBetween(view3d.viewDir(), want) > 0.5) {
     viewKey = null;
     for (const b of document.querySelectorAll('.viewbar button')) b.setAttribute('aria-pressed', 'false');
+    if (state.blick) { state.blick = 0; save(); }
   }
 });
 
@@ -1415,7 +1419,12 @@ function init() {
     for (const b of document.querySelectorAll('.figswitch button')) b.setAttribute('aria-pressed', String(b.dataset.fig === state.fig));
   };
   for (const b of document.querySelectorAll('.figswitch button')) b.addEventListener('click', () => setFig(b.dataset.fig));
+  // Link mit blick=…: die 3D-Konstruktion in dieser Ansicht zeigen (auf dem Telefon die 3D-Tafel), sobald die
+  // Blickrichtungen nach dem ersten Zeichnen bekannt sind
+  const linkBlick = state.blick;
+  if (linkBlick && window.matchMedia('(max-width: 719px)').matches) state.fig = '3d'; // Telefon (wie isPhone unten)
   setFig(state.fig);
+  if (linkBlick) requestAnimationFrame(() => requestAnimationFrame(() => selectView('d' + (linkBlick - 1))));
 
   // Zonenliste: einzelne Zone, ganze Gruppe oder alle abwählen
   $('info').addEventListener('click', (e) => {

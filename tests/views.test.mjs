@@ -123,3 +123,23 @@ test('Seitenleiste: Zusatzoptionen der Anzeige unter „Darstellung“, nach Taf
   // eingeklappte Abschnitte sagen, was man in ihnen findet
   for (const id of ['ctl-poly-lat', 'ctl-poly-shape', 'sec-view']) assert.ok(block(id).includes('class="sumhint"'), id);
 });
+
+test('Blick im Link: blick=1–3 hin und zurück, ungültige Werte und Standard ohne Eintrag', () => {
+  for (const h of ['#m=pg&g=31m&blick=1', '#m=form&sys=tetragonal&f=4mm:a1&muster=1&blick=1&kugel=0&ns=0&ebene=0&strahlen=0&normalen=0&achsen=1', '#m=form&sys=kubisch&bsp=galenit&blick=3']) {
+    const D = createState(), a = createState();
+    applyHashTo(a, h, D);
+    const want = Number(new URLSearchParams(h.slice(1)).get('blick'));
+    assert.equal(a.blick, want, h);
+    const h1 = hashOf(a, D);
+    assert.equal(new URLSearchParams(h1.slice(1)).get('blick'), String(want), h);
+    const b = createState();
+    applyHashTo(b, h1, D);
+    assert.equal(b.blick, want, h);
+  }
+  for (const bad of ['0', '4', '-1', '1.5', 'x', '']) assert.equal(stateOf(`#m=pg&g=4mm&blick=${bad}`).blick, 0, bad);
+  // ein Link ohne blick setzt einen vorherigen Blick zurück (der Link ist vollständig)
+  const st = stateOf('#m=pg&g=4mm&blick=2');
+  applyHashTo(st, '#m=pg&g=4mm', createState());
+  assert.equal(st.blick, 0);
+  assert.ok(!/blick=/.test(hashOf(createState(), createState())));
+});

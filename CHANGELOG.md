@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Blick der 3D-Konstruktion im Link:** Die Knöpfe unter der 3D-Konstruktion schreiben die gewählte Blickrichtung als `blick=1`, `2` oder `3` in die Adresse, „Link kopieren“ nimmt sie mit, und ein Link mit `blick=…` öffnet die 3D-Konstruktion in dieser Ansicht (auf dem Telefon die 3D-Tafel). „Schräg“ oder Drehen der Kamera entfernen den Eintrag. Gedacht u. a. für Verweise aus der geplanten 2D-App: Mit `blick=1` und ausgeblendeter Umkugel zeigt z. B. das Pedion einer polaren Punktgruppe mit Flächenmuster von oben die Symmetrie der zugehörigen 2D-Punktgruppe.
+
 ## [1.11.0] - 2026-10-30
 
 Die App steht jetzt auf einer gemeinsamen Grundlage mit den geplanten Geschwister-Apps; für Studierende sieht alles aus wie bisher.

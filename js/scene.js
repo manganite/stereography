@@ -33,6 +33,8 @@ export function createState() {
     },
     view: { dirColors: true, wulff: false, wulffRot: 0, axes: false, sphere: true, globe: true, plane: true, rays: true, normals: true },
     selected: null,
+    // Blick der 3D-Konstruktion (nur Link, nicht gespeichert): 0 keine Vorgabe, 1–3 die Blickrichtung des Systems
+    blick: 0,
     zoneSel: [],
     pgSel: [], // Punktgruppenmodus: gewählte Pole (Werkzeug Winkel)
     fig: 'stereo', // Telefon: sichtbare Tafel
@@ -232,6 +234,7 @@ export function hashOf(state, DEFAULTS) {
   }
   bools(URL_VIEW, state.view, d.view);
   if (state.view.wulff && state.view.wulffRot) q.set('netz', String(state.view.wulffRot));
+  if (state.blick >= 1 && state.blick <= 3) q.set('blick', String(state.blick));
   return '#' + q.toString().replace(/%2F/g, '/').replace(/%2C/g, ',').replace(/%3A/g, ':').replace(/%3B/g, ';');
 }
 
@@ -302,6 +305,9 @@ export function applyHashTo(state, hash, DEFAULTS) {
   }
   bools(URL_VIEW, state.view);
   if (q.has('netz')) state.view.wulffRot = num(q.get('netz'), 0, 180) ?? 0;
+  // blick=1, 2 oder 3: Blick der 3D-Konstruktion entlang der 1., 2. bzw. 3. Blickrichtung (Knöpfe unter der Ansicht)
+  const b = Number(q.get('blick'));
+  state.blick = q.has('blick') && Number.isInteger(b) && b >= 1 && b <= 3 ? b : 0;
   return true;
 }
 

@@ -65,7 +65,7 @@ export const TIPS = {
   'save-stereo-png': 'Stereogramm als PNG-Datei speichern (2048 × 2048 Pixel). Immer in hellen Farben, Hintergrund ausserhalb des Grundkreises durchsichtig.',
   'copy-3d': '3D-Konstruktion in der gezeigten Ansicht als Bild (PNG) in die Zwischenablage kopieren, z. B. für Folien. Immer in hellen Farben, Hintergrund durchsichtig.',
   'save-3d': '3D-Konstruktion in der gezeigten Ansicht als PNG-Datei speichern (etwa 2000 Pixel breit). Immer in hellen Farben, Hintergrund durchsichtig.',
-  'view-oblique': 'Schräger Blick auf Kugel, Kristall und Äquatorebene. Die Knöpfe daneben blicken entlang der drei Blickrichtungen des Kristallsystems (triklin: entlang a, b, c); liegt eine davon parallel zur Projektionsrichtung, zeigt sie das Bild wie im Stereogramm.',
+  'view-oblique': 'Schräger Blick auf Kugel, Kristall und Äquatorebene. Die Knöpfe daneben blicken entlang der drei Blickrichtungen des Kristallsystems (triklin: entlang a, b, c); liegt eine davon parallel zur Projektionsrichtung, zeigt sie das Bild wie im Stereogramm. Eine gewählte Blickrichtung steht auch im kopierten Link.',
 };
 
 /** ⓘ-Erklärungen: je Abschnitt ein Einleitungssatz und die Elemente, deren Texte gezeigt werden. */

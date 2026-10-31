@@ -253,6 +253,11 @@ function buildSystemSelect() {
   $('sys-select').value = state.poly.system;
 }
 
+/** Punktgruppen mit zwei Aufstellungen im Formenkatalog (Skript Kap. 5, Tabelle der Aufstellungen A und B). */
+const ZWEI_AUFSTELLUNGEN = { 321: 'A', 312: 'B', '3m1': 'A', '31m': 'B', '-3m1': 'A', '-31m': 'B', '-42m': 'A', '-4m2': 'B', '-6m2': 'A', '-62m': 'B' };
+/** Symbol der Punktgruppe einer Form; bei zwei Aufstellungen das vollständige Symbol (321, 312, 3m1, 31m, …). */
+const formGroupSym = (g) => (ZWEI_AUFSTELLUNGEN[g.id] && g.setting ? g.setting : g.hm);
+
 function buildFormSelect() {
   const sys = state.poly.system;
   const hex4 = isHexSystem(sys) && state.poly.bravais;
@@ -260,7 +265,8 @@ function buildFormSelect() {
   $('form-select').innerHTML = groups.map((g) => {
     const opts = CATALOG.filter((e) => e.pg === g.id && formListed(e))
       .map((e) => `<option value="${e.id}">${formName(e)} ${formLabelText(e.hkl, hex4)}</option>`).join('');
-    return `<optgroup label="Punktgruppe ${hmText(g.hm)} (${g.sf})">${opts}</optgroup>`;
+    const aufst = ZWEI_AUFSTELLUNGEN[g.id] ? `, Aufstellung ${ZWEI_AUFSTELLUNGEN[g.id]}` : '';
+    return `<optgroup label="Punktgruppe ${hmText(formGroupSym(g))} (${g.sf})${aufst}">${opts}</optgroup>`;
   }).join('');
   const ex = currentExample();
   if (ex) $('form-select').insertAdjacentHTML('afterbegin', `<option value="">Kombination: ${ex.name}</option>`);
@@ -1007,13 +1013,13 @@ function updateInfoPoly(C, col) {
     if (tw.length) {
       const tg = groupOf(tw[0].pg);
       const fsList = [...new Set(tw.map((x) => x.fs))].map(hmHTML).join(' bzw. ');
-      twinNote = `<p class="note">Die Punktgruppe ${hmHTML(g.hm)} ist hier nur erzeugende Symmetrie; die Eigensymmetrie der Form (${hmHTML(formEig(e))}) ist höher (Begriffe nach Borchardt-Ott). Geometrisch gleicht die Form der Form „${formName(tw[0])}“ in ${hmHTML(tg.hm)}; der Unterschied liegt nur in der Flächensymmetrie (1 statt ${fsList}), sichtbar mit „Flächensymmetrie zeigen“ oder an der Lage der Pole zum Symmetriegerüst.</p>`;
+      twinNote = `<p class="note">Die Punktgruppe ${hmHTML(formGroupSym(g))} ist hier nur erzeugende Symmetrie; die Eigensymmetrie der Form (${hmHTML(formEig(e))}) ist höher (Begriffe nach Borchardt-Ott). Geometrisch gleicht die Form der Form „${formName(tw[0])}“ in ${hmHTML(formGroupSym(tg))}; der Unterschied liegt nur in der Flächensymmetrie (1 statt ${fsList}), sichtbar mit „Flächensymmetrie zeigen“ oder an der Lage der Pole zum Symmetriegerüst.</p>`;
     }
   }
   setInfo(`
     <div class="info-head">
       <div class="hm-big form-sym">${brace(e.hkl)}</div>
-      <div class="hm-meta"><span class="form-name">${formName(e)}</span><span>Punktgruppe <b>${hmHTML(g.hm)}</b> (${g.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}</span></div>
+      <div class="hm-meta"><span class="form-name">${formName(e)}</span><span>Punktgruppe <b>${hmHTML(formGroupSym(g))}</b> (${g.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}${ZWEI_AUFSTELLUNGEN[g.id] ? ` · ${skriptTerm('Aufstellung', 'aufstellung-pg')} ${ZWEI_AUFSTELLUNGEN[g.id]}` : ''}</span></div>
     </div>
     ${broken}
     ${zoneBox}

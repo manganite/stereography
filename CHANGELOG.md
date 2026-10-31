@@ -8,12 +8,11 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Hinzugefügt
 
-- **Kristallformen in beiden Aufstellungen:** Der Modus „Kristallformen“ bietet jetzt auch die Aufstellung B an: 312, 31m, 3̄1m, 4̄m2 und 6̄2m mit ihren 19 Formen nach ITA Tab. 10.1.2.2 (gleiche Wyckoff-Lagen und Formtypen wie in Aufstellung A, Indizes gedreht, z. B. trigonales Prisma {100} in 312, trigonale Pyramide {hh2̄hl} und Pedion in 31m). Die Formauswahl und die Infobox nennen bei diesen Punktgruppen das vollständige Symbol und die Aufstellung (z. B. „Punktgruppe 312 (D3), Aufstellung B“). So lassen sich etwa 3m1 und 31m auch an ihren Formen vergleichen. Der Katalog umfasst damit 134 Formen (ohne Flächensymmetrie 78 in der Auswahl).
+- **Kristallformen in beiden Aufstellungen:** Der Modus „Kristallformen“ bietet jetzt auch die Aufstellung B an: 312, 31m, 3̄1m, 4̄m2 und 6̄2m mit ihren 19 Formen nach ITA Tab. 10.1.2.2 (gleiche Wyckoff-Lagen und Formtypen wie in Aufstellung A, Indizes gedreht, z. B. trigonales Prisma {100} in 312, trigonale Pyramide {hh2̄hl} und Pedion in 31m). Formauswahl, Infobox und Verzerrungshinweise nennen bei diesen Punktgruppen das vollständige Symbol, Formauswahl und Infobox auch die Aufstellung (z. B. „Punktgruppe 312 (D3), Aufstellung B“). So lassen sich etwa 3m1 und 31m auch an ihren Formen vergleichen. Der Katalog umfasst damit 134 Formen (ohne Flächensymmetrie 78 in der Auswahl). Die aus dem Katalog erzeugten Quizfragen bleiben auf die Aufstellung A beschränkt; Quiz und Moodle-Export sind unverändert.
 
 ### Geändert
 
 - **Skript, Kapitel 5 („Zwei Aufstellungen derselben Punktgruppe“):** Der App-Kasten beschreibt die Wahl der Aufstellung im Modus „Kristallformen“, mit Link auf das trigonale Prisma {100} in 312.
-- **Quiz:** Die aus dem Katalog erzeugten Fragen zu Flächenzahl und Flächensymmetrie bleiben auf die Aufstellung A beschränkt; Quiz und Moodle-Export sind unverändert.
 
 ## [1.11.0] - 2026-10-30
 

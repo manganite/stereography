@@ -914,13 +914,13 @@ function updateInfoPoly(C, col) {
       const hexNote = hs
         ? `<p>Die Restgruppe ist trigonal. In hexagonalen Achsen gilt c ∥ ${dirHTML(hs.c, false)}, a₁ ∥ ${dirHTML(hs.a1, false)}, a₂ ∥ ${dirHTML(hs.a2, false)} (Richtungen im kubischen Gitter), c/a = ${hs.ca.toFixed(2).replace('.', ',')}; die Formen dort stehen hinter dem Pfeil.${hs.c.join('') === '111' && state.poly.presetId !== '111' ? ' Mit der Projektionsrichtung [111] blickt man entlang der neuen c-Achse.' : ''}</p>`
         : '';
-      broken = `<div class="warnbox"><strong>${skriptTerm('Symmetrie erniedrigt', 'verzerrung-prinzip')}: ${hmHTML(g.hm)} → ${hmHTML(C.reduced.hm)}</strong>${ax}
+      broken = `<div class="warnbox"><strong>${skriptTerm('Symmetrie erniedrigt', 'verzerrung-prinzip')}: ${hmHTML(formGroupSym(g))} → ${hmHTML(C.reduced.hm)}</strong>${ax}
         ${st ? `<p>${stText}.</p>` : ''}
         <p>${C.orbitsMain.length > 1 ? `Die Form ${brace(e.hkl)} zerfällt in ${C.orbitsMain.length} Formen:` : `Die Form ${brace(e.hkl)} bleibt eine Form der Restsymmetrie:`}</p><ul class="auxlist">${parts}</ul>${hexNote}</div>`;
     } else if (S.breakModeOf(state) === 'stretch' && !st) {
-      broken = `<div class="okbox">Faktor 1: Der Kristall ist unverzerrt, die Punktgruppe ${hmHTML(g.hm)} bleibt. Mit dem Faktor streckt oder staucht man ihn entlang der gewählten Richtung.</div>`;
+      broken = `<div class="okbox">Faktor 1: Der Kristall ist unverzerrt, die Punktgruppe ${hmHTML(formGroupSym(g))} bleibt. Mit dem Faktor streckt oder staucht man ihn entlang der gewählten Richtung.</div>`;
     } else {
-      broken = `<div class="okbox">Die Verzerrung erhält die Punktgruppe ${hmHTML(g.hm)}.</div>`;
+      broken = `<div class="okbox">Die Verzerrung erhält die Punktgruppe ${hmHTML(formGroupSym(g))}.</div>`;
     }
   }
   let zoneBox = '';
@@ -1009,7 +1009,8 @@ function updateInfoPoly(C, col) {
   const normE = (s) => EIG_SAME[s] || s;
   if (!groupOrder.has(g.id)) groupOrder.set(g.id, buildPointGroup(g.id).order);
   if (e.mult === groupOrder.get(g.id) && normE(formEig(e)) !== normE(g.hm)) {
-    const tw = CATALOG.filter((x) => x.type === e.type && normE(groupOf(x.pg).hm) === normE(formEig(e)));
+    // nur Aufstellung A, damit die Flächensymmetrie aus einer einzigen Punktgruppe stammt
+    const tw = CATALOG.filter((x) => x.type === e.type && !x.aufst && normE(groupOf(x.pg).hm) === normE(formEig(e)));
     if (tw.length) {
       const tg = groupOf(tw[0].pg);
       const fsList = [...new Set(tw.map((x) => x.fs))].map(hmHTML).join(' bzw. ');

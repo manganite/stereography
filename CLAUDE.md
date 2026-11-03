@@ -106,9 +106,9 @@ stabil halten).
 - **Quizfragen** in `js/quiz-bank.js`, Kennung `kapitel-stufe-nr` (z. B. `zon-1-03`); Felder `stufe`,
   `kapitel`, `lernziel` (wörtlich im Skript, Test), `typ`, `frage`, `bild`, `antworten`, `richtig`,
   `erklaerung`, `skript`, `app`, `quelle`, `status`. Generatoren in `js/quiz-gen.js`.
-- **Ansicht entlang einer Blickrichtung** (eigene Festlegung, 24.10.): zuerst die Richtung
-  ∥ Projektionsrichtung, sonst eine ⊥ dazu, sonst die erste; Betrachter immer oben. Bestätigung durch
-  Thomas offen: Issue #53.
+- **Ansicht entlang einer Blickrichtung** (24.10., von Thomas bestätigt 3.11.): zuerst die Richtung
+  ∥ Projektionsrichtung, sonst eine ⊥ dazu, sonst die erste; Betrachter immer oben (`viewDirections` in
+  `js/scene.js`). Steckt in `blick=1–3` und ist damit Teil der Schnittstelle.
 
 ## Fallstricke
 

@@ -2,7 +2,7 @@
 
 > **Status (geprüft 3.11.2026, nachträglich ergänzt):** Umgesetzt (PR #28), danach mit v1.9.0 geändert:
 > - „Vorlesungsstoff“ heisst im Skript „Grundstoff“; Verweise auf Vorlesung und Folien sind entfernt; Lernziele „Aus der Vorlesung“ heissen entsprechend anders.
-> - Die Kapitelnummern der Einstufungstabelle (Abschn. 2) sind die alten. Zuordnung alt → neu: 1 → 2, 2 → 6, 3 → 4, 4 → 7, 5 → 8, 6 → 5, 7 → 1 und 9, 8 → 10, 9 → 11.
+> - Die Kapitelnummern der Einstufungstabelle (Abschn. 2) sind die alten. Zuordnung alt → neu: 1 → 2, 2 → 1 und 6, 3 → 4, 4 → 7, 5 → 8, 6 → 5, 7 → 1 und 9, 8 → 10, 9 → 11.
 > - Die Tabelle bleibt die Grundlage, wenn die Einstufung nachgeführt wird (Issue #55).
 >
 > Der Text darunter ist der Stand des Konzepts und wird nicht mehr nachgeführt. Was heute gilt, steht in `CLAUDE.md` und im `LEITFADEN.md` von crystallography-common; offene Punkte stehen in den GitHub Issues.
@@ -50,7 +50,7 @@ V = Vorlesung, T = Vertiefung, A = Hinweis zur App.
 | 4 | Flächen im Schnittpunkt zweier Zonen | V; **T**: Zonenbeziehung nach Borchardt-Ott, Komplikationsregel |
 | 4 | Zonenachse und Flächennormale | V: kubisch fällt [uvw] mit (uvw) zusammen; **T**: Topas-Vergleich; **A**: Werkzeug „Zone“ |
 | 5 | Tracht, Habitus, Wachstum | V |
-| 5 | Was das Stereogramm zeigt | V (folgt aus der Winkelkonstanz, 39); **A**: Habitusregel der App (Grenze 2/3) |
+| 5 | Was das Stereogramm zeigt | V (folgt aus der Winkelkonstanz); **A**: Habitusregel der App (Grenze 2/3) |
 | 6 | Was ist eine Blickrichtung? | V; **T**: ITA-Schreibweise ⟨1̄10⟩ |
 | 6 | Das HM-Symbol lesen | V; **T**: 1 als Platzhalter (31m und 3m1); **A**: Farben nach Blickrichtung |
 | 6 | Volles und gekürztes Symbol | V |

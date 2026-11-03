@@ -82,9 +82,8 @@ stabil halten).
   widerspricht der Antwort nicht.
 - **Erklärungen** lassen sich aus dem verlinkten Skriptabschnitt herleiten; was fehlt, kommt ins Skript.
 - **Offene Formen** in Bildfragen wie in der App, mit grau ergänzter Form.
-- **Rückmeldungen** sammelt das claude.ai-Artifact „Quiz-Fragenliste“, Sammlung `rueckmeldungen`
-  (`{notiz, von, stand: neu|erledigt, antwort, zeit}`). Nach dem Einarbeiten `stand: erledigt` und in
-  `antwort`, was geändert wurde. Werkzeug zum Neuerzeugen: Issue #51.
+- **Prüfung und Rückmeldungen** in der gemeinsamen Fragenliste (`CLAUDE.md` von common, Abschnitt
+  „Quiz“); diese App liefert ihre Fragen über `tools/quiz-quelle.mjs`.
 
 ### Familie
 - **`blick=1–3` als allgemeiner Link-Parameter** (31.10.): plane-groups verlinkt damit die 10 polaren

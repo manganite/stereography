@@ -99,7 +99,8 @@ stabil halten).
 - **Cache des Service Workers:** `stereogramm-<Version>`.
 - **Stabile Kennungen in Links:** `-43m:c38` = {112}, `-43m:c39` = {221} (wie in v1.0.0). Alte `phi=`
   (Zählung ab ↓, Gegenuhrzeigersinn) werden umgerechnet; `rho=` über 90° gilt weiter.
-- **Weitere Link-Schlüssel:** `str=<Richtung>,<Faktor>` (nur bei s ≠ 1, ohne Beispiel);
+- **Weitere Link-Schlüssel:** `str=<Richtung>,<Faktor>` (immer im Modus „Streckung“, auch bei s = 1,
+  ohne Beispiel; fehlt `str`, liest der Parser `br=1` als „Alle Parameter frei“, `js/scene.js`);
   `zonen=u,v,w;…` (nur mit `w=zone`); `pole=0`, `ns=0`, `bsp=`, `ab=`, `hkil=1`, `achsen=1`, `blick=`.
   Im Skript zusätzlich `data-view` (oblique/top/side), `data-dirs`, `data-labels="aus"`.
 - **Skript-Anker** bleiben gültig (Quiz, Infobox `js/skriptlinks.js` und andere Apps verweisen darauf).

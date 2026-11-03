@@ -1,9 +1,10 @@
 # CLAUDE.md – Stereographische Projektion
 
-**Zuerst lesen:** `../crystallography-common/CLAUDE.md` (Arbeitsweise, Git, Releases, gemeinsamer Code,
-Literaturregeln) und `../crystallography-common/LEITFADEN.md`. Fehlt der Ordner, klonen:
-`https://github.com/manganite/crystallography-common`. Aufbau und Link-Adressen der App: `README.md`.
-Hier steht nur, was zusätzlich für diese App gilt.
+**Gemeinsame Regeln:** @../crystallography-common/CLAUDE.md (Arbeitsweise, Git, Releases,
+gemeinsamer Code, Literaturregeln; bindet seinerseits `LEITFADEN.md` ein). Claude Code lädt beide mit
+dieser Datei. Fehlt der Ordner, klonen: `https://github.com/manganite/crystallography-common`.
+Aufbau und Link-Adressen der App: `README.md`. Hier steht nur, was zusätzlich für diese App
+gilt.
 
 **Zweck:** Stereogramme der Symmetriegerüste der 32 Punktgruppen mit optionalem Objekt in allgemeiner
 Lage; Stereogramme einfacher Polyeder in verschiedenen Lagen, skalierbar in Grösse und

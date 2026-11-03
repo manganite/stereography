@@ -51,7 +51,7 @@ stabil halten).
 ### Kristallformen
 - **Aufstellung B im Formenmodus** (v1.12.0): 312, 31m, 3̄1m, 4̄m2, 6̄2m. Erzeugte Quizfragen bleiben
   auf Aufstellung A.
-- **Monoklin** mit eindeutiger Achse b („monoklin c“ fehlt im Formenmodus).
+- **Monoklin** mit eindeutiger Achse b (Aufstellung „monoklin c“ im Formenmodus: Issue #58).
 - **Hexagonal** standardmässig (hkl), (hkil) zuschaltbar; [uvtw] nicht.
 - **Quarz** nach Kleber S. 70–71 (Abb. 1.70): {101} ist das grosse Rhomboeder. Links/Rechts ist nicht
   einheitlich benannt; das Skript sagt das.
@@ -84,8 +84,7 @@ stabil halten).
 - **Offene Formen** in Bildfragen wie in der App, mit grau ergänzter Form.
 - **Rückmeldungen** sammelt das claude.ai-Artifact „Quiz-Fragenliste“, Sammlung `rueckmeldungen`
   (`{notiz, von, stand: neu|erledigt, antwort, zeit}`). Nach dem Einarbeiten `stand: erledigt` und in
-  `antwort`, was geändert wurde. Die Werkzeuge zum Neuerzeugen sind nicht im Repository
-  (plane-groups hat sie unter `tools/listen/`).
+  `antwort`, was geändert wurde. Werkzeug zum Neuerzeugen: Issue #51.
 
 ### Familie
 - **`blick=1–3` als allgemeiner Link-Parameter** (31.10.): plane-groups verlinkt damit die 10 polaren
@@ -109,7 +108,7 @@ stabil halten).
   `erklaerung`, `skript`, `app`, `quelle`, `status`. Generatoren in `js/quiz-gen.js`.
 - **Ansicht entlang einer Blickrichtung** (eigene Festlegung, 24.10.): zuerst die Richtung
   ∥ Projektionsrichtung, sonst eine ⊥ dazu, sonst die erste; Betrachter immer oben. Bestätigung durch
-  Thomas nicht dokumentiert.
+  Thomas offen: Issue #53.
 
 ## Fallstricke
 

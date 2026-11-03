@@ -14,7 +14,7 @@ stabil halten).
 
 ### Ausrichtung
 - **Eigenständig** (28.10.2026): ohne die Vorlesung verständlich. Ersetzt die frühere Ausrichtung
-  „Begleitung zur Vorlesung“ (`spezifikation.md`, Stand v1.7.0).
+  „Begleitung zur Vorlesung“ (`docs/spezifikation.md`, Stand v1.7.0).
 - **Das Skript deckt die App vollständig ab** (27.10.): jeder Fachbegriff aus Infobox, Tooltips,
   Optionen und Beispielen, notfalls als Vertiefung.
 - **Didaktik vor Aufwand** (27.10.): Kapitelfolge und Nummern dürfen sich ändern; das Quiz wird
@@ -156,9 +156,9 @@ Alle in Thomas' Zotero; Quellen je Kapitel auch in `skript.html`.
 - **Weitere:** Fu & Itoh, IntechOpen 2015, Fig. 2 (BaTiO₃); Heaney u. a. 1994 (Links-/Rechtsquarz);
   webmineral (Gips, Turmalin).
 
-## Unterlagen ausserhalb des Repositories
+## Konzepte
 
-Im claude.ai-Projekt der App (noch nicht hier): `spezifikation.md` (bis v1.7.0, teils überholt),
-`konzept-skript.md`, `konzept-vertiefung.md` (Einstufung Grundstoff/Vertiefung), `konzept-kapitel-lagen.md`,
-`konzept-quiz.md`, `konzept-skript-ergaenzungen.md` (bis v1.9.1), `konzept-familie.md`,
-`leitfaden-familie.md`.
+In `docs/`, je mit Statuskopf: `spezifikation.md` (Funktionsbeschreibung bis v1.7.0, ausführlichste Beschreibung der Bedienung), `konzept-skript.md` (v1.3.0, weitgehend überholt), `konzept-quiz.md`,
+`konzept-kapitel-lagen.md` (heute Kap. 10), `konzept-vertiefung.md` (Einstufung Grundstoff/Vertiefung,
+alte Kapitelnummern mit Zuordnung), `konzept-skript-ergaenzungen.md` (Neuordnung v1.9.0). Das Konzept
+der Familie liegt in crystallography-common `docs/konzept-familie.md`.

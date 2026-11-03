@@ -89,6 +89,7 @@ Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Mod
 | `js/quiz-bank.js`, `js/quiz-gen.js` | Handgeschriebene Fragen (mit Quelle und Prüfstatus) und Generatoren für erzeugte Fragen |
 | `js/bild3d.js` | Feste räumliche Zeichnungen (SVG) von Kristallen und Symmetriegerüsten für Quiz und Moodle-Export |
 | `tools/moodle-export.mjs` | Export der geprüften Fragen als Moodle-XML |
+| `tools/quiz-quelle.mjs` | Fragen und Bilder für die gemeinsame Fragenliste der App-Familie (crystallography-common, `fragenliste/`) |
 | `js/pointgroups.js` | Generatoren der Punktgruppen, Gruppenerzeugung, automatische Bestimmung der Symmetrieelemente |
 | `js/forms.js` | Formenkatalog nach ITA Tab. 10.1.2.2/10.1.2.3 |
 | `js/sitesym.js` | Lage eines Pols: Einrasten, Lagesymmetrie, Multiplizität, Wyckoff-Lage |

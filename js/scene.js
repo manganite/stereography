@@ -218,7 +218,9 @@ export function hashOf(state, DEFAULTS) {
       const fs = exFactors(state, ex);
       if (fs.some((x) => Math.abs(x - 1) > 1e-6)) q.set('ab', fs.map((x) => String(Math.round(x * 100) / 100)).join(','));
     } else q.set('f', currentEntryId(state));
-    if (state.poly.presetId !== orientationPresets(sys)[0].id) q.set('lage', state.poly.presetId);
+    // Lage, die es im System nicht gibt (z. B. 001 ausser kubisch), gilt als die erste und wird nicht geschrieben
+    const presets = orientationPresets(sys);
+    if (presets.some((p) => p.id === state.poly.presetId) && state.poly.presetId !== presets[0].id) q.set('lage', state.poly.presetId);
     // Gitter: im Modus „alle frei“ das freie Gitter, sonst das unverzerrte (mit Streckung str=Richtung,Faktor)
     const mode = breakModeOf(state);
     const lat = mode === 'free' ? freeLat(state) : constrainLattice(currentLat(state), sys);
@@ -260,6 +262,9 @@ export function applyHashTo(state, hash, DEFAULTS) {
       if (q.has('ab')) state.poly.exScale[ex.id] = q.get('ab').split(',').map((x) => num(x, 0.5, 2) ?? 1);
     }
     if (q.has('lage')) state.poly.presetId = q.get('lage');
+    // ungültige Lage für das System (fehlt lage, bleibt die kubische Startlage 001): die erste des Systems
+    const presets = orientationPresets(state.poly.system);
+    if (!presets.some((p) => p.id === state.poly.presetId)) state.poly.presetId = presets[0].id;
     const lat = { ...LATTICE_DEFAULTS[state.poly.system], ...(ex && ex.sys === state.poly.system ? ex.lat : {}) };
     for (const k of LAT_KEYS) {
       if (!q.has(k)) continue;

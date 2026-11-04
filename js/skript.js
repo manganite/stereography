@@ -9,7 +9,7 @@ import { koerperSVG } from './bild3d.js';
 import { hklHTML } from '../lib/common/js/format.js';
 import { VERSION } from './version.js';
 import { appLink, nachladen, querstriche, inhaltsverzeichnis } from '../lib/common/js/skript-kern.js';
-import { versionEintragen, offline } from '../lib/common/js/seite.js';
+import { versionEintragen, offline, elemente } from '../lib/common/js/seite.js';
 
 /** @import { Palette, AppKristall } from './scene.js' */
 /** @import { View3D } from './view3d.js' */
@@ -90,7 +90,7 @@ async function render3d(fig, col) {
 
 function renderFigures() {
   const col = palette();
-  for (const fig of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('figure[data-app]'))) {
+  for (const fig of elemente('figure[data-app]')) {
     appLink(fig, 'index.html');
     if (fig.dataset.kind === '3d') { if (views3d.has(fig)) render3d(fig, col); } else renderStereo(fig, col);
   }
@@ -114,7 +114,7 @@ function symbolLegende(col) {
     pu: `<svg viewBox="-8 -8 16 16" width="16" height="16" aria-hidden="true"><circle r="6" fill="none" stroke="${ink}" stroke-width="1.6"/></svg>`,
     pb: `<svg viewBox="-8 -8 16 16" width="16" height="16" aria-hidden="true"><circle r="6.5" fill="none" stroke="${ink}" stroke-width="1.6"/><circle r="3.6" fill="${ink}"/></svg>`,
   };
-  for (const el of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.symlegende .sym'))) {
+  for (const el of elemente('.symlegende .sym')) {
     const s = /** @type {string} */ (el.dataset.sym);
     el.innerHTML = EXTRA[s] || symbolIcon(s, 'centre' in el.dataset, icol, 26);
   }
@@ -245,7 +245,7 @@ function wachstumFigur(fig) {
 }
 
 function watch3d() {
-  lazy3d = nachladen([...document.querySelectorAll('figure[data-kind="3d"]')], {
+  lazy3d = nachladen(elemente('figure[data-kind="3d"]'), {
     zeigen: (fig) => render3d(/** @type {HTMLElement} */ (fig), palette()),
     freigeben: release3d,
     fehlertext: 'Die 3D-Ansicht konnte nicht geladen werden.',
@@ -254,8 +254,8 @@ function watch3d() {
 
 function init() {
   versionEintragen(VERSION);
-  document.querySelectorAll('figure.proj').forEach(projectionSketch);
-  document.querySelectorAll('figure.wachs').forEach(wachstumFigur);
+  elemente('figure.proj').forEach(projectionSketch);
+  elemente('figure.wachs').forEach(wachstumFigur);
   renderFigures();
   watch3d();
   inhaltsverzeichnis();

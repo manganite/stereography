@@ -1473,32 +1473,35 @@ function init() {
     || state.poly.showPoles !== DEFAULTS.poly.showPoles || state.poly.showLower !== DEFAULTS.poly.showLower;
   if (viewChanged && !$('sec-view').open) { $('sec-view').dataset.quiet = '1'; $('sec-view').open = true; } // nicht als Wahl des Nutzers merken
 
-  // Erste Schritte je Modus: beim ersten Aufruf eines Modus, wegklickbar, über „?“ wieder zu öffnen; nicht
-  // für den Modus, in dem ein Link die App öffnet. Gespeichert: die gesehenen Modi, durch Komma getrennt
-  // (bis v1.12.1 nur „zu“ für die damals einzigen Erste Schritte, die zum Galenit im Modus „Kristallformen“).
+  // Erste Schritte je Modus: beim ersten Aufruf eines Modus, wegklickbar (× oder „?“), über „?“ wieder zu
+  // öffnen; nicht für den Modus, in dem ein Link die App öffnet (für die Sitzung, nicht gespeichert).
+  // Gespeichert: die gesehenen Modi (S.introSeen).
   const INTRO_KEY = 'stereo-intro';
-  const seen = new Set();
-  try { for (const m of (localStorage.getItem(INTRO_KEY) ?? '').split(',')) if (m) seen.add(m === 'zu' ? 'poly' : m); } catch { /* Speicher nicht verfügbar */ }
+  let seen = new Set();
+  try { seen = S.introSeen(localStorage.getItem(INTRO_KEY)); } catch { /* Speicher nicht verfügbar */ }
+  const viaLink = new Set(hashActive ? [state.mode] : []);
   const showIntro = (on) => { $('intro').hidden = !on; $('help-open').setAttribute('aria-expanded', String(on)); };
+  const closeIntro = () => {
+    showIntro(false);
+    seen.add(state.mode);
+    try { localStorage.setItem(INTRO_KEY, [...seen].join(',')); } catch { /* ignorieren */ }
+  };
   let introMode = hashActive ? state.mode : null;
   introSync = () => {
     $('steps-pg').hidden = state.mode !== 'pg';
     $('steps-poly').hidden = state.mode !== 'poly';
+    $('intro-quelle-pg').hidden = state.mode !== 'pg';
     $('intro-quelle').hidden = state.mode !== 'poly';
     if (state.mode === introMode) return;
     introMode = state.mode;
-    showIntro(!seen.has(state.mode));
+    showIntro(!seen.has(state.mode) && !viaLink.has(state.mode));
     for (const li of document.querySelectorAll('#intro li.done')) li.classList.remove('done');
   };
-  $('intro-close').addEventListener('click', () => {
-    showIntro(false);
-    seen.add(state.mode);
-    try { localStorage.setItem(INTRO_KEY, [...seen].join(',')); } catch { /* ignorieren */ }
-  });
+  $('intro-close').addEventListener('click', closeIntro);
   $('help-open').addEventListener('click', () => {
-    const on = $('intro').hidden;
-    showIntro(on);
-    if (on) { $('intro').closest('.side').scrollTop = 0; $('intro').scrollIntoView({ block: 'nearest' }); }
+    if (!$('intro').hidden) { closeIntro(); return; }
+    showIntro(true);
+    $('intro').closest('.side').scrollTop = 0; $('intro').scrollIntoView({ block: 'nearest' });
   });
   const isPhone = () => window.matchMedia('(max-width: 719px)').matches;
   const afterRender = (fn) => requestAnimationFrame(() => requestAnimationFrame(fn));
@@ -1524,12 +1527,13 @@ function init() {
     state.pg.showElements = true; $('pg-elements').checked = true;
     state.pg.showObject = true; $('pg-object').checked = true;
     state.pg.showPoles = true; $('pg-poles').checked = true;
-    if (state.mode !== 'pg') setMode('pg');
+    state.pg.tool = null; // „Ausgangspol ziehen“ geht nur ohne Werkzeug (z. B. „Winkel“)
+    if (state.mode !== 'pg') setMode('pg'); else syncToolBtns();
   };
   const generalPole = () => { state.pg.theta = DEFAULTS.pg.theta; state.pg.phi = DEFAULTS.pg.phi; };
   const STEPS = {
     p1: () => { choose4mm(); generalPole(); syncSliders(); render(); if (isPhone()) setFig('stereo'); },
-    p2: () => { choose4mm(); state.pg.phi = 0; syncSliders(); render(); if (isPhone()) setFig('stereo'); },
+    p2: () => { choose4mm(); generalPole(); state.pg.phi = 0; syncSliders(); render(); if (isPhone()) setFig('stereo'); },
     p3: () => { choose4mm(); generalPole(); state.pg.colorful = true; $('pg-colorful').checked = true; syncSliders(); render(); if (isPhone()) setFig('stereo'); },
     p4: () => { choose4mm(); render(); afterRender(() => selectView('d0')); if (isPhone()) setFig('3d'); },
     1: () => { loadGalena(); selectView('oblique'); if (isPhone()) setFig('3d'); },

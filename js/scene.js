@@ -18,6 +18,12 @@ const deg = Math.PI / 180;
 
 // ------------------------------------------------------------------ Zustand
 /** Startzustand der App (auch Grundlage jeder Link-Adresse). */
+/**
+ * Gesehene Erste Schritte aus dem gespeicherten Wert von `stereo-intro`: Modi, durch Komma getrennt.
+ * Bis v1.12.1 hiess „zu“: die damals einzigen Ersten Schritte (Galenit, Modus „Kristallformen“) sind gesehen.
+ */
+export const introSeen = (value) => new Set(String(value ?? '').split(',').filter(Boolean).map((m) => (m === 'zu' ? 'poly' : m)));
+
 export function createState() {
   return {
     mode: 'pg',

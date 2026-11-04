@@ -8,7 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Hinzugefügt
 
-- **README:** alle Schlüssel der Link-Adressen als Tabelle (Abschnitt „Links auf Ansichten“), Hinweis auf die App-Familie, Abschnitt „Rückmeldungen“.
+- **README:** alle Schlüssel der Link-Adressen als Tabelle (Abschnitt „Links auf Ansichten“), Hinweis auf die App-Familie, Abschnitte „Entstehung“ (mit Hilfe von Claude Code, fachliche Freigabe durch den Autor) und „Rückmeldungen“.
 - **`SECURITY.md`** und Vorlagen für Issues (Fehler, fachlicher Hinweis zu Skript oder Quiz, Vorschlag), wie in allen Repositories der Familie.
 - **Test:** Links bis v1.0.0 (`phi=` und `rho=` über 90°) werden umgerechnet.
 

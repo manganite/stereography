@@ -220,6 +220,10 @@ Der Tag startet zwei Workflows: `release.yml` legt das GitHub-Release mit den No
 
 Die Quelle jedes Beispielkristalls steht in der App und in `js/examples.js`.
 
+## Entstehung
+
+Fachautor ist Thomas Lottermoser (ETH Zürich). Code, Skript und Quiz sind mit Hilfe von [Claude Code](https://claude.com/claude-code), einem KI-Werkzeug von Anthropic, entstanden. Fachliche Aussagen stützen sich auf die genannten Quellen und sind, wo möglich, in Tests nachgerechnet. Skript und Quiz gibt der Autor fachlich frei; Quizfragen erscheinen erst nach dieser Freigabe.
+
 ## Rückmeldungen
 
 Fehler, fachliche Hinweise zu Skript und Quiz und Vorschläge bitte als [Issue](https://github.com/manganite/stereography/issues/new/choose). Sicherheitslücken nicht öffentlich melden, sondern wie in [SECURITY.md](SECURITY.md) beschrieben.

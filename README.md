@@ -26,7 +26,7 @@ Teil einer Familie von Lern-Apps mit gemeinsamer Grundlage: [crystallography-com
 - **Winkel im Punktgruppenmodus:** Mit dem Werkzeug „Winkel“ zwei Pole der allgemeinen Lage antippen; die Infobox nennt den Winkel und die Symmetrieoperation, die die beiden Pole ineinander überführt.
 - **Tracht und Habitus** (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2): Die Infobox nennt die auftretenden Formen und den Habitus-Grundtyp (isometrisch, planar oder taflig, prismatisch oder nadelig), bestimmt aus den Hauptausdehnungen L₁ ≥ L₂ ≥ L₃ des dargestellten Kristalls (zweite Momente des Körpers): isometrisch, wenn L₃/L₁ ≥ 2/3, sonst prismatisch oder planar.
 - **Beispielkristalle:** Kombinationen mehrerer Formen derselben Punktgruppe aus Lehrbüchern (Galenit, Pyrit, zwei tetragonale Dipyramiden, Rutil, ein rhombisch-pyramidaler Kristall, Topas, Gips, ein triklin-pinakoidaler Kristall, Magnesium, Links- und Rechtsquarz, Turmalin), mit Quelle. Jede Form hat eine eigene Farbe; die Infobox listet die Tracht mit Flächenzahl und Eigensymmetrie. Gitter und Abstände der Formen lassen sich unter „Gitter und Gestalt“ ändern; die Abstände sind nach den Abbildungen gewählt, nicht gemessen.
-- **Links auf Ansichten:** Der Zustand steht lesbar in der Adresse; „Link kopieren“ kopiert sie, etwa für Folien. Ein Link hat Vorrang vor dem gespeicherten Zustand. Ein Link mit `blick=` öffnet auf dem Telefon die 3D-Tafel. Alle Schlüssel unter [Links auf Ansichten](#links-auf-ansichten).
+- **Links auf Ansichten:** Der Zustand steht lesbar in der Adresse; „Link kopieren“ kopiert sie, etwa für Folien. Ein Link hat Vorrang vor dem gespeicherten Zustand. Ein Link mit `blick=` öffnet auf dem Telefon die 3D-Tafel. Alle Schlüssel unter [Link-Adressen](#link-adressen).
 - **Verzerrung in zwei Stufen:** Standardmässig sind nur die Gitterparameter frei, die das Kristallsystem zulässt; die Symmetrie bleibt erhalten. Mit „Symmetrie brechen“ sind alle Parameter frei; die App bestimmt dann die verbleibende Punktgruppe und zeigt, in welche Formen die gewählte Form zerfällt (farbig).
 - **Streckung entlang einer Blickrichtung:** Kristall und Gitter entlang einer Blickrichtung des Systems strecken oder stauchen, z. B. den Würfel entlang [111] zum Rhomboeder (m3̄m → 3̄m). Bei trigonaler Restgruppe eines kubischen Kristalls nennt die Infobox die hexagonalen Achsen und die Formen in hexagonalen Indizes.
 - **Blickrichtungen:** Die Symmetrieelemente werden den Positionen des vollen Hermann-Mauguin-Symbols zugeordnet (Klassen äquivalenter Richtungen, z. B. in m3̄m ⟨100⟩, ⟨111⟩, ⟨110⟩) und auf Wunsch in deren Farbe gezeichnet, im Stereogramm, in der 3D-Ansicht, im vollen Symbol und in der nach Blickrichtungen gegliederten Liste der Infobox. In der 3D-Ansicht lassen sich einzelne Blickrichtungen ausblenden. Ohne Farben entspricht das Stereogramm der schwarzen ITA-Darstellung.
@@ -69,7 +69,7 @@ Die App ist eine statische Webseite ohne Build-Schritt und ohne Abhängigkeiten.
 
 Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Module der App nicht von `file://`-Adressen.
 
-## Links auf Ansichten
+## Link-Adressen
 
 Der Zustand steht lesbar in der Adresse, z. B. `#m=pg&g=4/mmm&rho=40&az=30`. Ausser `m` und `g` bzw. `sys` steht dort nur, was vom Startzustand abweicht; Schalter mit `1` (ein) und `0` (aus). Die Link-Adressen sind eine Schnittstelle (Skript, Quiz, andere Apps der Familie) und bleiben stabil; alte Links werden umgerechnet (Tests `tests/scene.test.mjs`, `tests/stretch.test.mjs`, `tests/views.test.mjs`).
 

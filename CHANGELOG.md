@@ -11,6 +11,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 - **README:** alle Schlüssel der Link-Adressen als Tabelle (Abschnitt „Links auf Ansichten“), Hinweis auf die App-Familie, Abschnitte „Entstehung“ (mit Hilfe von Claude Code, fachliche Freigabe durch den Autor) und „Rückmeldungen“.
 - **`SECURITY.md`** und Vorlagen für Issues (Fehler, fachlicher Hinweis zu Skript oder Quiz, Vorschlag), wie in allen Repositories der Familie.
 - **Test:** Links bis v1.0.0 (`phi=` und `rho=` über 90°) werden umgerechnet.
+- **CodeQL** als Workflow (erweiterte Einrichtung nach `crystallography-common/vorlagen`): ohne Tests, die Kopie der gemeinsamen Dateien und three.js.
 
 ### Geändert
 
@@ -18,6 +19,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Behoben
 
+- **Indexmuster in der Infobox:** Spitze Klammern in der Bedingung (z. B. „hhl (h<l)“) wurden nur beim ersten Vorkommen maskiert; jetzt alle (Befund von CodeQL; die heutigen Formen enthalten je höchstens eine, die Anzeige ändert sich nicht).
 - **Link-Adresse:** Ein Link in den Modus „Kristallformen“ mit einem anderen System als kubisch und ohne `lage` wurde in Skript und Quiz mit `lage=001` zurückgeschrieben, einer Lage, die es nur im kubischen System gibt. Eine Lage, die es im System nicht gibt, gilt jetzt als die erste des Systems und erscheint nicht im Link (Issue #67). Die Darstellung war nicht betroffen.
 
 ## [1.12.0] - 2026-10-31

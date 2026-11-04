@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Sicherheitslücke melden
+    url: https://github.com/manganite/stereography/security/advisories/new
+    about: Bitte nicht öffentlich, sondern als private Meldung (siehe SECURITY.md).
+  - name: Gemeinsame Grundlage der App-Familie
+    url: https://github.com/manganite/crystallography-common/issues
+    about: Hinweise, die alle Apps gleich betreffen (Gestaltung, Bedienung, Aufbau von Skript und Quiz).

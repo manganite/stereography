@@ -7,6 +7,8 @@
 
 Interaktive Lern-App für eine Einführung in die Kristallographie, entstanden aus der Vorlesung Kristallographie an der ETH Zürich: Stereogramme der 32 kristallographischen Punktgruppen und ihrer Kristallformen, gekoppelt mit einer 3D-Konstruktion, dazu ein Skript und ein Übungsquiz. Für Laptop, iPad und Telefon; läuft im Browser, als Web-App auf dem Homescreen und offline.
 
+Teil einer Familie von Lern-Apps mit gemeinsamer Grundlage: [crystallography-common](https://github.com/manganite/crystallography-common).
+
 ### [Zur App: manganite.github.io/stereography](https://manganite.github.io/stereography/)
 
 ![Stereogramm und 3D-Konstruktion eines Galenit-Kristalls (Würfel, Oktaeder, Rhombendodekaeder) mit Symmetriegerüst m3̄m](docs/screenshot.png)
@@ -24,7 +26,7 @@ Interaktive Lern-App für eine Einführung in die Kristallographie, entstanden a
 - **Winkel im Punktgruppenmodus:** Mit dem Werkzeug „Winkel“ zwei Pole der allgemeinen Lage antippen; die Infobox nennt den Winkel und die Symmetrieoperation, die die beiden Pole ineinander überführt.
 - **Tracht und Habitus** (Begriffe nach Borchardt-Ott & Sowa, Abschn. 5.2): Die Infobox nennt die auftretenden Formen und den Habitus-Grundtyp (isometrisch, planar oder taflig, prismatisch oder nadelig), bestimmt aus den Hauptausdehnungen L₁ ≥ L₂ ≥ L₃ des dargestellten Kristalls (zweite Momente des Körpers): isometrisch, wenn L₃/L₁ ≥ 2/3, sonst prismatisch oder planar.
 - **Beispielkristalle:** Kombinationen mehrerer Formen derselben Punktgruppe aus Lehrbüchern (Galenit, Pyrit, zwei tetragonale Dipyramiden, Rutil, ein rhombisch-pyramidaler Kristall, Topas, Gips, ein triklin-pinakoidaler Kristall, Magnesium, Links- und Rechtsquarz, Turmalin), mit Quelle. Jede Form hat eine eigene Farbe; die Infobox listet die Tracht mit Flächenzahl und Eigensymmetrie. Gitter und Abstände der Formen lassen sich unter „Gitter und Gestalt“ ändern; die Abstände sind nach den Abbildungen gewählt, nicht gemessen.
-- **Links auf Ansichten:** Der Zustand steht lesbar in der Adresse (z. B. `#m=pg&g=4/mmm&rho=40&az=30`); „Link kopieren“ kopiert sie, etwa für Folien. Ein Link hat Vorrang vor dem gespeicherten Zustand. Ein Blick der 3D-Konstruktion entlang einer Blickrichtung steht als `blick=1`, `2` oder `3` im Link (z. B. `#m=form&sys=tetragonal&f=4mm:a1&muster=1&blick=1&kugel=0&ns=0&ebene=0&strahlen=0&normalen=0&achsen=1&pole=0`: das Pedion in 4mm mit Flächenmuster von oben, ohne Hilfslinien); auf dem Telefon öffnet ein solcher Link die 3D-Tafel.
+- **Links auf Ansichten:** Der Zustand steht lesbar in der Adresse; „Link kopieren“ kopiert sie, etwa für Folien. Ein Link hat Vorrang vor dem gespeicherten Zustand. Ein Link mit `blick=` öffnet auf dem Telefon die 3D-Tafel. Alle Schlüssel unter [Links auf Ansichten](#links-auf-ansichten).
 - **Verzerrung in zwei Stufen:** Standardmässig sind nur die Gitterparameter frei, die das Kristallsystem zulässt; die Symmetrie bleibt erhalten. Mit „Symmetrie brechen“ sind alle Parameter frei; die App bestimmt dann die verbleibende Punktgruppe und zeigt, in welche Formen die gewählte Form zerfällt (farbig).
 - **Streckung entlang einer Blickrichtung:** Kristall und Gitter entlang einer Blickrichtung des Systems strecken oder stauchen, z. B. den Würfel entlang [111] zum Rhomboeder (m3̄m → 3̄m). Bei trigonaler Restgruppe eines kubischen Kristalls nennt die Infobox die hexagonalen Achsen und die Formen in hexagonalen Indizes.
 - **Blickrichtungen:** Die Symmetrieelemente werden den Positionen des vollen Hermann-Mauguin-Symbols zugeordnet (Klassen äquivalenter Richtungen, z. B. in m3̄m ⟨100⟩, ⟨111⟩, ⟨110⟩) und auf Wunsch in deren Farbe gezeichnet, im Stereogramm, in der 3D-Ansicht, im vollen Symbol und in der nach Blickrichtungen gegliederten Liste der Infobox. In der 3D-Ansicht lassen sich einzelne Blickrichtungen ausblenden. Ohne Farben entspricht das Stereogramm der schwarzen ITA-Darstellung.
@@ -66,6 +68,71 @@ Die App ist eine statische Webseite ohne Build-Schritt und ohne Abhängigkeiten.
 3. Im Browser **http://localhost:8000** öffnen.
 
 Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Module der App nicht von `file://`-Adressen.
+
+## Links auf Ansichten
+
+Der Zustand steht lesbar in der Adresse, z. B. `#m=pg&g=4/mmm&rho=40&az=30`. Ausser `m` und `g` bzw. `sys` steht dort nur, was vom Startzustand abweicht; Schalter mit `1` (ein) und `0` (aus). Die Link-Adressen sind eine Schnittstelle (Skript, Quiz, andere Apps der Familie) und bleiben stabil; alte Links werden umgerechnet (Tests `tests/scene.test.mjs`, `tests/stretch.test.mjs`, `tests/views.test.mjs`).
+
+Beispiel: `#m=form&sys=tetragonal&f=4mm:a1&muster=1&blick=1&kugel=0&ns=0&ebene=0&strahlen=0&normalen=0&achsen=1&pole=0` zeigt das Pedion in 4mm mit Flächenmuster von oben, ohne Hilfslinien.
+
+| Schlüssel | Bedeutung | Werte (Startwert fett) |
+|---|---|---|
+| `m` | Modus | **`pg`** (Punktgruppen), `form` (Kristallformen) |
+
+Modus „Punktgruppen“ (`m=pg`):
+
+| Schlüssel | Bedeutung | Werte (Startwert fett) |
+|---|---|---|
+| `g` | Punktgruppe | Symbol mit `-` für den Querstrich, Aufstellungen eigens: `1`, `-1`, `2b`, `2c`, `mb`, `mc`, `2/mb`, `2/mc`, `222`, **`mm2`**, `mmm`, `4`, `-4`, `4/m`, `422`, `4mm`, `-42m`, `-4m2`, `4/mmm`, `3`, `-3`, `321`, `312`, `3m1`, `31m`, `-3m1`, `-31m`, `6`, `-6`, `6/m`, `622`, `6mm`, `-6m2`, `-62m`, `6/mmm`, `23`, `m-3`, `432`, `-43m`, `m-3m` |
+| `rho` | Poldistanz ρ des Ausgangspols in Grad, untere Halbkugel negativ | −90 … 90, **59**; Werte über 90 (vom Nordpol gezählt, Links bis v1.0.0) gelten weiter |
+| `az` | Azimut φ des Ausgangspols in Grad, ab → im Uhrzeigersinn | **75.5** |
+| `phi` | Azimut in der Zählung bis v1.0.0 (ab ↓ im Gegenuhrzeigersinn); wird nur gelesen und als `az` umgerechnet | |
+| `el` | Symmetriegerüst | `0`, **`1`** |
+| `obj` | Objekt in allgemeiner Lage | `0`, **`1`** |
+| `pole` | Flächenpole | `0`, **`1`** |
+| `hand` | Pole nach Händigkeit färben | **`0`**, `1` |
+| `aus` | in 3D ausgeblendete Blickrichtungen | z. B. `1,3`; **leer** |
+| `w` | Werkzeug | `winkel`; **leer** |
+
+Modus „Kristallformen“ (`m=form`):
+
+| Schlüssel | Bedeutung | Werte (Startwert fett) |
+|---|---|---|
+| `sys` | Kristallsystem | `triklin`, `monoklin`, `orthorhombisch`, `tetragonal`, `trigonal`, `hexagonal`, **`kubisch`** |
+| `f` | Form | `<Punktgruppe>:<Kennung>` aus `js/forms.js`, z. B. `m-3m:b35`; Startwert je System in `DEFAULT_ENTRY` (`js/scene.js`). `-43m:c38` = {112} und `-43m:c39` = {221} wie in v1.0.0. Ohne `muster=1` stehen je Punktgruppe nur die allgemeine Form und die Formen mit dieser Eigensymmetrie zur Wahl; eine andere Form (z. B. das Pedion `4mm:a1`) ersetzt die App dann durch dieselbe Form dort, wo sie ihre Eigensymmetrie hat, sonst durch den Startwert. Links auf solche Formen brauchen `muster=1`. |
+| `bsp` | Beispielkristall (statt `f`) | `galenit`, `pyrit`, `dipyramiden`, `rutil`, `mm2`, `topas`, `gips`, `triklin`, `magnesium`, `quarz`, `rechtsquarz`, `turmalin` |
+| `ab` | Abstände der Formen eines Beispiels als Faktoren, je Form einer | 0.5–2, z. B. `1,1.2` |
+| `lage` | Projektionsrichtung | kubisch **`001`**, `111`, `110`; sonst **`c`**, `a`, `b` |
+| `ba`, `ca` | Gitter: *b*/*a*, *c*/*a* | 0.25–3; Startwerte je System |
+| `al`, `be`, `ga` | Gitter: α, β, γ in Grad | 60–150; Startwerte je System |
+| `br` | Symmetrie brechen; ohne `str` alle Gitterparameter frei | **`0`**, `1` |
+| `str` | Streckung `<Richtung>,<Faktor>` (schaltet „Symmetrie brechen“ ein, auch ohne `br`) | Richtung kubisch `001`, `111`, `110`; tetragonal `100`, `110`; trigonal und hexagonal `100`, `210`; Faktor 0.5–2 |
+| `offen` | offene Form zeigen (Ergänzungsformen ausblenden) | **`0`**, `1` |
+| `pole` | Flächenpole | `0`, **`1`** |
+| `idx` | Indizes (hkl) | `0`, **`1`** |
+| `unten` | Pole der unteren Halbkugel | `0`, **`1`** |
+| `hkil` | vier Indizes (hkil) bei hexagonalen Achsen | **`0`**, `1` |
+| `geruest` | Symmetriegerüst der Punktgruppe unter den Polen | **`0`**, `1` |
+| `muster` | Flächensymmetrie zeigen (Muster, alle Formen) | **`0`**, `1` |
+| `abstand` | Abstand der grauen Ergänzungsformen | 0.3–3, **1** |
+| `gr` | Grösse des Kristalls in 3D | 0.3–1.2, **0.75** |
+| `w` | Werkzeug | `zone`, `winkel`; **leer** |
+| `zonen` | gewählte Zonen (nur mit `w=zone`) | `u,v,w;…`, z. B. `0,0,1;1,1,1` |
+
+Darstellung (beide Modi):
+
+| Schlüssel | Bedeutung | Werte (Startwert fett) |
+|---|---|---|
+| `farbe` | Symmetrieelemente nach Blickrichtung färben | `0`, **`1`** |
+| `wulff` | Wulffsches Netz | **`0`**, `1` |
+| `netz` | Drehung des Wulffschen Netzes in Grad | 0–180, **0** |
+| `achsen` | Kristallachsen | **`0`**, `1` |
+| `kugel` | Umkugel | `0`, **`1`** |
+| `ns` | Nord- und Südpol, Äquator der Umkugel | `0`, **`1`** |
+| `ebene` | Stereogramm in der Äquatorebene | `0`, **`1`** |
+| `strahlen` | Projektionsstrahlen | `0`, **`1`** |
+| `normalen` | Flächennormalen | `0`, **`1`** |
+| `blick` | Blick der 3D-Konstruktion entlang der 1., 2. oder 3. Blickrichtung des Hermann-Mauguin-Symbols | `1`, `2`, `3`; **leer** (freie Ansicht) |
 
 ## Konventionen
 
@@ -127,15 +194,21 @@ node tools/common/sync.mjs ../crystallography-common
 node --test tests/*.test.mjs
 ```
 
-Geprüft werden die Gruppenordnungen aller 40 Punktgruppen-Einträge, die Zuordnung der Symmetrieelemente zu den Blickrichtungen, die Flächenzahl aller 134 Formen gegen ITA, geschlossene Polyeder (Euler-Charakteristik 2), die Beispielkristalle, Lagen und Streckungen, die Abbildungen des Skripts und die Kennzeichnung der Vertiefungen, die Quizfragen (Pflichtfelder, Lernziel wörtlich im Skript, nachgerechnete Antworten, verschiedene Antwortbilder, Höchstanteile beim Ziehen, Moodle-Export) sowie die Release-Konsistenz (Version, Changelog, Offline-Liste) und die Kopie der gemeinsamen Dateien. Dieselben Tests laufen bei jedem Pull Request in GitHub Actions.
+Geprüft werden die Gruppenordnungen aller 40 Punktgruppen-Einträge, die Zuordnung der Symmetrieelemente zu den Blickrichtungen, die Flächenzahl aller 134 Formen gegen ITA, geschlossene Polyeder (Euler-Charakteristik 2), die Beispielkristalle, Lagen und Streckungen, die Abbildungen des Skripts und die Kennzeichnung der Vertiefungen, die Quizfragen (Pflichtfelder, Lernziel wörtlich im Skript, nachgerechnete Antworten, verschiedene Antwortbilder, Höchstanteile beim Ziehen, Moodle-Export) die Link-Adressen (hin und zurück, alte Links) sowie die Release-Konsistenz (Version, Changelog, Offline-Liste) und die Kopie der gemeinsamen Dateien. Dieselben Tests laufen bei jedem Pull Request in GitHub Actions.
 
 ### Versionen und Releases
 
-Die App folgt [Semantic Versioning](https://semver.org/lang/de/); Änderungen stehen im [CHANGELOG](CHANGELOG.md). Änderungen gehen über einen Branch und einen Pull Request nach `main`. Die Live-Seite wird nur bei einem Release aktualisiert:
+Die App folgt [Semantic Versioning](https://semver.org/lang/de/); Änderungen stehen im [CHANGELOG](CHANGELOG.md). Jede Änderung geht über einen Branch und einen Pull Request nach `main` (`main` ist geschützt; die CI muss grün sein). Die Live-Seite ändert sich nur mit einem Release:
 
-1. Version in `js/version.js`, `sw.js` und `CITATION.cff` (mit `date-released`) erhöhen (neue Funktion: zweite Stelle, Korrektur: dritte Stelle).
-2. Einträge unter `## [Unreleased]` in `CHANGELOG.md` unter eine neue Überschrift `## [x.y.z] - JJJJ-MM-TT` verschieben, Links am Ende ergänzen.
-3. Auf `main` taggen und pushen: `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z`.
+1. Release-PR: Version in `js/version.js`, `sw.js` und `CITATION.cff` (mit `date-released`) erhöhen (neue Funktion: zweite Stelle, Korrektur: dritte Stelle); in `CHANGELOG.md` die Einträge unter `## [Unreleased]` unter eine neue Überschrift `## [x.y.z] - JJJJ-MM-TT` verschieben und die Links am Ende ergänzen.
+2. Nach dem Merge den Tag auf den neuesten Stand von `main` setzen:
+   ```bash
+   git fetch && git log --oneline -1 origin/main     # ist das der Release-PR?
+   git -c user.email=6277652+manganite@users.noreply.github.com tag -a vX.Y.Z -m "vX.Y.Z" origin/main
+   git push origin vX.Y.Z
+   ```
+
+   Die Noreply-Adresse ist nötig, weil GitHub sonst einen Tag mit privater E-Mail-Adresse ablehnt (GH007).
 
 Der Tag startet zwei Workflows: `release.yml` legt das GitHub-Release mit den Notizen aus dem Changelog an, `deploy.yml` prüft und veröffentlicht den Stand auf GitHub Pages. Beide erzeugen dabei die PDF-Fassung des Skripts (`tools/skript-pdf.mjs`): auf der Seite als `skript.pdf`, im Release als Anhang.
 
@@ -146,6 +219,14 @@ Der Tag startet zwei Workflows: `release.yml` legt das GitHub-Release mit den No
 - F. Hoffmann: *Faszination Kristalle und Symmetrie. Einführung in die Kristallographie*, Springer Fachmedien, Wiesbaden 2016, [doi:10.1007/978-3-658-09581-9](https://doi.org/10.1007/978-3-658-09581-9): Beispielkristalle.
 
 Die Quelle jedes Beispielkristalls steht in der App und in `js/examples.js`.
+
+## Entstehung
+
+Fachautor ist Thomas Lottermoser (ETH Zürich). Code, Skript und Quiz sind mit Hilfe von [Claude Code](https://claude.com/claude-code), einem KI-Werkzeug von Anthropic, entstanden. Fachliche Aussagen stützen sich auf die genannten Quellen und sind, wo möglich, in Tests nachgerechnet. Skript und Quiz gibt der Autor fachlich frei; Quizfragen erscheinen erst nach dieser Freigabe.
+
+## Rückmeldungen
+
+Fehler, fachliche Hinweise zu Skript und Quiz und Vorschläge bitte als [Issue](https://github.com/manganite/stereography/issues/new/choose). Sicherheitslücken nicht öffentlich melden, sondern wie in [SECURITY.md](SECURITY.md) beschrieben.
 
 ## Zitieren
 

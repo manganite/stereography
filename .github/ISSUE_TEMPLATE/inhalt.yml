@@ -1,0 +1,23 @@
+name: Fachlicher Hinweis zu Skript oder Quiz
+description: Eine Aussage, Abbildung, Frage oder Antwort scheint falsch oder missverständlich.
+labels: [inhalt]
+body:
+  - type: input
+    id: wo
+    attributes:
+      label: Wo?
+      description: Kapitel und Abschnitt des Skripts, Text der Quizfrage oder Link auf die Ansicht.
+    validations:
+      required: true
+  - type: textarea
+    id: hinweis
+    attributes:
+      label: Hinweis
+      description: Was ist falsch oder unklar, und wie wäre es richtig?
+    validations:
+      required: true
+  - type: input
+    id: quelle
+    attributes:
+      label: Quelle
+      description: Falls vorhanden, z. B. Buch mit Seite oder International Tables mit Tabelle.

@@ -6,6 +6,16 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **README:** alle Schlüssel der Link-Adressen als Tabelle (Abschnitt „Links auf Ansichten“), Hinweis auf die App-Familie, Abschnitte „Entstehung“ (mit Hilfe von Claude Code, fachliche Freigabe durch den Autor) und „Rückmeldungen“.
+- **`SECURITY.md`** und Vorlagen für Issues (Fehler, fachlicher Hinweis zu Skript oder Quiz, Vorschlag), wie in allen Repositories der Familie.
+- **Test:** Links bis v1.0.0 (`phi=` und `rho=` über 90°) werden umgerechnet.
+
+### Geändert
+
+- **README:** Release-Ablauf über einen Release-PR, Tag auf `origin/main`.
+
 ### Behoben
 
 - **Link-Adresse:** Ein Link in den Modus „Kristallformen“ mit einem anderen System als kubisch und ohne `lage` wurde in Skript und Quiz mit `lage=001` zurückgeschrieben, einer Lage, die es nur im kubischen System gibt. Eine Lage, die es im System nicht gibt, gilt jetzt als die erste des Systems und erscheint nicht im Link (Issue #67). Die Darstellung war nicht betroffen.

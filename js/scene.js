@@ -13,7 +13,7 @@ import { normalize, mulVec } from './linalg.js';
 import { exampleById } from './examples.js';
 import { siteOf, distinctPoles } from './sitesym.js';
 
-/** @import { Vec3, Richtung, Normale, Grad } from '../lib/common/js/typen.js' */
+/** @import { Vec3, Richtung, Grad } from '../lib/common/js/typen.js' */
 /** @import { Teil } from '../lib/common/js/format.js' */
 /** @import { Punktgruppe, Achse } from './pointgroups.js' */
 /** @import { Gitterparameter, Kristall, Kristallflaeche, Zone, Streckrichtung } from './polyhedra.js' */
@@ -219,10 +219,7 @@ export const exFactors = (state, ex) => {
 export const exForms = (state, ex) => {
   const fs = exFactors(state, ex);
   // jede Form hat t oder r
-  return ex.forms.map((f, i) => {
-    const hkl = /** @type {Normale} */ (f.hkl);
-    return f.t != null ? { hkl, t: f.t * fs[i] } : { hkl, r: /** @type {number} */ (f.r) * fs[i] };
-  });
+  return ex.forms.map(({ hkl, r, t }, i) => (t != null ? { hkl, t: t * fs[i] } : { hkl, r: /** @type {number} */ (r) * fs[i] }));
 };
 /**
  * Art des Symmetriebruchs: null (Symmetrie bleibt), 'stretch' oder 'free'. Ohne Streckrichtung im System
@@ -290,7 +287,7 @@ export const LAT_KEYS = ['ba', 'ca', 'al', 'be', 'ga'];
 export const TOOL_NAMES = { zone: 'zone', angle: 'winkel' };
 /** @type {Record<string, 'zone' | 'angle'>} */
 export const TOOL_IDS = { zone: 'zone', winkel: 'angle' };
-/** Teil des Zustands mit Schaltern (für die Listen URL_…). @typedef {Record<string, unknown>} Schalter */
+/** Teil des Zustands mit Schaltern bzw. Reglern (Listen URL_…; bindCheck, bindRange in main.js). @typedef {Record<string, unknown>} Schalter */
 
 /** Link-Adresse (Hash) eines Zustands; nur Abweichungen vom Startzustand DEFAULTS. @param {Zustand} state @param {Zustand} DEFAULTS */
 export function hashOf(state, DEFAULTS) {

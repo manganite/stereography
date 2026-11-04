@@ -7,15 +7,16 @@
 // lat: Gitterparameter (a = 1) wie in polyhedra.js; fehlende Werte vom System.
 // In note: {hkl:h,k,l} wird als Formsymbol gesetzt (drei oder vier Indizes nach Einstellung).
 
-/** @import { Vec3 } from '../lib/common/js/typen.js' */
+/** @import { Vec3, Normale } from '../lib/common/js/typen.js' */
 /** @import { Gitterparameter } from './polyhedra.js' */
 /**
  * Beispielkristall (Bedeutung der Felder oben).
- * @typedef {{ id: string, name: string, formula?: string, sys: string, pg: string, forms: { hkl: Vec3, r?: number, t?: number }[], lat?: Partial<Gitterparameter>, src: string, note?: string }} Beispiel
+ * @typedef {{ id: string, name: string, formula?: string, sys: string, pg: string, forms: { hkl: Normale, r?: number, t?: number }[], lat?: Partial<Gitterparameter>, src: string, note?: string }} Beispiel
  */
+/** Beispielkristall, wie er unten steht: hkl als Zahlentripel. @typedef {Omit<Beispiel, 'forms'> & { forms: { hkl: Vec3, r?: number, t?: number }[] }} BeispielDaten */
 
-/** @type {Beispiel[]} */
-export const EXAMPLES = [
+/** @type {BeispielDaten[]} */
+const DATEN = [
   {
     id: 'galenit', name: 'Galenit', formula: 'PbS', sys: 'kubisch', pg: 'm-3m',
     forms: [
@@ -155,6 +156,9 @@ export const EXAMPLES = [
     note: 'Hemimorph: Oben und unten treten verschiedene Formen auf, weil keine Operation von 3m die Richtung c in −c überführt (keine Spiegelebene ⊥ c, keine 2-zählige Achse ⊥ c, kein Inversionszentrum). Die 3-zählige Achse ist polar; deshalb ist Turmalin pyroelektrisch.',
   },
 ];
+
+/** Die Beispielkristalle; hkl sind Flächennormalen (Normale). @type {Beispiel[]} */
+export const EXAMPLES = DATEN.map((b) => ({ ...b, forms: b.forms.map((f) => ({ ...f, hkl: /** @type {Normale} */ (f.hkl) })) }));
 
 /** @param {string | null} id */
 export const exampleById = (id) => EXAMPLES.find((x) => x.id === id) || null;

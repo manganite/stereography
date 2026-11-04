@@ -16,6 +16,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Geändert
 
 - **Gemeinsame Grundlage** auf crystallography-common v0.4.0: Regeln für ESLint (`tools/common/eslint-basis.mjs`). Am Verhalten ändert sich nichts.
+- **Typen bereinigt** (#87), ohne Änderung am Verhalten: `Schalter` nur noch in `scene.js`; `Raumoptionen` in `bild3d.js` baut auf `BildOptionen` der Familie auf; `dirHTML` nimmt eine Richtung, die Beispielkristalle führen ihre Indizes als Flächennormalen (Umwandlung einmal in `examples.js` statt in `exForms`). Beispielkristalle und Moodle-Export vorher und nachher gleich (nachgeprüft).
 - **Befunde von ESLint behoben**, ohne Änderung am Verhalten: ungenutzte Importe und Konstanten in `main.js`, `pointgroups.js`, `polyhedra.js`, `stereogram.js` und `tests/quiz.test.mjs`; `unten` in `bild3d.js` ohne unnötigen Startwert.
 - **Erste Schritte je Modus:** Die Karte erscheint beim ersten Aufruf eines Modus, nicht für den Modus, in dem ein Link die App öffnet; Schliessen mit × oder „?“ gilt als gesehen. Die Schritte zum Galenit gehören jetzt zu „Kristallformen“; wer sie geschlossen hat, sieht nur die neuen.
 - **Gemeinsame Grundlage** auf crystallography-common v0.3.1: im Typ der Quizfragen ist `pruefung.art` freiwillig; dazu Leitfaden-Änderungen. Am Verhalten ändert sich nichts (Moodle-Export bytegleich).

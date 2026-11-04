@@ -157,8 +157,8 @@ const DATEN = [
   },
 ];
 
-/** Die Beispielkristalle; hkl sind Flächennormalen (Normale). @type {Beispiel[]} */
-export const EXAMPLES = DATEN.map((b) => ({ ...b, forms: b.forms.map((f) => ({ ...f, hkl: /** @type {Normale} */ (f.hkl) })) }));
+/** Die Beispielkristalle; hkl sind Flächennormalen (nur Typangabe, LEITFADEN Abschn. 9). */
+export const EXAMPLES = /** @type {Beispiel[]} */ (DATEN);
 
 /** @param {string | null} id */
 export const exampleById = (id) => EXAMPLES.find((x) => x.id === id) || null;

@@ -87,6 +87,10 @@ stabil halten).
 - **Offene Formen** in Bildfragen wie in der App, mit grau ergänzter Form.
 - **Prüfung und Rückmeldungen** in der gemeinsamen Fragenliste (`CLAUDE.md` von common, Abschnitt
   „Quiz“); diese App liefert ihre Fragen über `tools/quiz-quelle.mjs`.
+- **Vorschau der App** (nicht öffentlich, angelegt 4.11.2026): Artifact https://claude.ai/artifact/3zax7EQn7ngSiQtqABDevW
+  mit App, Skript, Quiz und `skript.pdf`, Dateien wie in der Liste von `sw.js`. Beim Neuveröffentlichen URL
+  angeben, geänderte Dateien in `files` aufführen; `skript.pdf` vorher mit `node tools/skript-pdf.mjs` erzeugen
+  (in `.gitignore`).
 
 ### Familie
 - **`blick=1–3` als allgemeiner Link-Parameter** (31.10.): plane-groups verlinkt damit die 10 polaren

@@ -84,6 +84,20 @@ test('Link-Adresse: eine Lage, die es im System nicht gibt, gilt als die erste u
   assert.doesNotMatch(hashOf(lies('#m=form&sys=kubisch'), D), /lage=/);
 });
 
+test('Link-Adresse: unbekanntes Werkzeug, auch ein Schlüssel aus dem Prototyp, gilt als keins (Issue #86)', () => {
+  const D = createState();
+  const lies = (/** @type {string} */ h) => { const st = createState(); assert.ok(applyHashTo(st, h, D), h); return st; };
+  for (const w of ['toString', 'constructor', '__proto__', 'hasOwnProperty', 'unbekannt', '']) {
+    const st = lies(`#m=form&sys=kubisch&w=${w}`);
+    assert.equal(st.poly.tool, null, `w=${w}`);
+    assert.doesNotMatch(hashOf(st, D), /w=/, `w=${w}`);
+  }
+  // gültige Werkzeuge bleiben erhalten
+  assert.equal(lies('#m=form&sys=kubisch&w=zone').poly.tool, 'zone');
+  assert.equal(lies('#m=form&sys=kubisch&w=winkel').poly.tool, 'angle');
+  assert.match(hashOf(lies('#m=form&sys=kubisch&w=winkel'), D), /w=winkel(&|$)/);
+});
+
 test('Erste Schritte: gespeicherte Modi lesen, alter Wert „zu“ gilt als „poly“', () => {
   assert.deepEqual([...introSeen(null)], []);
   assert.deepEqual([...introSeen('')], []);

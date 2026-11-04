@@ -24,38 +24,79 @@ import { project, C as SC, R as SR } from '../js/stereogram.js';
 import { latticeFromParams, LATTICE_DEFAULTS, orientationPresets, orientationMatrix, identifyGroup } from '../js/polyhedra.js';
 import { inverse, transpose, mulVec, mul, matEq, neg, I3, vecEq } from '../js/linalg.js';
 
+/** @import { Vec3, Mat3, Normale, Richtung } from '../lib/common/js/typen.js' */
+/** @import { Frage, Frageinhalt, Generator, Bildantwort } from '../lib/common/js/quiz-core.js' */
+/** @import { Palette } from '../js/scene.js' */
+/** @import { Formeintrag } from '../js/forms.js' */
+/** @import { ScenePol } from '../js/stereogram.js' */
+/** Abschnitt des Skripts (abschnitt()). @typedef {{ kapitel: number, vertiefung: boolean }} Abschnitt */
+/**
+ * Frage aus Sicht der Tests: Antworten je nach Fragetyp Text oder Bild, deshalb hier ohne festen Typ.
+ * Die Felder, die jede Frage hat (Pflichtfelder, eigener Test), hier ohne undefined.
+ * @typedef {Omit<Frageinhalt, 'antworten' | 'hinweise' | 'lernziel' | 'skript' | 'bild' | 'bildAlt' | 'app'> & { antworten: any[], hinweise: any[],
+ *   lernziel: string, skript: string, bild: string, bildAlt: string, app: string, id: string, stufe: number, kapitel: number, status: string }} Testfrage
+ */
+/**
+ * Angaben zum Nachrechnen (pruefung in quiz-bank.js), aus Sicht der Tests: Welche Felder eine Frage hat, hängt von art ab;
+ * die Tests lesen je art nur ihre Felder. Felder mit mehreren Formen (achse, gruppen, richtung) ohne festen Typ.
+ * @typedef {{ art: string, phi: number, rho: number, hkl: Normale, r: number, gegen: { phi: number, rho: number }, flaechen: Vec3[],
+ *   a: Vec3, b: Vec3, rhos: number[], achse: any, flaeche: Vec3, gehoert: boolean, achsen: Vec3[], zonen: Vec3[], faelle: any[][],
+ *   system: string, lage: string, aus: Vec3[], form: string, anzahl: number, ordnung: number, gruppe: string, allgemein: boolean,
+ *   gruppen: any, pol: Vec3, nurOrdnung: boolean, bild: string, soll: string, spiegel: string, oben: number, unten: number,
+ *   stellen: number, aufAchse: boolean, eigen: string, nicht: string[], hashes: string[], abstand: number[],
+ *   geschwindigkeit: number[], nr: number, richtung: any, symbol: string, voll: string, position: number, zu: Vec3, fs: string,
+ *   gerade: boolean, formen: string[], lagen: string[], eig: string, pfeil: boolean, teile: number[] }} Pruefung
+ */
+
 const skript = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
 const K = '#336699';
-const col = new Proxy({ form: Array(8).fill(K), dir: [K, K, K] }, { get: (o, k) => (k in o ? o[k] : K) });
+const col = /** @type {Palette} */ (/** @type {unknown} */ (new Proxy(/** @type {Record<string | symbol, unknown>} */ ({ form: Array(8).fill(K), dir: [K, K, K] }), { get: (o, k) => (k in o ? o[k] : K) })));
 /** Abbildung einer Bildangabe wie im Quiz: räumliche Zeichnung ("3d#…") oder Stereogramm. */
+/** @param {string} hash */
 const svg = (hash) => (istRaum(hash) ? raumInner(hash, col) : buildSVG(stereoForHash(hash, col).scene).inner);
+/** @param {string} h */
 const text = (h) => h.replace(/<span class="ov">([^<]*)<\/span>/g, '$1').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
 
 /** Indizes aus „[0<span class="ov">1</span>1]“ bzw. „(112)“ → [0, -1, 1]. */
+/** @param {string} h */
 function idx(h) {
   const s = h.replace(/<span class="ov">(\d)<\/span>/g, '-$1').replace(/[[\]()]/g, '');
   const m = s.match(/^-?\d(-?\d)(-?\d)$/);
   assert.ok(m, `keine Indizes: ${h}`);
   return [...s.matchAll(/-?\d/g)].map((x) => Number(x[0]));
 }
+/** @param {number[]} a @param {number[]} b @returns {Vec3} */
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+/** @param {number[]} a @param {number[]} b */
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+/** @param {number[]} a @param {number[]} b */
 const parallel = (a, b) => cross(a, b).every((x) => x === 0) && a.some((x) => x !== 0);
-const norm = (a) => { const l = Math.hypot(...a); return a.map((x) => x / l); };
+/** @param {number[]} a @returns {Vec3} */
+const norm = (a) => { const l = Math.hypot(...a); return /** @type {Vec3} */ (a.map((x) => x / l)); };
+/** @param {number[]} a @param {number[]} b */
 const winkel = (a, b) => (Math.acos(Math.max(-1, Math.min(1, dot(norm(a), norm(b))))) * 180) / Math.PI;
+/** @param {number[]} a @param {number[]} b */
 const parallelF = (a, b) => Math.abs(Math.abs(dot(norm(a), norm(b))) - 1) < 1e-9;
 /** Alle Richtungen [uvw] in einem Antworttext. */
+/** @param {string} h */
 const richtungen = (h) => [...h.replace(/<span class="ov">(\d)<\/span>/g, '-$1').matchAll(/\[(-?\d)(-?\d)(-?\d)\]/g)].map((m) => [1, 2, 3].map((k) => Number(m[k])));
-const hex = latticeToCart('hexagonal');
+/** Gitterrichtung (hexagonal) → kartesisch; im Test auch für Indizes aus Antworttexten. */
+const hex = /** @type {(u: number[]) => Vec3} */ (latticeToCart('hexagonal'));
 // Bild eines Pols unter einer Abbildung (Beschreibung wie in quiz-bank.js)
+/** @type {Record<string, (p: number[]) => number[]>} */
 const BILD = { z: ([x, y, z]) => [x, y, -z], xyz: ([x, y, z]) => [-x, -y, -z], xy: ([x, y, z]) => [-x, -y, z], y: ([x, y, z]) => [-x, y, -z] };
 const P0 = norm([0.31, 0.52, 0.79]);
+/** @param {number[]} a @param {number[]} b */
 const nah = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
 // Metrik der App (Startwerte je System): Richtung [uvw] und Flächennormale (hkl) kartesisch
+/** @param {string} sys */
 const gitter = (sys) => latticeFromParams(LATTICE_DEFAULTS[sys]);
-const richtungK = (sys, uvw) => norm(mulVec(gitter(sys), uvw));
-const normaleK = (sys, hkl) => norm(mulVec(transpose(inverse(gitter(sys))), hkl));
+/** @param {string} sys @param {number[]} uvw */
+const richtungK = (sys, uvw) => norm(mulVec(gitter(sys), /** @type {Vec3} */ (uvw)));
+/** @param {string} sys @param {number[]} hkl */
+const normaleK = (sys, hkl) => norm(mulVec(transpose(inverse(gitter(sys))), /** @type {Vec3} */ (hkl)));
 /** φ und ρ eines Einheitsvektors, abgelesen am Bildpunkt der App (φ ab rechts im Uhrzeigersinn, ρ < 0 unten). */
+/** @param {number[]} p */
 function phiRho(p) {
   const b = project(norm(p));
   const dx = (b.x - SC) / SR, dy = (b.y - SC) / SR;
@@ -63,30 +104,39 @@ function phiRho(p) {
   return { phi, rho: ((2 * Math.atan(Math.hypot(dx, dy)) * 180) / Math.PI) * (b.upper ? 1 : -1), b };
 }
 /** Einheitsvektor aus φ und ρ (Konventionen wie oben). */
+/** @param {number} phi @param {number} rho @returns {Vec3} */
 function ausPhiRho(phi, rho) {
   const t = ((rho >= 0 ? rho : 180 + rho) * Math.PI) / 180, f = (phi * Math.PI) / 180;
   return [Math.sin(t) * Math.sin(f), Math.sin(t) * Math.cos(f), Math.cos(t)];
 }
+/** @param {string} s */
 const zahl = (s) => Number(s.replace('−', '-').replace(',', '.'));
 /** „φ = 210°, ρ = −40°“ → { phi, rho } */
+/** @param {string} h */
 function phiRhoText(h) {
-  const m = text(h).match(/φ = (−?[\d,]+)°, ρ = (−?[\d,]+)°/);
+  const m = /** @type {RegExpMatchArray} */ (text(h).match(/φ = (−?[\d,]+)°, ρ = (−?[\d,]+)°/));
   assert.ok(m, `keine Winkelkoordinaten: ${text(h)}`);
   return { phi: zahl(m[1]), rho: zahl(m[2]) };
 }
 /** Alle Flächen (hkl) in einem Antworttext. */
+/** @param {string} h */
 const flaechenIn = (h) => [...h.replace(/<span class="ov">(\d)<\/span>/g, '-$1').matchAll(/\((-?\d)(-?\d)(-?\d)\)/g)].map((m) => [1, 2, 3].map((k) => Number(m[k])));
+/** @param {number[]} a @param {number[]} b */
 const gleich = (a, b) => a.every((x, i) => x === b[i]);
 /** Operationen von m3̄m, die eine Richtung als Gerade (pfeil = false) bzw. als Pfeil (pfeil = true) erhalten. */
+/** @param {number[]} richtung @param {boolean} pfeil */
 function rest(richtung, pfeil) {
   const n = norm(richtung);
-  return buildPointGroup('m-3m').ops.filter((W) => { const v = mulVec(W, n); return vecEq(v, n) || (!pfeil && vecEq(v, n.map((x) => -x))); });
+  return buildPointGroup('m-3m').ops.filter((W) => { const v = mulVec(W, n); return vecEq(v, n) || (!pfeil && vecEq(v, /** @type {Vec3} */ (n.map((x) => -x)))); });
 }
 /** Bahnen einer Menge von Einheitsvektoren unter Operationen (Grössen, sortiert). */
+/** @param {Vec3[]} punkte @param {Mat3[]} ops */
 function bahnen(punkte, ops) {
-  const rest0 = [...punkte], gr = [];
+  const rest0 = [...punkte];
+  /** @type {number[]} */
+  const gr = [];
   while (rest0.length) {
-    const p = rest0.shift();
+    const p = /** @type {Vec3} */ (rest0.shift());
     const bild = ops.map((W) => mulVec(W, p));
     const n0 = rest0.length;
     for (let i = rest0.length - 1; i >= 0; i--) if (bild.some((b) => vecEq(b, rest0[i]))) rest0.splice(i, 1);
@@ -95,10 +145,13 @@ function bahnen(punkte, ops) {
   return gr.sort((a, b) => a - b);
 }
 /** Text mit Querstrichen (‾3 statt 3), damit 3̄m und 3m verschieden bleiben. */
+/** @param {string} h */
 const tq = (h) => text(h.replace(/<span class="ov">/g, '‾'));
+/** @param {Vec3[]} vs */
 const eindeutig = (vs) => vs.filter((v, i) => vs.findIndex((w) => vecEq(v, w)) === i);
 
 /** Abschnitt des Skripts zu einem Anker: Kapitel (Nummer) und ob er (oder ein umgebender) eine Vertiefung ist. */
+/** @param {string | undefined} anker */
 function abschnitt(anker) {
   const i = skript.indexOf(`<section id="${anker}"`);
   if (i < 0) return null;
@@ -107,6 +160,7 @@ function abschnitt(anker) {
   const nrs = [...vor.matchAll(/<h2[^>]*><span class="nr">(\d+)<\/span>/g)];
   const kapitel = Number(nrs[nrs.length - 1][1]);
   // Vertiefung: offene <section … data-level="vertiefung"> vor dem Anker
+  /** @type {boolean[]} */
   const stack = [];
   for (const m of skript.slice(0, i + 1).matchAll(/<(\/?)section\b([^>]*)>/g)) {
     if (m[1]) stack.pop(); else stack.push(m[2].includes('data-level="vertiefung"'));
@@ -116,8 +170,9 @@ function abschnitt(anker) {
 }
 
 /** Lernziele und Zusammenfassungen eines Kapitels als Text. */
+/** @param {number} nr */
 function zieleUndZusammenfassung(nr) {
-  const k = KAPITEL.find((x) => x.nr === nr);
+  const k = /** @type {typeof KAPITEL[number]} */ (KAPITEL.find((x) => x.nr === nr));
   const a = skript.indexOf(`<section id="${k.anker}"`);
   const next = KAPITEL.find((x) => x.nr === nr + 1);
   const b = next ? skript.indexOf(`<section id="${next.anker}"`) : skript.length;
@@ -131,21 +186,21 @@ const BILDANTWORT = ['text-bild', 'bild-bild'];
 
 test('Fragen: Pflichtfelder, eindeutige IDs, gültige Werte', () => {
   const ids = new Set();
-  for (const q of BANK) {
+  for (const q of /** @type {Testfrage[]} */ (BANK)) {
     assert.ok(!ids.has(q.id), `doppelte ID ${q.id}`);
     ids.add(q.id);
     assert.ok([1, 2, 3].includes(q.stufe), q.id);
     assert.ok(KAPITEL.some((k) => k.nr === q.kapitel), q.id);
     assert.ok(TYPEN.includes(q.typ), q.id);
     assert.ok(['entwurf', 'geprüft'].includes(q.status), q.id);
-    for (const f of ['frage', 'lernziel', 'erklaerung', 'skript', 'quelle']) assert.ok(typeof q[f] === 'string' && q[f].length > 2, `${q.id}: ${f}`);
+    for (const f of ['frage', 'lernziel', 'erklaerung', 'skript', 'quelle']) assert.ok(typeof /** @type {Record<string, unknown>} */ (q)[f] === 'string' && /** @type {Record<string, string>} */ (/** @type {unknown} */ (q))[f].length > 2, `${q.id}: ${f}`);
     assert.ok(q.antworten.length >= 3 && q.antworten.length <= 6, q.id);
     assert.equal(q.typ.startsWith('bild-'), !!q.bild, `${q.id}: Bild genau bei „bild-text“ und „bild-bild“`);
   }
 });
 
 test('Fragen: richtige Antworten, keine doppelten Antworten, Hinweise zu jeder falschen Antwort', () => {
-  for (const q of BANK) {
+  for (const q of /** @type {Testfrage[]} */ (BANK)) {
     assert.ok(q.richtig.length >= 1 && q.richtig.every((i) => Number.isInteger(i) && i >= 0 && i < q.antworten.length), q.id);
     if (q.typ === 'mehrfach') assert.ok(q.richtig.length < q.antworten.length, `${q.id}: nicht alle Antworten richtig`);
     else assert.equal(q.richtig.length, 1, `${q.id}: genau eine richtige Antwort`);
@@ -160,11 +215,11 @@ test('Fragen: richtige Antworten, keine doppelten Antworten, Hinweise zu jeder f
 });
 
 test('Fragen: Lernziel steht wörtlich in Lernzielen oder Zusammenfassung des Kapitels', () => {
-  for (const q of BANK) {
+  for (const q of /** @type {Testfrage[]} */ (BANK)) {
     const liste = zieleUndZusammenfassung(q.kapitel);
     assert.ok(liste.includes(text(q.lernziel)), `${q.id}: „${q.lernziel}“ nicht in Kap. ${q.kapitel}`);
   }
-  const g = GERUEST.make('mmm');
+  const g = /** @type {Testfrage} */ (GERUEST.make('mmm'));
   assert.ok(zieleUndZusammenfassung(GERUEST.kapitel).includes(g.lernziel));
 });
 
@@ -174,7 +229,7 @@ test('Fragen: Skript-Anker im richtigen Kapitel; Stufe 1 und 2 verweisen nicht a
   assert.deepEqual(abschnitt('multiplizitaet'), { kapitel: 10, vertiefung: true });
   assert.deepEqual(abschnitt('zonengleichung'), { kapitel: 7, vertiefung: false });
   for (const k of KAPITEL) assert.ok(skript.includes(`<section id="${k.anker}"`), k.anker);
-  const alle = [...BANK, ...GERUEST_ALLE.map((id) => ({ id: `gen:${id}`, ...GERUEST.make(id), kapitel: GERUEST.kapitel, stufe: GERUEST_STUFE1.includes(id) ? 1 : 2 }))];
+  const alle = /** @type {Testfrage[]} */ ([...BANK, ...GERUEST_ALLE.map((id) => ({ id: `gen:${id}`, ...GERUEST.make(id), kapitel: GERUEST.kapitel, stufe: GERUEST_STUFE1.includes(id) ? 1 : 2 }))]);
   for (const q of alle) {
     const a = abschnitt(q.skript);
     assert.ok(a, `${q.id}: Anker #${q.skript} fehlt im Skript`);
@@ -184,12 +239,13 @@ test('Fragen: Skript-Anker im richtigen Kapitel; Stufe 1 und 2 verweisen nicht a
 });
 
 test('Fragen: Ansichten der App sind gültig und ergeben Stereogramme', () => {
-  for (const q of BANK) {
+  for (const q of /** @type {Testfrage[]} */ (BANK)) {
     pruefeBilder(q);
   }
 });
 
 /** Bildangaben einer Frage: gültige Links der App, ohne Ersatz der Form, Antwortbilder verschieden. */
+/** @param {Testfrage} q */
 function pruefeBilder(q) {
   const hashes = [q.app, q.bild, ...(BILDANTWORT.includes(q.typ) ? q.antworten.map((a) => a.app) : [])].filter(Boolean);
   assert.ok(!istRaum(q.app), `${q.id}: „In der App öffnen“ braucht eine Link-Adresse der App`);
@@ -209,11 +265,12 @@ function pruefeBilder(q) {
 
 test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines Pols)', () => {
   let n = 0;
-  for (const q of BANK.filter((x) => x.pruefung)) {
-    const p = q.pruefung;
+  for (const q of /** @type {Testfrage[]} */ (BANK.filter((x) => x.pruefung))) {
+    // Angaben zum Nachrechnen; ihr Aufbau hängt von p.art ab (quiz-bank.js)
+    const p = /** @type {Pruefung} */ (/** @type {unknown} */ (q.pruefung));
     n += 1;
     if (p.art === 'zonenachse') {
-      const c = cross(...p.flaechen);
+      const c = cross(.../** @type {[Vec3, Vec3]} */ (p.flaechen));
       assert.ok(parallel(c, p.achse), `${q.id}: Kreuzprodukt ${c} ∦ ${p.achse}`);
       for (const f of p.flaechen) assert.equal(dot(f, p.achse), 0, q.id);
       q.antworten.forEach((a, i) => {
@@ -287,11 +344,13 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
     } else if (p.art === 'kubischesSymbol') {
       for (const g of POINT_GROUPS) assert.equal(g.system === 'kubisch', ['3', '-3'].includes(g.full.split(' ')[1]), g.id);
     } else if (p.art === 'hexAchsen') {
+      /** @param {number[][]} ds */
       const ist120 = (ds) => ds.length === 3 && [[0, 1], [0, 2], [1, 2]].every(([i, j]) => Math.abs(winkel(hex(ds[i]), hex(ds[j])) - 120) < 1e-9);
       q.antworten.forEach((a, i) => assert.equal(ist120(richtungen(a)), q.richtig.includes(i), `${q.id}: ${text(a)}`));
     } else if (p.art === 'hexSenkrecht') {
       q.antworten.forEach((a, i) => assert.equal(Math.abs(dot(hex(idx(a)), hex(p.zu))) < 1e-9, q.richtig.includes(i), `${q.id}: ${text(a)}`));
     } else if (p.art === 'hexMitte') {
+      /** @param {number[]} d */
       const mitte = (d) => Math.abs(winkel(hex(d), hex(p.a)) - 60) < 1e-9 && Math.abs(winkel(hex(d), hex(p.b)) - 60) < 1e-9;
       q.antworten.forEach((a, i) => assert.equal(mitte(idx(a)), q.richtig.includes(i), `${q.id}: ${text(a)}`));
     } else if (p.art === 'hexPol') {
@@ -301,7 +360,7 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       const c = symmetryDirections(buildPointGroup(p.gruppe))[p.position - 1];
       assert.ok(c.dirs.some((d) => parallelF(d, hex(p.richtung))), `${q.id}: ${p.richtung} nicht in ${c.label}`);
     } else if (p.art === 'zoneUndFlaeche') {
-      const c = cross(...p.flaechen);
+      const c = cross(.../** @type {[Vec3, Vec3]} */ (p.flaechen));
       assert.ok(parallel(c, p.achse), q.id);
       const gehoert = dot(p.flaeche, c) === 0;
       q.antworten.forEach((a, i) => {
@@ -309,7 +368,7 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
         assert.equal(r, q.richtig.includes(i), `${q.id}: ${text(a)}`);
       });
     } else if (p.art === 'schnitt') {
-      const f = cross(...p.zonen);
+      const f = cross(.../** @type {[Vec3, Vec3]} */ (p.zonen));
       assert.ok(parallel(f, p.flaeche), q.id);
       q.antworten.forEach((a, i) => {
         const fl = flaechenIn(a);
@@ -363,7 +422,7 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       assert.deepEqual(q.richtig, soll, q.id);
       p.flaechen.forEach((f, i) => assert.deepEqual(flaechenIn(q.antworten[i])[0], f, q.id));
     } else if (p.art === 'grundkreis') {
-      const O = orientationMatrix(gitter('kubisch'), orientationPresets('kubisch').find((x) => x.id === p.lage));
+      const O = orientationMatrix(gitter('kubisch'), /** @type {ReturnType<typeof orientationPresets>[number]} */ (orientationPresets('kubisch').find((x) => x.id === p.lage)));
       const soll = p.flaechen.map((f, i) => (Math.abs(mulVec(O, normaleK('kubisch', f))[2]) < 1e-9 ? i : -1)).filter((i) => i >= 0);
       assert.deepEqual(q.richtig, soll, q.id);
       p.flaechen.forEach((f, i) => assert.deepEqual(flaechenIn(q.antworten[i])[0], f, q.id));
@@ -393,9 +452,9 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
     } else if (p.art === 'ordnungen' && p.nurOrdnung) {
       assert.equal(buildPointGroup(p.gruppen[0]).ops.length, p.anzahl, q.id);
     } else if (p.art === 'ordnungen') {
-      const soll = p.gruppen.map((g, i) => (buildPointGroup(g).ops.length === p.anzahl ? i : -1)).filter((i) => i >= 0);
+      const soll = p.gruppen.map((/** @type {string} */ g, /** @type {number} */ i) => (buildPointGroup(g).ops.length === p.anzahl ? i : -1)).filter((/** @type {number} */ i) => i >= 0);
       assert.deepEqual(q.richtig, soll, q.id);
-      p.gruppen.forEach((g, i) => assert.equal(text(q.antworten[i]), text(hmHTML(groupById(g).hm)), q.id));
+      p.gruppen.forEach((/** @type {string} */ g, /** @type {number} */ i) => assert.equal(text(q.antworten[i]), text(hmHTML(groupById(g).hm)), q.id));
     } else if (p.art === 'drehung') {
       // Drehung um die Achse: Der Winkel des Pols zur Achse bleibt gleich (Kleinkreis), er ist nicht 90°
       const a = norm(p.achse), v = norm(p.pol);
@@ -415,10 +474,12 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       assert.ok(text(q.antworten[q.richtig[0]]).startsWith(['', 'Eine', 'Zwei', 'Drei', 'Vier', 'Fünf', 'Sechs'][p.stellen]), q.id);
     } else if (p.art === 'zentrum') {
       // Drehung um 180° und Spiegelung senkrecht dazu ergeben die Inversion
-      const op = (g) => buildPointGroup(g).ops.find((m) => !matEq(m, I3()));
+      /** @param {string} g */
+      const op = (g) => /** @type {Mat3} */ (buildPointGroup(g).ops.find((m) => !matEq(m, I3())));
       assert.ok(matEq(mul(op(p.spiegel), op(p.achse)), neg(I3())), q.id);
     } else if (p.art === 'vollSymbol' || p.art === 'kurzSymbol') {
       const g = groupById(p.gruppe);
+      /** @param {string} h */
       const t = (h) => text(h.replace(/<span class="ov">/g, '‾')).replace(/\s+/g, '');
       const soll = (p.art === 'vollSymbol' ? g.full : g.hm).replace(/-(\d)/g, '‾$1').replace(/\s+/g, '');
       q.antworten.forEach((a, i) => assert.equal(t(a) === soll, q.richtig.includes(i), `${q.id}: ${t(a)} gegen ${soll}`));
@@ -437,6 +498,7 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       // Würfel {100} im Abstand d₁, Oktaeder {111} im Abstand d₂: Oktaederflächen gibt es, solange d₂/d₁ < √3,
       // Würfelflächen, solange d₂/d₁ > 1/√3 (Ecke (d₁, d₁, d₁) bzw. Spitze √3·d₂ auf der Achse)
       const [d1, d2] = p.abstand, [v1, v2] = p.geschwindigkeit;
+      /** @param {number} t */
       const r = (t) => (d2 + v2 * t) / (d1 + v1 * t);
       assert.ok(r(0) > 1 / Math.sqrt(3) && r(0) < Math.sqrt(3), `${q.id}: anfangs beide Formen`);
       assert.ok(v2 / v1 > Math.sqrt(3), `${q.id}: Oktaederflächen verschwinden nicht`);
@@ -450,20 +512,20 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       assert.equal(identifyGroup(st).hm, p.symbol, q.id);
       assert.equal(tq(q.antworten[q.richtig[0]]), tq(hmHTML(p.symbol)), q.id);
     } else if (p.art === 'katalog') {
-      const e = CATALOG.find((x) => x.id === p.form);
+      const e = /** @type {Formeintrag} */ (CATALOG.find((x) => x.id === p.form));
       assert.equal(e.fs, p.fs, q.id);
       const info = buildPointGroup(e.pg);
       assert.equal(info.ops.length / stabilizer(info.ops, poleOfHKL(groupById(e.pg).system, e.hkl)).length, e.mult, q.id);
       assert.equal(tq(q.antworten[q.richtig[0]]), tq(hmHTML(p.fs)), q.id);
     } else if (p.art === 'richtungszahl') {
       const ops = buildPointGroup(p.gruppe).ops, n = norm(p.richtung);
-      const st = ops.filter((W) => { const v = mulVec(W, n); return vecEq(v, n) || (p.gerade && vecEq(v, n.map((x) => -x))); });
+      const st = ops.filter((W) => { const v = mulVec(W, n); return vecEq(v, n) || (p.gerade && vecEq(v, /** @type {Vec3} */ (n.map((x) => -x)))); });
       assert.equal(ops.length / st.length, p.anzahl, q.id);
       assert.equal(tq(q.antworten[q.richtig[0]]), String(p.anzahl), q.id);
     } else if (p.art === 'wyckoff') {
-      p.formen.forEach((id, i) => { const e = CATALOG.find((x) => x.id === id); assert.equal(e.wy, p.lagen[i], `${q.id}: ${id}`); assert.equal(e.mult, p.anzahl, q.id); });
+      p.formen.forEach((id, i) => { const e = /** @type {Formeintrag} */ (CATALOG.find((x) => x.id === id)); assert.equal(e.wy, p.lagen[i], `${q.id}: ${id}`); assert.equal(e.mult, p.anzahl, q.id); });
     } else if (p.art === 'eigen') {
-      assert.equal(formEig(CATALOG.find((x) => x.id === p.form)), p.eig, q.id);
+      assert.equal(formEig(/** @type {Formeintrag} */ (CATALOG.find((x) => x.id === p.form))), p.eig, q.id);
       assert.ok(tq(q.antworten[q.richtig[0]]).endsWith(tq(hmHTML(p.eig))), q.id);
     } else if (p.art === 'restgruppe') {
       assert.equal(identifyGroup(rest(p.richtung, p.pfeil)).hm, groupById(p.gruppe).hm, q.id);
@@ -473,9 +535,10 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       assert.deepEqual(bahnen(pole, rest(p.richtung, false)), p.teile, q.id);
     } else if (p.art === 'polar') {
       // polar: eine Richtung bleibt unter allen Operationen fest (Mittel der Matrizen ≠ 0)
-      const polar = (g) => { const ops = buildPointGroup(g).ops; const m = ops.reduce((a, W) => a.map((r, i) => r.map((x, j) => x + W[i][j])), [[0, 0, 0], [0, 0, 0], [0, 0, 0]]); return m.flat().some((x) => Math.abs(x) > 1e-9); };
-      assert.deepEqual(q.richtig, p.gruppen.map((g, i) => (polar(g) ? i : -1)).filter((i) => i >= 0), q.id);
-      p.gruppen.forEach((g, i) => assert.equal(tq(q.antworten[i]), tq(hmHTML(groupById(g).hm)), q.id));
+      /** @param {string} g */
+      const polar = (g) => { const ops = buildPointGroup(g).ops; const m = ops.reduce((a, W) => a.map((r, i) => r.map((x, j) => x + W[i][j])), /** @type {number[][]} */ ([[0, 0, 0], [0, 0, 0], [0, 0, 0]])); return m.flat().some((x) => Math.abs(x) > 1e-9); };
+      assert.deepEqual(q.richtig, p.gruppen.map((/** @type {string} */ g, /** @type {number} */ i) => (polar(g) ? i : -1)).filter((/** @type {number} */ i) => i >= 0), q.id);
+      p.gruppen.forEach((/** @type {string} */ g, /** @type {number} */ i) => assert.equal(tq(q.antworten[i]), tq(hmHTML(groupById(g).hm)), q.id));
     } else if (p.art === 'domaenen') {
       assert.equal(48 / rest(p.richtung, p.pfeil).length, p.anzahl, q.id);
       assert.equal(tq(q.antworten[q.richtig[0]]), String(p.anzahl), q.id);
@@ -495,7 +558,8 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
     } else if (p.art === 'musterGruppe') {
       // Polmuster einer Form: invariant unter der Eigensymmetrie p.eigen, nicht unter den Gruppen p.nicht
       const l = Math.hypot(...p.pol);
-      const muster = orbit(buildPointGroup(p.gruppe).ops, p.pol.map((x) => x / l)).map((o) => o.p);
+      const muster = orbit(buildPointGroup(p.gruppe).ops, /** @type {Vec3} */ (p.pol.map((x) => x / l))).map((o) => o.p);
+      /** @param {string} g */
       const invariant = (g) => buildPointGroup(g).ops.every((m) => muster.every((x) => muster.some((y) => vecEq(mulVec(m, x), y))));
       assert.ok(invariant(p.eigen), `${q.id}: Muster nicht invariant unter ${p.eigen}`);
       for (const g of p.nicht) assert.ok(!invariant(g), `${q.id}: Muster invariant unter ${g}`);
@@ -504,12 +568,14 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       const orb = orbit(buildPointGroup(p.gruppe).ops, P0).map((o) => o.p ?? o);
       for (const x of orb) {
         const nrm = norm(cross([0, 0, 1], x));
-        const sp = (v) => { const d = dot(v, nrm); return v.map((c, i) => c - 2 * d * nrm[i]); };
+        /** @param {number[]} v */
+        const sp = (v) => { const d = dot(v, nrm); return /** @type {Vec3} */ (v.map((c, i) => c - 2 * d * nrm[i])); };
         assert.ok(orb.every((y) => orb.some((z) => vecEq(sp(y), z))), q.id);
       }
       assert.ok(orb.every((x) => x[2] > 0), `${q.id}: alle Pole oben`);
     } else if (p.art === 'hkil') {
       const [h, k, l] = p.hkl;
+      /** @param {string} s0 */
       const vier = (s0) => { const t = s0.replace(/<span class="ov">(\d)<\/span>/g, '-$1').replace(/[()]/g, ''); return [...t.matchAll(/-?\d/g)].map((m) => Number(m[0])); };
       q.antworten.forEach((a, i) => assert.equal(gleich(vier(a), [h, k, -(h + k), l]), q.richtig.includes(i), `${q.id}: ${text(a)}`));
     } else if (p.art === 'hexWinkel') {
@@ -526,8 +592,8 @@ test('Generatoren Flächenzahl und Flächensymmetrie: Werte aus den Gruppenopera
     const ps = g.params(3);
     assert.ok(ps.length >= 20, g.id);
     for (const id of ps) {
-      const q = g.make(id);
-      const e = CATALOG.find((x) => x.id === id);
+      const q = /** @type {Testfrage} */ (g.make(id));
+      const e = /** @type {Formeintrag} */ (CATALOG.find((x) => x.id === id));
       const info = buildPointGroup(e.pg);
       const pol = poleOfHKL(groupById(e.pg).system, e.hkl);
       const st = stabilizer(info.ops, pol);
@@ -540,7 +606,7 @@ test('Generatoren Flächenzahl und Flächensymmetrie: Werte aus den Gruppenopera
       assert.equal(q.hinweise.length, 4);
       q.hinweise.slice(1).forEach((h) => assert.ok(h.length > 10));
       assert.ok(zieleUndZusammenfassung(g.kapitel).includes(q.lernziel), q.lernziel);
-      assert.equal(abschnitt(q.skript).kapitel, g.kapitel);
+      assert.equal(/** @type {Abschnitt} */ (abschnitt(q.skript)).kapitel, g.kapitel);
       for (const h of [q.app, q.bild].filter(Boolean)) {
         assert.equal(currentEntryId(stateForHash(h)), id, `${g.id}: ${h}`);
         assert.match(svg(h), /<circle/);
@@ -556,7 +622,7 @@ test('Generatoren Flächenzahl und Flächensymmetrie: Werte aus den Gruppenopera
         // Hinweis: „auch auf diesen Elementen“ genau dann, wenn ein Pol der Ablenkerform nur Elemente durch den Pol von e hat
         const se = new Set(st);
         q.antworten.slice(1).forEach((a, i) => {
-          const x = CATALOG.find((y) => y.pg === e.pg && tq(hmHTML(y.fs)) === tq(a));
+          const x = /** @type {Formeintrag} */ (CATALOG.find((y) => y.pg === e.pg && tq(hmHTML(y.fs)) === tq(a)));
           const px = poleOfHKL(groupById(e.pg).system, x.hkl);
           const drin = info.ops.some((W) => stabilizer(info.ops, mulVec(W, px)).every((j) => se.has(j)));
           assert.equal(q.hinweise[i + 1].includes('auch auf diesen'), drin, `${g.id}:${id}: Hinweis zu ${text(a)}`);
@@ -572,14 +638,14 @@ test('Generator Symmetriegerüst: alle 32 Punktgruppen, Ablenker mit anderem Sym
   const p1 = GERUEST.params(1), p2 = GERUEST.params(2);
   assert.deepEqual([...p1, ...p2].sort(), [...GERUEST_ALLE].sort(), 'Stufe 1 und 2 zusammen alle 32, ohne Überschneidung');
   for (const id of GERUEST_ALLE) {
-    const q = GERUEST.make(id);
+    const q = /** @type {Testfrage} */ (GERUEST.make(id));
     assert.equal(q.antworten.length, 4, id);
     assert.equal(q.antworten[q.richtig[0]], hmHTML(groupById(id).hm), id);
     assert.equal(new Set(q.antworten).size, 4, `${id}: doppelte Antwort`);
     // jedes Ablenker-Gerüst sieht anders aus als das gezeigte
     const bild = svg(q.bild);
     for (const a of q.antworten.slice(1)) {
-      const g = GERUEST_ALLE.map(groupById).find((x) => hmHTML(x.hm) === a);
+      const g = /** @type {ReturnType<typeof groupById>} */ (GERUEST_ALLE.map(groupById).find((x) => hmHTML(x.hm) === a));
       assert.notEqual(svg(`#m=pg&g=${encodeURIComponent(g.id)}&obj=0&farbe=0`), bild, `${id}: Ablenker ${g.hm} hat dasselbe Gerüst`);
     }
     assert.match(q.erklaerung, /Kristallsystem/, id);
@@ -588,12 +654,16 @@ test('Generator Symmetriegerüst: alle 32 Punktgruppen, Ablenker mit anderem Sym
 
 // ------------------------------------------------------------------ Räumliche Zeichnungen
 /** Erzeugte Fragen eines Generators, mit id, stufe, kapitel und status wie in quiz-core.js. */
-const erzeugt = (g) => g.stufen.flatMap((st) => g.params(st).map((p) => ({ ...g.make(p, st), id: `${g.id}:${p}`, stufe: st, kapitel: g.kapitel, status: g.status })));
+/** @param {Generator} g */
+/** Alle Fragen eines Generators. @param {Generator} g @returns {Testfrage[]} */
+const erzeugt = (g) => g.stufen.flatMap((st) => g.params(st).map((p) => /** @type {Testfrage} */ ({ ...g.make(p, st), id: `${g.id}:${p}`, stufe: st, kapitel: g.kapitel, status: g.status })));
 
 /** Pole eines Stereogramms gezählt (Mittelpunkt, Grundkreis, Punkt im Kreis, nur ● oder ○) und ihre Poldistanzen ρ. */
+/** @param {string} hash */
 function polZahl(hash) {
+  /** @type {{ q: number[], rand: boolean, n: number, rho: number }[]} */
   const stellen = [];
-  for (const p of stereoForHash(hash, col).scene.poles) {
+  for (const p of /** @type {ScenePol[]} */ (stereoForHash(hash, col).scene.poles)) {
     const [x, y, z] = p.p;
     const rand = Math.abs(z) < 1e-6;
     const d = rand ? 1 : 1 + Math.abs(z);
@@ -610,6 +680,7 @@ function polZahl(hash) {
   };
 }
 /** ρ-Werte in einem Text („bei ρ = 54,7°“). */
+/** @param {string} t */
 const rhoImText = (t) => [...t.matchAll(/ρ = (\d+(?:,\d)?)°/g)].map((m) => Number(m[1].replace(',', '.')));
 
 test('Räumliche Zeichnungen: Bildangabe, eigenständiges SVG, Kristall und Gerüst', () => {
@@ -644,19 +715,20 @@ test('Kristalle ↔ Stereogramm: Zählung und ρ der Beschreibungen stimmen mit 
 });
 
 test('Hinweise zu Gerüsten: kein Element zugleich „zusätzlich“ und „fehlt“', () => {
-  const qs = [...GERUEST_ALLE.map((id) => GERUEST.make(id)), ...erzeugt(GERUEST3D)];
+  const qs = [...GERUEST_ALLE.map((id) => /** @type {Testfrage} */ (GERUEST.make(id))), ...erzeugt(GERUEST3D)];
   for (const q of qs) {
     for (const h of q.hinweise.slice(1)) {
       const t = text(h);
       const [vor, nach = ''] = t.split('dafür');
       // Spiegelebenen nach Lage (⊥ c, ∥ c, schräg) getrennt: „zusätzlich eine Spiegelebene ⊥ c; dafür fehlen vier ∥ c“ ist richtig
+      /** @param {string} x */
       const namen = (x) => new Set([...x.matchAll(/\d-zählige Dreh(?:inversions)?achse|schräge Spiegelebene|Spiegelebenen? [⊥∥] c|Inversionszentrum/g)].map((m) => m[0].replace('Spiegelebenen', 'Spiegelebene')));
       const A = namen(vor.replace(/an (?:derselben Stelle|denselben Stellen) [^;]*/g, '')), B = namen(nach);
       for (const n of A) assert.ok(!B.has(n), `${t}`);
     }
   }
   // dieselbe Achse ∥ c mit anderem Charakter: „statt“
-  const h = text(GERUEST.make('-3').hinweise[GERUEST.make('-3').antworten.indexOf(hmHTML('3'))] || '');
+  const h = text(/** @type {Testfrage} */ (GERUEST.make('-3')).hinweise[GERUEST.make('-3').antworten.indexOf(hmHTML('3'))] || '');
   assert.match(h, /an derselben Stelle eine 3-zählige Drehachse statt der 3-zähligen Drehinversionsachse/);
 });
 
@@ -671,9 +743,9 @@ test('Generatoren mit Bildantworten: gültige Fragen, richtige Antwort passt zum
       assert.equal(q.hinweise.length, 4, q.id);
       assert.equal(q.hinweise[0], null, q.id);
       q.hinweise.slice(1).forEach((h, i) => assert.ok(typeof h === 'string' && h.length > 10, `${q.id}: Hinweis ${i + 1}`));
-      for (const f of ['frage', 'erklaerung', 'quelle']) assert.ok(q[f].length > 10, `${q.id}: ${f}`);
+      for (const f of ['frage', 'erklaerung', 'quelle']) assert.ok(/** @type {Record<string, string>} */ (/** @type {unknown} */ (q))[f].length > 10, `${q.id}: ${f}`);
       assert.ok(zieleUndZusammenfassung(q.kapitel).includes(q.lernziel), `${q.id}: ${q.lernziel}`);
-      const a = abschnitt(q.skript);
+      const a = /** @type {Abschnitt} */ (abschnitt(q.skript));
       assert.equal(a.kapitel, q.kapitel, q.id);
       assert.ok(!a.vertiefung, q.id);
       pruefeBilder(q);
@@ -684,6 +756,7 @@ test('Generatoren mit Bildantworten: gültige Fragen, richtige Antwort passt zum
       assert.equal(new Set(q.antworten.map((x) => x.alt)).size, 4, `${q.id}: gleiche Alternativtexte`);
       assert.ok(!/"/.test(q.bildAlt + q.antworten.map((x) => x.alt).join('')), q.id);
       // richtige Antwort: derselbe Kristall bzw. dieselbe Punktgruppe in derselben Lage wie das Bild
+      /** @param {string} h */
       const ohne = (h) => appHash(h).replace('&idx=0', '').replace('&obj=0&farbe=0', '');
       assert.equal(ohne(q.antworten[0].app), ohne(q.bild), q.id);
       q.antworten.slice(1).forEach((x) => assert.notEqual(ohne(x.app), ohne(q.bild), q.id));
@@ -691,7 +764,7 @@ test('Generatoren mit Bildantworten: gültige Fragen, richtige Antwort passt zum
   }
   // Gerüste: keine unlesbaren kubischen Gerüste, auch nicht als Ablenker
   for (const q of erzeugt(GERUEST3D)) {
-    for (const x of q.antworten) assert.ok(!GERUEST3D_OHNE.includes(decodeURIComponent(new URLSearchParams(appHash(x.app).slice(1)).get('g'))), q.id);
+    for (const x of q.antworten) assert.ok(!GERUEST3D_OHNE.includes(decodeURIComponent(/** @type {string} */ (new URLSearchParams(appHash(x.app).slice(1)).get('g')))), q.id);
   }
   // Lage: drei Lagen desselben Kristalls und ein anderer Kristall in der gefragten Lage; bei Zeichnungen, die sich
   // kaum unterscheiden (Würfel [111]/[110]), statt der zweiten Lage ein weiterer Kristall in der gefragten Lage
@@ -721,7 +794,7 @@ test('Ablauf: Stufe, Kapitel, Anzahl und Höchstanteil eines Generators', () => 
     assert.ok(z.every((k) => k.stufe === 1));
     for (const g of GENERATOREN) assert.ok(z.filter((k) => k.gen === g).length <= Math.round(10 * GEN_ANTEIL), g.id);
     // alle erzeugten Fragen zusammen höchstens die Hälfte, auch in Kapiteln mit vielen erzeugten Fragen
-    for (const [kap, st, n] of [[null, 1, 10], [[4], 2, 10], [[6], 2, 5], [[10], 3, 20], [[6, 4], 1, 20]]) {
+    for (const [kap, st, n] of /** @type {[number[] | null, 1 | 2 | 3, number][]} */ ([[null, 1, 10], [[4], 2, 10], [[6], 2, 5], [[10], 3, 20], [[6, 4], 1, 20]])) {
       const zz = ziehen(kands, { stufe: st, kapitel: kap, n, rand: r });
       const g = zz.filter((k) => k.gen).length;
       assert.ok(g <= Math.floor(n * GEN_GESAMT) && g <= zz.length * GEN_GESAMT, `Kap. ${kap}, Stufe ${st}, n = ${n}: ${g} von ${zz.length}`);
@@ -739,14 +812,14 @@ test('Ablauf: Stufe, Kapitel, Anzahl und Höchstanteil eines Generators', () => 
 test('Ablauf: gemischte Antworten behalten die richtige Lösung; Auswertung', () => {
   const kands = kandidaten(BANK, GENERATOREN, { entwurf: true });
   for (const [s, k] of kands.entries()) {
-    const q0 = k.frage || k.gen.make(k.param, k.stufe);
+    const q0 = k.frage || /** @type {Generator} */ (k.gen).make(/** @type {string} */ (k.param), k.stufe);
     const q = stellen(k, rng(s + 1));
     const richtig0 = q0.richtig.map((i) => JSON.stringify(q0.antworten[i])).sort();
     assert.deepEqual(q.richtig.map((i) => JSON.stringify(q.antworten[i])).sort(), richtig0, k.key);
     assert.ok(pruefen(q, q.richtig));
     assert.ok(!pruefen(q, [...q.richtig, ...[0, 1, 2, 3].filter((i) => !q.richtig.includes(i)).slice(0, 1)]), `${k.key}: zusätzliche falsche Antwort`);
     if (q.richtig.length > 1) assert.ok(!pruefen(q, q.richtig.slice(1)), `${k.key}: unvollständig`);
-    if (q.hinweise) q.richtig.forEach((i) => assert.equal(q.hinweise[i], null, k.key));
+    if (q.hinweise) q.richtig.forEach((i) => assert.equal(/** @type {(string | null)[]} */ (q.hinweise)[i], null, k.key));
   }
 });
 
@@ -768,6 +841,7 @@ test('Fortschritt: vermerken, Stand je Kapitel, unbrauchbarer Speicher', () => {
 });
 
 test('Moodle-Export: Kategorien, Bruchteile, eingebettete Bilder, nur geprüfte Fragen', () => {
+  /** @param {boolean} alle */
   const genZahl = (alle) => GENERATOREN.filter((g) => alle || g.status === 'geprüft').reduce((n, g) => n + g.stufen.reduce((m, st) => m + g.params(st).length, 0), 0);
   assert.equal(moodleXML().anzahl, BANK.filter((q) => q.status === 'geprüft').length + genZahl(false));
   const { xml, anzahl } = moodleXML({ entwurf: true });
@@ -793,18 +867,18 @@ test('Skript: „Lernziele prüfen“ am Ende jedes Kapitels führt ins Quiz mit
     const a = skript.indexOf(`<section id="${kap.anker}"`);
     const b = i + 1 < KAPITEL.length ? skript.indexOf(`<section id="${KAPITEL[i + 1].anker}"`) : skript.length;
     const ls = [...skript.slice(a, b).matchAll(/<p class="quizlink">([\s\S]*?)<\/p>/g)].map((m) => m[1]);
-    const hatFragen = [1, 2, 3].some((st) => n[nr]?.[st]);
+    const hatFragen = /** @type {(1 | 2 | 3)[]} */ ([1, 2, 3]).some((st) => n[nr]?.[st]);
     assert.equal(ls.length, hatFragen ? 1 : 0, `Kap. ${nr}: ${ls.length} Links`);
     if (!hatFragen) return;
     const l = ls[0];
-    const ziele = [...l.matchAll(/href="quiz\.html\?kap=(\d+)&amp;stufe=(\d)"/g)].map((m) => [Number(m[1]), Number(m[2])]);
+    const ziele = [...l.matchAll(/href="quiz\.html\?kap=(\d+)&amp;stufe=(\d)"/g)].map((m) => /** @type {[number, 1 | 2 | 3]} */ ([Number(m[1]), Number(m[2])]));
     assert.ok(ziele.length >= 1, `Kap. ${nr}`);
     for (const [k, st] of ziele) {
       assert.equal(k, nr, `Kap. ${nr}: Link auf Kap. ${k}`);
       assert.ok(n[nr]?.[st] > 0, `Kap. ${nr}, Stufe ${st}: keine Fragen`);
     }
     // jede Stufe mit eigenen Fragen hat einen Link
-    for (const st of [1, 2, 3]) if (n[nr]?.[st]) assert.ok(ziele.some(([, s0]) => s0 === st), `Kap. ${nr}: Link Stufe ${st} fehlt`);
+    for (const st of /** @type {(1 | 2 | 3)[]} */ ([1, 2, 3])) if (n[nr]?.[st]) assert.ok(ziele.some(([, s0]) => s0 === st), `Kap. ${nr}: Link Stufe ${st} fehlt`);
     assert.ok(!/<a (?![^>]*target="_blank")/.test(l), `Kap. ${nr}: neuer Tab`);
   });
   const js = readFileSync(new URL('../lib/common/js/quiz-seite.js', import.meta.url), 'utf8');
@@ -831,9 +905,9 @@ test('Seite: Schalter „Auch ungeprüfte Fragen zeigen“ für alle, im Browser
   assert.match(js, /localStorage\.setItem\(ENTWURF/);
   // ohne Schalter nur geprüfte Fragen, mit Schalter alle
   // (alle Fragen sind inzwischen geprüft; deshalb eine künstliche Entwurfsfrage dazu)
-  const bank = [...BANK, { ...BANK[0], id: 'test-entwurf', status: 'entwurf' }];
+  const bank = [...BANK, { ...BANK[0], id: 'test-entwurf', status: /** @type {const} */ ('entwurf') }];
   const ohne = kandidaten(bank, GENERATOREN, {}), mit = kandidaten(bank, GENERATOREN, { entwurf: true });
-  assert.ok(ohne.every((k) => (k.frage ? k.frage.status : k.gen.status) === 'geprüft'));
+  assert.ok(ohne.every((k) => (k.frage ? k.frage.status : /** @type {Generator} */ (k.gen).status) === 'geprüft'));
   assert.ok(mit.length > ohne.length);
 });
 
@@ -856,7 +930,7 @@ test('Fragen: Abbildungsverweise aufs Skript existieren und liegen im Kapitel de
   const html = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
   const abb = new Set([...html.matchAll(/<b>Abb\. (\d+\.\d+)([a-z]?)<\/b>/g)].flatMap((m) => [m[1], m[1] + m[2]]));
   const fehler = [];
-  for (const q of BANK) {
+  for (const q of /** @type {Testfrage[]} */ (BANK)) {
     const texte = [q.frage, q.erklaerung, ...(q.hinweise || [])].filter(Boolean);
     const quelle = (q.quelle || '').split(';').filter((t) => /Skript/.test(t));
     for (const t of [...texte, ...quelle]) {

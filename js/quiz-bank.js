@@ -1,4 +1,3 @@
-// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Fragen des Quiz (handgeschrieben). Aufbau je Frage siehe Konzept „Quiz“, Abschnitt 7:
 //   id, stufe (1–3), kapitel (Skript), lernziel (wörtlich aus Lernzielen oder Zusammenfassung des Skripts),
 //   typ: 'einfach' | 'mehrfach' | 'bild-text' (Frage mit Bild) | 'text-bild' (Antworten sind Bilder)
@@ -12,9 +11,12 @@
 //   pruefung (optional): Angaben, die tests/quiz.test.mjs nachrechnet.
 // Nur Fragen mit status 'geprüft' erscheinen im Quiz; Entwürfe zeigt quiz.html?entwurf.
 
-/** Querstrich über einer Ziffer (negativer Index). */
+/** @import { Frage } from '../lib/common/js/quiz-core.js' */
+
+/** Querstrich über einer Ziffer (negativer Index). @param {number | string} d */
 const o = (d) => `<span class="ov">${d}</span>`;
 
+/** @type {Frage[]} */
 export const BANK = [
   // ================================================================ Kapitel 2: Die stereographische Projektion
   {
@@ -1514,7 +1516,7 @@ export const BANK = [
       'Die Wachstumsgeschwindigkeit ist anisotrop: Nicht gleichwertige Flächen wachsen verschieden schnell.',
     ],
     erklaerung: 'Beim Wachstum verschieben sich die Flächen parallel. Eine schnell wachsende Fläche wird dabei von ihren Nachbarn eingeholt, wird kleiner und kann verschwinden; langsam wachsende Flächen werden immer grösser und bestimmen den Habitus.',
-    skript: 'wachstum', app: null,
+    skript: 'wachstum',
     quelle: 'Borchardt-Ott & Sowa (2018), Abschn. 5.3, S. 38–39 (Abb. 5.6)',
     status: 'geprüft',
   },

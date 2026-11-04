@@ -15,5 +15,5 @@
     // hier liegt js/ unter lib/common/.
     "rootDirs": ["tools", "lib/common"]
   },
-  "include": ["js/**/*.js", "tools/**/*.mjs"]
+  "include": ["js/**/*.js", "tools/**/*.mjs", "tests/**/*.mjs"]
 }

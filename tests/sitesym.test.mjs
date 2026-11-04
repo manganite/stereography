@@ -7,10 +7,16 @@ import { wyckoffPositions, siteOf, snapPole, distinctPoles, poleOfHKL } from '..
 import { normalize, cross, scale, add } from '../js/linalg.js';
 import { createState, applyHashTo, hashOf, pgScene } from '../js/scene.js';
 
+/** @import { Vec3 } from '../lib/common/js/typen.js' */
+/** @import { Palette } from '../js/scene.js' */
+/** @import { Punktgruppeninfo } from '../js/pointgroups.js' */
+
 const deg = Math.PI / 180;
+/** @param {number} rho @param {number} phi @returns {Vec3} */
 const pole = (rho, phi) => [Math.sin(rho * deg) * Math.sin(phi * deg), Math.sin(rho * deg) * Math.cos(phi * deg), Math.cos(rho * deg)];
 
 /** Stichproben: Pole auf jeder Achse, auf jeder Spiegelebene und ein allgemeiner Pol. */
+/** @param {Punktgruppeninfo} info */
 function samples(info) {
   const out = [normalize([0.31, 0.17, 0.83])];
   for (const a of info.axes) out.push(a.dir, scale(a.dir, -1));
@@ -40,7 +46,7 @@ test('Jeder Pol gehört zu genau einer Wyckoff-Lage, jede Lage wird erreicht', (
     for (const p of samples(info)) {
       const s = siteOf(g.id, info, p);
       assert.ok(s.wy, `${g.id}: Pol ${p.map((x) => x.toFixed(3))} ohne Wyckoff-Lage`);
-      assert.equal(s.mult, rows.find((r) => r.wy === s.wy).mult, `${g.id} ${s.wy}`);
+      assert.equal(s.mult, /** @type {typeof rows[number]} */ (rows.find((r) => r.wy === s.wy)).mult, `${g.id} ${s.wy}`);
       // die Bahn hat so viele verschiedene Pole wie die Multiplizität
       assert.equal(distinctPoles(orbit(info.ops, s.p)).length, s.mult, `${g.id} ${s.wy}: Polzahl`);
       seen.add(s.wy);
@@ -63,7 +69,7 @@ test('Katalog: Pol jeder Form ergibt deren Wyckoff-Lage und Flächensymmetrie (I
 });
 
 test('Aufstellungen mit eigener Lagentabelle (ALT_SETTINGS): Lagen nach ITA Tab. 10.1.2.2', () => {
-  const list = (id) => wyckoffPositions(id).map((r) => `${r.mult}${r.wy} ${r.fs}`).join(' | ');
+  const list = (/** @type {string} */ id) => wyckoffPositions(id).map((r) => `${r.mult}${r.wy} ${r.fs}`).join(' | ');
   assert.equal(list('312'), '6c 1 | 3b ..2 | 2a 3..');
   assert.equal(list('31m'), '6c 1 | 3b ..m | 1a 3.m');
   assert.equal(list('-31m'), '12d 1 | 6c ..m | 6b ..2 | 2a 3.m');
@@ -101,14 +107,14 @@ test('Link-Adresse: eingerasteter Pol bleibt nach dem Runden auf 4 Stellen spezi
   a.pg.phi = ((Math.atan2(p[0], p[1]) / deg) + 360) % 360;
   const b = createState();
   applyHashTo(b, hashOf(a, D), D);
-  const { site, distinct, scene } = pgScene(b, new Proxy({}, { get: () => '#000' }));
+  const { site, distinct, scene } = pgScene(b, /** @type {Palette} */ (/** @type {unknown} */ (new Proxy({}, { get: () => '#000' }))));
   assert.equal(`${site.mult}${site.wy} ${site.fs}`, '24e ..m');
   assert.equal(distinct.length, 24);
   assert.equal(scene.poles.length, 24);
 });
 
 test('Skript, Kapitel 8: Abbildungen zeigen die genannten Lagen', () => {
-  const col = new Proxy({}, { get: () => '#000' });
+  const col = /** @type {Palette} */ (/** @type {unknown} */ (new Proxy({}, { get: () => '#000' })));
   const expect = {
     '#m=pg&g=4/mmm&rho=40&az=20': '16g 1', '#m=pg&g=4/mmm&rho=40&az=0': '8f .m.', '#m=pg&g=4/mmm&rho=40&az=45': '8e ..m',
     '#m=pg&g=4/mmm&rho=90&az=20': '8d m..', '#m=pg&g=4/mmm&rho=90&az=0': '4c m2m.', '#m=pg&g=4/mmm&rho=90&az=45': '4b m.m2',

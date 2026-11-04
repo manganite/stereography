@@ -1,4 +1,3 @@
-// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Export der Quizfragen als Moodle-XML (Fragentyp „Multiple Choice“), zum Import in die Fragensammlung
 // eines Moodle-Kurses. Stereogramme werden als SVG-Dateien in die Fragen eingebettet.
 // Die Arbeit macht tools/common/moodle.mjs; hier Fragen, Kapitel und Bilder dieser App.
@@ -18,11 +17,15 @@ import { buildSVG } from '../js/stereogram.js';
 import { istRaum, raumSVG } from '../js/bild3d.js';
 import { helleFarben, mitSchrift, moodleXML as moodleXMLCommon } from './common/moodle.mjs';
 
+/** @import { BildOptionen } from '../lib/common/js/quiz-core.js' */
+/** @import { Palette } from '../js/scene.js' */
+
 const FONTS = fileURLToPath(new URL('../lib/common/fonts/', import.meta.url));
 
-/** Farben des hellen Modus aus base.css (wie palette() in scene.js, ohne Browser). */
+/** Farben des hellen Modus aus base.css (wie palette() in scene.js, ohne Browser). @returns {Palette} */
 export function hellePalette() {
   const v = helleFarben(fileURLToPath(new URL('../lib/common/css/base.css', import.meta.url)));
+  /** @param {string} n */
   const g = (n) => v[n];
   return {
     paper: g('paper'), ink: g('ink'), muted: g('muted'), net: g('net'),
@@ -35,7 +38,7 @@ export function hellePalette() {
   };
 }
 
-/** SVG einer Abbildung (Link-Adresse der App), wie im Quiz: ohne Ausgangspol-Markierung. */
+/** SVG einer Abbildung (Link-Adresse der App), wie im Quiz: ohne Ausgangspol-Markierung. @param {string} hash @param {Palette} col @param {BildOptionen} [opt] */
 function svgFor(hash, col, opt = {}) {
   if (istRaum(hash)) return raumSVG(hash, col, opt);
   const { scene } = stereoForHash(hash, col);
@@ -45,7 +48,7 @@ function svgFor(hash, col, opt = {}) {
   return mitSchrift(buildSVG({ ...scene, bg: col.paper }, { standalone: true }).full, FONTS);
 }
 
-/** Alle (geprüften) Fragen, nach Kapitel und Stufe in Kategorien. */
+/** Alle (geprüften) Fragen, nach Kapitel und Stufe in Kategorien. @param {{ entwurf?: boolean }} [optionen] */
 export function moodleXML({ entwurf = false } = {}) {
   const col = hellePalette();
   return moodleXMLCommon({

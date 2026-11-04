@@ -1,4 +1,3 @@
-// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // PDF-Fassung des Skripts (A4) aus skript.html; die Arbeit macht tools/common/skript-pdf.mjs.
 //
 //   node tools/skript-pdf.mjs [Ausgabedatei] [--base https://…/]
@@ -18,12 +17,12 @@ const args = process.argv.slice(2);
 const bi = args.indexOf('--base');
 const BASE = bi >= 0 ? args.splice(bi, 2)[1] : 'https://manganite.github.io/stereography/';
 const OUT = args[0] || join(ROOT, 'skript.pdf');
-const VERSION = readFileSync(join(ROOT, 'js/version.js'), 'utf8').match(/VERSION = '([^']+)'/)[1];
+const VERSION = /** @type {RegExpMatchArray} */ (readFileSync(join(ROOT, 'js/version.js'), 'utf8').match(/VERSION = '([^']+)'/))[1];
 
 const { anzahl, fehler } = await skriptPDF({
   root: ROOT, out: OUT, base: BASE, titel: 'Stereographische Projektion', version: VERSION,
   // Abb. 8.5: ein Zustand, in dem beide Formen noch zu sehen sind (Oktaeder : Würfel ≈ 1,44)
-  vorbereiten: (page) => page.$eval('#w-zeit', (el) => { el.value = 20; el.dispatchEvent(new Event('input')); }),
+  vorbereiten: (page) => page.$eval('#w-zeit', (el) => { /** @type {HTMLInputElement} */ (el).value = '20'; el.dispatchEvent(new Event('input')); }),
   interaktiv: ['fig-proj', 'fig-wachstum'],
 }).catch((e) => { console.error(e); process.exit(1); });
 console.log(`${OUT}: Skript ${VERSION}, ${anzahl} 3D-Abbildungen als Bild`);

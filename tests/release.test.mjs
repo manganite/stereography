@@ -7,17 +7,19 @@ import { fileURLToPath } from 'node:url';
 import { VERSION } from '../js/version.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
+/** @param {string} p */
 const read = (p) => readFileSync(join(ROOT, p), 'utf8');
 const sw = read('sw.js');
 
 test('Version: semver, gleich in js/version.js, sw.js und CHANGELOG.md', () => {
   assert.match(VERSION, /^\d+\.\d+\.\d+$/);
-  assert.equal(sw.match(/const VERSION = '([^']+)'/)[1], VERSION, 'sw.js');
+  assert.equal(/** @type {RegExpMatchArray} */ (sw.match(/const VERSION = '([^']+)'/))[1], VERSION, 'sw.js');
   assert.match(read('CHANGELOG.md'), new RegExp(`^## \\[${VERSION.replace(/\./g, '\\.')}\\] - \\d{4}-\\d{2}-\\d{2}$`, 'm'), 'CHANGELOG.md');
 });
 
 test('Service Worker: Offline-Liste deckt alle Dateien der App ab', () => {
   const listed = [...sw.matchAll(/^ {2}'([^']+)',$/gm)].map((m) => m[1]);
+  /** @type {(dir: string) => string[]} */
   const walk = (dir) => readdirSync(join(ROOT, dir)).flatMap((f) => {
     const p = join(dir, f);
     return statSync(join(ROOT, p)).isDirectory() ? walk(p) : [p];
@@ -30,7 +32,7 @@ test('Service Worker: Offline-Liste deckt alle Dateien der App ab', () => {
 });
 
 test('Service Worker: jede Seite wird bei Seitenaufrufen aus ihrem eigenen Cache-Eintrag geliefert', () => {
-  const pages = JSON.parse(sw.match(/const PAGES = (\[[^\]]*\]);/)[1].replace(/'/g, '"'));
+  const pages = JSON.parse(/** @type {RegExpMatchArray} */ (sw.match(/const PAGES = (\[[^\]]*\]);/))[1].replace(/'/g, '"'));
   const html = readdirSync(ROOT).filter((f) => f.endsWith('.html'));
   for (const p of html) assert.ok(pages.includes(p), `fehlt in PAGES (sw.js): ${p}`);
 });

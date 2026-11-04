@@ -1,4 +1,3 @@
-// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Quiz der App: Fragen, Kapitel und Bilder. Ablauf, Rückmeldung und Fortschritt kommen aus
 // lib/common/js/quiz-seite.js (gemeinsam mit den anderen Apps der Familie).
 
@@ -12,10 +11,13 @@ import { KAPITEL, SPEICHER } from './quiz-kapitel.js';
 import { initQuiz } from '../lib/common/js/quiz-seite.js';
 import { versionEintragen, offline } from '../lib/common/js/seite.js';
 
+/** @import { BildOptionen } from '../lib/common/js/quiz-core.js' */
+
 /** Abbildung einer Bildangabe: räumliche Zeichnung ("3d#…") oder Stereogramm (Link-Adresse der App), ohne
  *  Markierung des Ausgangspols (sie sähe aus wie ein zweites Polsymbol).
  *  opt.zonenachse = false: Zonenachse weder beschriften noch markieren (sie wäre die Antwort);
- *  opt.klein: grössere Polsymbole für kleine Bilder (Antworten als Stereogramme). */
+ *  opt.klein: grössere Polsymbole für kleine Bilder (Antworten als Stereogramme).
+ * @param {string} hash @param {string | undefined} alt @param {BildOptionen} [opt] */
 function stereoSVG(hash, alt, opt = {}) {
   if (istRaum(hash)) return `<svg viewBox="0 0 520 520" role="img" aria-label="${alt || 'Räumliche Zeichnung'}">${raumInner(hash, palette(), opt)}</svg>`;
   const { scene } = stereoForHash(hash, palette());

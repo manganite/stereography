@@ -7,6 +7,7 @@ import { pruefen } from '../tools/common/check.mjs';
 import { SPEICHER } from '../js/quiz-kapitel.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
+/** @param {string} p */
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
 test('lib/common und tools/common entsprechen dem Manifest (Änderungen gehören nach crystallography-common)', () => {

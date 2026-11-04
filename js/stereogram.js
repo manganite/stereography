@@ -10,7 +10,7 @@ import { hklParts } from '../lib/common/js/format.js';
 /** @import { Teil } from '../lib/common/js/format.js' */
 /**
  * Farben des Stereogramms (aus base.css bzw. den hellen Farben für Bilder).
- * @typedef {{ paper: string, ink: string, muted: string, net: string, mirror: string, axis: string, upper: string, lower: string, accent: string, accent2: string }} Farben
+ * @typedef {{ paper: string, ink: string, muted: string, net: string, mirror: string, axis: string, upper: string, lower?: string, accent: string, accent2: string }} Farben
  */
 /** Projizierter Punkt: Bildschirmkoordinaten, obere Halbkugel, auf dem Grundkreis. @typedef {{ x: number, y: number, upper: boolean, onPrimitive: boolean }} Bildpunkt */
 /**
@@ -25,7 +25,7 @@ import { hklParts } from '../lib/common/js/format.js';
  * @property {boolean} [selected]
  * @property {boolean} [faint]
  * @property {boolean} [aux]
- * @property {string} [color]
+ * @property {string | null} [color]
  * @property {string[]} [zoneColors]
  * @property {boolean} [zone]
  */
@@ -36,9 +36,9 @@ import { hklParts } from '../lib/common/js/format.js';
  * @property {Farben} col
  * @property {{ on: boolean, rot?: Grad }} [wulff]
  * @property {boolean} [primitiveBold]
- * @property {string} [primitiveColor]
- * @property {(Vec3 | { n: Vec3, color?: string })[]} [mirrors]
- * @property {{ dir: Vec3, symbol: string, centre: boolean, color?: string }[]} [axes]
+ * @property {string | null} [primitiveColor]
+ * @property {(Vec3 | { n: Vec3, color?: string | null })[]} [mirrors]
+ * @property {{ dir: Vec3, symbol: string, centre: boolean, color?: string | null }[]} [axes]
  * @property {Vec3[]} [zones]
  * @property {boolean} [centreAtOrigin]
  * @property {boolean} [faint]
@@ -50,7 +50,7 @@ import { hklParts } from '../lib/common/js/format.js';
  * @property {number} [poleScale]
  * @property {SceneZone[]} [zoneList]
  * @property {SceneZone} [zone]
- * @property {{ a: Vec3, b: Vec3, label: string }} [arc]
+ * @property {{ a: Vec3, b: Vec3, label: string } | null} [arc]
  * @property {number} [labelSize]
  * @property {number} [hitR]
  * @property {string} [bg]

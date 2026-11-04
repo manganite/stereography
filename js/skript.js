@@ -1,4 +1,3 @@
-// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Skript zur App: Abbildungen aus dem Code der App, Projektionsskizze, Wachstumsfigur, Symbollegende.
 // Inhaltsverzeichnis, App-Links und Nachladen kommen aus lib/common/js/skript-kern.js.
 // Eine Abbildung ist durch die Link-Adresse der App beschrieben (data-app="#m=form&…"); daraus entsteht
@@ -12,12 +11,21 @@ import { VERSION } from './version.js';
 import { appLink, nachladen, querstriche, inhaltsverzeichnis } from '../lib/common/js/skript-kern.js';
 import { versionEintragen, offline } from '../lib/common/js/seite.js';
 
-const deg = Math.PI / 180;
+/** @import { Palette, AppKristall } from './scene.js' */
+/** @import { View3D } from './view3d.js' */
+/** @import { Vector3 } from '../lib/three.bundle.js' */
 
+const deg = Math.PI / 180;
+/** Link-Adresse einer Abbildung (nur Abbildungen mit data-app werden gezeichnet). @param {HTMLElement} fig */
+const adresse = (fig) => /** @type {string} */ (fig.dataset.app);
+/** Zeichenfläche einer Abbildung. @param {Element} fig */
+const flaeche = (fig) => /** @type {HTMLElement} */ (fig.querySelector('.fig-art'));
+
+/** @param {HTMLElement} fig @param {Palette} col */
 function renderStereo(fig, col) {
   const dirs = fig.dataset.dirs ? fig.dataset.dirs.split(',').map(Number) : null;
-  const { scene } = stereoFor(fig.dataset.app, col, dirs);
-  const box = fig.querySelector('.fig-art');
+  const { scene } = stereoFor(adresse(fig), col, dirs);
+  const box = flaeche(fig);
   box.innerHTML = `<svg viewBox="0 0 520 520" role="img" aria-label="${fig.dataset.alt || 'Stereogramm'}">${buildSVG(scene).inner}</svg>`;
 }
 
@@ -25,9 +33,13 @@ function renderStereo(fig, col) {
 // eigenen WebGL-Kontext, und Browser halten nur wenige (Safari auf iPhone/iPad etwa 8) gleichzeitig; das Skript
 // hat mehr 3D-Abbildungen. Deshalb leben nur Ansichten in der Nähe des sichtbaren Bereichs (nachladen aus
 // skript-kern.js); beim Verlassen wird der Kontext freigegeben und die Kameraposition gemerkt.
+/** @type {Map<Element, View3D>} */
 const views3d = new Map();
+/** @type {Map<Element, Vector3>} */
 const cams3d = new Map();
+/** @type {{ lebt: (fig: Element) => boolean }} */
 let lazy3d = { lebt: () => false };
+/** @param {Element} fig */
 function release3d(fig) {
   const v = views3d.get(fig);
   if (!v) return;
@@ -35,12 +47,13 @@ function release3d(fig) {
   v.destroy();
   views3d.delete(fig);
 }
+/** @param {HTMLElement} fig @param {Palette} col */
 async function render3d(fig, col) {
   const { View3D } = await import('./view3d.js');
   if (!lazy3d.lebt(fig)) return; // inzwischen aus dem Bild gescrollt
   let v = views3d.get(fig);
   if (!v) {
-    const box = fig.querySelector('.fig-art');
+    const box = flaeche(fig);
     box.innerHTML = '';
     v = new View3D(box, {});
     views3d.set(fig, v);
@@ -49,7 +62,7 @@ async function render3d(fig, col) {
     const cam = cams3d.get(fig);
     if (cam) { v.camera.position.copy(cam); v.controls.update(); }
   }
-  const st0 = stateFor(fig.dataset.app);
+  const st0 = stateFor(adresse(fig));
   if (st0.mode === 'pg') {
     // Symmetriegerüst in 3D wie in der App (renderPG in main.js)
     const { info, p0, orb, scene } = pgScene(st0, col);
@@ -62,7 +75,8 @@ async function render3d(fig, col) {
     );
     return;
   }
-  const { st, C, scene } = stereoFor(fig.dataset.app, col);
+  const { st, C: C0, scene } = stereoFor(adresse(fig), col);
+  const C = /** @type {AppKristall} */ (C0); // Modus Kristallformen: immer mit Kristall
   v.setStereoTexture(buildSVG(scene, { standalone: true }).full);
   // data-labels="aus": Indizes nur in dieser Abbildung ausblenden (der Link in die App behält sie)
   const labels = st.poly.labels && st.poly.showPoles && fig.dataset.labels !== 'aus' ? C.faces.map((f) => hklHTML(f.hkl, C.hex && st.poly.bravais)) : null;
@@ -74,7 +88,7 @@ async function render3d(fig, col) {
 
 function renderFigures() {
   const col = palette();
-  for (const fig of document.querySelectorAll('figure[data-app]')) {
+  for (const fig of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('figure[data-app]'))) {
     appLink(fig, 'index.html');
     if (fig.dataset.kind === '3d') { if (views3d.has(fig)) render3d(fig, col); } else renderStereo(fig, col);
   }
@@ -86,9 +100,11 @@ function renderFigures() {
 // ------------------------------------------------------------------ Symbollegende (Kap. 4)
 // Die Symbole zeichnet derselbe Code wie das Stereogramm der App (symbolIcon); Pole, Spiegelebene und
 // Inversionszentrum wie in der Legende der App.
+/** @param {Palette} col */
 function symbolLegende(col) {
   const ink = col.ink, paper = col.paper;
   const icol = { ...col, axis: ink, paper };
+  /** @type {Record<string, string>} */
   const EXTRA = {
     z: `<svg viewBox="-10 -10 20 20" width="20" height="20" aria-hidden="true"><circle r="4.2" fill="${paper}" stroke="${ink}" stroke-width="1.4"/></svg>`,
     m: `<svg viewBox="0 0 26 10" width="26" height="10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="${ink}" stroke-width="3.2" stroke-linecap="round"/></svg>`,
@@ -96,8 +112,8 @@ function symbolLegende(col) {
     pu: `<svg viewBox="-8 -8 16 16" width="16" height="16" aria-hidden="true"><circle r="6" fill="none" stroke="${ink}" stroke-width="1.6"/></svg>`,
     pb: `<svg viewBox="-8 -8 16 16" width="16" height="16" aria-hidden="true"><circle r="6.5" fill="none" stroke="${ink}" stroke-width="1.6"/><circle r="3.6" fill="${ink}"/></svg>`,
   };
-  for (const el of document.querySelectorAll('.symlegende .sym')) {
-    const s = el.dataset.sym;
+  for (const el of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.symlegende .sym'))) {
+    const s = /** @type {string} */ (el.dataset.sym);
     el.innerHTML = EXTRA[s] || symbolIcon(s, 'centre' in el.dataset, icol, 26);
   }
 }
@@ -106,11 +122,13 @@ function symbolLegende(col) {
 // Links ein Schnitt durch die Umkugel (N oben, S unten, Äquatorebene von der Seite), rechts der Blick
 // von oben auf die Projektionsebene. Ein Regler stellt die Poldistanz ρ ein (Borchardt-Ott: obere
 // Halbkugel vom Nordpol, untere vom Südpol aus negativ).
+/** @type {{ draw: () => void }[]} */
 const projFigures = [];
+/** @param {Element} fig */
 function projectionSketch(fig) {
-  const svg = fig.querySelector('svg');
-  const input = fig.querySelector('input[type="range"]');
-  const out = fig.querySelector('output');
+  const svg = /** @type {SVGSVGElement} */ (fig.querySelector('svg'));
+  const input = /** @type {HTMLInputElement} */ (fig.querySelector('input[type="range"]'));
+  const out = /** @type {HTMLOutputElement} */ (fig.querySelector('output'));
   const R = 120, L = { x: 165, y: 175 };
   let T = { x: 485, y: 175 };
   const draw = () => {
@@ -134,10 +152,12 @@ function projectionSketch(fig) {
     // Bogen für ρ vom Bezugspol aus
     const a0 = upper ? -90 : 90, a1 = upper ? -90 + theta : 90 - (180 - theta);
     const arcR = 46;
+    /** @param {number} a */
     const pt = (a) => ({ x: L.x + arcR * Math.cos(a * deg), y: L.y + arcR * Math.sin(a * deg) });
     const A0 = pt(a0), A1 = pt(a1);
     const sweep = upper ? 1 : 0;
     const lab = { x: L.x + (arcR + 16) * Math.cos(((a0 + a1) / 2) * deg), y: L.y + (arcR + 16) * Math.sin(((a0 + a1) / 2) * deg) };
+    /** @param {number} x @param {number} y @param {boolean} filled */
     const marker = (x, y, filled) => (filled || onEq
       ? `<circle class="pt" cx="${x}" cy="${y}" r="6"/>`
       : `<circle class="pt-open" cx="${x}" cy="${y}" r="6"/>`);
@@ -169,6 +189,7 @@ function projectionSketch(fig) {
     out.textContent = `ρ = ${rho < 0 ? '−' : ''}${Math.abs(rho)}° (${where}). Abstand vom Mittelpunkt: ${Math.round((r / R) * 100)} % des Radius.`;
   };
   input.addEventListener('input', draw);
+  /** @type {boolean | null} */
   let wasNarrow = null;
   new ResizeObserver(() => { const n = fig.clientWidth < 540; if (n !== wasNarrow) { wasNarrow = n; draw(); } }).observe(fig);
   draw();
@@ -180,17 +201,21 @@ function projectionSketch(fig) {
 // parallel mit konstanter Geschwindigkeit, eine doppelt so schnell wie die andere; der Regler stellt die Zeit ein.
 // Das Oktaeder verschwindet, sobald sein Abstand das √3-Fache des Würfelabstands erreicht (Würfelecke), der Würfel,
 // sobald sein Abstand das √3-Fache des Oktaederabstands erreicht. Das Rhombendodekaeder des Galenits bleibt weg.
+/** @type {{ draw: () => void }[]} */
 const wachsFigures = [];
+/** @type {Record<string, { k: number, T: number, schnell: string, langsam: string }>} */
 const WACHS = { okt: { k: 2, T: 4, schnell: 'Oktaeder', langsam: 'Würfel' }, wue: { k: 0.5, T: 4, schnell: 'Würfel', langsam: 'Oktaeder' } };
+/** @param {number} x */
 const zahl = (x) => x.toFixed(2).replace('.', ',');
+/** @param {Element} fig */
 function wachstumFigur(fig) {
-  const art3 = fig.querySelector('.w-3d'), artS = fig.querySelector('.w-st');
-  const input = fig.querySelector('input[type="range"]'), out = fig.querySelector('output');
-  const wahl = [...fig.querySelectorAll('input[type="radio"]')];
+  const art3 = /** @type {HTMLElement} */ (fig.querySelector('.w-3d')), artS = /** @type {HTMLElement} */ (fig.querySelector('.w-st'));
+  const input = /** @type {HTMLInputElement} */ (fig.querySelector('input[type="range"]')), out = /** @type {HTMLOutputElement} */ (fig.querySelector('output'));
+  const wahl = [.../** @type {NodeListOf<HTMLInputElement>} */ (fig.querySelectorAll('input[type="radio"]'))];
   const R0 = 1.45; // Abstand des Oktaeders im Beispiel Galenit (examples.js), Würfel 1
   const draw = () => {
     const col = palette();
-    const fall = WACHS[(wahl.find((x) => x.checked) || {}).value || 'okt'];
+    const fall = WACHS[(wahl.find((x) => x.checked) || /** @type {Partial<HTMLInputElement>} */ ({})).value || 'okt'];
     const t = (Number(input.value) / 100) * fall.T;
     const dW = 1 + (fall.k < 1 ? 2 : 1) * t, dO = 1 + (fall.k < 1 ? 1 : 2) * t; // die schnellere Form doppelt so schnell
     const st = stateFor('#m=form&sys=kubisch&bsp=galenit&idx=0');
@@ -198,6 +223,7 @@ function wachstumFigur(fig) {
     const C = polyCrystal(st, col);
     art3.innerHTML = `<svg viewBox="0 0 520 520" role="img" aria-label="Galenit aus Würfel und Oktaeder">${koerperSVG('', col, { state: st })}</svg>`;
     artS.innerHTML = `<svg viewBox="0 0 520 520" role="img" aria-label="Stereogramm dazu">${buildSVG(polyScene(st, C, col).scene).inner}</svg>`;
+    /** @param {number} form */
     const n = (form) => C.faces.filter((x) => x.form === form && !x.hidden).length;
     const nW = n(0), nO = n(1);
     const verh = `Abstand vom Mittelpunkt, Oktaeder : Würfel = ${zahl(dO / dW)} : 1`;
@@ -211,14 +237,14 @@ function wachstumFigur(fig) {
     out.textContent = `${stand} ${verh}. ${weg}`;
   };
   input.addEventListener('input', draw);
-  wahl.forEach((x) => x.addEventListener('change', () => { input.value = 0; draw(); }));
+  wahl.forEach((x) => x.addEventListener('change', () => { input.value = '0'; draw(); }));
   draw();
   wachsFigures.push({ draw });
 }
 
 function watch3d() {
   lazy3d = nachladen([...document.querySelectorAll('figure[data-kind="3d"]')], {
-    zeigen: (fig) => render3d(fig, palette()),
+    zeigen: (fig) => render3d(/** @type {HTMLElement} */ (fig), palette()),
     freigeben: release3d,
     fehlertext: 'Die 3D-Ansicht konnte nicht geladen werden.',
   });

@@ -1,4 +1,3 @@
-// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Quelle der Quizfragen dieser App für die gemeinsame Fragenliste der App-Familie
 // (crystallography-common, fragenliste/extract.mjs): Fragen, Generatoren, Kapitel und die Bilder,
 // mit denselben Funktionen wie im Moodle-Export, aber ohne eingebettete Schriften.
@@ -10,8 +9,11 @@ import { buildSVG } from '../js/stereogram.js';
 import { istRaum, raumSVG, appHash } from '../js/bild3d.js';
 import { hellePalette } from './moodle-export.mjs';
 
+/** @import { BildOptionen } from '../lib/common/js/quiz-core.js' */
+
 export function quizQuelle() {
   const col = hellePalette();
+  /** @param {string} angabe @param {BildOptionen} [opt] */
   const bild = (angabe, opt = {}) => {
     if (!angabe) return null;
     if (istRaum(angabe)) return raumSVG(angabe, col, opt);
@@ -24,6 +26,6 @@ export function quizQuelle() {
   return {
     app: 'stereography', titel: 'Stereographische Projektion', kurz: 'Stereo',
     kapitel: KAPITEL, bank: BANK, generatoren: GENERATOREN,
-    bild, adresse: (angabe) => (angabe ? appHash(angabe) : null),
+    bild, adresse: (/** @type {string} */ angabe) => (angabe ? appHash(angabe) : null),
   };
 }

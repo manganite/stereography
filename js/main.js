@@ -1079,7 +1079,7 @@ function symText(sym, hex4) {
   let t = m[1];
   if (!hex4 && SYM3[t]) t = SYM3[t];
   const html = t.replace(/-(2h|\d|[hkil])/g, '<span class="ov">$1</span>');
-  return html + (m[2] ? ` (${m[2].replace('<', '&lt;').replace('>', '&gt;')})` : '');
+  return html + (m[2] ? ` (${m[2].replace(/</g, '&lt;').replace(/>/g, '&gt;')})` : '');
 }
 
 // ------------------------------------------------------------------ Interaktion Stereogramm

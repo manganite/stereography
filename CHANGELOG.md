@@ -11,10 +11,15 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 - **README:** alle Schlüssel der Link-Adressen als Tabelle (Abschnitt „Links auf Ansichten“), Hinweis auf die App-Familie, Abschnitt „Rückmeldungen“.
 - **`SECURITY.md`** und Vorlagen für Issues (Fehler, fachlicher Hinweis zu Skript oder Quiz, Vorschlag), wie in allen Repositories der Familie.
 - **Test:** Links bis v1.0.0 (`phi=` und `rho=` über 90°) werden umgerechnet.
+- **CodeQL** als Workflow (erweiterte Einrichtung nach `crystallography-common/vorlagen`): ohne Tests, die Kopie der gemeinsamen Dateien und three.js.
 
 ### Geändert
 
 - **README:** Release-Ablauf über einen Release-PR, Tag auf `origin/main`.
+
+### Behoben
+
+- **Indexmuster in der Infobox:** Spitze Klammern in der Bedingung (z. B. „hhl (h<l)“) wurden nur beim ersten Vorkommen maskiert; jetzt alle (Befund von CodeQL; die heutigen Formen enthalten je höchstens eine, die Anzeige ändert sich nicht).
 
 ## [1.12.0] - 2026-10-31
 

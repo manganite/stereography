@@ -1,0 +1,26 @@
+name: Fehler in der App
+description: Etwas funktioniert nicht oder sieht falsch aus.
+labels: [bug]
+body:
+  - type: textarea
+    id: was
+    attributes:
+      label: Was passiert?
+      description: Was haben Sie getan, was ist passiert, was hätten Sie erwartet?
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link auf die Ansicht
+      description: „Link kopieren“ in der App, oder die Adresse aus dem Browser (Skript, Quiz).
+  - type: input
+    id: umgebung
+    attributes:
+      label: Gerät, Browser und Version der App
+      description: z. B. „iPad, Safari, v1.2.0“ (die Version steht in der App unten).
+  - type: textarea
+    id: bild
+    attributes:
+      label: Bildschirmfoto
+      description: Wenn es hilft, hier hineinziehen.

@@ -1,0 +1,11 @@
+name: Vorschlag
+description: Eine Idee für App, Skript oder Quiz.
+labels: [idee]
+body:
+  - type: textarea
+    id: idee
+    attributes:
+      label: Vorschlag
+      description: Was fehlt, und wozu wäre es gut (z. B. für welches Thema oder welche Übung)?
+    validations:
+      required: true

@@ -6,6 +6,16 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **README:** alle Schlüssel der Link-Adressen als Tabelle (Abschnitt „Links auf Ansichten“), Hinweis auf die App-Familie, Abschnitt „Rückmeldungen“.
+- **`SECURITY.md`** und Vorlagen für Issues (Fehler, fachlicher Hinweis zu Skript oder Quiz, Vorschlag), wie in allen Repositories der Familie.
+- **Test:** Links bis v1.0.0 (`phi=` und `rho=` über 90°) werden umgerechnet.
+
+### Geändert
+
+- **README:** Release-Ablauf über einen Release-PR, Tag auf `origin/main`.
+
 ## [1.12.0] - 2026-10-31
 
 Kristallformen in beiden Aufstellungen, Blick der 3D-Konstruktion im Link und im Skript mehr zu enantiomorphen und polaren Punktgruppen samt Pedion.

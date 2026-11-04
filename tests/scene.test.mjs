@@ -30,6 +30,22 @@ test('Link-Adresse: Zustand → Hash → Zustand ergibt denselben Hash', () => {
   }
 });
 
+test('Link-Adresse: Links bis v1.0.0 (phi= ab ↓ im Gegenuhrzeigersinn, rho= über 90°) werden umgerechnet', () => {
+  const D = createState();
+  const lies = (h) => { const st = createState(); assert.ok(applyHashTo(st, h, D), h); return st; };
+  // alte Zählung phi ab a (↓) im Gegenuhrzeigersinn, neue az ab b (→) im Uhrzeigersinn: az = 90° − phi
+  assert.equal(lies('#m=pg&g=mm2&rho=40&phi=0').pg.phi, 90);
+  assert.equal(lies('#m=pg&g=mm2&rho=40&phi=90').pg.phi, 0);
+  assert.equal(lies('#m=pg&g=mm2&rho=40&phi=120').pg.phi, 330);
+  // az hat Vorrang vor phi
+  assert.equal(lies('#m=pg&g=mm2&az=10&phi=0').pg.phi, 10);
+  // rho über 90° (vom Nordpol gezählt) ist die untere Halbkugel; neu geschrieben als negatives rho
+  const unten = lies('#m=pg&g=mm2&rho=120&az=30');
+  assert.equal(unten.pg.theta, 120);
+  assert.match(hashOf(unten, D), /rho=-60(&|$)/);
+  assert.equal(lies('#m=pg&g=mm2&rho=-60&az=30').pg.theta, 120);
+});
+
 test('Skript: jede Abbildung ist ein gültiger Link der App und ergibt ein Stereogramm', () => {
   const html = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
   const hashes = [...html.matchAll(/data-app="([^"]+)"/g)].map((m) => m[1].replace(/&amp;/g, '&'));

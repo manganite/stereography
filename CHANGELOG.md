@@ -15,6 +15,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
+- **Gemeinsame Grundlage** auf crystallography-common v0.5.0: geprüfte Helfer für Elemente der Seite (`lib/common/js/seite.js`). Die App nutzt sie statt eigener Umwandlungen (`$`, `eingabe`, `auswahl`, `abschnitt`, `grafik` für das Stereogramm, `elemente` für Listen); fehlt ein Element oder hat es eine andere Art, meldet die Seite das beim ersten Zugriff mit der ID. Sonst ändert sich nichts (App in beiden Modi, Skript und Quiz im Browser durchgeklickt, Desktop und Telefon).
 - **Gemeinsame Grundlage** auf crystallography-common v0.4.0: Regeln für ESLint (`tools/common/eslint-basis.mjs`). Am Verhalten ändert sich nichts.
 - **Typen bereinigt** (#87), ohne Änderung am Verhalten: `Schalter` nur noch in `scene.js`; `Raumoptionen` in `bild3d.js` baut auf `BildOptionen` der Familie auf; `dirHTML` nimmt eine Richtung, die Beispielkristalle führen ihre Indizes als Flächennormalen (eine Typangabe in `examples.js` statt einer Umwandlung in `exForms`). Beispielkristalle und Moodle-Export vorher und nachher gleich (nachgeprüft).
 - **Befunde von ESLint behoben**, ohne Änderung am Verhalten: ungenutzte Importe und Konstanten in `main.js`, `pointgroups.js`, `polyhedra.js`, `stereogram.js` und `tests/quiz.test.mjs`; `unten` in `bild3d.js` ohne unnötigen Startwert.

@@ -16,7 +16,7 @@ import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
 import { TIPS, SECTIONS, LABELS } from './hilfetexte.js';
-import { offline } from '../lib/common/js/seite.js';
+import { offline, $, eingabe, auswahl, abschnitt, grafik, elemente } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
 import * as S from './scene.js';
 import { snapPole } from './sitesym.js';
@@ -39,22 +39,11 @@ import {
 /** @type {(keyof Gitterparameter)[]} */
 const LAT = ['ba', 'ca', 'al', 'be', 'ga'];
 
-// Elemente der Seite (index.html). Die Typprüfung kennt die Seite nicht: Die Art des Elements wird hier
-// festgelegt, nicht geprüft (wie in der Vorlage der App-Familie).
-/** @param {string} id */
-const $ = (id) => /** @type {HTMLElement} */ (document.getElementById(id));
-/** @param {string} id */
-const eingabe = (id) => /** @type {HTMLInputElement} */ (document.getElementById(id));
-/** @param {string} id */
-const auswahl = (id) => /** @type {HTMLSelectElement} */ (document.getElementById(id));
-/** @param {string} id */
-const abschnitt = (id) => /** @type {HTMLDetailsElement} */ (document.getElementById(id));
-/** Das Stereogramm (SVG). */
-const stereoEl = () => /** @type {SVGSVGElement} */ (/** @type {unknown} */ (document.getElementById('stereo')));
+// Elemente der Seite (index.html) über die geprüften Helfer aus lib/common/js/seite.js ($, eingabe, auswahl, abschnitt, grafik, elemente)
 const deg = Math.PI / 180;
 const coarse = window.matchMedia('(pointer: coarse)');
 /** viewBox-Einheiten pro CSS-Pixel des Stereogramms. */
-const svgUnit = () => { const w = stereoEl().getBoundingClientRect().width; return w > 0 ? 520 / w : 1; };
+const svgUnit = () => { const w = grafik('stereo').getBoundingClientRect().width; return w > 0 ? 520 / w : 1; };
 /** Trefferradius in viewBox-Einheiten: mit Finger mindestens 22 px (44 px Durchmesser). */
 /** @param {number} minUnits @param {number} px */
 const touchRadius = (minUnits, px) => (coarse.matches ? Math.max(minUnits, px * svgUnit()) : minUnits);
@@ -240,8 +229,8 @@ function syncPicker() {
   if (fam) state.pg.famPref[fam] = state.pg.id;
   // Zeile „Aufstellung“ nur unter der gewählten Gruppe; monoklin wie die übrigen Gruppen mit Aufstellungen
   const row = g.system === 'monoklin' ? 'mono' : fam;
-  for (const r of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('#pg-picker [data-setrow]'))) r.hidden = r.dataset.setrow !== row;
-  for (const b of /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('#pg-picker button'))) {
+  for (const r of elemente('#pg-picker [data-setrow]')) r.hidden = r.dataset.setrow !== row;
+  for (const b of elemente('#pg-picker button', HTMLButtonElement)) {
     let on = false;
     if (b.dataset.fam) on = b.dataset.fam === fam;
     else if (b.dataset.id) on = b.dataset.id === state.pg.id;
@@ -423,7 +412,7 @@ function formLabelText(hkl, hex) {
 }
 
 // ------------------------------------------------------------------ Stereogramm
-const svg = stereoEl();
+const svg = grafik('stereo');
 /** @type {Aktuell | null} */
 let current = null; // zuletzt gerenderte Daten
 
@@ -1374,7 +1363,7 @@ view3d.controls.addEventListener('change', () => {
   const want = viewKey === 'oblique' ? OBLIQUE : viewVec;
   if (angleBetween(view3d.viewDir(), want) > 0.5) {
     viewKey = null;
-    for (const b of document.querySelectorAll('.viewbar button')) b.setAttribute('aria-pressed', 'false');
+    for (const b of elemente('.viewbar button', HTMLButtonElement)) b.setAttribute('aria-pressed', 'false');
     if (state.blick) { state.blick = 0; save(); }
   }
 });
@@ -1391,10 +1380,10 @@ const sliders = [];
 /** Regler mit einem Feld des Zustands verbinden. @param {string} id @param {Schalter} obj @param {string} key @param {(v: number) => string} fmt */
 function bindRange(id, obj, key, fmt) {
   const el = eingabe(id), out = $(id + '-out');
-  const sync = () => { el.value = String(obj[key]); if (out) out.textContent = fmt(Number(obj[key])); };
+  const sync = () => { el.value = String(obj[key]); out.textContent = fmt(Number(obj[key])); };
   sync();
   sliders.push(sync);
-  el.addEventListener('input', () => { obj[key] = Number(el.value); if (out) out.textContent = fmt(/** @type {number} */ (obj[key])); render(); });
+  el.addEventListener('input', () => { obj[key] = Number(el.value); out.textContent = fmt(/** @type {number} */ (obj[key])); render(); });
 }
 function syncSliders() { sliders.forEach((s) => s()); }
 
@@ -1516,12 +1505,12 @@ function init() {
   // Werkzeuge „Zone“ und „Winkel“: je ein Button am Stereogramm und in der 3D-Ansicht,
   // gemeinsamer Zustand; höchstens ein Werkzeug aktiv
   syncToolBtns = () => {
-    for (const b of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.tool-toggle'))) {
+    for (const b of elemente('.tool-toggle')) {
       b.setAttribute('aria-pressed', String(curTool() === b.dataset.tool));
       b.hidden = state.mode === 'pg' && b.dataset.tool !== 'angle'; // Zone nur bei Kristallformen
     }
   };
-  for (const b of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.tool-toggle'))) {
+  for (const b of elemente('.tool-toggle')) {
     b.addEventListener('click', () => {
       // data-tool: 'zone' oder 'angle' (nur „angle“ im Punktgruppenmodus sichtbar)
       const t = /** @type {'zone' | 'angle' | null} */ (curTool() === b.dataset.tool ? null : b.dataset.tool);
@@ -1548,9 +1537,9 @@ function init() {
   const setFig = (f) => {
     state.fig = f === '3d' ? '3d' : 'stereo';
     document.body.dataset.fig = state.fig;
-    for (const b of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.figswitch button'))) b.setAttribute('aria-pressed', String(b.dataset.fig === state.fig));
+    for (const b of elemente('.figswitch button', HTMLButtonElement)) b.setAttribute('aria-pressed', String(b.dataset.fig === state.fig));
   };
-  for (const b of /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll('.figswitch button'))) b.addEventListener('click', () => setFig(b.dataset.fig));
+  for (const b of elemente('.figswitch button', HTMLButtonElement)) b.addEventListener('click', () => setFig(b.dataset.fig));
   // Link mit blick=…: die 3D-Konstruktion in dieser Ansicht zeigen (auf dem Telefon die 3D-Tafel), sobald die
   // Blickrichtungen nach dem ersten Zeichnen bekannt sind
   const linkBlick = state.blick;
@@ -1587,7 +1576,7 @@ function init() {
   /** @type {Record<string, boolean>} */
   let sects = {};
   try { sects = JSON.parse(localStorage.getItem(SECT_KEY) || '{}') || {}; } catch { sects = {}; }
-  for (const d of /** @type {NodeListOf<HTMLDetailsElement>} */ (document.querySelectorAll('details.sect, details.subsect'))) {
+  for (const d of elemente('details.sect, details.subsect', HTMLDetailsElement)) {
     if (typeof sects[d.id] === 'boolean') d.open = sects[d.id];
     d.addEventListener('toggle', () => {
       if (d.dataset.quiet) { delete d.dataset.quiet; return; } // von der ⓘ-Erklärung vorübergehend geöffnet
@@ -1630,7 +1619,7 @@ function init() {
     if (state.mode === introMode) return;
     introMode = state.mode;
     showIntro(!seen.has(state.mode) && !viaLink.has(state.mode));
-    for (const li of document.querySelectorAll('#intro li.done')) li.classList.remove('done');
+    for (const li of elemente('#intro li.done')) li.classList.remove('done');
   };
   $('intro-close').addEventListener('click', closeIntro);
   $('help-open').addEventListener('click', () => {
@@ -1766,8 +1755,7 @@ init();
 
 // ------------------------------------------------------------------ Version und Offline-Betrieb
 {
-  const el = document.getElementById('app-version');
-  if (el) el.innerHTML = `<a href="https://github.com/manganite/stereography/releases/tag/v${VERSION}">Version ${VERSION}</a> · <a href="https://github.com/manganite/stereography">Quellcode</a>`;
+  $('app-version').innerHTML = `<a href="https://github.com/manganite/stereography/releases/tag/v${VERSION}">Version ${VERSION}</a> · <a href="https://github.com/manganite/stereography">Quellcode</a>`;
 }
 // Service Worker nur auf HTTPS (GitHub Pages), lokal zum Testen mit ?sw. Nach einem Update übernimmt
 // die neue Version beim nächsten Öffnen; die Seite lädt dann einmal neu (Zustand bleibt gespeichert).

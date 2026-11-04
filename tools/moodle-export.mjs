@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Export der Quizfragen als Moodle-XML (Fragentyp „Multiple Choice“), zum Import in die Fragensammlung
 // eines Moodle-Kurses. Stereogramme werden als SVG-Dateien in die Fragen eingebettet.
 // Die Arbeit macht tools/common/moodle.mjs; hier Fragen, Kapitel und Bilder dieser App.

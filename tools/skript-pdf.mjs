@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // PDF-Fassung des Skripts (A4) aus skript.html; die Arbeit macht tools/common/skript-pdf.mjs.
 //
 //   node tools/skript-pdf.mjs [Ausgabedatei] [--base https://…/]

@@ -11,6 +11,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 - **Gemeinsame Grundlage** auf crystallography-common v0.3.0: Typen für die Typprüfung mit TypeScript (JSDoc; `lib/common/js/typen.js`, Typen des Quiz in `quiz-core.js`), neu in der Offline-Liste. Am Verhalten ändert sich nichts (Moodle-Export bytegleich, Quiz, Skript und Hilfen im Browser gleich, nachgeprüft).
 - **README:** Abschnitt „Links auf Ansichten“ heisst „Link-Adressen“, wie im Leitfaden der App-Familie.
 
+### Hinzugefügt
+
+- **Typprüfung mit TypeScript** über JSDoc-Typen (`tsconfig.json`, CI-Job `typen`; crystallography-common#19, Schritt 1): Die Rechenkerne (`linalg.js`, `pointgroups.js`, `forms.js`, `sitesym.js`, `polyhedra.js`, `stereogram.js`, `examples.js`) sind strikt typisiert, mit Vektoren und Matrizen fester Länge und getrennten Typen für Richtung [uvw] und Normale (hkl) sowie Grad und Bogenmass, wo beide vorkommen. Die übrigen Dateien folgen in Schritt 2 (#73). Am Verhalten ändert sich nichts (Rechenergebnisse, Moodle-Export, App, Skript und Quiz vorher und nachher gleich, nachgeprüft).
+
 ## [1.12.1] - 2026-11-04
 
 Korrekturen an Link-Adresse und Infobox, gemeinsame Grundlage v0.2.0, README mit allen Link-Adressen und gemeinsamer GitHub-Auftritt der App-Familie. Für Nutzer ändert sich nur, dass Links in den Modus „Kristallformen“ keine ungültige Lage mehr enthalten.

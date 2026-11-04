@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Quelle der Quizfragen dieser App für die gemeinsame Fragenliste der App-Familie
 // (crystallography-common, fragenliste/extract.mjs): Fragen, Generatoren, Kapitel und die Bilder,
 // mit denselben Funktionen wie im Moodle-Export, aber ohne eingebettete Schriften.

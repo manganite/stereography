@@ -148,4 +148,5 @@ export const EXAMPLES = [
   },
 ];
 
+/** @param {string} id */
 export const exampleById = (id) => EXAMPLES.find((x) => x.id === id) || null;

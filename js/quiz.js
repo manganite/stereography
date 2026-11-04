@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Quiz der App: Fragen, Kapitel und Bilder. Ablauf, Rückmeldung und Fortschritt kommen aus
 // lib/common/js/quiz-seite.js (gemeinsam mit den anderen Apps der Familie).
 

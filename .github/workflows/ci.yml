@@ -23,6 +23,22 @@ jobs:
       - name: Tests (Punktgruppen, Formenkatalog, Beispiele, Quiz, Release-Konsistenz, gemeinsame Dateien)
         run: node --test tests/*.test.mjs
 
+  # Typprüfung (LEITFADEN.md, Abschn. 9). TypeScript nur hier, die Tests bleiben ohne Abhängigkeiten.
+  # Lokal dieselben Pakete in einem Befehl installieren (ein zweites npm install --no-save entfernt die ersten).
+  typen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install TypeScript
+        run: npm install --no-save typescript@7.0.2 @types/node@22.20.5 playwright@1.52.0
+      - name: Typen prüfen
+        run: npx tsc -p .
+
   # PDF-Fassung des Skripts wie bei Deploy und Release, damit Fehler vor dem Tag auffallen
   pdf:
     # Playwright 1.52 kennt die Systempakete von Ubuntu 24.04; ubuntu-latest wechselt auf Ubuntu 26

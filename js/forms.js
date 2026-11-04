@@ -7,7 +7,16 @@
 // hkl: Repräsentant mit Zahlenwerten (bei hexagonalen Achsen drei Indizes h k l, i = −(h+k)).
 // sym: Indexmuster nach ITA; mult: Flächenzahl (Multiplizität, dient als Prüfung).
 
-/** Die 47 Formen: deutscher Name (Borchardt-Ott, ITA-Name in Klammern) und Eigensymmetrie (ITA Tab. 10.1.2.3). */
+/** @import { Vec3, Normale } from '../lib/common/js/typen.js' */
+/**
+ * Eintrag des Formenkatalogs. pg: Punktgruppe, wy: Wyckoff-Buchstabe, fs: Flächensymmetrie, type: Formtyp
+ * (FORM_TYPES), sym: Indexmuster, hkl: Repräsentant, mult: Flächenzahl, alt: Namensvariante, aufst: 'B' bei
+ * Aufstellung B, id: Kennung (Links), idx: Stelle im Katalog.
+ * @typedef {{ pg: string, wy: string, fs: string, type: number, sym: string, hkl: Normale, mult: number, alt?: boolean, aufst?: 'B', id: string, idx: number }} Formeintrag
+ */
+/** Zeile der Tabellen unten: [Wyckoff, Flächensymmetrie, Formtyp, Indexmuster, Repräsentant, Multiplizität, Namensvariante]. @typedef {[string, string, number, string, Vec3, number, boolean?]} Zeile */
+
+/** Die 47 Formen: deutscher Name (Borchardt-Ott, ITA-Name in Klammern) und Eigensymmetrie (ITA Tab. 10.1.2.3). @type {Record<number, { name: string, alt?: string, eig: string }>} */
 export const FORM_TYPES = {
   1: { name: 'Pedion', eig: '∞m' },
   2: { name: 'Pinakoid', eig: '∞/mm' },
@@ -59,15 +68,18 @@ export const FORM_TYPES = {
 };
 
 // [Wyckoff, Flächensymmetrie, Formtyp, Indexmuster, Repräsentant, Multiplizität, Namensvariante]
-const T = (pg, rows) => rows.map(([wy, fs, type, sym, hkl, mult, alt]) => ({ pg, wy, fs, type, sym, hkl, mult, alt }));
+/** @param {string} pg @param {Zeile[]} rows */
+const T = (pg, rows) => rows.map(([wy, fs, type, sym, hkl, mult, alt]) => ({ pg, wy, fs, type, sym, hkl: /** @type {Normale} */ (hkl), mult, alt }));
 /** Aufstellung B (312, 31m, 3̄1m, 4̄m2, 6̄2m): gleiche Wyckoff-Buchstaben und Formtypen wie in Aufstellung A, Indizes um 30° bzw. 45° gedreht. */
+/** @param {string} pg @param {Zeile[]} rows */
 const TB = (pg, rows) => T(pg, rows).map((e) => ({ ...e, aufst: 'B' }));
 
 // Kennungen aus v1.0.0 beibehalten, damit Links (f=…) und gespeicherte Auswahl dieselbe Form zeigen:
 // In 4̄3m waren die Formtypen von {112} und {221} vertauscht, die Kennung enthält den Typ.
+/** @type {Record<string, string>} */
 const LEGACY_IDS = { '-43m:1,1,2': '-43m:c38', '-43m:2,2,1': '-43m:c39' };
 
-/** Formen je Punktgruppe: monoklin Achse b; beide Aufstellungen bei 32, 3m, 3̄m, 4̄2m und 6̄m2 (A: 321, 3m1, 3̄m1, 4̄2m, 6̄m2; B: 312, 31m, 3̄1m, 4̄m2, 6̄2m). */
+/** Formen je Punktgruppe: monoklin Achse b; beide Aufstellungen bei 32, 3m, 3̄m, 4̄2m und 6̄m2 (A: 321, 3m1, 3̄m1, 4̄2m, 6̄m2; B: 312, 31m, 3̄1m, 4̄m2, 6̄2m). @type {Formeintrag[]} */
 export const CATALOG = [
   // triklin
   ...T('1', [['a', '1', 1, 'hkl', [1, 1, 1], 1]]),
@@ -122,6 +134,9 @@ export const CATALOG = [
     ['d', 'm..', 46, '0kl', [0, 2, 1], 24], ['c', 'm.m2', 40, '011', [0, 1, 1], 12], ['b', '.3m', 35, '111', [1, 1, 1], 8], ['a', '4m.m', 34, '100', [1, 0, 0], 6]]),
 ].map((e, i) => ({ ...e, id: LEGACY_IDS[`${e.pg}:${e.hkl.join(',')}`] || `${e.pg}:${e.wy}${e.type}`, idx: i }));
 
+/** @param {Pick<Formeintrag, 'type' | 'alt'>} e */
 export const formName = (e) => (e.alt && FORM_TYPES[e.type].alt ? FORM_TYPES[e.type].alt : FORM_TYPES[e.type].name);
+/** @param {Pick<Formeintrag, 'type'>} e */
 export const formEig = (e) => FORM_TYPES[e.type].eig;
+/** @param {string} id */
 export const entryById = (id) => CATALOG.find((e) => e.id === id);

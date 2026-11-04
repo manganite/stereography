@@ -6,14 +6,65 @@
 import { cross, normalize, dot, scale } from './linalg.js';
 import { hklParts } from '../lib/common/js/format.js';
 
+/** @import { Vec3, Grad, Bogenmass } from '../lib/common/js/typen.js' */
+/** @import { Teil } from '../lib/common/js/format.js' */
+/**
+ * Farben des Stereogramms (aus base.css bzw. den hellen Farben für Bilder).
+ * @typedef {{ paper: string, ink: string, muted: string, net: string, mirror: string, axis: string, upper: string, lower: string, accent: string, accent2: string }} Farben
+ */
+/** Projizierter Punkt: Bildschirmkoordinaten, obere Halbkugel, auf dem Grundkreis. @typedef {{ x: number, y: number, upper: boolean, onPrimitive: boolean }} Bildpunkt */
+/**
+ * Pol in der Szene. label: Beschriftung in Teilen (hklParts), det: Determinante der erzeugenden Operation,
+ * idx: Nummer für die Trefferfläche, gen: Ausgangspol, aux: Ergänzungsform, zoneColors: Ringe je Zone.
+ * @typedef {object} ScenePol
+ * @property {Vec3} p
+ * @property {Teil[] | null} [label]
+ * @property {number} [det]
+ * @property {number} [idx]
+ * @property {boolean} [gen]
+ * @property {boolean} [selected]
+ * @property {boolean} [faint]
+ * @property {boolean} [aux]
+ * @property {string} [color]
+ * @property {string[]} [zoneColors]
+ * @property {boolean} [zone]
+ */
+/** Zone: Zonenachse, Farbe, Beschriftung; axisMark: false ohne × am Zonenpol. @typedef {{ axis: Vec3, color?: string, label?: Teil[] | null, axisMark?: boolean }} SceneZone */
+/**
+ * Inhalt eines Stereogramms (buildSVG).
+ * @typedef {object} Szene
+ * @property {Farben} col
+ * @property {{ on: boolean, rot?: Grad }} [wulff]
+ * @property {boolean} [primitiveBold]
+ * @property {string} [primitiveColor]
+ * @property {(Vec3 | { n: Vec3, color?: string })[]} [mirrors]
+ * @property {{ dir: Vec3, symbol: string, centre: boolean, color?: string }[]} [axes]
+ * @property {Vec3[]} [zones]
+ * @property {boolean} [centreAtOrigin]
+ * @property {boolean} [faint]
+ * @property {ScenePol[]} [poles]
+ * @property {boolean} [colorByDet]
+ * @property {boolean} [showLower]
+ * @property {{ name: string, dir: Vec3 }[]} [axisLabels]
+ * @property {string} [fontFamily]
+ * @property {number} [poleScale]
+ * @property {SceneZone[]} [zoneList]
+ * @property {SceneZone} [zone]
+ * @property {{ a: Vec3, b: Vec3, label: string }} [arc]
+ * @property {number} [labelSize]
+ * @property {number} [hitR]
+ * @property {string} [bg]
+ */
+
 export const SIZE = 520;
 export const C = SIZE / 2;
 export const R = 210;
 const SYM = 17; // Grösse der Achsensymbole
 
+/** @param {number} x */
 const f = (x) => (Math.round(x * 100) / 100).toString();
 
-/** Stereographische Projektion eines Einheitsvektors → Bildschirmkoordinaten. */
+/** Stereographische Projektion eines Einheitsvektors → Bildschirmkoordinaten. @param {Vec3} p @returns {Bildpunkt} */
 export function project(p) {
   const upper = p[2] >= -1e-9;
   const d = upper ? 1 + p[2] : 1 - p[2];
@@ -21,7 +72,7 @@ export function project(p) {
   return { x: C + R * py, y: C + R * px, upper, onPrimitive: Math.abs(p[2]) < 1e-6 };
 }
 
-/** Umkehrung: Bildschirmpunkt → Einheitsvektor (obere oder untere Halbkugel). */
+/** Umkehrung: Bildschirmpunkt → Einheitsvektor (obere oder untere Halbkugel). @param {number} sx @param {number} sy @param {boolean} [lower] @returns {Vec3} */
 export function unproject(sx, sy, lower = false) {
   const py = (sx - C) / R, px = (sy - C) / R;
   let r2 = px * px + py * py;
@@ -29,13 +80,15 @@ export function unproject(sx, sy, lower = false) {
   if (r2 > 1) { const r = Math.sqrt(r2); qx /= r; qy /= r; r2 = 1; }
   const z = (1 - r2) / (1 + r2);
   const s = 1 + z;
+  /** @type {Vec3} */
   const p = [qx * s, qy * s, z];
   return lower ? [p[0], p[1], -p[2]] : p;
 }
 
-/** Bildschirmwinkel (Grad, SVG-Drehsinn) einer Richtung in der Ebene. */
+/** Bildschirmwinkel (Grad, SVG-Drehsinn) einer Richtung in der Ebene. @param {Vec3} d */
 const screenAngle = (d) => (Math.atan2(d[0], d[1]) * 180) / Math.PI;
 
+/** @param {number} n @param {number} r @param {number} startDeg */
 function polyPoints(n, r, startDeg) {
   const pts = [];
   for (let i = 0; i < n; i++) {
@@ -45,6 +98,7 @@ function polyPoints(n, r, startDeg) {
   return pts.join(' ');
 }
 
+/** @param {number} s @param {number} [ratio] */
 const lensPath = (s, ratio = 0.62) => {
   const h = s * ratio;
   return `M ${f(-s)} 0 Q 0 ${f(-h * 2)} ${f(s)} 0 Q 0 ${f(h * 2)} ${f(-s)} 0 Z`;
@@ -55,11 +109,16 @@ const lensPath = (s, ratio = 0.62) => {
  * Linse mit langer Achse entlang +x, Polygone mit einer Ecke auf +x.
  * centre: Punkt für Inversionszentrum (nur bei Achse ⊥ Projektionsebene, 2/m, 4/m, 6/m).
  * halo: weisser Unterleger, der Linien um das Symbol herum aussetzt (wie in ITA).
+ * @param {string} symbol
+ * @param {boolean} centre
+ * @param {Pick<Farben, 'axis' | 'paper'>} col
+ * @param {boolean} [halo]
  */
 export function axisSymbolSVG(symbol, centre, col, halo = false) {
   const ink = col.axis, paper = col.paper;
   const filled = halo ? `fill="${paper}" stroke="${paper}" stroke-width="7" stroke-linejoin="round"` : `fill="${ink}" stroke="${ink}" stroke-width="0.8"`;
   const open = halo ? filled : `fill="${paper}" stroke="${ink}" stroke-width="1.6"`;
+  /** @param {number} r */
   const dotC = (r) => (halo ? '' : `<circle r="${f(r)}" fill="${paper}" stroke="${ink}" stroke-width="1.2"/>`);
   const s = SYM;
   switch (symbol) {
@@ -82,6 +141,9 @@ export function axisSymbolSVG(symbol, centre, col, halo = false) {
  * Dreieck mit Spitze nach oben, Sechseck mit Ecken oben/unten.
  * Liegende/geneigte Achsen: Linse tangential, Dreieck mit Spitze radial nach aussen,
  * 4-zählige Symbole in fester Lage (Spitze oben, Linse von 4̄ senkrecht).
+ * @param {string} symbol
+ * @param {{ x: number, y: number }} q
+ * @param {boolean} alongZ
  */
 function symbolAngle(symbol, q, alongZ) {
   const radial = alongZ ? 0 : (Math.atan2(q.y - C, q.x - C) * 180) / Math.PI;
@@ -95,17 +157,25 @@ function symbolAngle(symbol, q, alongZ) {
   }
 }
 
-/** Kleines eigenständiges SVG eines Achsensymbols (für Legenden), Lage wie Achse ⊥ Projektionsebene. */
+/**
+ * Kleines eigenständiges SVG eines Achsensymbols (für Legenden), Lage wie Achse ⊥ Projektionsebene.
+ * @param {string} symbol @param {boolean} centre @param {Pick<Farben, 'axis' | 'paper'>} col @param {number} [size]
+ */
 export function symbolIcon(symbol, centre, col, size = 26) {
   const a = symbolAngle(symbol, { x: C, y: C }, true);
   return `<svg class="sym-icon" viewBox="-21 -21 42 42" width="${size}" height="${size}" aria-hidden="true"><g transform="rotate(${a})">${axisSymbolSVG(symbol, centre, col)}</g></svg>`;
 }
 
-/** Punkte auf dem kürzeren Grosskreisbogen von a nach b (Einheitsvektoren); bei a ≈ −b ein beliebiger Halbkreis. */
+/**
+ * Punkte auf dem kürzeren Grosskreisbogen von a nach b (Einheitsvektoren); bei a ≈ −b ein beliebiger Halbkreis.
+ * @param {Vec3} a @param {Vec3} b @param {number} [n]
+ * @returns {Vec3[]}
+ */
 export function arcPoints(a, b, n = 90) {
   a = normalize(a); b = normalize(b);
   const d = Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]));
   const om = Math.acos(d);
+  /** @type {Vec3} */
   let u;
   if (om > Math.PI - 1e-6) {
     u = cross(a, Math.abs(a[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0]);
@@ -113,6 +183,7 @@ export function arcPoints(a, b, n = 90) {
     u = [b[0] - d * a[0], b[1] - d * a[1], b[2] - d * a[2]];
   }
   u = normalize(u);
+  /** @type {Vec3[]} */
   const pts = [];
   for (let i = 0; i <= n; i++) {
     const t = (om * i) / n;
@@ -121,7 +192,7 @@ export function arcPoints(a, b, n = 90) {
   return pts;
 }
 
-/** Polylinie eines Grosskreises (obere Hälfte) mit Normale n. */
+/** Polylinie eines Grosskreises (obere Hälfte) mit Normale n. @param {Vec3} n */
 function greatCirclePath(n) {
   n = normalize(n);
   if (Math.abs(n[2]) > 1 - 1e-9) return null; // = Grundkreis
@@ -132,6 +203,7 @@ function greatCirclePath(n) {
   const N = 160;
   for (let i = 0; i <= N; i++) {
     const t = (Math.PI * i) / N;
+    /** @type {Vec3} */
     const p = [u[0] * Math.cos(t) + w[0] * Math.sin(t), u[1] * Math.cos(t) + w[1] * Math.sin(t), u[2] * Math.cos(t) + w[2] * Math.sin(t)];
     const q = project(p);
     pts.push(`${f(q.x)},${f(q.y)}`);
@@ -139,17 +211,19 @@ function greatCirclePath(n) {
   return 'M ' + pts.join(' L ');
 }
 
-/** Kleinkreis um die Achse ax (Einheitsvektor) mit Öffnungswinkel rho, nur obere Halbkugel. */
+/** Kleinkreis um die Achse ax (Einheitsvektor) mit Öffnungswinkel rho, nur obere Halbkugel. @param {Vec3} ax @param {Bogenmass} rho */
 function smallCirclePath(ax, rho) {
   ax = normalize(ax);
   const u = normalize(Math.abs(ax[2]) < 0.9 ? cross(ax, [0, 0, 1]) : cross(ax, [1, 0, 0]));
   const w = cross(ax, u);
+  /** @type {string[][]} */
   const segs = [];
+  /** @type {string[]} */
   let cur = [];
   const N = 180;
   for (let i = 0; i <= N; i++) {
     const t = (2 * Math.PI * i) / N;
-    const p = [0, 1, 2].map((k) => ax[k] * Math.cos(rho) + Math.sin(rho) * (u[k] * Math.cos(t) + w[k] * Math.sin(t)));
+    const p = /** @type {Vec3} */ ([0, 1, 2].map((k) => ax[k] * Math.cos(rho) + Math.sin(rho) * (u[k] * Math.cos(t) + w[k] * Math.sin(t))));
     if (p[2] >= -1e-9) { const q = project(p); cur.push(`${f(q.x)},${f(q.y)}`); }
     else if (cur.length) { segs.push(cur); cur = []; }
   }
@@ -157,17 +231,18 @@ function smallCirclePath(ax, rho) {
   return segs.map((s) => 'M ' + s.join(' L ')).join(' ');
 }
 
+/** Drehung um z (Projektionsrichtung). @param {Vec3} p @param {Grad} deg @returns {Vec3} */
 const rotZ = (p, deg) => {
   const a = (deg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
   return [c * p[0] - s * p[1], s * p[0] + c * p[1], p[2]];
 };
 
-/** Wulffsches Netz (Grosskreise durch die Pole N/S oben/unten, Kleinkreise) gedreht um rot Grad. */
+/** Wulffsches Netz (Grosskreise durch die Pole N/S oben/unten, Kleinkreise) gedreht um rot Grad. @param {Grad} rot @param {Farben} col */
 function wulffNet(rot, col) {
   let main = '', fine = '';
   for (let deg = 2; deg < 180; deg += 2) {
     if (deg === 90) continue;
-    const psi = (deg * Math.PI) / 180;
+    const psi = /** @type {Bogenmass} */ ((deg * Math.PI) / 180);
     // Grosskreise, die die Nord-Süd-Achse (x) enthalten
     const n = rotZ([0, Math.cos(psi), Math.sin(psi)], rot);
     const gp = greatCirclePath(n);
@@ -188,8 +263,14 @@ function wulffNet(rot, col) {
  * den Ziffern gezeichnet (text-decoration: overline sitzt auf Höhe der Oberlänge, deutlich zu hoch).
  * Breiten nach IBM Plex Sans (Ziffern tabellarisch 0,6 em); o = { fs, anchor, italic, fill }.
  */
+/** @type {Record<string, number>} */
 const GLYPH_W = { ' ': 0.236, '[': 0.32, ']': 0.32, '(': 0.335, ')': 0.335, '{': 0.33, '}': 0.33 };
+/** @param {string} ch */
 const glyphW = (ch) => GLYPH_W[ch] ?? 0.6;
+/**
+ * @param {Teil[]} parts @param {number} x @param {number} y @param {string} attrs SVG-Attribute des Texts
+ * @param {{ fs: number, anchor?: string, italic?: boolean, fill: string }} o
+ */
 function textWithBars(parts, x, y, attrs, o) {
   const ts = parts.map((p) => `<tspan>${p.t}</tspan>`).join('');
   let out = `<text x="${f(x)}" y="${f(y)}" ${attrs}>${ts}</text>`;
@@ -220,21 +301,26 @@ function textWithBars(parts, x, y, attrs, o) {
  *   poleScale (Grösse der Polsymbole, Standard 1; das Quiz vergrössert sie in kleinen Bildern),
  *   zoneList:[{axis, color, label, axisMark}] (axisMark: false ohne × am Zonenpol)
  * }
+ * @param {Szene} scene
+ * @param {{ standalone?: boolean }} [optionen]
  */
 export function buildSVG(scene, { standalone = false } = {}) {
   const col = scene.col;
   const out = [];
   const font = scene.fontFamily || 'Helvetica, Arial, sans-serif';
   out.push(`<circle cx="${C}" cy="${C}" r="${R}" fill="${col.paper}"/>`);
-  if (scene.wulff?.on) out.push(wulffNet(scene.wulff.rot || 0, col));
+  if (scene.wulff?.on) out.push(wulffNet(/** @type {Grad} */ (scene.wulff.rot || 0), col));
 
   // Symmetriegerüst in eigener Gruppe; scene.faint: gedämpft (unter Flächenpolen im Polyedermodus)
   const fc = scene.faint ? { ...col, ink: col.muted, mirror: col.muted, axis: col.muted } : col;
+  /** @type {string[]} */
   const fw = [];
   // Dünne Linien (ITA): liegende Symmetrieachsen als Durchmesser, im kubischen System
   // zusätzlich die Zonen {100} und {110}, soweit sie keine Spiegelebenen sind.
   // Farben je Element (Blickrichtung) optional: axis.color, mirror {n, color}; sonst Tinte
+  /** @type {Map<string, string>} */
   const byColor = new Map();
+  /** @param {string} color @param {string} d */
   const addPath = (color, d) => byColor.set(color, (byColor.get(color) || '') + d + ' ');
   for (const ax of scene.axes || []) {
     if (Math.abs(ax.dir[2]) >= 1e-6) continue;
@@ -248,6 +334,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   for (const [color, d] of byColor) fw.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="${scene.faint ? 0.9 : 1.1}"/>`);
 
   // Spiegelebenen (nach Farbe gruppiert)
+  /** @type {Map<string, string>} */
   const mirrBy = new Map();
   for (const m of scene.mirrors || []) {
     const n = Array.isArray(m) ? m : m.n;
@@ -277,6 +364,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   }
 
   // Achsensymbole
+  /** @type {{ ax: NonNullable<Szene['axes']>[number], q: Bildpunkt, ang: number, centre: boolean }[]} */
   const placed = [];
   for (const ax of scene.axes || []) {
     const inPlane = Math.abs(ax.dir[2]) < 1e-6;
@@ -287,6 +375,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
       placed.push({ ax, q, ang, centre: ax.centre && alongZ });
     }
   }
+  /** @param {{ q: Bildpunkt, ang: number }} P */
   const tr = (P) => `translate(${f(P.q.x)},${f(P.q.y)}) rotate(${f(P.ang)})${scene.faint ? ' scale(0.8)' : ''}`;
   for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, false, fc, true)}</g>`);
   for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, P.ax.color ? { ...fc, axis: P.ax.color } : fc)}</g>`);
@@ -315,7 +404,10 @@ export function buildSVG(scene, { standalone = false } = {}) {
   // Winkel: Grosskreisbogen zwischen zwei Polen; Abschnitte auf der unteren Halbkugel gestrichelt
   if (scene.arc) {
     const pts = arcPoints(scene.arc.a, scene.arc.b, 120);
-    let run = [], up = null;
+    /** @type {Bildpunkt[]} */
+    let run = [];
+    /** @type {boolean | null} */
+    let up = null;
     const flush = () => {
       if (run.length > 1) out.push(`<path d="M ${run.map((q) => `${f(q.x)},${f(q.y)}`).join(' L ')}" fill="none" stroke="${col.accent}" stroke-width="${up ? 3.2 : 2}" stroke-linecap="round"${up ? '' : ' stroke-dasharray="6 5"'}/>`);
     };
@@ -336,6 +428,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
 
   // Pole
   const poles = (scene.poles || []).map((P) => ({ ...P, q: project(P.p) }));
+  /** @type {(ScenePol & { q: Bildpunkt })[]} */
   const drawn = [];
   // Hof hinter ausgewählten Polen (deutlicher Kontrast zur übrigen Projektion)
   for (const P of poles) {
@@ -343,7 +436,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
   }
   for (const P of poles) {
     if (!P.q.upper && !scene.showLower) continue;
-    const cU = P.selected ? col.accent : P.color || (scene.colorByDet ? (P.det > 0 ? col.upper : col.accent2) : col.ink);
+    const cU = P.selected ? col.accent : P.color || (scene.colorByDet ? ((P.det ?? 0) > 0 ? col.upper : col.accent2) : col.ink);
     const op = P.faint ? ' opacity="0.45"' : '';
     const ps = scene.poleScale || 1;
     if (P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(4.2 * ps)}" fill="${cU}"${op}/>`);
@@ -359,6 +452,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
     if (P.selected) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(Math.max(12.5, 10.5 + 2.6 * zc.length))}" fill="none" stroke="${col.accent}" stroke-width="3"/>`);
   }
   // Beschriftungen: zusammenfallende Pole (oben/unten) werden gestapelt beschriftet
+  /** @type {{ x: number, y: number, items: (ScenePol & { q: Bildpunkt })[] }[]} */
   const clusters = [];
   for (const P of drawn) {
     if (!P.label) continue;
@@ -380,7 +474,7 @@ export function buildSVG(scene, { standalone = false } = {}) {
     else if (Math.abs(dy) <= 0.35) by -= ((cl.items.length - 1) * lh) / 2;
     cl.items.forEach((P, k) => {
       const fill = P.selected ? col.accent : P.aux ? col.muted : P.q.upper ? col.ink : col.muted;
-      out.push(textWithBars(P.label, cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="${f(fs)}" fill="${fill}"${P.selected ? ' font-weight="600"' : ''} text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`, { fs, anchor, italic: !P.q.upper, fill }));
+      out.push(textWithBars(/** @type {Teil[]} */ (P.label), cl.x + dx * off, by + k * lh, `font-family="${font}" font-size="${f(fs)}" fill="${fill}"${P.selected ? ' font-weight="600"' : ''} text-anchor="${anchor}" paint-order="stroke" stroke="${col.paper}" stroke-width="3" stroke-linejoin="round"${P.q.upper ? '' : ' font-style="italic"'}`, { fs, anchor, italic: !P.q.upper, fill }));
     });
   }
   // Treffer-Flächen für Klick/Tippen

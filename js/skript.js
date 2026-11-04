@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Skript zur App: Abbildungen aus dem Code der App, Projektionsskizze, Wachstumsfigur, Symbollegende.
 // Inhaltsverzeichnis, App-Links und Nachladen kommen aus lib/common/js/skript-kern.js.
 // Eine Abbildung ist durch die Link-Adresse der App beschrieben (data-app="#m=form&…"); daraus entsteht

@@ -13,6 +13,14 @@ import { mulVec, dot, normalize, scale, sub, inverse, transpose, fromColumns, ro
 import { buildPointGroup, latticeToCart, groupById } from './pointgroups.js';
 import { CATALOG } from './forms.js';
 
+/** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
+/** @import { Punktgruppe, Analyse } from './pointgroups.js' */
+/**
+ * Wyckoff-Lage: Buchstabe, orientiertes Symbol der Lagesymmetrie, Multiplizität, Vertreter (Pol) und
+ * Indizes der Operationen seiner Lagesymmetrie.
+ * @typedef {{ wy: string, fs: string, mult: number, rep: Vec3, stab: number[] }} Wyckofflage
+ */
+
 const deg = Math.PI / 180;
 /** Einrasten beim Ziehen: Abstand (Winkel auf der Kugel) zu einer Achse bzw. Spiegelebene. */
 export const SNAP_AXIS = 4 * deg;
@@ -25,6 +33,7 @@ const ON_TOL = 1e-4;
  * (Buchstabe → orientiertes Symbol). Die Buchstaben stimmen mit der Standardaufstellung überein,
  * in den Symbolen sind die Positionen der 2. und 3. Blickrichtung vertauscht.
  */
+/** @type {Record<string, { std: string, fs: Record<string, string> }>} */
 const ALT_SETTINGS = {
   '2c': { std: '2b', fs: { b: '1', a: '2' } },
   mc: { std: 'mb', fs: { b: '1', a: 'm' } },
@@ -36,15 +45,21 @@ const ALT_SETTINGS = {
   '-62m': { std: '-6m2', fs: { e: '1', d: 'm..', c: '..m', b: 'm2m', a: '3.m' } },
 };
 
-/** Pol (Flächennormale) zu Miller-Indizes im kartesischen System der Punktgruppen. */
+/**
+ * Pol (Flächennormale) zu Miller-Indizes im kartesischen System der Punktgruppen.
+ * @param {string} system
+ * @param {Normale} hkl
+ */
 export function poleOfHKL(system, hkl) {
   const toCart = latticeToCart(system);
-  const A = fromColumns(toCart([1, 0, 0]), toCart([0, 1, 0]), toCart([0, 0, 1]));
+  const [a, b, c] = /** @type {Richtung[]} */ ([[1, 0, 0], [0, 1, 0], [0, 0, 1]]);
+  const A = fromColumns(toCart(a), toCart(b), toCart(c));
   return normalize(mulVec(transpose(inverse(A)), hkl));
 }
 
-/** Indizes der Operationen, die p festhalten. */
+/** Indizes der Operationen, die p festhalten. @param {Mat3[]} ops @param {Vec3} p @param {number} [tol] */
 export function stabilizer(ops, p, tol = ON_TOL) {
+  /** @type {number[]} */
   const out = [];
   ops.forEach((m, i) => {
     const q = mulVec(m, p);
@@ -54,10 +69,12 @@ export function stabilizer(ops, p, tol = ON_TOL) {
 }
 
 /** Drehung R mit R·G_std·R⁻¹ = G_alt (Achsen des Kristallsystems bleiben dabei Achsen). */
+/** @param {Mat3[]} stdOps @param {Mat3[]} altOps */
 function settingRotation(stdOps, altOps) {
+  /** @type {Mat3[]} */
   const cands = [];
   for (let k = 1; k < 24; k++) cands.push(rotation([0, 0, 1], k * 15 * deg));
-  for (const a of [[1, 0, 0], [0, 1, 0]]) for (const s of [1, -1]) cands.push(rotation(a, s * 90 * deg));
+  for (const a of /** @type {Vec3[]} */ ([[1, 0, 0], [0, 1, 0]])) for (const s of [1, -1]) cands.push(rotation(a, s * 90 * deg));
   for (const R of cands) {
     const Rt = transpose(R);
     if (stdOps.every((m) => { const c = mul(mul(R, m), Rt); return altOps.some((n) => matEq(n, c)); })) return R;
@@ -65,18 +82,23 @@ function settingRotation(stdOps, altOps) {
   throw new Error('keine Drehung zwischen den Aufstellungen gefunden');
 }
 
+/** @type {Map<string, Wyckofflage[]>} */
 const cache = new Map();
 /**
  * Wyckoff-Lagen einer Punktgruppe: [{ wy, fs, mult, rep, stab }] (rep: Pol der Lage,
  * stab: Indizes der Operationen seiner Lagesymmetrie in info.ops).
+ * @param {string} groupId
+ * @returns {Wyckofflage[]}
  */
 export function wyckoffPositions(groupId) {
-  if (cache.has(groupId)) return cache.get(groupId);
+  const vorhanden = cache.get(groupId);
+  if (vorhanden) return vorhanden;
   const info = buildPointGroup(groupId);
   const alt = ALT_SETTINGS[groupId];
   const srcId = alt ? alt.std : groupId;
-  const src = groupById(srcId);
+  const src = /** @type {Punktgruppe} */ (groupById(srcId));
   const R = alt ? settingRotation(buildPointGroup(srcId).ops, info.ops) : null;
+  /** @type {Wyckofflage[]} */
   const rows = [];
   for (const e of CATALOG) {
     if (e.pg !== srcId || rows.some((r) => r.wy === e.wy)) continue;
@@ -90,7 +112,7 @@ export function wyckoffPositions(groupId) {
   return rows;
 }
 
-/** Symmetrieelemente, auf die ein Pol einrasten kann: Achsen (Punkte ±d) und Spiegelebenen (Grosskreise). */
+/** Symmetrieelemente, auf die ein Pol einrasten kann: Achsen (Punkte ±d) und Spiegelebenen (Grosskreise). @param {Pick<Analyse, 'axes' | 'mirrors'>} info */
 function snapTargets(info) {
   return { axes: info.axes.map((a) => a.dir), mirrors: info.mirrors };
 }
@@ -98,14 +120,18 @@ function snapTargets(info) {
 /**
  * Pol beim Ziehen einrasten: liegt p näher als SNAP_AXIS an einer Achse, wird er auf die Achse gesetzt,
  * sonst näher als SNAP_MIRROR an einer Spiegelebene auf deren Grosskreis. Rückgabe: { p, on }.
+ * @param {Pick<Analyse, 'axes' | 'mirrors'>} info
+ * @param {Vec3} p
+ * @returns {{ p: Vec3, on: 'axis' | 'mirror' | null }}
  */
 export function snapPole(info, p) {
   const { axes, mirrors } = snapTargets(info);
+  /** @type {{ ang: number, p: Vec3 } | null} */
   let best = null;
   for (const d of axes) {
     const c = dot(d, p);
     const ang = Math.acos(Math.min(1, Math.abs(c)));
-    if (ang < SNAP_AXIS && (!best || ang < best.ang)) best = { ang, p: c >= 0 ? d.slice() : scale(d, -1) };
+    if (ang < SNAP_AXIS && (!best || ang < best.ang)) best = { ang, p: c >= 0 ? /** @type {Vec3} */ (d.slice()) : scale(d, -1) };
   }
   if (best) return { p: best.p, on: 'axis' };
   for (const n of mirrors) {
@@ -120,17 +146,24 @@ export function snapPole(info, p) {
 /**
  * Lage des Pols p in der Punktgruppe: { special, mult, stab (Indizes), wy, fs, p }.
  * p wird auf die Elemente seiner Lagesymmetrie gesetzt (entfernt Rundungsfehler, z. B. aus der Link-Adresse).
+ * @param {string} groupId
+ * @param {Pick<Analyse, 'ops'>} info
+ * @param {Vec3} p
  */
 export function siteOf(groupId, info, p) {
   const stab = stabilizer(info.ops, p);
   let pc = p;
   if (stab.length > 1) {
     // auf den gemeinsamen Fixraum projizieren: Mittel der Bilder unter der Lagesymmetrie
-    const s = stab.reduce((acc, i) => { const q = mulVec(info.ops[i], p); return [acc[0] + q[0], acc[1] + q[1], acc[2] + q[2]]; }, [0, 0, 0]);
+    /** @type {(acc: Vec3, i: number) => Vec3} */
+    const summe = (acc, i) => { const q = mulVec(info.ops[i], p); return [acc[0] + q[0], acc[1] + q[1], acc[2] + q[2]]; };
+    const s = stab.reduce(summe, [0, 0, 0]);
     pc = normalize(s);
   }
   const mult = info.ops.length / stab.length;
+  /** @param {number[]} list */
   const key = (list) => list.slice().sort((a, b) => a - b).join(',');
+  /** @type {Wyckofflage | null | undefined} */
   let row = null;
   const rows = wyckoffPositions(groupId);
   if (stab.length === 1) row = rows.find((r) => r.stab.length === 1) || null;
@@ -149,8 +182,10 @@ export function siteOf(groupId, info, p) {
 /**
  * Bahn ohne Doppelte: je Stelle ein Eintrag { p, det, op (erste Operation), ops (alle Operationen
  * dorthin), mixed (Bild und Spiegelbild fallen zusammen) }. orbit: Ausgabe von pointgroups.orbit.
+ * @param {{ p: Vec3, det: number, op: number }[]} orbit
  */
 export function distinctPoles(orbit) {
+  /** @type {{ p: Vec3, det: number, op: number, ops: number[], mixed: boolean }[]} */
   const out = [];
   for (const o of orbit) {
     const e = out.find((u) => Math.hypot(u.p[0] - o.p[0], u.p[1] - o.p[1], u.p[2] - o.p[2]) < 1e-6);

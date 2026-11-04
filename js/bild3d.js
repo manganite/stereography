@@ -14,10 +14,12 @@ import { cross, normalize, dot } from './linalg.js';
 /** @import { Vec3 } from '../lib/common/js/typen.js' */
 /** @import { Achse } from './pointgroups.js' */
 /** @import { Palette, Zustand } from './scene.js' */
+/** @import { BildOptionen } from '../lib/common/js/quiz-core.js' */
 /**
  * Optionen einer Zeichnung: ebene Projektionsebene und Blickpfeil (Standard ja), blick andere Kamerarichtung,
- * state fertiger Zustand statt der Link-Adresse, klein kräftigere Linien für kleine Antwortbilder.
- * @typedef {{ ebene?: boolean, blick?: Vec3, state?: Zustand, klein?: boolean, [name: string]: unknown }} Raumoptionen
+ * state fertiger Zustand statt der Link-Adresse; dazu die Bildoptionen der Familie (klein: kräftigere Linien
+ * für kleine Antwortbilder).
+ * @typedef {BildOptionen & { ebene?: boolean, blick?: Vec3, state?: Zustand }} Raumoptionen
  */
 /** Bildpunkt mit Tiefe z (zur Kamera positiv). @typedef {{ x: number, y: number, z: number }} Raumpunkt */
 /** Projektion eines Raumpunkts (Vektor mit drei Komponenten). @typedef {(p: number[]) => Raumpunkt} Projektor */

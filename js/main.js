@@ -26,7 +26,7 @@ import {
 } from './scene.js';
 
 /** @import { Vec3, Richtung, Normale } from '../lib/common/js/typen.js' */
-/** @import { Zustand, Palette, AppKristall, Winkel } from './scene.js' */
+/** @import { Zustand, Palette, AppKristall, Winkel, Schalter } from './scene.js' */
 /** @import { Punktgruppe } from './pointgroups.js' */
 /** @import { Formeintrag } from './forms.js' */
 /** @import { Beispiel } from './examples.js' */
@@ -36,7 +36,6 @@ import {
 /** Szene des Modus Kristallformen. @typedef {ReturnType<typeof polyScene>['scene']} PolySzene */
 /** Zuletzt gezeichnete Daten. @typedef {{ kind: 'pg', info: PgTeile['info'], scene: PgTeile['scene'] } | { kind: 'poly', C: AppKristall, scene: PolySzene }} Aktuell */
 /** Ansicht der 3D-Konstruktion entlang einer Blickrichtung (viewDirections). @typedef {ReturnType<typeof pgViewDirections>[number]} Ansicht */
-/** Teil des Zustands mit Schaltern bzw. Reglern (bindCheck, bindRange). @typedef {Record<string, unknown>} Schalter */
 /** @type {(keyof Gitterparameter)[]} */
 const LAT = ['ba', 'ca', 'al', 'be', 'ga'];
 
@@ -1154,10 +1153,10 @@ function updateInfoPoly(C, col) {
     ${habitNote}`)}`);
 }
 
-/** Richtung [uvw] (bei hexagonalen Achsen wahlweise [uvtw]) als HTML. @param {Vec3} v @param {boolean} four @param {[string, string]} [br] */
+/** Richtung [uvw] (bei hexagonalen Achsen wahlweise [uvtw]) als HTML. @param {Richtung} v @param {boolean} four @param {[string, string]} [br] */
 function dirHTML(v, four, br = ['[', ']']) {
   /** @type {number[]} */
-  const w = four ? dirToFour(/** @type {Richtung} */ (v)) : v;
+  const w = four ? dirToFour(v) : v;
   return br[0] + w.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join(Math.max(...w.map(Math.abs)) > 9 ? ' ' : '') + br[1];
 }
 

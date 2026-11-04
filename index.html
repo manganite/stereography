@@ -175,13 +175,19 @@
   <aside class="side" aria-label="Bedienung">
     <section class="card intro" id="intro" aria-labelledby="intro-title" hidden>
       <div class="intro-head"><h2 id="intro-title">Erste Schritte</h2><button class="intro-x" id="intro-close" type="button" aria-label="Erste Schritte schliessen">×</button></div>
-      <ol class="steps">
+      <ol class="steps" id="steps-pg">
+        <li><b>Punktgruppe wählen.</b> Das Stereogramm zeigt ihr Symmetriegerüst: Drehachsen als Symbole, Spiegelebenen als kräftige Grosskreise. <button class="linkbtn" type="button" data-step="p1">4mm wählen</button></li>
+        <li><b>Ausgangspol ziehen.</b> Alle Operationen der Gruppe wirken auf ihn; in allgemeiner Lage entstehen so viele Pole, wie die Gruppe Operationen hat, bei 4mm acht. Nahe einer Spiegelebene oder Achse rastet er ein: spezielle Lage, weniger Pole. <button class="linkbtn" type="button" data-step="p2">Auf eine Spiegelebene setzen</button></li>
+        <li><b>Drehung oder Spiegelung?</b> Farbig erscheinen die Pole gleicher Händigkeit (aus Drehungen) in einer Farbe, die Spiegelbilder in der anderen. <button class="linkbtn" type="button" data-step="p3">Farben einschalten</button></li>
+        <li><b>Symbol lesen.</b> Das Symbol nennt die Symmetrie entlang der Blickrichtungen, bei 4mm [001], ⟨100⟩ und ⟨110⟩. Mit „Blick“ unter der 3D-Ansicht schaut man entlang einer von ihnen. <button class="linkbtn" type="button" data-step="p4">Entlang [001] sehen</button></li>
+      </ol>
+      <ol class="steps" id="steps-poly">
         <li><b>Kristall wählen.</b> Der Galenit (PbS) steht im Zentrum einer Kugel; jede Fläche hat eine Normale. <button class="linkbtn" type="button" data-step="1">Galenit laden</button></li>
         <li><b>Fläche antippen.</b> Eine Fläche in der 3D-Ansicht antippen: Ihr Pol im Stereogramm leuchtet auf, und umgekehrt. <button class="linkbtn" type="button" data-step="2">Fläche (001) zeigen</button></li>
         <li><b>Projektion verfolgen.</b> Die Normale trifft die Kugel im Flächenpol; der Strahl zum Südpol schneidet die Äquatorebene im Punkt des Stereogramms. Pol oben: Punkt, unten: Kreis. <button class="linkbtn" type="button" data-step="3">Seitlich ansehen</button></li>
         <li><b>Symmetrie erkennen.</b> Das Symmetriegerüst von m<span class="ov">3</span>m erklärt, warum die Pole so liegen. Im Tab „Punktgruppen“ wirkt es auf einen einzelnen Pol. <button class="linkbtn" type="button" data-step="4">Gerüst einblenden</button></li>
       </ol>
-      <p class="intro-foot">Begriffe nach Borchardt-Ott &amp; Sowa, <i>Kristallographie</i> (2018), Abschn. 5.4. <span class="only-fine">Tooltips erklären jedes Bedienelement.</span><span class="only-coarse">Das ⓘ neben den Überschriften erklärt die Bedienelemente.</span> Wieder öffnen mit „?“ oben.</p>
+      <p class="intro-foot"><span id="intro-quelle-pg">Begriffe nach Borchardt-Ott &amp; Sowa, <i>Kristallographie</i> (2018), Abschn. 5.4, 6, 7.1 und 9. </span><span id="intro-quelle">Begriffe nach Borchardt-Ott &amp; Sowa, <i>Kristallographie</i> (2018), Abschn. 5.4. </span><span class="only-fine">Tooltips erklären jedes Bedienelement.</span><span class="only-coarse">Das ⓘ neben den Überschriften erklärt die Bedienelemente.</span> Wieder öffnen mit „?“ oben.</p>
     </section>
     <div class="prim card">
       <section id="ctl-pg" class="stack">

@@ -1399,6 +1399,8 @@ function bindRange(id, obj, key, fmt) {
 }
 function syncSliders() { sliders.forEach((s) => s()); }
 
+/** Erste Schritte des aktiven Modus zeigen, wenn er neu ist (gesetzt in init). */
+let introSync = () => {};
 /** @param {'pg' | 'poly'} mode */
 function setMode(mode) {
   state.mode = mode;
@@ -1413,6 +1415,7 @@ function setMode(mode) {
   if (mode !== 'poly') $('v3d-hint').textContent = '';
   if (mode !== 'pg') $('v3d-dirs').hidden = true;
   $('stereo-sub').textContent = 'Projektion ∥ c';
+  introSync();
   render();
 }
 
@@ -1602,21 +1605,39 @@ function init() {
     || state.poly.showPoles !== DEFAULTS.poly.showPoles || state.poly.showLower !== DEFAULTS.poly.showLower;
   if (viewChanged && !abschnitt('sec-view').open) { abschnitt('sec-view').dataset.quiet = '1'; abschnitt('sec-view').open = true; } // nicht als Wahl des Nutzers merken
 
-  // Erste Schritte: beim ersten Besuch ohne Link sichtbar, wegklickbar, über „?“ wieder zu öffnen
+  // Erste Schritte je Modus: beim ersten Aufruf eines Modus, wegklickbar (× oder „?“), über „?“ wieder zu
+  // öffnen; nicht für den Modus, in dem ein Link die App öffnet (für die Sitzung, nicht gespeichert).
+  // Gespeichert: die gesehenen Modi (S.introSeen).
   const INTRO_KEY = 'stereo-intro';
+  /** @type {Set<string>} */
+  let seen = new Set();
+  try { seen = S.introSeen(localStorage.getItem(INTRO_KEY)); } catch { /* Speicher nicht verfügbar */ }
+  /** @type {Set<string>} */
+  const viaLink = new Set(hashActive ? [state.mode] : []);
   /** @param {boolean} on */
   const showIntro = (on) => { $('intro').hidden = !on; $('help-open').setAttribute('aria-expanded', String(on)); };
-  let introClosed = false;
-  try { introClosed = localStorage.getItem(INTRO_KEY) === 'zu'; } catch { /* Speicher nicht verfügbar */ }
-  showIntro(!introClosed && !hashActive);
-  $('intro-close').addEventListener('click', () => {
+  const closeIntro = () => {
     showIntro(false);
-    try { localStorage.setItem(INTRO_KEY, 'zu'); } catch { /* ignorieren */ }
-  });
+    seen.add(state.mode);
+    try { localStorage.setItem(INTRO_KEY, [...seen].join(',')); } catch { /* ignorieren */ }
+  };
+  /** @type {string | null} */
+  let introMode = hashActive ? state.mode : null;
+  introSync = () => {
+    $('steps-pg').hidden = state.mode !== 'pg';
+    $('steps-poly').hidden = state.mode !== 'poly';
+    $('intro-quelle-pg').hidden = state.mode !== 'pg';
+    $('intro-quelle').hidden = state.mode !== 'poly';
+    if (state.mode === introMode) return;
+    introMode = state.mode;
+    showIntro(!seen.has(state.mode) && !viaLink.has(state.mode));
+    for (const li of document.querySelectorAll('#intro li.done')) li.classList.remove('done');
+  };
+  $('intro-close').addEventListener('click', closeIntro);
   $('help-open').addEventListener('click', () => {
-    const on = /** @type {boolean} */ ($('intro').hidden); // hidden wird hier nur als Schalter gesetzt
-    showIntro(on);
-    if (on) { /** @type {HTMLElement} */ ($('intro').closest('.side')).scrollTop = 0; $('intro').scrollIntoView({ block: 'nearest' }); }
+    if (!$('intro').hidden) { closeIntro(); return; }
+    showIntro(true);
+    /** @type {HTMLElement} */ ($('intro').closest('.side')).scrollTop = 0; $('intro').scrollIntoView({ block: 'nearest' });
   });
   const isPhone = () => window.matchMedia('(max-width: 719px)').matches;
   /** @param {() => void} fn */
@@ -1638,8 +1659,22 @@ function init() {
     const i = C ? C.faces.findIndex((f) => f.role === 'main' && f.hkl.join() === hkl.join()) : -1;
     if (i >= 0) { state.selected = i; render(); }
   };
+  // Punktgruppen: 4mm, Ausgangspol in allgemeiner und spezieller Lage, Farben, Blick entlang [001]
+  const choose4mm = () => {
+    if (state.pg.id !== '4mm') { state.pg.id = '4mm'; state.pg.hideDirs = []; state.pgSel = []; syncPicker(); }
+    state.pg.showElements = true; eingabe('pg-elements').checked = true;
+    state.pg.showObject = true; eingabe('pg-object').checked = true;
+    state.pg.showPoles = true; eingabe('pg-poles').checked = true;
+    state.pg.tool = null; // „Ausgangspol ziehen“ geht nur ohne Werkzeug (z. B. „Winkel“)
+    if (state.mode !== 'pg') setMode('pg'); else syncToolBtns();
+  };
+  const generalPole = () => { state.pg.theta = DEFAULTS.pg.theta; state.pg.phi = DEFAULTS.pg.phi; };
   /** @type {Record<string, () => void>} */
   const STEPS = {
+    p1: () => { choose4mm(); generalPole(); syncSliders(); render(); if (isPhone()) setFig('stereo'); },
+    p2: () => { choose4mm(); generalPole(); state.pg.phi = 0; syncSliders(); render(); if (isPhone()) setFig('stereo'); },
+    p3: () => { choose4mm(); generalPole(); state.pg.colorful = true; eingabe('pg-colorful').checked = true; syncSliders(); render(); if (isPhone()) setFig('stereo'); },
+    p4: () => { choose4mm(); render(); afterRender(() => selectView('d0')); if (isPhone()) setFig('3d'); },
     1: () => { loadGalena(); selectView('oblique'); if (isPhone()) setFig('3d'); },
     2: () => { if (!galenaShown()) loadGalena(); afterRender(() => selectFace([0, 0, 1])); if (isPhone()) setFig('stereo'); },
     3: () => {

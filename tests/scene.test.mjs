@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createState, hashOf, applyHashTo, pgScene, polyCrystal, polyScene, normalizeZones, currentEntryId } from '../js/scene.js';
+import { createState, hashOf, applyHashTo, pgScene, polyCrystal, polyScene, normalizeZones, currentEntryId, introSeen } from '../js/scene.js';
 import { buildSVG } from '../js/stereogram.js';
 
 /** @import { Palette, AppKristall } from '../js/scene.js' */
@@ -82,4 +82,12 @@ test('Link-Adresse: eine Lage, die es im System nicht gibt, gilt als die erste u
   assert.match(hashOf(lies('#m=form&sys=tetragonal&lage=a'), D), /lage=a(&|$)/);
   assert.match(hashOf(lies('#m=form&sys=kubisch&lage=111'), D), /lage=111(&|$)/);
   assert.doesNotMatch(hashOf(lies('#m=form&sys=kubisch'), D), /lage=/);
+});
+
+test('Erste Schritte: gespeicherte Modi lesen, alter Wert „zu“ gilt als „poly“', () => {
+  assert.deepEqual([...introSeen(null)], []);
+  assert.deepEqual([...introSeen('')], []);
+  assert.deepEqual([...introSeen('zu')], ['poly']);
+  assert.deepEqual([...introSeen('zu,pg')].sort(), ['pg', 'poly']);
+  assert.deepEqual([...introSeen('pg,poly')].sort(), ['pg', 'poly']);
 });

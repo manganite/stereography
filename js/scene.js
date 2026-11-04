@@ -72,6 +72,14 @@ import { siteOf, distinctPoles } from './sitesym.js';
 const deg = Math.PI / 180;
 
 // ------------------------------------------------------------------ Zustand
+/**
+ * Gesehene Erste Schritte aus dem gespeicherten Wert von `stereo-intro`: Modi, durch Komma getrennt.
+ * Bis v1.12.1 hiess „zu“: die damals einzigen Ersten Schritte (Galenit, Modus „Kristallformen“) sind gesehen.
+ * @param {string | null | undefined} value
+ * @returns {Set<string>}
+ */
+export const introSeen = (value) => new Set(String(value ?? '').split(',').filter(Boolean).map((m) => (m === 'zu' ? 'poly' : m)));
+
 /** Startzustand der App (auch Grundlage jeder Link-Adresse). @returns {Zustand} */
 export function createState() {
   return {

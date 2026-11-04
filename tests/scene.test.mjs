@@ -50,3 +50,17 @@ test('Skript: jede Abbildung ist ein gültiger Link der App und ergibt ein Stere
   const rho = (Math.acos(f.normal[2]) * 180) / Math.PI;
   assert.ok(Math.abs(phi - 45) < 1e-6 && Math.abs(rho - 54.7356) < 1e-3);
 });
+
+test('Link-Adresse: eine Lage, die es im System nicht gibt, gilt als die erste und wird nicht geschrieben (Issue #67)', () => {
+  const D = createState();
+  const lies = (h) => { const st = createState(); assert.ok(applyHashTo(st, h, D), h); return st; };
+  // ohne lage blieb die kubische Startlage 001 stehen und wurde als lage=001 zurückgeschrieben
+  const t = lies('#m=form&sys=tetragonal&f=4/mmm:f14');
+  assert.equal(t.poly.presetId, 'c');
+  assert.doesNotMatch(hashOf(t, D), /lage=/);
+  assert.doesNotMatch(hashOf(lies('#m=form&sys=hexagonal&lage=111'), D), /lage=/);
+  // gültige Lagen bleiben erhalten
+  assert.match(hashOf(lies('#m=form&sys=tetragonal&lage=a'), D), /lage=a(&|$)/);
+  assert.match(hashOf(lies('#m=form&sys=kubisch&lage=111'), D), /lage=111(&|$)/);
+  assert.doesNotMatch(hashOf(lies('#m=form&sys=kubisch'), D), /lage=/);
+});

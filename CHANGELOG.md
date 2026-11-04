@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Behoben
+
+- **Link-Adresse:** Ein Link in den Modus „Kristallformen“ mit einem anderen System als kubisch und ohne `lage` wurde in Skript und Quiz mit `lage=001` zurückgeschrieben, einer Lage, die es nur im kubischen System gibt. Eine Lage, die es im System nicht gibt, gilt jetzt als die erste des Systems und erscheint nicht im Link (Issue #67). Die Darstellung war nicht betroffen.
+
 ## [1.12.0] - 2026-10-31
 
 Kristallformen in beiden Aufstellungen, Blick der 3D-Konstruktion im Link und im Skript mehr zu enantiomorphen und polaren Punktgruppen samt Pedion.

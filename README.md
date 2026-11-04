@@ -99,7 +99,7 @@ Modus „Kristallformen“ (`m=form`):
 | Schlüssel | Bedeutung | Werte (Startwert fett) |
 |---|---|---|
 | `sys` | Kristallsystem | `triklin`, `monoklin`, `orthorhombisch`, `tetragonal`, `trigonal`, `hexagonal`, **`kubisch`** |
-| `f` | Form | `<Punktgruppe>:<Kennung>` aus `js/forms.js`, z. B. `m-3m:b35`, `4mm:a1`; Startwert je System in `DEFAULT_ENTRY` (`js/scene.js`). `-43m:c38` = {112} und `-43m:c39` = {221} wie in v1.0.0 |
+| `f` | Form | `<Punktgruppe>:<Kennung>` aus `js/forms.js`, z. B. `m-3m:b35`; Startwert je System in `DEFAULT_ENTRY` (`js/scene.js`). `-43m:c38` = {112} und `-43m:c39` = {221} wie in v1.0.0. Ohne `muster=1` stehen je Punktgruppe nur die allgemeine Form und die Formen mit dieser Eigensymmetrie zur Wahl; eine andere Form (z. B. das Pedion `4mm:a1`) ersetzt die App dann durch dieselbe Form dort, wo sie ihre Eigensymmetrie hat, sonst durch den Startwert. Links auf solche Formen brauchen `muster=1`. |
 | `bsp` | Beispielkristall (statt `f`) | `galenit`, `pyrit`, `dipyramiden`, `rutil`, `mm2`, `topas`, `gips`, `triklin`, `magnesium`, `quarz`, `rechtsquarz`, `turmalin` |
 | `ab` | Abstände der Formen eines Beispiels als Faktoren, je Form einer | 0.5–2, z. B. `1,1.2` |
 | `lage` | Projektionsrichtung | kubisch **`001`**, `111`, `110`; sonst **`c`**, `a`, `b` |
@@ -204,8 +204,11 @@ Die App folgt [Semantic Versioning](https://semver.org/lang/de/); Änderungen st
 2. Nach dem Merge den Tag auf den neuesten Stand von `main` setzen:
    ```bash
    git fetch && git log --oneline -1 origin/main     # ist das der Release-PR?
-   git tag -a vX.Y.Z -m "vX.Y.Z" origin/main && git push origin vX.Y.Z
+   git -c user.email=6277652+manganite@users.noreply.github.com tag -a vX.Y.Z -m "vX.Y.Z" origin/main
+   git push origin vX.Y.Z
    ```
+
+   Die Noreply-Adresse ist nötig, weil GitHub sonst einen Tag mit privater E-Mail-Adresse ablehnt (GH007).
 
 Der Tag startet zwei Workflows: `release.yml` legt das GitHub-Release mit den Notizen aus dem Changelog an, `deploy.yml` prüft und veröffentlicht den Stand auf GitHub Pages. Beide erzeugen dabei die PDF-Fassung des Skripts (`tools/skript-pdf.mjs`): auf der Seite als `skript.pdf`, im Release als Anhang.
 

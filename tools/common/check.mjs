@@ -9,12 +9,19 @@ import { join, relative, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TEILE, MANIFEST, dateien } from './sync.mjs';
 
-/** Liste der Abweichungen (leer, wenn die Kopie dem Manifest entspricht). */
+/**
+ * Liste der Abweichungen (leer, wenn die Kopie dem Manifest entspricht).
+ * @param {string} app
+ * @returns {string[]}
+ */
 export function pruefen(app) {
   const p = join(app, MANIFEST);
   if (!existsSync(p)) return [`${MANIFEST} fehlt`];
+  /** @type {{ files: Record<string, string> }} */
   const m = JSON.parse(readFileSync(p, 'utf8'));
+  /** @type {string[]} */
   const fehler = [];
+  /** @type {Set<string>} */
   const da = new Set();
   for (const t of TEILE) {
     if (!existsSync(join(app, t.ziel))) { fehler.push(`Ordner fehlt: ${t.ziel}`); continue; }

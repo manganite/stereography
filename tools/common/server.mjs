@@ -11,6 +11,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+/** @type {Record<string, string>} */
 export const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
   '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml',
@@ -18,10 +19,15 @@ export const MIME = {
   '.pdf': 'application/pdf',
 };
 
+/**
+ * @param {string} root
+ * @param {number} [port]
+ * @returns {Promise<import('node:http').Server>}
+ */
 export function server(root, port = 0) {
   root = resolve(root);
   const srv = createServer(async (req, res) => {
-    const adresse = new URL(req.url, 'http://x'), pfad = adresse.pathname;
+    const adresse = new URL(req.url ?? '/', 'http://x'), pfad = adresse.pathname;
     const path = normalize(decodeURIComponent(pfad)).replace(/^([/\\])+/, '');
     let file = resolve(root, path || 'index.html');
     // nur Dateien innerhalb von root (auch kein Nachbarordner mit gleichem Namensanfang wie root-privat)
@@ -43,5 +49,5 @@ export function server(root, port = 0) {
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const ordner = resolve(process.argv[2] || join(dirname(fileURLToPath(import.meta.url)), '..', '..'));
   const srv = await server(ordner, Number(process.argv[3] || 8000));
-  console.log(`${ordner} unter http://127.0.0.1:${srv.address().port}/ (Ende mit Ctrl+C)`);
+  console.log(`${ordner} unter http://127.0.0.1:${/** @type {import('node:net').AddressInfo} */ (srv.address()).port}/ (Ende mit Ctrl+C)`);
 }

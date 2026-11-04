@@ -23,25 +23,36 @@ export const TEILE = [
 ];
 export const MANIFEST = 'lib/common/MANIFEST.json';
 
+/** @param {string} p */
 const sha = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
+/**
+ * Alle Dateien unter dir, sortiert.
+ * @param {string} dir
+ * @returns {string[]}
+ */
 export function dateien(dir) {
   return readdirSync(dir).sort().flatMap((f) => {
     const p = join(dir, f);
     return statSync(p).isDirectory() ? dateien(p) : [p];
   });
 }
+/** Ausgabe eines git-Befehls; null, wenn er scheitert. @param {string} cwd @param {...string} args */
 const git = (cwd, ...args) => {
   try { return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return null; }
 };
 
-/** Version des gemeinsamen Repositories (js/version.js). */
+/** Version des gemeinsamen Repositories (js/version.js). @param {string} quelle */
 export function versionVon(quelle) {
   const m = readFileSync(join(quelle, 'js/version.js'), 'utf8').match(/COMMON_VERSION = '([^']+)'/);
   if (!m) throw new Error(`keine COMMON_VERSION in ${join(quelle, 'js/version.js')}`);
   return m[1];
 }
 
-/** Kopie anlegen; gibt das Manifest zurück. */
+/**
+ * Kopie anlegen; gibt das Manifest zurück.
+ * @param {string} quelle
+ * @param {string} app
+ */
 export function sync(quelle, app) {
   quelle = resolve(quelle);
   app = resolve(app);
@@ -51,6 +62,7 @@ export function sync(quelle, app) {
   const commit = git(quelle, 'rev-parse', 'HEAD');
   const tag = git(quelle, 'describe', '--tags', '--exact-match');
   const sauber = git(quelle, 'status', '--porcelain') === '';
+  /** @type {Record<string, string>} */
   const files = {};
   for (const t of TEILE) {
     const ziel = join(app, t.ziel);

@@ -401,7 +401,7 @@ export function applyHashTo(state, hash, DEFAULTS) {
     state.poly.lats[sysNow] = constrainLattice(lat, sysNow);
     if (q.has('abstand')) state.poly.auxDist = num(q.get('abstand'), 0.3, 3) ?? state.poly.auxDist;
     if (q.has('gr')) state.poly.size = num(q.get('gr'), 0.3, 1.2) ?? state.poly.size;
-    // nur eigene Schlüssel: w=toString o. ä. aus dem Prototyp gilt als kein Werkzeug (#86)
+    // nur eigene Schlüssel: w=toString o. ä. aus dem Prototyp gilt als kein Werkzeug
     const w = q.get('w');
     state.poly.tool = w != null && Object.hasOwn(TOOL_IDS, w) ? TOOL_IDS[w] : null;
     if (q.has('zonen')) state.poly.zones = da('zonen').split(';').filter((k) => /^-?\d+,-?\d+,-?\d+$/.test(k) && k !== '0,0,0');

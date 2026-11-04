@@ -7,7 +7,7 @@ import { buildCrystal, latticeOps, hklOrbit, LATTICE_DEFAULTS, SYSTEM_OF, habitO
 
 /** @import { Vec3, Richtung } from '../lib/common/js/typen.js' */
 /** @import { Palette } from '../js/scene.js' */
-/** @import { Kristallparameter, Kristall } from '../js/polyhedra.js' */
+/** @import { Kristall } from '../js/polyhedra.js' */
 /** @import { Punktgruppe } from '../js/pointgroups.js' */
 /** @import { Formeintrag } from '../js/forms.js' */
 
@@ -104,7 +104,7 @@ test('Zonen des Kristalls: mindestens drei Flächen, nach Symmetrie gruppiert', 
   /** @param {Kristall} C */
   const summary = (C) => zonesOf(C).map((c) => `${c.rep.join('')}:${c.zones.length}x${c.faces}`);
   const ex = /** @type {typeof EXAMPLES[number]} */ (EXAMPLES.find((e) => e.id === 'galenit'));
-  const galenit = buildCrystal({ groupId: ex.pg, forms: /** @type {Kristallparameter['forms']} */ (ex.forms), lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: '001' });
+  const galenit = buildCrystal({ groupId: ex.pg, forms: ex.forms, lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: '001' });
   // Borchardt-Ott & Sowa S. 36: (100) liegt in den Zonen [010], [001], [011], [01-1]
   assert.deepEqual(summary(galenit), ['100:3x8', '110:6x8', '111:4x6', '211:12x4']);
   const cube = buildCrystal({ entryId: 'm-3m:a34', lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: null });

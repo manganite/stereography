@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.12.1] - 2026-11-04
+
+Korrekturen an Link-Adresse und Infobox, gemeinsame Grundlage v0.2.0, README mit allen Link-Adressen und gemeinsamer GitHub-Auftritt der App-Familie. Für Nutzer ändert sich nur, dass Links in den Modus „Kristallformen“ keine ungültige Lage mehr enthalten.
+
 ### Hinzugefügt
 
 - **README:** alle Schlüssel der Link-Adressen als Tabelle (Abschnitt „Links auf Ansichten“), Hinweis auf die App-Familie, Abschnitte „Entstehung“ (mit Hilfe von Claude Code, fachliche Freigabe durch den Autor) und „Rückmeldungen“.
@@ -288,7 +292,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.12.1...HEAD
+[1.12.1]: https://github.com/manganite/stereography/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/manganite/stereography/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/manganite/stereography/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/manganite/stereography/compare/v1.9.1...v1.10.0

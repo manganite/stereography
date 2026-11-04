@@ -66,8 +66,6 @@ export const HEX_B = [0, 1, 0];                  // [010]
 export const HEX_A_MINUS_B = normalize(add(HEX_A, scale(HEX_B, -1))); // [1-10]
 /** @type {Vec3} */
 const D111 = [1, 1, 1];
-/** @type {Vec3} */
-const D110 = [1, 1, 0];
 
 const inv = inversion;
 

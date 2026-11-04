@@ -3,8 +3,7 @@
 // Pole der oberen Halbkugel: Punkt; der unteren: Kreis; beide zusammen: Kreis mit Punkt.
 // Spiegelebenen: kräftige Linien (Grosskreise); Spiegelebene ⊥ z: kräftiger Grundkreis.
 
-import { cross, normalize, dot, scale } from './linalg.js';
-import { hklParts } from '../lib/common/js/format.js';
+import { cross, normalize, scale } from './linalg.js';
 
 /** @import { Vec3, Grad, Bogenmass } from '../lib/common/js/typen.js' */
 /** @import { Teil } from '../lib/common/js/format.js' */
@@ -84,9 +83,6 @@ export function unproject(sx, sy, lower = false) {
   const p = [qx * s, qy * s, z];
   return lower ? [p[0], p[1], -p[2]] : p;
 }
-
-/** Bildschirmwinkel (Grad, SVG-Drehsinn) einer Richtung in der Ebene. @param {Vec3} d */
-const screenAngle = (d) => (Math.atan2(d[0], d[1]) * 180) / Math.PI;
 
 /** @param {number} n @param {number} r @param {number} startDeg */
 function polyPoints(n, r, startDeg) {

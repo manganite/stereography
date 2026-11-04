@@ -1,8 +1,8 @@
 {
   "name": "crystallography-common",
-  "version": "0.3.1",
-  "tag": "v0.3.1",
-  "commit": "df1c9dff824660a4c9d1d30933fbf4124d095d13",
+  "version": "0.4.0",
+  "tag": "v0.4.0",
+  "commit": "01460209939aa1c484fbb5532cf546553e10de5d",
   "files": {
     "lib/common/css/app.css": "9710ce4604e7fc82c24fd65f365513a181f0097dcccee5a266e471aa44c70445",
     "lib/common/css/base.css": "48000b7d494db36a6456613482b79419f5eb034026eb51ae0a40347ecaa9da2b",
@@ -15,7 +15,7 @@
     "lib/common/js/seite.js": "63e039bd0a11e20fece2af4823e0b059145fc67907aa00105f21c967e8cc7b3b",
     "lib/common/js/skript-kern.js": "6e0cfc6619a24ad8338723817b35eb6cfb8f7b9ef4f6ccdfd5b5deba415a7892",
     "lib/common/js/typen.js": "3ad299729f1c44d92297ec62e3ff9d2ef582b1b3679b5de152d37f3776df34cd",
-    "lib/common/js/version.js": "ca1d6aa41dc336bc1162997ee76d6329f2315fbda66bbf8785fb41b067f79351",
+    "lib/common/js/version.js": "618aeb0ea18ac13abcb658755b047c4c23c5cb11c91b27502b295df83e75ae02",
     "lib/common/fonts/LICENSE-ibm-plex-mono.txt": "23b0a9d0c6d3f140a0b77e483c5cfa6bba574325ef5cb189ed9f2fec4884533f",
     "lib/common/fonts/LICENSE-ibm-plex-sans.txt": "d0283623ef57e722fd0eb688a8041589670c608ab780cd3612d06ba6f153d3fd",
     "lib/common/fonts/LICENSE-source-serif-4.txt": "18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3",
@@ -33,9 +33,10 @@
     "lib/common/fonts/source-serif-4-latin-500-normal.woff2": "d3e119de0b756d9fa6d368de570f7168bb74eedf3289aaeae22dd97b900918d1",
     "lib/common/fonts/source-serif-4-latin-600-normal.woff2": "f2b7e1cf1d277b7608231868135648f8ad8e2b58d8e97ca088bee15dc357bee7",
     "tools/common/check.mjs": "22a1a22108916d59805f3350218fa307e4f0bd73807483f9fbab1c6d6592bcbf",
+    "tools/common/eslint-basis.mjs": "ac03ff806d647562d6d9446977626849403386545f26628291610502a8ac54c3",
     "tools/common/moodle.mjs": "140021fc8026bfc9c155336c6d53a9ef04e6bedb3add579a59b06b369fb8d122",
     "tools/common/server.mjs": "45338ddc50f7df0546af56d1cd4159d677e05df1ef6263956009c02ef72895ab",
-    "tools/common/skript-pdf.mjs": "abdf9d0ba4070254a4b7e4247a864ba65cd3a69440f8494f464cc472c5fe2753",
+    "tools/common/skript-pdf.mjs": "29350df75464fdce5cc7e9598f50b89a9ba091de056115d695c16a5feab91331",
     "tools/common/sync.mjs": "379a1f6648aeadfd171cc0eeb160d59224ecf8f486ec4496b45b850f22a90739"
   }
 }

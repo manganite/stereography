@@ -76,7 +76,8 @@ export async function skriptPDF({
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   /** @type {string[]} */
   const fehler = [];
-  let anzahl = 0;
+  /** @type {number} */
+  let anzahl;
   try {
     const ctx = await browser.newContext({ viewport: { width: 1180, height: 900 }, deviceScaleFactor: 2, colorScheme: 'light', serviceWorkers: 'block' });
     const page = await ctx.newPage();

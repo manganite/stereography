@@ -47,7 +47,9 @@ stabil halten).
   Formatmenü; auf dem Telefon kein Export.
 - **Beispielkristalle** sind nur Voreinstellungen; keine frei hinzufügbaren Formen. Eigene Indizes und
   freie Kombinationsformen bewusst zurückgestellt.
-- **Startgruppe** mm2. Erste Schritte nach Borchardt-Ott Abschn. 5.4 (Galenit).
+- **Startgruppe** mm2. **Erste Schritte je Modus** (4.11.2026, Issue #77): „Kristallformen“ nach Borchardt-Ott
+  Abschn. 5.4 (Galenit); „Punktgruppen“ an 4*mm* (allgemeine und spezielle Lage, Händigkeit, Blick entlang [001]).
+  Wer die App zum ersten Mal öffnet, sieht also zuerst die Schritte zu „Punktgruppen“.
 
 ### Kristallformen
 - **Aufstellung B im Formenmodus** (v1.12.0): 312, 31m, 3̄1m, 4̄m2, 6̄2m. Erzeugte Quizfragen bleiben
@@ -94,7 +96,7 @@ stabil halten).
 ## Konventionen
 
 - **Speicher im Browser, nie umbenennen:** `stereo-state` (Zustandsversion 4; ältere werden umgerechnet),
-  `stereo-intro`, `stereo-sections`, `stereo-explain`; Quiz `stereo-quiz-v1`, `-entwurf`, `-lauf`.
+  `stereo-intro` (Wert: gesehene Modi, z. B. `pg,poly`; `zu` bis v1.12.1 gilt als `poly`), `stereo-sections`, `stereo-explain`; Quiz `stereo-quiz-v1`, `-entwurf`, `-lauf`.
 - **Cache des Service Workers:** `stereogramm-<Version>`.
 - **Stabile Kennungen in Links:** `-43m:c38` = {112}, `-43m:c39` = {221} (wie in v1.0.0). Alte `phi=`
   (Zählung ab ↓, Gegenuhrzeigersinn) werden umgerechnet; `rho=` über 90° gilt weiter.

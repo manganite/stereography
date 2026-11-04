@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Erste Schritte für „Punktgruppen“** (#77): vier Schritte an 4*mm*: Symmetriegerüst, Ausgangspol in allgemeiner und spezieller Lage, Pole gleicher Händigkeit und Spiegelbilder, Blick entlang [001]. Die Erste Schritte erscheinen je Modus beim ersten Aufruf; die zum Galenit gehören jetzt zu „Kristallformen“. Wer sie geschlossen hat, sieht nur die neuen.
+
 ### Geändert
 
 - **Gemeinsame Grundlage** auf crystallography-common v0.3.0: Typen für die Typprüfung mit TypeScript (JSDoc; `lib/common/js/typen.js`, Typen des Quiz in `quiz-core.js`), neu in der Offline-Liste. Am Verhalten ändert sich nichts (Moodle-Export bytegleich, Quiz, Skript und Hilfen im Browser gleich, nachgeprüft).

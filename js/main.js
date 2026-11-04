@@ -1274,6 +1274,8 @@ function bindRange(id, obj, key, fmt) {
 }
 function syncSliders() { sliders.forEach((s) => s()); }
 
+/** Erste Schritte des aktiven Modus zeigen, wenn er neu ist (gesetzt in init). */
+let introSync = () => {};
 function setMode(mode) {
   state.mode = mode;
   state.selected = null;
@@ -1287,6 +1289,7 @@ function setMode(mode) {
   if (mode !== 'poly') $('v3d-hint').textContent = '';
   if (mode !== 'pg') $('v3d-dirs').hidden = true;
   $('stereo-sub').textContent = 'Projektion ∥ c';
+  introSync();
   render();
 }
 
@@ -1470,15 +1473,27 @@ function init() {
     || state.poly.showPoles !== DEFAULTS.poly.showPoles || state.poly.showLower !== DEFAULTS.poly.showLower;
   if (viewChanged && !$('sec-view').open) { $('sec-view').dataset.quiet = '1'; $('sec-view').open = true; } // nicht als Wahl des Nutzers merken
 
-  // Erste Schritte: beim ersten Besuch ohne Link sichtbar, wegklickbar, über „?“ wieder zu öffnen
+  // Erste Schritte je Modus: beim ersten Aufruf eines Modus, wegklickbar, über „?“ wieder zu öffnen; nicht
+  // für den Modus, in dem ein Link die App öffnet. Gespeichert: die gesehenen Modi, durch Komma getrennt
+  // (bis v1.12.1 nur „zu“ für die damals einzigen Erste Schritte, die zum Galenit im Modus „Kristallformen“).
   const INTRO_KEY = 'stereo-intro';
+  const seen = new Set();
+  try { for (const m of (localStorage.getItem(INTRO_KEY) ?? '').split(',')) if (m) seen.add(m === 'zu' ? 'poly' : m); } catch { /* Speicher nicht verfügbar */ }
   const showIntro = (on) => { $('intro').hidden = !on; $('help-open').setAttribute('aria-expanded', String(on)); };
-  let introClosed = false;
-  try { introClosed = localStorage.getItem(INTRO_KEY) === 'zu'; } catch { /* Speicher nicht verfügbar */ }
-  showIntro(!introClosed && !hashActive);
+  let introMode = hashActive ? state.mode : null;
+  introSync = () => {
+    $('steps-pg').hidden = state.mode !== 'pg';
+    $('steps-poly').hidden = state.mode !== 'poly';
+    $('intro-quelle').hidden = state.mode !== 'poly';
+    if (state.mode === introMode) return;
+    introMode = state.mode;
+    showIntro(!seen.has(state.mode));
+    for (const li of document.querySelectorAll('#intro li.done')) li.classList.remove('done');
+  };
   $('intro-close').addEventListener('click', () => {
     showIntro(false);
-    try { localStorage.setItem(INTRO_KEY, 'zu'); } catch { /* ignorieren */ }
+    seen.add(state.mode);
+    try { localStorage.setItem(INTRO_KEY, [...seen].join(',')); } catch { /* ignorieren */ }
   });
   $('help-open').addEventListener('click', () => {
     const on = $('intro').hidden;
@@ -1503,7 +1518,20 @@ function init() {
     const i = C ? C.faces.findIndex((f) => f.role === 'main' && f.hkl.join() === hkl.join()) : -1;
     if (i >= 0) { state.selected = i; render(); }
   };
+  // Punktgruppen: 4mm, Ausgangspol in allgemeiner und spezieller Lage, Farben, Blick entlang [001]
+  const choose4mm = () => {
+    if (state.pg.id !== '4mm') { state.pg.id = '4mm'; state.pg.hideDirs = []; state.pgSel = []; syncPicker(); }
+    state.pg.showElements = true; $('pg-elements').checked = true;
+    state.pg.showObject = true; $('pg-object').checked = true;
+    state.pg.showPoles = true; $('pg-poles').checked = true;
+    if (state.mode !== 'pg') setMode('pg');
+  };
+  const generalPole = () => { state.pg.theta = DEFAULTS.pg.theta; state.pg.phi = DEFAULTS.pg.phi; };
   const STEPS = {
+    p1: () => { choose4mm(); generalPole(); syncSliders(); render(); if (isPhone()) setFig('stereo'); },
+    p2: () => { choose4mm(); state.pg.phi = 0; syncSliders(); render(); if (isPhone()) setFig('stereo'); },
+    p3: () => { choose4mm(); generalPole(); state.pg.colorful = true; $('pg-colorful').checked = true; syncSliders(); render(); if (isPhone()) setFig('stereo'); },
+    p4: () => { choose4mm(); render(); afterRender(() => selectView('d0')); if (isPhone()) setFig('3d'); },
     1: () => { loadGalena(); selectView('oblique'); if (isPhone()) setFig('3d'); },
     2: () => { if (!galenaShown()) loadGalena(); afterRender(() => selectFace([0, 0, 1])); if (isPhone()) setFig('stereo'); },
     3: () => {

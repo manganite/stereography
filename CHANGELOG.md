@@ -13,6 +13,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Geändert
 
 - **Erste Schritte je Modus:** Die Karte erscheint beim ersten Aufruf eines Modus, nicht für den Modus, in dem ein Link die App öffnet; Schliessen mit × oder „?“ gilt als gesehen. Die Schritte zum Galenit gehören jetzt zu „Kristallformen“; wer sie geschlossen hat, sieht nur die neuen.
+- **Gemeinsame Grundlage** auf crystallography-common v0.3.1: im Typ der Quizfragen ist `pruefung.art` freiwillig; dazu Leitfaden-Änderungen. Am Verhalten ändert sich nichts (Moodle-Export bytegleich).
 - **Gemeinsame Grundlage** auf crystallography-common v0.3.0: Typen für die Typprüfung mit TypeScript (JSDoc; `lib/common/js/typen.js`, Typen des Quiz in `quiz-core.js`), neu in der Offline-Liste. Am Verhalten ändert sich nichts (Moodle-Export bytegleich, Quiz, Skript und Hilfen im Browser gleich, nachgeprüft).
 - **README:** Abschnitt „Links auf Ansichten“ heisst „Link-Adressen“, wie im Leitfaden der App-Familie.
 
@@ -20,6 +21,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 - **Typprüfung mit TypeScript** über JSDoc-Typen (`tsconfig.json`, CI-Job `typen`; crystallography-common#19, Schritt 1): Die Rechenkerne (`linalg.js`, `pointgroups.js`, `forms.js`, `sitesym.js`, `polyhedra.js`, `stereogram.js`, `examples.js`) sind strikt typisiert, mit Vektoren und Matrizen fester Länge und getrennten Typen für Richtung [uvw] und Normale (hkl) sowie Grad und Bogenmass, wo beide vorkommen. Am Verhalten ändert sich nichts (Rechenergebnisse, Moodle-Export, App, Skript und Quiz vorher und nachher gleich, nachgeprüft).
 - **Typprüfung für alle Dateien** (Schritt 2, #73): Oberfläche (`main.js`, `scene.js`, `view3d.js`, `bild3d.js`, `skript.js`), Quiz (`quiz-gen.js`, `quiz-bank.js`, `quiz.js`), Werkzeuge und Tests sind strikt typisiert, ohne Ausnahmen. three.js bekommt seine Typen aus `@types/three` in der Version des Bundles (r186; `lib/three.bundle.d.ts`, CI-Job `typen`). Am Verhalten ändert sich nichts (Moodle-Export bytegleich; App über Link-Adressen und Bedienung, Telefon, dunkles Farbschema, Skript und Quiz im Browser vorher und nachher gleich; nachgeprüft).
+
+### Behoben
+
+- **Skript, Abb. 7.1** (Galenit mit der Zone [001] in 3D): Zonenkreis, Zonenachse und die Flächen der Zone fehlten, weil die Optionen in `js/skript.js` hinter einem Kommentar standen (#80). Die Abbildung zeigt jetzt, was die Bildunterschrift beschreibt, wie die App unter derselben Link-Adresse.
 
 ## [1.12.1] - 2026-11-04
 

@@ -24,6 +24,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Behoben
 
+- **3D-Ansicht:** Die Startwerte von `View3D` (u. a. der angeforderte Frame) stehen wieder vor `setView`. Seit der Typprüfung (#79) setzte der Konstruktor den schon angeforderten ersten Frame danach zurück: im ersten Frame wurde doppelt gezeichnet, und eine Ansicht, die vor dem ersten Frame abgebaut wird, zeichnete noch mit dem freigegebenen Renderer (Befund aus dem nachgeholten Review von #79).
 - **Skript, Abb. 7.1** (Galenit mit der Zone [001] in 3D): Zonenkreis, Zonenachse und die Flächen der Zone fehlten, weil die Optionen in `js/skript.js` hinter einem Kommentar standen (#80). Die Abbildung zeigt jetzt, was die Bildunterschrift beschreibt, wie die App unter derselben Link-Adresse.
 
 ## [1.12.1] - 2026-11-04

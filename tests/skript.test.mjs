@@ -8,7 +8,9 @@ import { readFileSync } from 'node:fs';
 const html = readFileSync(new URL('../skript.html', import.meta.url), 'utf8');
 
 // Inhalt eines <div class="box …"> bis zum passenden </div>
+/** @param {string} kind */
 function boxes(kind) {
+  /** @type {string[]} */
   const out = [];
   const re = new RegExp(`<div class="box ${kind}"[^>]*>`, 'g');
   let m;
@@ -92,7 +94,7 @@ test('Skript-Verweise der App: Anker existiert und liegt im angegebenen Kapitel'
     const at = html.indexOf(`id="${anchor}"`);
     assert.ok(at > 0, `Anker #${anchor} fehlt im Skript`);
     const nrs = [...html.slice(0, at).matchAll(/<h2><span class="nr">(\d+)<\/span>/g)];
-    assert.equal(Number(nrs.at(-1)[1]), kap, `#${anchor} liegt nicht in Kapitel ${kap}`);
+    assert.equal(Number(/** @type {RegExpMatchArray} */ (nrs.at(-1))[1]), kap, `#${anchor} liegt nicht in Kapitel ${kap}`);
   }
 });
 

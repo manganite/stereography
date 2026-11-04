@@ -43,7 +43,7 @@ import { CATALOG, entryById, FORM_TYPES } from './forms.js';
  * @property {Partial<Gitterparameter>} lat
  * @property {boolean} [broken]
  * @property {number} [auxDist]
- * @property {string} [presetId]
+ * @property {string | null} [presetId]
  * @property {{ uvw: Richtung, s: number } | null} [stretch]
  */
 /** Kristall, wie ihn buildCrystal liefert. @typedef {ReturnType<typeof buildCrystal>} Kristall */

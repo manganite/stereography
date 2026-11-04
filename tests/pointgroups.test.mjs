@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { POINT_GROUPS, buildPointGroup, symmetryDirections } from '../js/pointgroups.js';
 
 // Gruppenordnung je Punktgruppe (Hermann-Mauguin-Kurzsymbol), ITA Vol. A Tab. 10.1.2.2
+/** @type {Record<string, number>} */
 const ORDER = {
   '1': 1, '-1': 2, '2': 2, 'm': 2, '2/m': 4, '222': 4, 'mm2': 4, 'mmm': 8,
   '4': 4, '-4': 4, '4/m': 8, '422': 8, '4mm': 8, '-42m': 8, '-4m2': 8, '4/mmm': 16,

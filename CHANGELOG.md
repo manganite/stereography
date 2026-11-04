@@ -13,7 +13,8 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Hinzugefügt
 
-- **Typprüfung mit TypeScript** über JSDoc-Typen (`tsconfig.json`, CI-Job `typen`; crystallography-common#19, Schritt 1): Die Rechenkerne (`linalg.js`, `pointgroups.js`, `forms.js`, `sitesym.js`, `polyhedra.js`, `stereogram.js`, `examples.js`) sind strikt typisiert, mit Vektoren und Matrizen fester Länge und getrennten Typen für Richtung [uvw] und Normale (hkl) sowie Grad und Bogenmass, wo beide vorkommen. Die übrigen Dateien folgen in Schritt 2 (#73). Am Verhalten ändert sich nichts (Rechenergebnisse, Moodle-Export, App, Skript und Quiz vorher und nachher gleich, nachgeprüft).
+- **Typprüfung mit TypeScript** über JSDoc-Typen (`tsconfig.json`, CI-Job `typen`; crystallography-common#19, Schritt 1): Die Rechenkerne (`linalg.js`, `pointgroups.js`, `forms.js`, `sitesym.js`, `polyhedra.js`, `stereogram.js`, `examples.js`) sind strikt typisiert, mit Vektoren und Matrizen fester Länge und getrennten Typen für Richtung [uvw] und Normale (hkl) sowie Grad und Bogenmass, wo beide vorkommen. Am Verhalten ändert sich nichts (Rechenergebnisse, Moodle-Export, App, Skript und Quiz vorher und nachher gleich, nachgeprüft).
+- **Typprüfung für alle Dateien** (Schritt 2, #73): Oberfläche (`main.js`, `scene.js`, `view3d.js`, `bild3d.js`, `skript.js`), Quiz (`quiz-gen.js`, `quiz-bank.js`, `quiz.js`), Werkzeuge und Tests sind strikt typisiert, ohne Ausnahmen. three.js bekommt seine Typen aus `@types/three` in der Version des Bundles (r186; `lib/three.bundle.d.ts`, CI-Job `typen`). Am Verhalten ändert sich nichts (Moodle-Export bytegleich; App über Link-Adressen und Bedienung, Telefon, dunkles Farbschema, Skript und Quiz im Browser vorher und nachher gleich; nachgeprüft).
 
 ## [1.12.1] - 2026-11-04
 

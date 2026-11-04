@@ -10,7 +10,7 @@ import { poleOfHKL, stabilizer } from './sitesym.js';
 import { mulVec } from './linalg.js';
 
 /** @import { Vec3 } from '../lib/common/js/typen.js' */
-/** @import { Generator } from '../lib/common/js/quiz-core.js' */
+/** @import { Generator, Frageinhalt } from '../lib/common/js/quiz-core.js' */
 /** @import { Punktgruppe, Punktgruppeninfo, Achse, Blickrichtungsklasse } from './pointgroups.js' */
 /** @import { Formeintrag } from './forms.js' */
 /** Symmetrieelemente einer Gruppe (Ausschnitt von buildPointGroup). @typedef {Pick<Punktgruppeninfo, 'axes' | 'mirrors' | 'centro'>} Elemente */
@@ -97,7 +97,9 @@ export function geruestAblenker(/** @type {string} */ id) {
   return out;
 }
 
-/** @type {Generator} */
+/** Generator, dessen Fragen nicht von der Stufe abhängen (make auch mit dem Parameter allein). @typedef {Generator & { make(p: string): Frageinhalt }} StufenfreierGenerator */
+
+/** @type {StufenfreierGenerator} */
 export const GERUEST = {
   id: 'gen-geruest', kapitel: 4, stufen: [1, 2], status: 'geprüft',
   params: (stufe) => (stufe === 1 ? GERUEST_STUFE1 : GERUEST_ALLE.filter((id) => !GERUEST_STUFE1.includes(id))),
@@ -161,7 +163,7 @@ function enthalten(e, x) {
 /** Katalogeintrag zu einer id aus den Parametern (immer vorhanden). @param {string} id */
 const eintrag = (id) => /** @type {Formeintrag} */ (entryById(id));
 
-/** @type {Generator} */
+/** @type {StufenfreierGenerator} */
 export const FLAECHENZAHL = {
   id: 'gen-flaechenzahl', kapitel: 10, stufen: [3], status: 'geprüft',
   params: () => SPEZIELL.map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechenzahl'].includes(id)),
@@ -243,7 +245,7 @@ function ablesenText(/** @type {Formeintrag} */ e) {
   return `Im Stereogramm liegt jeder Pol der Form ${und(bild)}. Diese Elemente gehen durch die Fläche: ${und(teile)}${leer.length ? `; zu ${und(leer)} keines` : ''}.${einmal}`;
 }
 
-/** @type {Generator} */
+/** @type {StufenfreierGenerator} */
 export const FLAECHENSYM = {
   id: 'gen-flaechensym', kapitel: 10, stufen: [3], status: 'geprüft',
   params: () => SPEZIELL.filter((e) => FS_GRUPPEN.includes(e.pg)).map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechensym'].includes(id)),

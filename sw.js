@@ -44,6 +44,7 @@ const FILES = [
   'lib/common/js/quiz-seite.js',
   'lib/common/js/seite.js',
   'lib/common/js/skript-kern.js',
+  'lib/common/js/typen.js',
   'lib/common/js/version.js',
   'lib/three.bundle.js',
   'lib/common/fonts/fonts.css',

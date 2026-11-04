@@ -42,6 +42,7 @@ const PRINT_CSS = `
   *, *::before, *::after { animation: none !important; transition: none !important; }
 `;
 
+/** @param {string} links @param {string} rechts */
 const kopf = (links, rechts) => `<div style="font: 7.5pt sans-serif; color:#7a8794; width:100%; padding:0 18mm; display:flex; justify-content:space-between;"><span>${links}</span><span>${rechts}</span></div>`;
 
 /**
@@ -50,15 +51,30 @@ const kopf = (links, rechts) => `<div style="font: 7.5pt sans-serif; color:#7a87
  * (z. B. interaktive Abbildungen in einen Zustand bringen); statisch: Abbildungen, die als Bild eingesetzt werden;
  * reste: Elemente ausserhalb dieser Bilder, die danach entfernt werden (z. B. Beschriftungen der 3D-Ansichten);
  * interaktiv: IDs interaktiver Abbildungen (Hinweis auf die Online-Version); css: zusätzliche Druckstile.
+ * @param {object} optionen
+ * @param {string} optionen.root
+ * @param {string} optionen.out
+ * @param {string} optionen.base
+ * @param {string} optionen.titel
+ * @param {string} optionen.version
+ * @param {string} [optionen.seite]
+ * @param {(page: import('playwright').Page) => Promise<void>} [optionen.vorbereiten]
+ * @param {string} [optionen.statisch]
+ * @param {string} [optionen.reste]
+ * @param {string[]} [optionen.interaktiv]
+ * @param {string} [optionen.css]
+ * @returns {Promise<{ anzahl: number, fehler: string[] }>}
  */
 export async function skriptPDF({
   root, out, base, titel, version, seite = 'skript.html', vorbereiten = async () => {},
   statisch = 'figure[data-kind="3d"]', reste = '.lbl3d', interaktiv = [], css = '',
 }) {
+  /** @type {typeof import('playwright')} */
   const { chromium } = require('playwright');
   const srv = await server(root);
-  const url = `http://127.0.0.1:${srv.address().port}/${seite}`;
+  const url = `http://127.0.0.1:${/** @type {import('node:net').AddressInfo} */ (srv.address()).port}/${seite}`;
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  /** @type {string[]} */
   const fehler = [];
   let anzahl = 0;
   try {
@@ -72,25 +88,26 @@ export async function skriptPDF({
     await vorbereiten(page);
 
     // Abbildungen mit WebGL einzeln zeichnen lassen (die Seite hält nur die sichtbaren live) und festhalten
+    /** @type {string[]} */
     const bilder = [];
     for (const fig of await page.$$(statisch)) {
       await fig.scrollIntoViewIfNeeded();
-      const art = await fig.$('.fig-art');
-      await page.waitForFunction((el) => el.querySelector('canvas'), art, { timeout: 20000 });
+      const art = /** @type {import('playwright').ElementHandle} */ (await fig.$('.fig-art'));
+      await page.waitForFunction((el) => /** @type {Element} */ (el).querySelector('canvas'), art, { timeout: 20000 });
       await page.waitForTimeout(700);
       bilder.push((await art.screenshot({ type: 'png' })).toString('base64'));
     }
     anzahl = bilder.length;
 
     await page.evaluate(({ bilder, BASE, SEITE, PRINT_CSS, statisch, reste, interaktiv }) => {
-      [...document.querySelectorAll(statisch)].forEach((fig, i) => {
+      [.../** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll(statisch))].forEach((fig, i) => {
         const neu = document.createElement('div');
         neu.className = 'fig-art static3d';
         const img = document.createElement('img');
         img.alt = fig.dataset.alt || '';
         img.src = `data:image/png;base64,${bilder[i]}`;
         neu.appendChild(img);
-        fig.querySelector('.fig-art').replaceWith(neu);
+        /** @type {Element} */ (fig.querySelector('.fig-art')).replaceWith(neu);
         fig.removeAttribute('data-kind');
       });
       if (reste) document.querySelectorAll(reste).forEach((e) => { if (!e.closest('.static3d')) e.remove(); });

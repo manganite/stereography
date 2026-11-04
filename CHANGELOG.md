@@ -24,6 +24,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Behoben
 
+- **Link-Adresse:** Ein Wert für `w`, der dem Namen einer Eigenschaft entspricht, die jedes JavaScript-Objekt erbt (z. B. `#m=form&w=toString`), galt als Werkzeug: Die 3D-Ansicht zeigte einen Hinweis zum Werkzeug „Winkel“, und der nächste Link enthielt `w=undefined` (#86). Solche Werte gelten jetzt wie andere unbekannte Werte als kein Werkzeug.
 - **Skript, Abb. 7.1** (Galenit mit der Zone [001] in 3D): Zonenkreis, Zonenachse und die Flächen der Zone fehlten, weil die Optionen in `js/skript.js` hinter einem Kommentar standen (#80). Die Abbildung zeigt jetzt, was die Bildunterschrift beschreibt, wie die App unter derselben Link-Adresse.
 
 ## [1.12.1] - 2026-11-04

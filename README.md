@@ -205,7 +205,7 @@ npx tsc -p .
 npx eslint .
 ```
 
-Geprüft wird alles in `js/`, `tools/` und `tests/`, strikt und ohne Ausnahmen; `lib/three.bundle.js` selbst nicht (Fremdcode), seine Typen kommen aus `@types/three` in der Version des Bundles (r186). Mit den installierten Paketen zeigt auch VS Code die Meldungen in geöffneten Dateien.
+Geprüft wird alles in `js/`, `tools/` und `tests/`, strikt und ohne Ausnahmen; `lib/three.bundle.js` selbst nicht (Fremdcode), seine Typen kommen aus `@types/three` in der Version des Bundles (r186). Mit den installierten Paketen zeigt auch VS Code die Meldungen der Typprüfung in geöffneten Dateien (die von ESLint mit der Erweiterung „ESLint“).
 
 ### Versionen und Releases
 

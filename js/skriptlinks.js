@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 /**
  * Verweise aus der App ins Skript: Anker eines Abschnitts (oder Kastens) in skript.html und das
  * Kapitel, in dem er steht. tests/skript.test.mjs prüft, dass jeder Anker existiert und im

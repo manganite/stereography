@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Fragen des Quiz (handgeschrieben). Aufbau je Frage siehe Konzept „Quiz“, Abschnitt 7:
 //   id, stufe (1–3), kapitel (Skript), lernziel (wörtlich aus Lernzielen oder Zusammenfassung des Skripts),
 //   typ: 'einfach' | 'mehrfach' | 'bild-text' (Frage mit Bild) | 'text-bild' (Antworten sind Bilder)

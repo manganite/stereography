@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Gemeinsamer Kern von App (main.js) und Skript (skript.js): Zustand, Link-Adresse, Farben und die
 // Szenen für das Stereogramm (buildSVG). Ohne Zugriff auf Bedienelemente; die App setzt die Auswahl,
 // das Skript erzeugt aus einer Link-Adresse dieselbe Abbildung wie die App.

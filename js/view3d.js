@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // 3D-Ansicht: Umkugel, Äquatorebene mit dem Stereogramm, Symmetrieelemente,
 // Objekte in allgemeiner Lage bzw. Polyeder, Flächennormalen und Projektionsstrahlen.
 // Weltkoordinaten = kartesisches Kristallsystem (x ∥ a, y ∥ b, z ∥ c).

@@ -12,13 +12,61 @@ import {
   add, scale, cross, EPS,
 } from './linalg.js';
 
+/** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
+/**
+ * Eintrag der Gruppenliste (Bedeutung der Felder bei POINT_GROUPS).
+ * @typedef {object} Punktgruppe
+ * @property {string} id
+ * @property {string} hm
+ * @property {string} [setting]
+ * @property {string} system
+ * @property {boolean} [hex]
+ * @property {string} sf
+ * @property {string} full
+ * @property {string} laue
+ * @property {() => Mat3[]} gens
+ */
+/**
+ * Drehachse oder Drehinversionsachse (kartesische Richtung, kanonisches Vorzeichen). cls: Position im
+ * HM-Symbol, gesetzt von symmetryDirections() (−1: keine).
+ * @typedef {{ dir: Vec3, symbol: string, centre: boolean, mirrorPerp: boolean, cls?: number }} Achse
+ */
+/**
+ * Ergebnis von analyzeGroup(). mirrors: Normalen der Spiegelebenen (kartesisch); mirrorCls: Position im
+ * HM-Symbol je Spiegel, gesetzt von symmetryDirections().
+ * @typedef {object} Analyse
+ * @property {Mat3[]} ops
+ * @property {number} order
+ * @property {boolean} centro
+ * @property {boolean} chiral
+ * @property {boolean} polar
+ * @property {boolean} piezo
+ * @property {Achse[]} axes
+ * @property {Vec3[]} mirrors
+ * @property {number[]} [mirrorCls]
+ */
+/** Vollständige Daten einer Punktgruppe (buildPointGroup). @typedef {Punktgruppe & Analyse} Punktgruppeninfo */
+/**
+ * Klasse von Blickrichtungen (eine Position im HM-Symbol).
+ * @typedef {{ pos: number, label: string, dirs: Vec3[], hm: string | null, axes: Achse[], mirrors: Vec3[] }} Blickrichtungsklasse
+ */
+
 const S3 = Math.sqrt(3);
-export const X = [1, 0, 0], Y = [0, 1, 0], Z = [0, 0, 1];
+/** @type {Vec3} */
+export const X = [1, 0, 0];
+/** @type {Vec3} */
+export const Y = [0, 1, 0];
+/** @type {Vec3} */
+export const Z = [0, 0, 1];
 // hexagonale Gitterrichtungen (kartesisch, normiert)
+/** @type {Vec3} */
 export const HEX_A = [S3 / 2, -0.5, 0];          // [100]
+/** @type {Vec3} */
 export const HEX_B = [0, 1, 0];                  // [010]
 export const HEX_A_MINUS_B = normalize(add(HEX_A, scale(HEX_B, -1))); // [1-10]
+/** @type {Vec3} */
 const D111 = [1, 1, 1];
+/** @type {Vec3} */
 const D110 = [1, 1, 0];
 
 const inv = inversion;
@@ -27,6 +75,7 @@ const inv = inversion;
  * Gruppenliste. hm: Kurzsymbol ('-' setzt einen Querstrich über das folgende Zeichen),
  * setting: Aufstellung (falls ITA mehrere führt), full: volles HM-Symbol (Leerzeichen trennen
  * Symmetrierichtungen), sf: Schoenflies, laue: Laue-Klasse, gens: Generatoren.
+ * @type {Punktgruppe[]}
  */
 export const POINT_GROUPS = [
   // --- triklin
@@ -80,14 +129,17 @@ export const POINT_GROUPS = [
 
 export const SYSTEMS = ['triklin', 'monoklin', 'orthorhombisch', 'tetragonal', 'trigonal', 'hexagonal', 'kubisch'];
 
+/** @param {string} id */
 export const groupById = (id) => POINT_GROUPS.find((g) => g.id === id);
 
-/** Erzeugt alle Elemente der Gruppe aus den Generatoren (Identität zuerst). */
+/** Erzeugt alle Elemente der Gruppe aus den Generatoren (Identität zuerst). @param {Mat3[]} gens */
 export function generateGroup(gens) {
   const els = [I3()];
+  /** @param {Mat3} m */
   const has = (m) => els.some((e) => matEq(e, m));
   let frontier = [I3()];
   while (frontier.length) {
+    /** @type {Mat3[]} */
     const next = [];
     for (const a of frontier) {
       for (const g of gens) {
@@ -101,7 +153,7 @@ export function generateGroup(gens) {
   return els;
 }
 
-/** Ordnung einer eigentlichen Drehung aus der Spur. */
+/** Ordnung einer eigentlichen Drehung aus der Spur. @param {Mat3} R */
 function rotationOrder(R) {
   const t = trace(R);
   const c = (t - 1) / 2;
@@ -110,14 +162,17 @@ function rotationOrder(R) {
   return Math.round((2 * Math.PI) / ang);
 }
 
-/** Drehachse einer eigentlichen Drehung (beliebiges Vorzeichen). */
+/** Drehachse einer eigentlichen Drehung (beliebiges Vorzeichen). @param {Mat3} R @returns {Vec3} */
 function rotationAxis(R) {
   const n = rotationOrder(R);
   if (n === 2) {
     // R + I hat Rang 1, Spalten ∥ Achse
     const M = [0, 1, 2].map((i) => [0, 1, 2].map((j) => R[i][j] + (i === j ? 1 : 0)));
-    let best = [0, 0, 0], bn = 0;
+    /** @type {Vec3} */
+    let best = [0, 0, 0];
+    let bn = 0;
     for (let j = 0; j < 3; j++) {
+      /** @type {Vec3} */
       const col = [M[0][j], M[1][j], M[2][j]];
       const l = Math.hypot(...col);
       if (l > bn) { bn = l; best = col; }
@@ -127,7 +182,7 @@ function rotationAxis(R) {
   return normalize([R[2][1] - R[1][2], R[0][2] - R[2][0], R[1][0] - R[0][1]]);
 }
 
-/** Kanonisches Vorzeichen einer Richtung: z > 0, sonst y > 0, sonst x > 0. */
+/** Kanonisches Vorzeichen einer Richtung: z > 0, sonst y > 0, sonst x > 0. @param {Vec3} d */
 export function canonicalDir(d) {
   const t = 1e-7;
   if (d[2] < -t) return scale(d, -1);
@@ -142,11 +197,14 @@ export function canonicalDir(d) {
  * Analysiert eine Liste von Operationen und bestimmt die Symmetrieelemente.
  * Rückgabe: { ops, order, centro, chiral, polar, piezo, axes:[{dir, symbol, centre}], mirrors:[normal] }
  * symbol ∈ '2','3','4','6','-3','-4','-6'
+ * @param {Mat3[]} ops
+ * @returns {Analyse}
  */
 export function analyzeGroup(ops) {
   const centro = ops.some((m) => matEq(m, neg(I3())));
   const chiral = ops.every((m) => det(m) > 0);
   // polar, falls ein Vektor existiert, der unter allen Operationen invariant ist
+  /** @type {Mat3} */
   const P = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
   for (const m of ops) for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) P[i][j] += m[i][j] / ops.length;
   const polar = P.some((r) => r.some((x) => Math.abs(x) > 1e-6));
@@ -157,7 +215,9 @@ export function analyzeGroup(ops) {
   for (const m of ops) { const t = trace(m), t2 = trace(mul(m, m)); nPiezo += (t * (t * t + t2)) / 2; }
   const piezo = Math.round(nPiezo / ops.length) > 0;
 
+  /** @type {{ dir: Vec3, rot: Set<number>, rotinv: Set<number>, mirror: boolean }[]} */
   const axisMap = [];
+  /** @param {Vec3} d */
   const findAxis = (d) => {
     const c = canonicalDir(d);
     let e = axisMap.find((a) => Math.abs(Math.abs(a.dir[0] * c[0] + a.dir[1] * c[1] + a.dir[2] * c[2]) - 1) < 1e-6);
@@ -177,7 +237,9 @@ export function analyzeGroup(ops) {
       if (n === 2) e.mirror = true; else e.rotinv.add(n);
     }
   }
+  /** @type {Achse[]} */
   const axes = [];
+  /** @type {Vec3[]} */
   const mirrors = [];
   for (const e of axisMap) {
     if (e.mirror) mirrors.push(e.dir);
@@ -196,14 +258,14 @@ export function analyzeGroup(ops) {
   return { ops, order: ops.length, centro, chiral, polar, piezo, axes, mirrors };
 }
 
-/** Vollständige Daten zu einer Punktgruppe. */
+/** Vollständige Daten zu einer Punktgruppe. @param {string} id @returns {Punktgruppeninfo} */
 export function buildPointGroup(id) {
-  const g = groupById(id);
+  const g = /** @type {Punktgruppe} */ (groupById(id)); // unbekannte id: Fehler wie bisher beim Zugriff
   const ops = generateGroup(g.gens());
   return { ...g, ...analyzeGroup(ops) };
 }
 
-/** Bahn (Orbit) eines Punktes unter der Gruppe: [{p, det, op}] */
+/** Bahn (Orbit) eines Punktes unter der Gruppe: [{p, det, op}] @param {Mat3[]} ops @param {Vec3} p0 */
 export function orbit(ops, p0) {
   return ops.map((m, i) => ({ p: mulVec(m, p0), det: det(m), op: i }));
 }
@@ -216,24 +278,33 @@ export function orbit(ops, p0) {
  * Rückgabe: [{ pos, label (HTML), dirs, hm, axes:[...], mirrors:[normale] }]; Triklin: [].
  * Jede Achse erhält zusätzlich axis.cls = pos, info.mirrorCls[i] = pos des i-ten Spiegels.
  */
-/** Positionen des HM-Symbols als Gitterrichtungen [uvw] je Kristallsystem. */
+/**
+ * Positionen des HM-Symbols als Gitterrichtungen [uvw] je Kristallsystem.
+ * @param {string} system
+ * @returns {{ label: string, uvw: Richtung[] }[]}
+ */
 function directionPositions(system) {
+  const R = /** @param {Vec3[]} l */ (l) => /** @type {Richtung[]} */ (l);
   switch (system) {
     case 'monoklin': case 'orthorhombisch':
-      return [{ label: '[100]', uvw: [[1, 0, 0]] }, { label: '[010]', uvw: [[0, 1, 0]] }, { label: '[001]', uvw: [[0, 0, 1]] }];
+      return [{ label: '[100]', uvw: R([[1, 0, 0]]) }, { label: '[010]', uvw: R([[0, 1, 0]]) }, { label: '[001]', uvw: R([[0, 0, 1]]) }];
     case 'tetragonal':
-      return [{ label: '[001]', uvw: [[0, 0, 1]] }, { label: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0]] }, { label: '⟨110⟩', uvw: [[1, 1, 0], [1, -1, 0]] }];
+      return [{ label: '[001]', uvw: R([[0, 0, 1]]) }, { label: '⟨100⟩', uvw: R([[1, 0, 0], [0, 1, 0]]) }, { label: '⟨110⟩', uvw: R([[1, 1, 0], [1, -1, 0]]) }];
     case 'trigonal': case 'hexagonal':
-      return [{ label: '[001]', uvw: [[0, 0, 1]] }, { label: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0], [-1, -1, 0]] },
-        { label: '⟨210⟩', uvw: [[1, -1, 0], [1, 2, 0], [-2, -1, 0]] }];
+      return [{ label: '[001]', uvw: R([[0, 0, 1]]) }, { label: '⟨100⟩', uvw: R([[1, 0, 0], [0, 1, 0], [-1, -1, 0]]) },
+        { label: '⟨210⟩', uvw: R([[1, -1, 0], [1, 2, 0], [-2, -1, 0]]) }];
     case 'kubisch':
-      return [{ label: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] },
-        { label: '⟨111⟩', uvw: [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1]] },
-        { label: '⟨110⟩', uvw: [[1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]] }];
+      return [{ label: '⟨100⟩', uvw: R([[1, 0, 0], [0, 1, 0], [0, 0, 1]]) },
+        { label: '⟨111⟩', uvw: R([[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1]]) },
+        { label: '⟨110⟩', uvw: R([[1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]]) }];
     default: return [];
   }
 }
-/** Gitterrichtung → kartesisch im Koordinatensystem dieser Datei (a ∥ x bzw. HEX_A, b ∥ y, c ∥ z). */
+/**
+ * Gitterrichtung → kartesisch im Koordinatensystem dieser Datei (a ∥ x bzw. HEX_A, b ∥ y, c ∥ z).
+ * @param {string} system
+ * @returns {(u: Richtung) => Vec3}
+ */
 export function latticeToCart(system) {
   const hex = system === 'trigonal' || system === 'hexagonal';
   const a = hex ? HEX_A : X, b = hex ? HEX_B : Y;
@@ -242,11 +313,16 @@ export function latticeToCart(system) {
 /**
  * info: { system, full, axes, mirrors }; toCart: Gitterrichtung [uvw] → kartesische Richtung im
  * Koordinatensystem von axes/mirrors (Standard: Koordinatensystem der Punktgruppen dieser Datei).
+ * @param {Pick<Punktgruppeninfo, 'system' | 'full' | 'axes' | 'mirrors' | 'mirrorCls'>} info
+ * @param {(u: Richtung) => Vec3} [toCart]
+ * @returns {Blickrichtungsklasse[]}
  */
 export function symmetryDirections(info, toCart = latticeToCart(info.system)) {
   const pos = directionPositions(info.system);
   const parts = info.full.split(' ');
+  /** @type {Blickrichtungsklasse[]} */
   const classes = pos.map((p, i) => ({ pos: i, label: p.label, dirs: p.uvw.map((u) => normalize(toCart(u))), hm: parts[i] || null, axes: [], mirrors: [] }));
+  /** @param {Vec3} v */
   const find = (v) => classes.findIndex((c) => c.dirs.some((d) => Math.abs(Math.abs(d[0] * v[0] + d[1] * v[1] + d[2] * v[2]) - 1) < 1e-6));
   for (const a of info.axes) {
     const k = find(a.dir);
@@ -261,14 +337,16 @@ export function symmetryDirections(info, toCart = latticeToCart(info.system)) {
   return classes;
 }
 
-/** Zusammenfassung der Symmetrieelemente für die Anzeige. */
+/** Zusammenfassung der Symmetrieelemente für die Anzeige. @param {Pick<Punktgruppeninfo, 'axes' | 'mirrors' | 'centro'>} info */
 export function elementSummary(info) {
   const order = ['6', '-6', '4', '-4', '3', '-3', '2'];
+  /** @type {Record<string, number>} */
   const counts = {};
   for (const a of info.axes) {
     const key = a.symbol + (a.centre ? '/c' : '');
     counts[key] = (counts[key] || 0) + 1;
   }
+  /** @type {{ symbol: string, centre: boolean, count: number }[]} */
   const out = [];
   for (const s of order) {
     for (const c of [false, true]) {

@@ -1,0 +1,19 @@
+{
+  // Typprüfung (LEITFADEN.md, Abschn. 9): npx tsc -p .  (in der CI der Job „typen“)
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "skipLibCheck": true,
+    // Die Werkzeuge in tools/common/ beziehen Typen aus ../js/ (so liegen sie in crystallography-common);
+    // hier liegt js/ unter lib/common/.
+    "rootDirs": ["tools", "lib/common"]
+  },
+  "include": ["js/**/*.js", "tools/**/*.mjs"]
+}

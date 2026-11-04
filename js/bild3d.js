@@ -1,3 +1,4 @@
+// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Feste räumliche Zeichnungen für Quiz und Moodle-Export: Kristall (Polyeder) und Symmetriegerüst einer
 // Punktgruppe als SVG, ohne WebGL. Parallelprojektion aus einer festen Richtung wie in Lehrbuchzeichnungen:
 // x zeigt zum Betrachter, y nach rechts, leicht von oben (x, y, z wie im Stereogramm: x nach unten, y nach rechts).

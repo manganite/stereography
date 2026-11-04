@@ -15,6 +15,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
+- **Gemeinsame Grundlage** auf crystallography-common v0.2.0: ⓘ-Erklärungen maskieren den Text der Bedienelemente, der Moodle-Export maskiert Anführungszeichen in Alternativtexten (beides Befunde von CodeQL; Anzeige und Moodle-Export sind unverändert, nachgeprüft).
 - **README:** Release-Ablauf über einen Release-PR, Tag auf `origin/main`.
 
 ### Behoben

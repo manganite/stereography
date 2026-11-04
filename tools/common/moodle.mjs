@@ -19,6 +19,8 @@ export function helleFarben(cssPfad) {
 }
 
 export const xmlEsc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+/** Wert eines Attributs in doppelten Anführungszeichen (z. B. alt="…"): zusätzlich " maskiert. */
+export const attrEsc = (s) => xmlEsc(s).replace(/"/g, '&quot;');
 /** HTML der App für Moodle: Querstrich als kombinierender Überstrich (Moodle kennt die CSS-Klasse nicht). */
 export const html = (s) => String(s).replace(/<span class="ov">([^<]*)<\/span>/g, (m, t) => [...t].map((c) => c + '̅').join(''));
 const cdata = (s) => `<![CDATA[${String(s).replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
@@ -54,7 +56,7 @@ export function frageXML(q, { kapitel, bildSVG }) {
   const files = [];
   let text = html(q.frage);
   if (q.bild) {
-    text += `<p><img src="@@PLUGINFILE@@/bild.svg" alt="${xmlEsc(q.bildAlt || 'Stereogramm')}" width="320" height="320"></p>`;
+    text += `<p><img src="@@PLUGINFILE@@/bild.svg" alt="${attrEsc(q.bildAlt || 'Stereogramm')}" width="320" height="320"></p>`;
     files.push(datei('bild.svg', bildSVG(q.bild, q.bildOpt)));
   }
   if (q.typ === 'mehrfach') text += '<p><i>Mehrere Antworten können richtig sein.</i></p>';
@@ -65,7 +67,7 @@ export function frageXML(q, { kapitel, bildSVG }) {
     const fb = q.hinweise?.[i] ? `<feedback format="html"><text>${cdata(html(q.hinweise[i]))}</text></feedback>` : '';
     if (q.typ === 'text-bild' || q.typ === 'bild-bild') {
       const name = `antwort${i + 1}.svg`;
-      return `<answer fraction="${frac}" format="html"><text>${cdata(`<img src="@@PLUGINFILE@@/${name}" alt="${xmlEsc(a.alt)}" width="200" height="200">`)}</text>${datei(name, bildSVG(a.app, { ...q.bildOpt, klein: true }))}${fb}</answer>`;
+      return `<answer fraction="${frac}" format="html"><text>${cdata(`<img src="@@PLUGINFILE@@/${name}" alt="${attrEsc(a.alt)}" width="200" height="200">`)}</text>${datei(name, bildSVG(a.app, { ...q.bildOpt, klein: true }))}${fb}</answer>`;
     }
     return `<answer fraction="${frac}" format="html"><text>${cdata(html(a))}</text>${fb}</answer>`;
   });

@@ -5,10 +5,19 @@ import { CATALOG, FORM_TYPES, formEig } from '../js/forms.js';
 import { POINT_GROUPS, buildPointGroup } from '../js/pointgroups.js';
 import { buildCrystal, latticeOps, hklOrbit, LATTICE_DEFAULTS, SYSTEM_OF, habitOf } from '../js/polyhedra.js';
 
-const groupOf = (id) => POINT_GROUPS.find((g) => g.id === id);
+/** @import { Vec3, Richtung } from '../lib/common/js/typen.js' */
+/** @import { Palette } from '../js/scene.js' */
+/** @import { Kristallparameter, Kristall } from '../js/polyhedra.js' */
+/** @import { Punktgruppe } from '../js/pointgroups.js' */
+/** @import { Formeintrag } from '../js/forms.js' */
+
+/** @param {string} id */
+const groupOf = (id) => /** @type {Punktgruppe} */ (POINT_GROUPS.find((g) => g.id === id));
 
 /** Euler-Charakteristik V − E + F eines konvexen Polyeders aus seinen Flächen. */
+/** @param {{ verts: Vec3[] }[]} faces */
 function euler(faces) {
+  /** @param {Vec3} v */
   const key = (v) => v.map((x) => x.toFixed(5)).join(',');
   const V = new Set(faces.flatMap((f) => f.verts.map(key))).size;
   const E = faces.reduce((s, f) => s + f.verts.length, 0) / 2;
@@ -23,7 +32,9 @@ test('134 Formen (115 in Aufstellung A, 19 in Aufstellung B), je 47 Formtypen be
 });
 
 test('Aufstellung B: dieselben Wyckoff-Lagen, Formtypen und Flächenzahlen wie Aufstellung A', () => {
+  /** @type {Record<string, string>} */
   const PAARE = { 312: '321', '31m': '3m1', '-31m': '-3m1', '-4m2': '-42m', '-62m': '-6m2' };
+  /** @param {string} pg */
   const sig = (pg) => CATALOG.filter((e) => e.pg === pg).map((e) => `${e.wy}:${e.type}:${e.mult}`).join(' ');
   for (const [b, a] of Object.entries(PAARE)) {
     assert.ok(CATALOG.some((e) => e.pg === b), b);
@@ -50,7 +61,9 @@ test('jede Form ergibt einen geschlossenen Körper (Euler = 2), keine Hauptfläc
 });
 
 test('reduzierte Formliste ohne Flächensymmetrie: 78 Formen (67 in Aufstellung A)', () => {
+  /** @type {Record<string, string>} */
   const EIG_SAME = { '-62m': '-6m2', '-4m2': '-42m' };
+  /** @param {string} s */
   const norm = (s) => EIG_SAME[s] || s;
   const listed = CATALOG.filter((e) => {
     const g = groupOf(e.pg);
@@ -63,6 +76,7 @@ test('reduzierte Formliste ohne Flächensymmetrie: 78 Formen (67 in Aufstellung 
 test('Flächenform der kubischen Formen passt zum Namen (Drei- bzw. Vierecke)', () => {
   // Tristetraeder und Trisoktaeder: Dreiecke; Deltoiddodekaeder und Deltoidikositetraeder: Vierecke (Deltoide).
   // Borchardt-Ott & Sowa, Tab. 9.7; in 4̄3m und m3̄m ist die Zuordnung zu {hhl} h<l bzw. h>l vertauscht.
+  /** @type {Record<number, number>} */
   const ECKEN = { 33: 3, 34: 4, 35: 3, 38: 4, 39: 3, 40: 4, 42: 3, 43: 4, 45: 3, 46: 3, 47: 3 };
   let checked = 0;
   for (const e of CATALOG.filter((x) => ECKEN[x.type])) {
@@ -76,7 +90,8 @@ test('Flächenform der kubischen Formen passt zum Namen (Drei- bzw. Vierecke)', 
 });
 
 test('Kennungen aus v1.0.0 zeigen dieselbe Form (4̄3m)', () => {
-  const byId = (id) => CATALOG.find((e) => e.id === id);
+  /** @param {string} id */
+  const byId = (id) => /** @type {Formeintrag} */ (CATALOG.find((e) => e.id === id));
   assert.deepEqual(byId('-43m:c38').hkl, [1, 1, 2]);
   assert.equal(FORM_TYPES[byId('-43m:c38').type].name.split(' ')[0], 'Tristetraeder');
   assert.deepEqual(byId('-43m:c39').hkl, [2, 2, 1]);
@@ -86,9 +101,10 @@ test('Kennungen aus v1.0.0 zeigen dieselbe Form (4̄3m)', () => {
 test('Zonen des Kristalls: mindestens drei Flächen, nach Symmetrie gruppiert', async () => {
   const { zonesOf } = await import('../js/polyhedra.js');
   const { EXAMPLES } = await import('../js/examples.js');
+  /** @param {Kristall} C */
   const summary = (C) => zonesOf(C).map((c) => `${c.rep.join('')}:${c.zones.length}x${c.faces}`);
-  const ex = EXAMPLES.find((e) => e.id === 'galenit');
-  const galenit = buildCrystal({ groupId: ex.pg, forms: ex.forms, lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: '001' });
+  const ex = /** @type {typeof EXAMPLES[number]} */ (EXAMPLES.find((e) => e.id === 'galenit'));
+  const galenit = buildCrystal({ groupId: ex.pg, forms: /** @type {Kristallparameter['forms']} */ (ex.forms), lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: '001' });
   // Borchardt-Ott & Sowa S. 36: (100) liegt in den Zonen [010], [001], [011], [01-1]
   assert.deepEqual(summary(galenit), ['100:3x8', '110:6x8', '111:4x6', '211:12x4']);
   const cube = buildCrystal({ entryId: 'm-3m:a34', lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: null });
@@ -103,20 +119,22 @@ test('Zonen des Kristalls: mindestens drei Flächen, nach Symmetrie gruppiert', 
   // Schlüssel der Zonen hängen nicht von der Lage ab (Auswahl bleibt beim Wechsel der Blickrichtung gültig)
   const { zoneByUvw, zoneKey } = await import('../js/polyhedra.js');
   const cube110 = buildCrystal({ entryId: 'm-3m:a34', lat: LATTICE_DEFAULTS.kubisch, broken: false, auxDist: 1, presetId: '110' });
-  assert.equal(zoneByUvw(cube, [0, 0, 1]).key, '0,0,1');
-  assert.equal(zoneByUvw(cube110, [0, 0, 1]).key, '0,0,1');
-  assert.equal(zoneKey([0, 0, -2]), '0,0,1');
+  assert.equal(zoneByUvw(cube, /** @type {Richtung} */ ([0, 0, 1])).key, '0,0,1');
+  assert.equal(zoneByUvw(cube110, /** @type {Richtung} */ ([0, 0, 1])).key, '0,0,1');
+  assert.equal(zoneKey(/** @type {Richtung} */ ([0, 0, -2])), '0,0,1');
   assert.deepEqual(zonesOf(cube110)[0].zones.map((z) => z.key).sort(), zonesOf(cube)[0].zones.map((z) => z.key).sort());
 });
 
 test('Habitus: isometrisch nur bei L₃/L₁ ≥ 2/3; hexagonales Prisma je nach Abstand des Pinakoids', async () => {
   const { createState, applyHashTo, polyCrystal } = await import('../js/scene.js');
   const K = '#000';
-  const col = new Proxy({ form: Array(8).fill(K), dir: [K, K, K] }, { get: (o, k) => (k in o ? o[k] : K) });
+  const col = /** @type {Palette} */ (/** @type {unknown} */ (new Proxy(/** @type {Record<string | symbol, unknown>} */ ({ form: Array(8).fill(K), dir: [K, K, K] }), { get: (o, k) => (k in o ? o[k] : K) })));
+  /** @param {string} hash */
   const habit = (hash) => {
     const st = createState();
     applyHashTo(st, hash, createState());
-    return habitOf(polyCrystal(st, col).faces.filter((f) => !f.hidden));
+    // die Beispiele im Test haben einen Habitus
+    return /** @type {NonNullable<ReturnType<typeof habitOf>>} */ (habitOf(polyCrystal(st, col).faces.filter((f) => !f.hidden)));
   };
   // Abb. 5.1–5.3 des Skripts
   assert.equal(habit('#m=form&sys=hexagonal&f=6/mmm:c25&abstand=0.3').type, 'planar');

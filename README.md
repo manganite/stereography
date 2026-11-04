@@ -170,12 +170,12 @@ Darstellung (beide Modi):
 | `js/version.js` | Versionsnummer der App |
 | `sw.js` | Service Worker für den Offline-Betrieb |
 | `tests/` | Automatische Tests (Node, ohne Abhängigkeiten) |
-| `tsconfig.json` | Typprüfung mit TypeScript (JSDoc-Typen, kein Build-Schritt); strikt bisher die Rechenkerne `js/linalg.js`, `pointgroups.js`, `forms.js`, `sitesym.js`, `polyhedra.js`, `stereogram.js`, `examples.js` |
+| `tsconfig.json` | Typprüfung mit TypeScript (JSDoc-Typen, kein Build-Schritt), strikt für `js/`, `tools/` und `tests/` |
 | `js/linalg.js` | Vektoren und Matrizen |
 | `manifest.webmanifest`, `icons/` | Favicon und Homescreen-Icons (iPad/iPhone: Teilen → Zum Home-Bildschirm; Android: Menü → Zum Startbildschirm hinzufügen) |
 | `lib/common/`, `tools/common/` | Gemeinsame Grundlage der App-Familie aus [crystallography-common](https://github.com/manganite/crystallography-common), als Kopie mit fester Version (`lib/common/MANIFEST.json`): Stile (`base.css`, `app.css`, `skript.css`, `quiz.css`), Schriften, Hilfen, Quiz, Skript-Bausteine, Formatierung, Werkzeuge. Nicht von Hand ändern; siehe unten. |
 | `lib/common/fonts/` | Schriften IBM Plex Sans, IBM Plex Mono und Source Serif 4 (WOFF2, nur benötigte Schnitte, aus den npm-Paketen `@fontsource/*`), SIL Open Font License 1.1, siehe `lib/common/fonts/LICENSE-*.txt`. Selbst gehostet, damit die App ohne Verbindung zu Google auskommt. |
-| `lib/three.bundle.js` | three.js r186 mit OrbitControls und CSS2DRenderer (MIT-Lizenz, siehe `lib/three-LICENSE.txt`); `lib/three.bundle.d.ts`: vorläufige Typen für die Typprüfung (der Browser lädt sie nie) |
+| `lib/three.bundle.js` | three.js r186 mit OrbitControls und CSS2DRenderer (MIT-Lizenz, siehe `lib/three-LICENSE.txt`); `lib/three.bundle.d.ts`: Typen für die Typprüfung aus `@types/three` derselben Version (der Browser lädt sie nie) |
 
 Die Flächenzahl jeder Katalogform wird beim Erzeugen mit der Multiplizität aus ITA verglichen (alle 134 stimmen überein); ebenso die Flächensymmetrie jeder Form mit dem berechneten Stabilisator der Fläche. Die Symmetrieelemente werden nicht von Hand eingetragen, sondern aus den Gruppenelementen berechnet (Drehachsen aus Spur und Eigenvektor, Spiegelebenen und Drehinversionsachsen aus −R).
 
@@ -200,11 +200,11 @@ Geprüft werden die Gruppenordnungen aller 40 Punktgruppen-Einträge, die Zuordn
 Typprüfung (die Typen stehen als JSDoc-Kommentare im Code; Versionen wie im Job `typen` in `.github/workflows/ci.yml`, alle Pakete in einem Befehl, sonst entfernt npm die zuvor installierten):
 
 ```bash
-npm install --no-save typescript@7.0.2 @types/node@22.20.5 playwright@1.52.0
+npm install --no-save typescript@7.0.2 @types/node@22.20.5 playwright@1.52.0 @types/three@0.186.0
 npx tsc -p .
 ```
 
-Strikt geprüft werden bisher die Rechenkerne; die übrigen Dateien tragen `// @ts-nocheck`, bis sie typisiert sind ([#73](https://github.com/manganite/stereography/issues/73)). Mit den installierten Paketen zeigt auch VS Code die Meldungen in geöffneten Dateien.
+Geprüft wird alles in `js/`, `tools/` und `tests/`, strikt und ohne Ausnahmen; `lib/three.bundle.js` selbst nicht (Fremdcode), seine Typen kommen aus `@types/three` in der Version des Bundles (r186). Mit den installierten Paketen zeigt auch VS Code die Meldungen in geöffneten Dateien.
 
 ### Versionen und Releases
 

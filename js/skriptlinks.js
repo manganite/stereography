@@ -1,8 +1,8 @@
-// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 /**
  * Verweise aus der App ins Skript: Anker eines Abschnitts (oder Kastens) in skript.html und das
  * Kapitel, in dem er steht. tests/skript.test.mjs prüft, dass jeder Anker existiert und im
  * angegebenen Kapitel liegt und dass jeder Begriff der Infobox einen Verweis hat.
+ * @type {Record<string, number>}
  */
 export const SKRIPT_ANCHORS = {
   'indizes-gitter': 1, // Gitter
@@ -21,9 +21,10 @@ export const SKRIPT_ANCHORS = {
   'verzerrung-prinzip': 11, // Symmetriebruch, Restgruppe
 };
 
+/** @param {string} s */
 const attr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 
-/** Begriff als Link ins Skript (z. B. die Bezeichnung einer Zeile der Infobox). */
+/** Begriff als Link ins Skript (z. B. die Bezeichnung einer Zeile der Infobox). @param {string} label @param {string} anchor */
 export function skriptTerm(label, anchor) {
   const kap = SKRIPT_ANCHORS[anchor];
   return `<a class="skript-term" href="skript.html#${anchor}" title="${attr(`Im Skript erklärt, Kapitel ${kap}`)}">${label}</a>`;

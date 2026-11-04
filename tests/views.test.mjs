@@ -10,20 +10,27 @@ import { POINT_GROUPS, SYSTEMS } from '../js/pointgroups.js';
 import { CATALOG } from '../js/forms.js';
 import { SYSTEM_OF } from '../js/polyhedra.js';
 
+/** @import { Vec3 } from '../lib/common/js/typen.js' */
+/** @import { Palette } from '../js/scene.js' */
+
 const K = '#336699';
-const col = new Proxy({ form: Array(8).fill(K), dir: [K, K, K] }, { get: (o, k) => (k in o ? o[k] : K) });
+const col = /** @type {Palette} */ (/** @type {unknown} */ (new Proxy(/** @type {Record<string | symbol, unknown>} */ ({ form: Array(8).fill(K), dir: [K, K, K] }), { get: (o, k) => (k in o ? o[k] : K) })));
+/** @param {string} hash */
 const stateOf = (hash) => { const st = createState(); assert.ok(applyHashTo(st, hash, createState()), hash); return st; };
+/** @param {{ uvw: number[] }[]} dirs */
 const uvw = (dirs) => dirs.map((d) => d.uvw.join(','));
+/** @param {number[]} a @param {number[]} b */
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
 test('Ansichten: je Kristallsystem drei Richtungen, Positionen wie im Hermann-Mauguin-Symbol', () => {
+  /** @type {Record<string, string[]>} */
   const want = {
     triklin: ['1,0,0', '0,1,0', '0,0,1'], monoklin: ['1,0,0', '0,1,0', '0,0,1'], orthorhombisch: ['1,0,0', '0,1,0', '0,0,1'],
     tetragonal: ['0,0,1', '1,0,0', '1,1,0'], trigonal: ['0,0,1', '1,0,0', '2,1,0'], hexagonal: ['0,0,1', '1,0,0', '2,1,0'],
     kubisch: ['0,0,1', '1,1,1', '1,1,0'], // ⟨100⟩ als [001]: Blick wie im Stereogramm
   };
   for (const sys of SYSTEMS) {
-    const g = POINT_GROUPS.find((x) => x.system === sys);
+    const g = /** @type {typeof POINT_GROUPS[number]} */ (POINT_GROUPS.find((x) => x.system === sys));
     const st = stateOf(`#m=pg&g=${g.id}`);
     const d = pgViewDirections(st);
     assert.deepEqual(uvw(d), want[sys], sys);
@@ -39,7 +46,7 @@ test('Ansichten: hexagonal [210] steht senkrecht auf b, Richtung ∥ Projektions
 });
 
 test('Ansichten folgen der Lage: Familienmitglied ∥ bzw. ⊥ Projektionsrichtung', () => {
-  const dirsFor = (h) => { const st = stateOf(h); return polyViewDirections(polyCrystal(st, col)); };
+  const dirsFor = (/** @type {string} */ h) => { const st = stateOf(h); return polyViewDirections(polyCrystal(st, col)); };
   // kubisch, [111] ∥ Projektionsrichtung: ⟨111⟩ von oben, ⟨110⟩ seitlich ([1-10] ⊥ [111])
   const c111 = dirsFor('#m=form&sys=kubisch&f=m-3m:b35&lage=111');
   assert.equal(c111[1].along, 'proj');
@@ -110,7 +117,7 @@ test('Oberfläche: jede Option hat ein Bedienelement und einen Tooltip', async (
 
 test('Seitenleiste: Zusatzoptionen der Anzeige unter „Darstellung“, nach Tafel gegliedert', () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-  const block = (id) => { const i = html.indexOf(`id="${id}"`); const j = html.indexOf('</details>', i); return html.slice(i, j); };
+  const block = (/** @type {string} */ id) => { const i = html.indexOf(`id="${id}"`); const j = html.indexOf('</details>', i); return html.slice(i, j); };
   const card = html.slice(html.indexOf('id="ctl-poly"'), html.indexOf('</section>', html.indexOf('id="ctl-poly"')));
   const view = block('sec-view');
   for (const id of ['pg-poles', 'poly-poles', 'pg-colorful', 'poly-lower', 'v-wulff', 'v-sphere', 'v-globe', 'v-rays']) {

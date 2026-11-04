@@ -129,8 +129,8 @@ export const POINT_GROUPS = [
 
 export const SYSTEMS = ['triklin', 'monoklin', 'orthorhombisch', 'tetragonal', 'trigonal', 'hexagonal', 'kubisch'];
 
-/** @param {string} id */
-export const groupById = (id) => POINT_GROUPS.find((g) => g.id === id);
+/** Gruppe zur id. Alle Aufrufer übergeben ids aus der Liste (eine unbekannte ergäbe undefined). @param {string} id */
+export const groupById = (id) => /** @type {Punktgruppe} */ (POINT_GROUPS.find((g) => g.id === id));
 
 /** Erzeugt alle Elemente der Gruppe aus den Generatoren (Identität zuerst). @param {Mat3[]} gens */
 export function generateGroup(gens) {

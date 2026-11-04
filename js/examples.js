@@ -7,6 +7,14 @@
 // lat: Gitterparameter (a = 1) wie in polyhedra.js; fehlende Werte vom System.
 // In note: {hkl:h,k,l} wird als Formsymbol gesetzt (drei oder vier Indizes nach Einstellung).
 
+/** @import { Vec3 } from '../lib/common/js/typen.js' */
+/** @import { Gitterparameter } from './polyhedra.js' */
+/**
+ * Beispielkristall (Bedeutung der Felder oben).
+ * @typedef {{ id: string, name: string, formula?: string, sys: string, pg: string, forms: { hkl: Vec3, r?: number, t?: number }[], lat?: Partial<Gitterparameter>, src: string, note?: string }} Beispiel
+ */
+
+/** @type {Beispiel[]} */
 export const EXAMPLES = [
   {
     id: 'galenit', name: 'Galenit', formula: 'PbS', sys: 'kubisch', pg: 'm-3m',
@@ -148,5 +156,5 @@ export const EXAMPLES = [
   },
 ];
 
-/** @param {string} id */
+/** @param {string | null} id */
 export const exampleById = (id) => EXAMPLES.find((x) => x.id === id) || null;

@@ -22,6 +22,7 @@ test('das Suchmuster erkennt Verweise, auch mit Umlaut am Wortanfang', () => {
 });
 
 test('keine Verweise auf Vorlesung, Übungen oder Folien', () => {
+  /** @type {string[]} */
   const funde = [];
   for (const f of files) {
     readFileSync(new URL(f, root), 'utf8').replace(HERKUNFT, '').split('\n').forEach((zeile, i) => {

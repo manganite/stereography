@@ -121,6 +121,15 @@ export class View3D {
     this.controls.enablePan = false;
     this.controls.minDistance = 2.5;
     this.controls.maxDistance = 12;
+    // Startwerte vor setView: setView fordert schon einen Frame an (_raf)
+    /** @type {THREE.Object3D[]} */
+    this.pickables = [];
+    /** @type {THREE.MeshBasicMaterial | null} */
+    this._texMat = null;
+    /** @type {number | null} */
+    this._raf = null;
+    this._texToken = 0;
+    this._destroyed = false;
     this.controls.addEventListener('change', () => this.requestRender());
     this.setView('oblique');
 
@@ -143,14 +152,6 @@ export class View3D {
     this.texture.colorSpace = THREE.SRGBColorSpace;
     this.texture.anisotropy = 4;
 
-    /** @type {THREE.Object3D[]} */
-    this.pickables = [];
-    /** @type {THREE.MeshBasicMaterial | null} */
-    this._texMat = null;
-    /** @type {number | null} */
-    this._raf = null;
-    this._texToken = 0;
-    this._destroyed = false;
     this._setupPicking();
     this._ro = new ResizeObserver(() => this.resize());
     this._ro.observe(container);

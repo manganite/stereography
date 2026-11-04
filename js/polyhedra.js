@@ -10,8 +10,8 @@ import {
   fromColumns, inverse, transpose, mul, mulVec, dot, cross, normalize, scale, add, sub, norm,
   solve3, vecEq, fromRows, matEq,
 } from './linalg.js';
-import { buildPointGroup, groupById, analyzeGroup, POINT_GROUPS } from './pointgroups.js';
-import { CATALOG, entryById, FORM_TYPES } from './forms.js';
+import { buildPointGroup, analyzeGroup, POINT_GROUPS } from './pointgroups.js';
+import { entryById, FORM_TYPES } from './forms.js';
 
 /** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
 /** @import { Analyse } from './pointgroups.js' */

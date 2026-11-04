@@ -195,13 +195,14 @@ node tools/common/sync.mjs ../crystallography-common
 node --test tests/*.test.mjs
 ```
 
-Geprüft werden die Gruppenordnungen aller 40 Punktgruppen-Einträge, die Zuordnung der Symmetrieelemente zu den Blickrichtungen, die Flächenzahl aller 134 Formen gegen ITA, geschlossene Polyeder (Euler-Charakteristik 2), die Beispielkristalle, Lagen und Streckungen, die Abbildungen des Skripts und die Kennzeichnung der Vertiefungen, die Quizfragen (Pflichtfelder, Lernziel wörtlich im Skript, nachgerechnete Antworten, verschiedene Antwortbilder, Höchstanteile beim Ziehen, Moodle-Export) die Link-Adressen (hin und zurück, alte Links) sowie die Release-Konsistenz (Version, Changelog, Offline-Liste) und die Kopie der gemeinsamen Dateien. Dieselben Tests laufen bei jedem Pull Request in GitHub Actions, zusammen mit der Typprüfung und der PDF-Fassung des Skripts.
+Geprüft werden die Gruppenordnungen aller 40 Punktgruppen-Einträge, die Zuordnung der Symmetrieelemente zu den Blickrichtungen, die Flächenzahl aller 134 Formen gegen ITA, geschlossene Polyeder (Euler-Charakteristik 2), die Beispielkristalle, Lagen und Streckungen, die Abbildungen des Skripts und die Kennzeichnung der Vertiefungen, die Quizfragen (Pflichtfelder, Lernziel wörtlich im Skript, nachgerechnete Antworten, verschiedene Antwortbilder, Höchstanteile beim Ziehen, Moodle-Export) die Link-Adressen (hin und zurück, alte Links) sowie die Release-Konsistenz (Version, Changelog, Offline-Liste) und die Kopie der gemeinsamen Dateien. Dieselben Tests laufen bei jedem Pull Request in GitHub Actions, zusammen mit Typprüfung, ESLint und der PDF-Fassung des Skripts.
 
-Typprüfung (die Typen stehen als JSDoc-Kommentare im Code; Versionen wie im Job `typen` in `.github/workflows/ci.yml`, alle Pakete in einem Befehl, sonst entfernt npm die zuvor installierten):
+Typprüfung und ESLint (die Typen stehen als JSDoc-Kommentare im Code, die Regeln für ESLint in `tools/common/eslint-basis.mjs`; Versionen wie in den Jobs `typen` und `lint` in `.github/workflows/ci.yml`, alle Pakete in einem Befehl, sonst entfernt npm die zuvor installierten):
 
 ```bash
-npm install --no-save typescript@7.0.2 @types/node@22.20.5 playwright@1.52.0 @types/three@0.186.0
+npm install --no-save typescript@7.0.2 @types/node@22.20.5 playwright@1.52.0 @types/three@0.186.0 eslint@10.14.0 @eslint/js@10.0.1 globals@17.14.0
 npx tsc -p .
+npx eslint .
 ```
 
 Geprüft wird alles in `js/`, `tools/` und `tests/`, strikt und ohne Ausnahmen; `lib/three.bundle.js` selbst nicht (Fremdcode), seine Typen kommen aus `@types/three` in der Version des Bundles (r186). Mit den installierten Paketen zeigt auch VS Code die Meldungen in geöffneten Dateien.

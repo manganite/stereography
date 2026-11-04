@@ -34,10 +34,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install TypeScript
-        run: npm install --no-save typescript@7.0.2 @types/node@22.20.5 playwright@1.52.0 @types/three@0.186.0
+      - name: Install TypeScript und ESLint
+        run: npm install --no-save typescript@7.0.2 @types/node@22.20.5 playwright@1.52.0 @types/three@0.186.0 eslint@10.14.0 @eslint/js@10.0.1 globals@17.14.0
       - name: Typen prüfen
         run: npx tsc -p .
+
+  # ESLint (LEITFADEN.md von crystallography-common, Abschn. 9), Regeln in tools/common/eslint-basis.mjs.
+  # Dieselben Pakete wie bei „typen“, damit tsc auch die Konfiguration prüft.
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install ESLint
+        run: npm install --no-save typescript@7.0.2 @types/node@22.20.5 playwright@1.52.0 @types/three@0.186.0 eslint@10.14.0 @eslint/js@10.0.1 globals@17.14.0
+      - name: ESLint
+        run: npx eslint .
 
   # PDF-Fassung des Skripts wie bei Deploy und Release, damit Fehler vor dem Tag auffallen
   pdf:

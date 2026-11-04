@@ -12,7 +12,7 @@ import {
   kandidaten, zaehlen, ziehen, stellen, pruefen, rng, GEN_ANTEIL, GEN_GESAMT,
   leererFortschritt, fortschrittAus, vermerken, stand,
 } from '../lib/common/js/quiz-core.js';
-import { KAPITEL, SPEICHER } from '../js/quiz-kapitel.js';
+import { KAPITEL } from '../js/quiz-kapitel.js';
 import { createState, applyHashTo, stereoForHash, stateForHash, currentEntryId } from '../js/scene.js';
 import { buildSVG } from '../js/stereogram.js';
 import { groupById, POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart } from '../js/pointgroups.js';

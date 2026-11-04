@@ -14,7 +14,7 @@ import { normalize } from './linalg.js';
 import { View3D, OBLIQUE } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
-import { initHelp, setTip, showTipAt, hideTip } from '../lib/common/js/help.js';
+import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
 import { TIPS, SECTIONS, LABELS } from './hilfetexte.js';
 import { offline } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';

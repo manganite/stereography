@@ -129,14 +129,13 @@ export function koerperSVG(hash, col, opt = {}) {
   let rg = null;
   /** @type {number | null} */
   let oben = null;
-  /** @type {number | null} */
-  let unten = null;
   if (ebene) {
     rg = ring([0, 0, 1], rho, P);
     // Austrittspunkte der z-Achse aus dem Kristall (konvex: kleinste Ebene in Richtung ±z)
     /** @param {number} s */
     const austritt = (s) => Math.min(...faces.filter((x) => s * x.normal[2] > 1e-6).map((x) => dot(x.normal, x.verts[0]) / (s * x.normal[2])));
-    oben = austritt(1); unten = austritt(-1);
+    oben = austritt(1);
+    const unten = austritt(-1);
     for (const s of rg.stuecke.filter((x) => !x.vorn)) out.push(`<path d="${pfad(s.pts)}" fill="none" stroke="${col.muted}" stroke-width="1.3" stroke-dasharray="5 4"/>`);
     if (Number.isFinite(unten)) {
       const a = P([0, 0, -unten]), b = P([0, 0, -1.55 * rmax]);

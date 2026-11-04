@@ -1,4 +1,3 @@
-// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // 3D-Ansicht: Umkugel, Äquatorebene mit dem Stereogramm, Symmetrieelemente,
 // Objekte in allgemeiner Lage bzw. Polyeder, Flächennormalen und Projektionsstrahlen.
 // Weltkoordinaten = kartesisches Kristallsystem (x ∥ a, y ∥ b, z ∥ c).
@@ -6,25 +5,59 @@
 import * as THREE from '../lib/three.bundle.js';
 import { SIZE, R, arcPoints } from './stereogram.js';
 
+/** @import { Vec3, Mat3 } from '../lib/common/js/typen.js' */
+/** @import { Achse } from './pointgroups.js' */
+/** @import { Palette, AppFlaeche } from './scene.js' */
+/** Kristallachse für die Pfeile (crystalAxesFor bzw. Kristall.axes). @typedef {{ name: string, dir: Vec3 }} Achspfeil */
+/** Bogen des Werkzeugs Winkel. @typedef {{ a: Vec3, b: Vec3, label?: string }} Bogen */
+/**
+ * Gemeinsame Schalter der Grundszene (Kugel, Gradnetz, Äquatorebene, Pole N und S).
+ * @typedef {{ showSphere?: boolean, showPlane?: boolean, showGlobe?: boolean, planeOpacity?: number }} Grundoptionen
+ */
+/**
+ * Punktgruppen-Szene: Symmetrieelemente, Bahn (orbit) des Pols p0 mit den Operationen ops.
+ * @typedef {object} Punktgruppendaten
+ * @property {Vec3[]} mirrors
+ * @property {number[]} [mirrorCls]
+ * @property {Achse[]} axes
+ * @property {boolean} centro
+ * @property {Mat3[]} ops
+ * @property {{ p: Vec3, det: number, op: number, rep?: boolean, mixed?: boolean }[] | null} orbit
+ * @property {Vec3} p0
+ * @property {Achspfeil[]} crystalAxes
+ */
+/**
+ * @typedef {Grundoptionen & { showElements?: boolean, showObject?: boolean, showPoles?: boolean, showRays?: boolean, showAxes?: boolean, dirColors?: string[] | null, hiddenDirs?: Set<number | undefined>, arc?: Bogen | null }} Punktgruppenoptionen
+ */
+/** Zone in der 3D-Ansicht. @typedef {{ axis: Vec3, inZone: number[], color?: string }} Zone3D */
+/**
+ * @typedef {Grundoptionen & { showPoles?: boolean, showRays?: boolean, showAxes?: boolean, showNormals?: boolean, size: number, motifs?: { pts: Vec3[] }[] | null, zones?: Zone3D[] | null, zone?: Zone3D | null, picked?: number[], arc?: Bogen | null }} Polyederoptionen
+ */
+/** Polyeder: Flächen (mit Farben der App) und Kristallachsen. @typedef {{ faces: AppFlaeche[], axes: Achspfeil[] }} Polyederdaten */
+
+/** @param {Vec3} p */
 const V = (p) => new THREE.Vector3(p[0], p[1], p[2]);
 /** Schräge Standardansicht (Richtung zur Kamera). */
 export const OBLIQUE = [3.4, 1.7, 2.9];
 
 /** CSS-Farbe für die Leinwand; nicht lesbare Werte (ältere Browser) durch fallback ersetzen. */
+/** @param {CanvasRenderingContext2D} ctx @param {string} css @param {string} fallback */
 function canvasColor(ctx, css, fallback) {
   ctx.fillStyle = '#010203';
   ctx.fillStyle = css;
   return ctx.fillStyle === '#010203' && css !== '#010203' ? fallback : ctx.fillStyle;
 }
+/** @param {string} css */
 const transparent = (css) => !css || css === 'transparent' || /^rgba\(.*,\s*0\)$/.test(css) || /\/\s*0\)$/.test(css);
 
 /**
  * Zeichnet die HTML-Beschriftungen der 3D-Ansicht (CSS2D-Elemente in root) auf ctx, an ihrer
  * angezeigten Stelle; sx, sy: Bildpunkte je CSS-Pixel. Überstriche (.ov) wie im CSS (base.css).
+ * @param {CanvasRenderingContext2D} ctx @param {HTMLElement} root @param {number} sx @param {number} sy
  */
 function drawLabels(ctx, root, sx, sy) {
   const r0 = root.getBoundingClientRect();
-  for (const el of root.querySelectorAll('.lbl3d')) {
+  for (const el of /** @type {NodeListOf<HTMLElement>} */ (root.querySelectorAll('.lbl3d'))) {
     if (el.style.display === 'none') continue;
     const r = el.getBoundingClientRect();
     if (!r.width || !r.height) continue;
@@ -42,7 +75,7 @@ function drawLabels(ctx, root, sx, sy) {
     const fs = (parseFloat(cs.fontSize) || 12) * sy;
     ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${fs}px ${cs.fontFamily}`;
     const color = canvasColor(ctx, cs.color, '#000');
-    const parts = [...el.childNodes].map((n) => ({ t: n.textContent, bar: !!(n.classList && n.classList.contains('ov')) })).filter((p) => p.t);
+    const parts = [...el.childNodes].map((n) => ({ t: n.textContent ?? '', bar: !!(/** @type {Element} */ (n).classList && /** @type {Element} */ (n).classList.contains('ov')) })).filter((p) => p.t);
     const widths = parts.map((p) => ctx.measureText(p.t).width);
     const total = widths.reduce((a, b) => a + b, 0);
     const m = ctx.measureText('(0)');
@@ -65,7 +98,10 @@ function drawLabels(ctx, root, sx, sy) {
 }
 
 export class View3D {
-  /** transparent: durchsichtiger Hintergrund (Bildexport). */
+  /**
+   * transparent: durchsichtiger Hintergrund (Bildexport); onSelect: Klick auf eine Fläche (Nummer) oder daneben (null).
+   * @param {HTMLElement} container @param {{ onSelect?: (idx: number | null) => void, transparent?: boolean }} [optionen]
+   */
   constructor(container, { onSelect, transparent = false } = {}) {
     this.container = container;
     this.onSelect = onSelect;
@@ -107,13 +143,21 @@ export class View3D {
     this.texture.colorSpace = THREE.SRGBColorSpace;
     this.texture.anisotropy = 4;
 
+    /** @type {THREE.Object3D[]} */
     this.pickables = [];
+    /** @type {THREE.MeshBasicMaterial | null} */
+    this._texMat = null;
+    /** @type {number | null} */
+    this._raf = null;
+    this._texToken = 0;
+    this._destroyed = false;
     this._setupPicking();
     this._ro = new ResizeObserver(() => this.resize());
     this._ro.observe(container);
     this.resize();
   }
 
+  /** @param {string} kind 'top', 'side' oder schräg */
   setView(kind) {
     if (kind === 'top') this.setViewDir([0, 0, 1]);
     else if (kind === 'side') this._placeCamera(new THREE.Vector3(1, 0.0001 / 5.2, 0.35 / 5.2));
@@ -123,6 +167,7 @@ export class View3D {
   /**
    * Blick entlang einer Weltrichtung (Betrachter auf der Seite von dir, Blick zum Zentrum), Abstand wie bisher.
    * Fast ∥ z: Blick von oben mit x nach unten und y nach rechts wie im Stereogramm.
+   * @param {Vec3 | number[]} dir
    */
   setViewDir(dir) {
     const v = new THREE.Vector3(dir[0], dir[1], dir[2]).normalize();
@@ -138,6 +183,7 @@ export class View3D {
     return this.camera.position.clone().sub(this.controls.target).normalize().toArray();
   }
 
+  /** @param {THREE.Vector3} v */
   _placeCamera(v) {
     this.camera.position.copy(v.normalize().multiplyScalar(5.2));
     this.camera.lookAt(0, 0, 0);
@@ -205,18 +251,19 @@ export class View3D {
     const out = document.createElement('canvas');
     out.width = this.renderer.domElement.width;
     out.height = this.renderer.domElement.height;
-    const ctx = out.getContext('2d');
+    const ctx = /** @type {CanvasRenderingContext2D} */ (out.getContext('2d'));
     ctx.drawImage(this.renderer.domElement, 0, 0); // im selben Durchlauf wie render(): Puffer noch gültig
     this.renderer.setPixelRatio(oldPr);
     this.renderer.setSize(w, h, false);
     this.requestRender();
     const sx = out.width / w, sy = out.height / h;
     drawLabels(ctx, this.labelRenderer.domElement, sx, sy);
-    return new Promise((resolve, reject) => out.toBlob((b) => (b ? resolve(b) : reject(new Error('PNG fehlgeschlagen'))), 'image/png'));
+    return new Promise(/** @param {(b: Blob) => void} resolve @param {(e: Error) => void} reject */ (resolve, reject) => out.toBlob((b) => (b ? resolve(b) : reject(new Error('PNG fehlgeschlagen'))), 'image/png'));
   }
 
   _setupPicking() {
     const el = this.renderer.domElement;
+    /** @type {[number, number] | null} */
     let down = null;
     el.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
     el.addEventListener('pointerup', (e) => {
@@ -233,25 +280,28 @@ export class View3D {
     });
   }
 
+  /** @param {THREE.Group} group */
   _dispose(group) {
-    group.traverse((o) => {
+    group.traverse((obj) => {
+      // Mesh, Linien und Beschriftungen; andere Objekte haben diese Felder nicht
+      const o = /** @type {THREE.Mesh & { isCSS2DObject?: boolean, element?: HTMLElement }} */ (obj);
       if (o.geometry) o.geometry.dispose();
       if (o.material && o.material !== this._texMat) {
         (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose());
       }
-      if (o.isCSS2DObject && o.element.parentNode) o.element.parentNode.removeChild(o.element);
+      if (o.isCSS2DObject && o.element && o.element.parentNode) o.element.parentNode.removeChild(o.element);
     });
     group.clear();
   }
 
-  /** Aktualisiert die Stereogramm-Textur aus einem SVG-String; das Promise erfüllt sich, sobald sie gezeichnet ist. */
+  /** Aktualisiert die Stereogramm-Textur aus einem SVG-String; das Promise erfüllt sich, sobald sie gezeichnet ist. @param {string} svg */
   setStereoTexture(svg) {
     const token = (this._texToken = (this._texToken || 0) + 1);
-    return new Promise((resolve) => {
+    return new Promise(/** @param {(v?: void) => void} resolve */ (resolve) => {
       const img = new Image();
       img.onload = () => {
         if (token === this._texToken) {
-          const ctx = this.texCanvas.getContext('2d');
+          const ctx = /** @type {CanvasRenderingContext2D} */ (this.texCanvas.getContext('2d'));
           ctx.clearRect(0, 0, 1024, 1024);
           ctx.drawImage(img, 0, 0, 1024, 1024);
           this.texture.needsUpdate = true;
@@ -264,9 +314,11 @@ export class View3D {
     });
   }
 
+  /** @param {Palette} col @param {Grundoptionen} opts */
   _buildBase(col, opts) {
     this._dispose(this.base);
     this.renderer.setClearColor(new THREE.Color(col.paper), this.transparent ? 0 : 1);
+    /** @param {string} x */
     const c = (x) => new THREE.Color(x);
     // Kugel (sehr transparent) + Gradnetz
     const sph = new THREE.Mesh(
@@ -275,6 +327,7 @@ export class View3D {
     );
     this.base.add(sph);
     if (opts.showSphere) {
+      /** @type {number[]} */
       const pts = [];
       for (let lon = 0; lon < 180; lon += 30) {
         const a = (lon * Math.PI) / 180;
@@ -313,7 +366,7 @@ export class View3D {
     const eq = new THREE.Mesh(new THREE.TorusGeometry(1, 0.006, 6, 160), new THREE.MeshBasicMaterial({ color: c(col.ink) }));
     this.base.add(eq);
     // Nord- und Südpol (Projektionszentren)
-    for (const [z, name] of [[1, 'N'], [-1, 'S']]) {
+    for (const [z, name] of /** @type {[number, string][]} */ ([[1, 'N'], [-1, 'S']])) {
       const m = new THREE.Mesh(new THREE.SphereGeometry(0.03, 16, 12), new THREE.MeshBasicMaterial({ color: c(col.ink) }));
       m.position.set(0, 0, z);
       this.base.add(m);
@@ -326,6 +379,7 @@ export class View3D {
     }
   }
 
+  /** @param {Achspfeil[]} axes @param {Palette} col */
   _axisArrows(axes, col) {
     for (const a of axes) {
       const d = V(a.dir).normalize();
@@ -340,9 +394,13 @@ export class View3D {
     }
   }
 
+  /** @param {Vec3[]} points @param {Palette} col */
   _rays(points, col) {
     // Projektionsstrahlen: obere Pole → Südpol, untere Pole → Nordpol
-    const seg = [], dots = [];
+    /** @type {number[]} */
+    const seg = [];
+    /** @type {Vec3[]} */
+    const dots = [];
     for (const p of points) {
       const upper = p[2] >= -1e-9;
       const ctr = upper ? [0, 0, -1] : [0, 0, 1];
@@ -362,16 +420,18 @@ export class View3D {
     }
   }
 
-  /** Punktgruppen-Szene. */
+  /** Punktgruppen-Szene. @param {Punktgruppendaten} data @param {Palette} col @param {Punktgruppenoptionen} opts */
   showPointGroup(data, col, opts) {
     this._buildBase(col, opts);
     this._dispose(this.content);
     this.pickables = [];
+    /** @param {string} x */
     const c = (x) => new THREE.Color(x);
     if (opts.showElements) {
       // Farben nach Blickrichtung (opts.dirColors[k]) oder neutral; ausgeblendete Blickrichtungen weglassen
       const hidden = opts.hiddenDirs || new Set();
-      const dirCol = (k, fallback) => (opts.dirColors && k >= 0 ? opts.dirColors[k] : fallback);
+      /** @param {number | undefined} k @param {string} fallback */
+      const dirCol = (k, fallback) => (opts.dirColors && /** @type {number} */ (k) >= 0 ? opts.dirColors[/** @type {number} */ (k)] : fallback);
       // Spiegelebenen als halbtransparente Scheiben
       data.mirrors.forEach((n, i) => {
         const k = data.mirrorCls ? data.mirrorCls[i] : -1;
@@ -435,6 +495,7 @@ export class View3D {
       const sg = new THREE.SphereGeometry(0.022, 12, 10);
       data.orbit.forEach((o, i) => {
         const M = data.ops[o.op];
+        /** @type {number[]} */
         const pos = [];
         for (const vv of verts) {
           const p = [vv.x, vv.y, vv.z];
@@ -463,7 +524,7 @@ export class View3D {
     this.requestRender();
   }
 
-  /** Grosskreisbogen zwischen zwei Polen auf der Umkugel mit Winkelangabe (Werkzeug Winkel). */
+  /** Grosskreisbogen zwischen zwei Polen auf der Umkugel mit Winkelangabe (Werkzeug Winkel). @param {Bogen} arc @param {Palette} col */
   _arc(arc, col) {
     const pts = arcPoints(arc.a, arc.b, 96).map((p) => V(p).multiplyScalar(1.004));
     const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, 0.014, 8, false), new THREE.MeshBasicMaterial({ color: new THREE.Color(col.accent) }));
@@ -478,11 +539,17 @@ export class View3D {
     }
   }
 
-  /** Polyeder-Szene. Flächen mit hidden (offene Form) werden nicht gezeichnet. */
+  /**
+   * Polyeder-Szene. Flächen mit hidden (offene Form) werden nicht gezeichnet. selected: gewählte Fläche;
+   * labels: Beschriftung je Fläche (HTML) oder null.
+   * @param {Polyederdaten} poly @param {Palette} col @param {Polyederoptionen} opts @param {number | null} [selected]
+   * @param {string[] | null} [labels]
+   */
   showPolyhedron(poly, col, opts, selected, labels) {
     this._buildBase(col, opts);
     this._dispose(this.content);
     this.pickables = [];
+    /** @param {string} x */
     const c = (x) => new THREE.Color(x);
     const k = opts.size;
     const vis = poly.faces.map((f, i) => ({ f, i })).filter(({ f }) => !f.hidden);
@@ -492,18 +559,21 @@ export class View3D {
     for (const k of opts.picked || []) hi.add(k);
     // Zonen (eine oder mehrere): Fläche getönt in der Farbe der ersten Zone, zu der sie gehört
     const zones = opts.zones || (opts.zone ? [{ ...opts.zone, color: col.accent }] : []);
+    /** @type {Map<number, string>} */
     const zoneCol = new Map();
     zones.forEach((z) => z.inZone.forEach((i) => { if (!zoneCol.has(i)) zoneCol.set(i, z.color || col.accent); }));
-    const inZone = { has: (i) => zoneCol.has(i), get size() { return zoneCol.size; } };
+    const inZone = { has: (/** @type {number} */ i) => zoneCol.has(i), get size() { return zoneCol.size; } };
     const focus = hi.size > 0 || inZone.size > 0;
     const accent = c(col.accent), paper = c(col.paper);
+    /** @param {AppFlaeche} f @param {number} i */
     const faceColor = (f, i) => {
       const base = c(f.color3d || col.crystal);
       if (hi.has(i)) return accent.clone();
-      if (inZone.has(i)) return base.lerp(c(zoneCol.get(i)), 0.5);
+      if (inZone.has(i)) return base.lerp(c(/** @type {string} */ (zoneCol.get(i))), 0.5);
       return focus ? base.lerp(paper, 0.45) : base;
     };
     vis.forEach(({ f, i }) => {
+      /** @type {number[]} */
       const pos = [];
       for (let j = 1; j < f.verts.length - 1; j++) {
         for (const v of [f.verts[0], f.verts[j], f.verts[j + 1]]) pos.push(v[0] * k, v[1] * k, v[2] * k);
@@ -521,6 +591,7 @@ export class View3D {
       m.renderOrder = 2;
       this.content.add(m);
       this.pickables.push(m);
+      /** @type {number[]} */
       const ep = [];
       for (let j = 0; j < f.verts.length; j++) {
         const a = f.verts[j], b = f.verts[(j + 1) % f.verts.length];
@@ -532,6 +603,7 @@ export class View3D {
     });
     // Flächenmuster (Flächensymmetrie): kleine asymmetrische Dreiecke, mit der Punktgruppe vervielfältigt
     if (opts.motifs && opts.motifs.length) {
+      /** @type {number[]} */
       const mp = [];
       for (const m of opts.motifs) for (const v of m.pts) mp.push(v[0] * k, v[1] * k, v[2] * k);
       const mg = new THREE.BufferGeometry();
@@ -543,6 +615,7 @@ export class View3D {
     const sg = new THREE.SphereGeometry(0.026, 14, 10);
     if (opts.showNormals) {
       // Normale entlang n vom Lotfusspunkt auf der Flächenebene bis zum Flächenpol
+      /** @type {number[]} */
       const np = [];
       vis.forEach(({ f }) => {
         const n = f.normal;
@@ -556,7 +629,7 @@ export class View3D {
     if (opts.showPoles !== false) vis.forEach(({ f, i }) => {
       const isSel = hi.has(i), isZ = inZone.has(i);
       const pc = isSel ? col.accent : isZ ? zoneCol.get(i) : focus ? col.muted : f.role === 'aux' ? col.muted : f.color2d || col.normal;
-      const m = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: c(pc) }));
+      const m = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ color: c(/** @type {string} */ (pc)) }));
       m.scale.setScalar(isSel ? 1.9 : isZ ? 1.4 : focus ? 0.85 : 1);
       m.position.copy(V(f.normal));
       m.userData.idx = i;
@@ -566,7 +639,7 @@ export class View3D {
         const el = document.createElement('div');
         el.className = 'lbl3d lbl-hkl' + (isSel ? ' sel' : isZ ? ' zone' : focus ? ' dim' : '') + (f.role === 'aux' ? ' aux' : '');
         el.innerHTML = labels[i];
-        if (isZ && !isSel) el.style.color = zoneCol.get(i);
+        if (isZ && !isSel) el.style.color = /** @type {string} */ (zoneCol.get(i));
         const lab = new THREE.CSS2DObject(el);
         lab.position.copy(V(f.normal).multiplyScalar(1.13));
         this.content.add(lab);

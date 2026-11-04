@@ -1,4 +1,3 @@
-// @ts-nocheck – Typprüfung folgt in Schritt 2 (crystallography-common#19, stereography#73)
 // Erzeugte Fragen: aus den Daten der App, die schon getestet sind, mit sicherer richtiger Antwort.
 // Ein Generator: { id, kapitel, stufen, status, params(stufe) → Parameter, make(param, stufe) → Frage }.
 // Die Frage hat denselben Aufbau wie in quiz-bank.js (ohne id, stufe, kapitel, status; die setzt quiz-core.js).
@@ -10,6 +9,12 @@ import { SYSTEM_OF } from './polyhedra.js';
 import { poleOfHKL, stabilizer } from './sitesym.js';
 import { mulVec } from './linalg.js';
 
+/** @import { Vec3 } from '../lib/common/js/typen.js' */
+/** @import { Generator } from '../lib/common/js/quiz-core.js' */
+/** @import { Punktgruppe, Punktgruppeninfo, Achse, Blickrichtungsklasse } from './pointgroups.js' */
+/** @import { Formeintrag } from './forms.js' */
+/** Symmetrieelemente einer Gruppe (Ausschnitt von buildPointGroup). @typedef {Pick<Punktgruppeninfo, 'axes' | 'mirrors' | 'centro'>} Elemente */
+
 // ------------------------------------------------------------------ Symmetriegerüst → Punktgruppe
 // Je Punktgruppe eine Aufstellung wie im Formenkatalog (monoklin Achse b, 321, 3m1, 3̄m1, 4̄2m, 6̄m2),
 // damit kein HM-Symbol doppelt vorkommt.
@@ -19,18 +24,23 @@ const GERUEST_ALLE = ['1', '-1', '2b', 'mb', '2/mb', '222', 'mm2', 'mmm', '4', '
 // (1̄, 2, m, 4, 4̄); die übrigen sind Stufe 2.
 const GERUEST_STUFE1 = ['2b', 'mb', '-1', 'mm2', 'mmm', '4', '-4', '4/mmm', '6/mmm', 'm-3m'];
 // Ablenker aus demselben Kristallsystem; reicht das nicht, aus diesen Nachbarsystemen
+/** @type {Record<string, string[]>} */
 const NACHBARN = { triklin: ['monoklin'], monoklin: ['orthorhombisch', 'triklin'], orthorhombisch: ['monoklin', 'tetragonal'], trigonal: ['hexagonal'] };
 
 const ZAHL = ['keine', 'eine', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun'];
+/** @type {Record<string, string>} */
 const ACHSE = { 6: '6-zählige Drehachse', '-6': '6-zählige Drehinversionsachse', 4: '4-zählige Drehachse', '-4': '4-zählige Drehinversionsachse',
   3: '3-zählige Drehachse', '-3': '3-zählige Drehinversionsachse', 2: '2-zählige Drehachse' };
+/** @type {Record<string, string>} */
 const ACHSEN = { 6: '6-zählige Drehachsen', '-6': '6-zählige Drehinversionsachsen', 4: '4-zählige Drehachsen', '-4': '4-zählige Drehinversionsachsen',
   3: '3-zählige Drehachsen', '-3': '3-zählige Drehinversionsachsen', 2: '2-zählige Drehachsen' };
 
 /** Symmetrieelemente als Satzteil, z. B. „eine 4-zählige Drehachse, vier 2-zählige Drehachsen, fünf Spiegelebenen und ein Inversionszentrum“. */
-export function elementeText(info) {
+export function elementeText(/** @type {Elemente} */ info) {
   const s = elementSummary(info);
+  /** @type {string[]} */
   const teile = [];
+  /** @type {Record<string, number>} */
   const n = {};
   for (const a of s.axes) n[a.symbol] = (n[a.symbol] || 0) + a.count;
   for (const sym of ['6', '-6', '4', '-4', '3', '-3', '2']) if (n[sym]) teile.push(`${ZAHL[n[sym]]} ${n[sym] === 1 ? ACHSE[sym] : ACHSEN[sym]}`);
@@ -44,11 +54,13 @@ export function elementeText(info) {
  * Satz zu Blickrichtungen und Symbol. Positionen ohne Symmetrieelement (Platzhalter 1) werden nicht genannt; sie
  * sind im Skript Vertiefung. Monoklin nennt die Richtung b der Standardaufstellung (Skript Kap. 5). Trigonale Gruppen mit zwei
  * Aufstellungen behalten im gekürzten Symbol die Ziffer 1 (3m1, nicht 3m), wie in ITA.
+ * @param {Punktgruppe} g @param {Blickrichtungsklasse[]} cls
  */
 function symbolText(g, cls) {
   const echt = cls.filter((c) => c.hm !== '1');
   if (!echt.length) return '';
-  const blick = ` Blickrichtung${echt.length > 1 ? 'en' : ''}: ${echt.map((c) => `${c.label}: ${hmHTML(c.hm)}`).join(' · ')}.`;
+  // echt: Klassen mit Symbol (hm gesetzt, nicht 1)
+  const blick = ` Blickrichtung${echt.length > 1 ? 'en' : ''}: ${echt.map((c) => `${c.label}: ${hmHTML(/** @type {string} */ (c.hm))}`).join(' · ')}.`;
   if (g.system === 'monoklin') return `${blick} Symbol ${hmHTML(g.hm)} (Standardaufstellung mit b als eindeutiger Achse; gebräuchlich ist auch c).`;
   const kurz = g.system === 'trigonal' && g.setting ? `${hmHTML(g.setting)} (Punktgruppe ${hmHTML(g.hm)})` : hmHTML(g.hm);
   return g.full.replace(/ /g, '') === g.hm ? `${blick} Symbol ${kurz}.` : `${blick} Volles Symbol ${hmHTML(g.full)}, gekürzt ${kurz}.`;
@@ -56,14 +68,18 @@ function symbolText(g, cls) {
 
 /** Elemente des Ablenkers im Vergleich zum gezeigten Gerüst: was im Bild fehlt bzw. zusätzlich zu sehen ist. */
 /** Lage einer Spiegelebene aus ihrer Normalen: 'mh' ⊥ c, 'mv' ∥ c, 'mo' schräg. */
-function spiegelLage(n) {
+function spiegelLage(/** @type {Vec3} */ n) {
   const l = Math.hypot(...n), z = Math.abs(n[2]) / l;
   return z > 1 - 1e-6 ? 'mh' : z < 1e-6 ? 'mv' : 'mo';
 }
+/** @type {Record<string, [string, string]>} */
 const SPIEGEL = { mh: ['Spiegelebene ⊥ c', 'Spiegelebenen ⊥ c'], mv: ['Spiegelebene ∥ c', 'Spiegelebenen ∥ c'], mo: ['schräge Spiegelebene', 'schräge Spiegelebenen'] };
+/** @param {string} k @param {number} n */
 const nennenM = (k, n) => `${n === 1 ? 'eine' : ZAHL[n]} ${SPIEGEL[k][n === 1 ? 0 : 1]}`;
+/** Zahl der Elemente je Art (Achsensymbol, Lage der Spiegelebene, c: Inversionszentrum). @param {Elemente} info */
 function zaehle(info) {
   const s = elementSummary(info);
+  /** @type {Record<string, number>} */
   const n = {};
   for (const a of s.axes) n[a.symbol] = (n[a.symbol] || 0) + a.count;
   // Spiegelebenen nach Lage: ⊥ c (Normale ∥ c), ∥ c (Normale ⊥ c), schräg (kubisch)
@@ -72,14 +88,16 @@ function zaehle(info) {
   return n;
 }
 /** Bis zu drei Ablenker (verschiedene HM-Symbole), zuerst aus demselben Kristallsystem. */
-export function geruestAblenker(id) {
+export function geruestAblenker(/** @type {string} */ id) {
   const g = groupById(id);
+  /** @param {string} sys */
   const kand = (sys) => GERUEST_ALLE.map(groupById).filter((x) => x.system === sys && x.hm !== g.hm);
   const out = [...kand(g.system)];
   for (const sys of NACHBARN[g.system] || []) if (out.length < 3) out.push(...kand(sys));
   return out;
 }
 
+/** @type {Generator} */
 export const GERUEST = {
   id: 'gen-geruest', kapitel: 4, stufen: [1, 2], status: 'geprüft',
   params: (stufe) => (stufe === 1 ? GERUEST_STUFE1 : GERUEST_ALLE.filter((id) => !GERUEST_STUFE1.includes(id))),
@@ -115,36 +133,45 @@ export const GERUEST = {
 // ------------------------------------------------------------------ Flächenzahl und Flächensymmetrie (Kap. 10, Stufe 3)
 // Daten aus dem Formenkatalog (js/forms.js): Wyckoff-Lage, Flächensymmetrie, Flächenzahl je Form; die Tests rechnen
 // Flächenzahl und Flächensymmetrie aus den Gruppenoperationen nach.
+/** @param {Vec3} hkl */
 const indizes = (hkl) => `{${hkl.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join('')}}`;
+/** @param {string} id */
 const ORDNUNG = (id) => buildPointGroup(id).ops.length;
 /** Symbol der Punktgruppe; trigonal mit Aufstellung (3m1, 31m), damit die Positionen der Flächensymmetrie lesbar sind. */
+/** @param {Punktgruppe} g */
 const gruppenSymbol = (g) => hmHTML(g.system === 'trigonal' && g.setting ? g.setting : g.hm);
 /** Formen mit spezieller Lage (Flächensymmetrie ≠ 1) in Gruppen mit mindestens 8 Operationen; nur Aufstellung A, wie geprüft. */
 const SPEZIELL = CATALOG.filter((e) => e.fs !== '1' && e.mult > 1 && ORDNUNG(e.pg) >= 8 && !e.aufst);
 /** Varianten, die eine handgeschriebene Frage schon stellt (lag-3-01, lag-3-03). */
+/** @type {Record<string, string[]>} */
 const SCHON_GEFRAGT = { 'gen-flaechenzahl': ['-43m:a33'], 'gen-flaechensym': ['4/mmm:a2'] };
 
-/** Operationen (Indizes), die den Pol einer Form festhalten. */
+/** Operationen (Indizes), die den Pol einer Form festhalten. @param {Formeintrag} e */
 function stab(e) {
   const info = buildPointGroup(e.pg);
   return { info, s: new Set(stabilizer(info.ops, poleOfHKL(groupById(e.pg).system, e.hkl))) };
 }
-/** Liegt ein Pol der Form x auch auf allen Elementen, die durch den Pol von e gehen, aber nicht umgekehrt? */
+/** Liegt ein Pol der Form x auch auf allen Elementen, die durch den Pol von e gehen, aber nicht umgekehrt? @param {Formeintrag} e @param {Formeintrag} x */
 function enthalten(e, x) {
   const { info, s } = stab(e);
   const p = poleOfHKL(groupById(x.pg).system, x.hkl);
   return info.ops.some((W) => { const t = new Set(stabilizer(info.ops, mulVec(W, p))); return [...t].every((i) => s.has(i)) && t.size < s.size; });
 }
 
+/** Katalogeintrag zu einer id aus den Parametern (immer vorhanden). @param {string} id */
+const eintrag = (id) => /** @type {Formeintrag} */ (entryById(id));
+
+/** @type {Generator} */
 export const FLAECHENZAHL = {
   id: 'gen-flaechenzahl', kapitel: 10, stufen: [3], status: 'geprüft',
   params: () => SPEZIELL.map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechenzahl'].includes(id)),
   make(id) {
-    const e = entryById(id);
+    const e = eintrag(id);
     const g = groupById(e.pg);
     const n = ORDNUNG(e.pg), k = n / e.mult;
     const fs = hmHTML(e.fs);
     // typische Fehler: Flächensymmetrie vergessen, Ordnung der Flächensymmetrie, Flächenzahl einer anderen Form
+    /** @type {[number, string][]} */
     const kand = [[n, `So viele Flächen hat nur die allgemeine Form mit der Flächensymmetrie 1. Hier halten die ${k} Operationen von ${fs} jeden Pol fest; je ${k} Bilder fallen zusammen.`],
       [k, `${k} ist die Ordnung der Flächensymmetrie ${fs}, nicht die Flächenzahl.`]];
     for (const x of SPEZIELL.filter((y) => y.pg === e.pg && y.fs !== e.fs)) {
@@ -154,6 +181,7 @@ export const FLAECHENZAHL = {
     if (e.mult % 2 === 0) kand.push([e.mult / 2, `So viele Flächen hätte die Form bei einer doppelt so grossen Flächensymmetrie. Hier: ${n}/${k} = ${e.mult}.`]);
     kand.push([1, `Eine einzige Fläche bliebe nur, wenn alle ${n} Operationen den Pol festhielten. Hier sind es ${k}: ${n}/${k} = ${e.mult}.`]);
     kand.push([n / 2, `Das ist die halbe Ordnung der Punktgruppe; geteilt wird aber durch die Ordnung der Flächensymmetrie: ${n}/${k} = ${e.mult}.`]);
+    /** @type {[number, string][]} */
     const abl = [];
     for (const [x, h] of kand) if (x !== e.mult && Number.isInteger(x) && x > 0 && x <= n && !abl.some(([y]) => y === x) && abl.length < 3) abl.push([x, h]);
     const sys = SYSTEM_OF[e.pg];
@@ -178,31 +206,35 @@ const FS_GRUPPEN = [...new Set(SPEZIELL.map((e) => e.pg))].filter((pg) => new Se
  * Symmetrieelemente durch den Pol einer Form, nach Blickrichtung: die Drehachse entlang der Flächennormalen (bei
  * Drehinversionsachsen ihr Drehanteil: 4̄ → 2, 3̄ und 6̄ → 3) und die Spiegelebenen, die die Normale enthalten.
  */
-function elementeAmPol(e) {
+function elementeAmPol(/** @type {Formeintrag} */ e) {
   const info = buildPointGroup(e.pg);
   const klassen = symmetryDirections(info);
+  const mirrorCls = /** @type {number[]} */ (info.mirrorCls); // gesetzt von symmetryDirections()
   const p = poleOfHKL(SYSTEM_OF[e.pg], e.hkl);
+  /** @param {Vec3} v @param {Vec3} w */
   const nd = (v, w) => Math.abs(v[0] * w[0] + v[1] * w[1] + v[2] * w[2]) / Math.hypot(...v) / Math.hypot(...w);
+  /** @type {Record<string, number>} */
   const DREH = { 2: 2, 3: 3, 4: 4, 6: 6, '-3': 3, '-4': 2, '-6': 3 };
   return klassen.map((c, i) => {
     const achse = info.axes.find((a) => a.cls === i && DREH[a.symbol] && nd(a.dir, p) > 1 - 1e-6);
-    const spiegel = info.mirrors.filter((m, j) => info.mirrorCls[j] === i && nd(m, p) < 1e-6).length;
+    const spiegel = info.mirrors.filter((m, j) => mirrorCls[j] === i && nd(m, p) < 1e-6).length;
     return { label: c.label, n: achse ? DREH[achse.symbol] : 0, sym: achse ? achse.symbol : '', spiegel };
   });
 }
 /** Erklärung, wie man die Flächensymmetrie am Stereogramm abliest. */
-function ablesenText(e) {
+function ablesenText(/** @type {Formeintrag} */ e) {
   const el = elementeAmPol(e);
   const n = Math.max(0, ...el.map((x) => x.n)), sp = el.reduce((s, x) => s + x.spiegel, 0);
   const ax = el.find((x) => x.n);
   // Drehinversionsachse (3̄, 4̄, 6̄): im Stereogramm ihr Symbol; den Pol hält nur ihr Drehanteil fest
   const inv = ax && ax.sym.startsWith('-');
+  /** @param {{ n: number, sym: string }} x */
   const achsName = (x) => (x.sym.startsWith('-') ? `die ${ov(x.sym.slice(1))}-Achse entlang der Flächennormalen (den Pol hält davon nur die ${x.n}-zählige Drehung fest)` : `die ${x.n}-zählige Achse entlang der Flächennormalen`);
   // Spiegelebene ⊥ c durch den Pol: im Stereogramm der kräftige Grundkreis
   const info = buildPointGroup(e.pg), p = poleOfHKL(SYSTEM_OF[e.pg], e.hkl);
   const gk = info.mirrors.some((m) => Math.abs(m[2]) > (1 - 1e-6) * Math.hypot(...m)) && info.ops.every((o) => Math.abs(mulVec(o, p)[2]) < 1e-6);
   const linien = sp === 1 ? 'einer Spiegellinie' : `${ZAHL[sp]} Spiegellinien`;
-  const bild = [n ? (inv ? `auf dem Symbol einer ${ov(ax.sym.slice(1))}-Achse` : `auf dem Symbol einer ${n}-zähligen Achse`) : '', sp ? `auf ${linien}${gk ? (sp === 1 ? ', dem kräftigen Grundkreis' : ' (eine davon ist der kräftige Grundkreis)') : ''}` : ''].filter(Boolean);
+  const bild = [n ? (inv ? `auf dem Symbol einer ${ov(/** @type {{ sym: string }} */ (ax).sym.slice(1))}-Achse` : `auf dem Symbol einer ${n}-zähligen Achse`) : '', sp ? `auf ${linien}${gk ? (sp === 1 ? ', dem kräftigen Grundkreis' : ' (eine davon ist der kräftige Grundkreis)') : ''}` : ''].filter(Boolean);
   const teile = el.filter((x) => x.n || x.spiegel).map((x) => `zu ${x.label} ${[x.n ? achsName(x) : '', x.spiegel ? `${x.spiegel === 1 ? 'eine Spiegelebene' : `${ZAHL[x.spiegel]} Spiegelebenen`}` : ''].filter(Boolean).join(' und ')}`);
   const leer = el.filter((x) => !x.n && !x.spiegel).map((x) => x.label);
   // mehrere Spiegelebenen derselben Blickrichtung, die die Achse durch den Pol ineinander überführt: im Symbol nur ein m
@@ -211,20 +243,24 @@ function ablesenText(e) {
   return `Im Stereogramm liegt jeder Pol der Form ${und(bild)}. Diese Elemente gehen durch die Fläche: ${und(teile)}${leer.length ? `; zu ${und(leer)} keines` : ''}.${einmal}`;
 }
 
+/** @type {Generator} */
 export const FLAECHENSYM = {
   id: 'gen-flaechensym', kapitel: 10, stufen: [3], status: 'geprüft',
   params: () => SPEZIELL.filter((e) => FS_GRUPPEN.includes(e.pg)).map((e) => e.id).filter((id) => !SCHON_GEFRAGT['gen-flaechensym'].includes(id)),
   make(id) {
-    const e = entryById(id);
+    const e = eintrag(id);
     const g = groupById(e.pg);
     const n = ORDNUNG(e.pg), k = n / e.mult;
     // Ablenker: andere Flächensymmetrien derselben Gruppe, zuerst gleicher Ordnung, dann nach Abstand der Ordnung
+    /** @type {Formeintrag[]} */
     const andere = [];
     for (const x of SPEZIELL.filter((y) => y.pg === e.pg && y.fs !== e.fs)) if (!andere.some((y) => y.fs === x.fs)) andere.push(x);
+    /** @param {Formeintrag} x */
     const abstand = (x) => Math.abs(Math.log((n / x.mult) / k));
-    const abl = andere.map((x, i) => [x, i]).sort((a, b) => abstand(a[0]) - abstand(b[0]) || a[1] - b[1]).slice(0, 3).map(([x]) => x);
+    const abl = andere.map((x, i) => /** @type {[Formeintrag, number]} */ ([x, i])).sort((a, b) => abstand(a[0]) - abstand(b[0]) || a[1] - b[1]).slice(0, 3).map(([x]) => x);
     const labels = symmetryDirections(buildPointGroup(e.pg)).map((c) => c.label).join(', ');
     const sys = SYSTEM_OF[e.pg];
+    /** @param {Formeintrag} x */
     const hinweis = (x) => (enthalten(e, x)
       ? `${hmHTML(x.fs)} ist die Flächensymmetrie der Form ${indizes(x.hkl)} (${x.mult} Flächen). Die Pole von ${indizes(e.hkl)} liegen auch auf diesen Elementen, aber zusätzlich auf weiteren; das Symbol nennt alle Elemente durch die Fläche.`
       : `${hmHTML(x.fs)} ist die Flächensymmetrie der Form ${indizes(x.hkl)} (${x.mult} Flächen). Die Pole von ${indizes(e.hkl)} liegen auf anderen Symmetrieelementen.`);
@@ -247,6 +283,7 @@ export const FLAECHENSYM = {
 
 // ------------------------------------------------------------------ Räumliche Zeichnungen (js/bild3d.js)
 // Bildangabe "3d#…": feste Zeichnung des Kristalls bzw. Symmetriegerüsts; die Projektionsrichtung ist darin senkrecht.
+/** @param {number | string} d */
 const ov = (d) => `<span class="ov">${d}</span>`;
 const PFEIL = 'Die Projektionsrichtung ist in den Zeichnungen senkrecht (Pfeil).';
 /** Regel aus der Zusammenfassung von Kap. 6. */
@@ -257,6 +294,7 @@ const GRAU = ' Grau: das Pinakoid, mit dem die App das offene Prisma schliesst.'
  * Kristalle für Körper ↔ Stereogramm. form: Link-Adresse ohne "#m=form&"; der, des, den: Name mit Artikel;
  * muster: Stereogramm in Worten; pole: Zählung, die der Test aus dem Stereogramm nachrechnet
  * (mitte: Pol im Mittelpunkt, rand: Pole auf dem Grundkreis, doppelt: Punkt im Kreis, einzeln: nur ● oder ○).
+ * @type {Record<string, { form: string, der: string, des: string, den?: string, grau?: boolean, muster: string, pole: Polzahl, rho?: number[] }>}
  */
 export const KOERPER = {
   wuerfel: { form: 'sys=kubisch&f=m-3m:a34', der: 'der Würfel {100}', des: 'des Würfels {100}', den: 'den Würfel {100}',
@@ -283,7 +321,7 @@ export const KOERPER = {
     muster: 'vier Punkte im Kreis bei ρ = 36,4° (flache Dipyramide, c/a = 0,6), als Rechteck statt Quadrat angeordnet, weil a ≠ b: Die Pole liegen näher bei der kürzeren Achse a (oben und unten)', pole: { mitte: 0, rand: 0, doppelt: 4, einzeln: 0 } },
 };
 /** Aufgaben: Kristall, Stufe, drei Ablenker (Kristalle mit ähnlichem, aber unterscheidbarem Stereogramm). */
-const KOERPER_AUFGABEN = [
+const KOERPER_AUFGABEN = /** @type {[string, number, string[]][]} */ ([
   ['wuerfel', 1, ['oktaeder', 'rhombendodekaeder', 'hexPrisma']],
   ['oktaeder', 1, ['wuerfel', 'tetraeder', 'rhombendodekaeder']],
   ['rhombendodekaeder', 1, ['wuerfel', 'oktaeder', 'tetraeder']],
@@ -297,26 +335,35 @@ const KOERPER_AUFGABEN = [
   ['trigPrisma', 2, ['hexPrisma', 'tetrPrisma', 'rhomboeder']],
   ['rhombDipyr', 2, ['tetrDipyr', 'oktaeder', 'hexDipyr']],
   ['oktaeder', 2, ['tetrDipyr', 'rhombDipyr', 'tetraeder']],
-].map(([k, stufe, abl]) => ({ id: stufe === 1 ? k : `${k}-2`, k, stufe, abl }));
+]).map(([k, stufe, abl]) => ({ id: stufe === 1 ? k : `${k}-2`, k, stufe, abl }));
 
+/** Zählung der Pole im Stereogramm (siehe KOERPER). @typedef {{ mitte: number, rand: number, doppelt: number, einzeln: number }} Polzahl */
+/** @param {string} k @param {string} [lage] */
 const formHash = (k, lage) => `#m=form&${KOERPER[k].form}${lage && lage !== '001' ? `&lage=${lage}` : ''}`;
 // Alternativtexte beschreiben, was das Bild zeigt (Bildschirmleser, Moodle): Stereogramm in Worten bzw. Kristall und Lage
+/** @param {string} t */
 const ohneArtikel = (t) => t.replace(/^(der|die|das) /, '');
+/** @param {string} k @param {string} [lage] */
 const musterVon = (k, lage) => (lage ? LAGE_MUSTER[k][lage][0] : KOERPER[k].muster);
+/** @param {string} k @param {string} [lage] */
 const stereo = (k, lage) => ({ app: `${formHash(k, lage)}&idx=0`, alt: `Stereogramm: ${musterVon(k, lage)}` });
 /** Steilerer Blick (45° von oben, 30° gedreht), wo sonst die Zähligkeit um die Projektionsrichtung nicht zu sehen ist. */
+/** @type {Record<string, string[]>} */
 const STEIL = { rhombendodekaeder: ['001', '111'] };
+/** @param {string} k @param {string} [lage] */
 const blickVon = (k, lage) => (STEIL[k] && STEIL[k].includes(lage || '001') ? '&blick=45,30' : '');
+/** @param {string} k @param {string} [lage] */
 const zeichnung = (k, lage) => ({ app: `3d${formHash(k, lage)}${blickVon(k, lage)}`, alt: `Räumliche Zeichnung: ${ohneArtikel(KOERPER[k].der)}${lage ? `, [${lage}] senkrecht` : ''}` });
 const QUELLE_FORM = 'Formen nach Borchardt-Ott & Sowa (2018), Abschn. 5.2 (S. 35), 5.4 (Abb. 5.13, S. 43) und Abb. 15.2 (S. 358–360)';
 
+/** @type {Generator} */
 export const KOERPER_STEREO = {
   id: 'gen-koerper', kapitel: 6, stufen: [1, 2], status: 'geprüft',
   /** k:… Kristall → Stereogramm, s:… Stereogramm → Kristall */
   params: (stufe) => KOERPER_AUFGABEN.filter((a) => a.stufe === stufe).flatMap((a) => [`k:${a.id}`, `s:${a.id}`]),
   make(param) {
     const [richtung, id] = param.split(':');
-    const a = KOERPER_AUFGABEN.find((x) => x.id === id);
+    const a = /** @type {typeof KOERPER_AUFGABEN[number]} */ (KOERPER_AUFGABEN.find((x) => x.id === id));
     const e = KOERPER[a.k];
     const alle = [a.k, ...a.abl];
     const grau = e.grau ? GRAU : '';
@@ -352,7 +399,7 @@ export const KOERPER_STEREO = {
 };
 
 // ------------------------------------------------------------------ Lage: Kristall in drei Projektionsrichtungen
-/** Stereogramm je Lage in Worten (kubisch: [001], [111], [110] ∥ Projektionsrichtung) und Zählung für den Test. */
+/** Stereogramm je Lage in Worten (kubisch: [001], [111], [110] ∥ Projektionsrichtung) und Zählung für den Test. @type {Record<string, Record<string, [string, Polzahl, number[]?]>>} */
 export const LAGE_MUSTER = {
   wuerfel: {
     '001': [KOERPER.wuerfel.muster, KOERPER.wuerfel.pole],
@@ -370,6 +417,7 @@ export const LAGE_MUSTER = {
     110: ['ein Punkt im Kreis in der Mitte, zwei Pole auf dem Grundkreis (links und rechts) und vier Punkte im Kreis, bei ρ = 60°', { mitte: 1, rand: 2, doppelt: 4, einzeln: 0 }, [0, 60]],
   },
 };
+/** @type {Record<string, string>} */
 const LAGE_ANDERER = { wuerfel: 'oktaeder', oktaeder: 'wuerfel', rhombendodekaeder: 'wuerfel' };
 const LAGEN = ['001', '111', '110'];
 /**
@@ -377,12 +425,17 @@ const LAGEN = ['001', '111', '110'];
  * (in beiden Fällen oben eine Ecke bzw. Kante zwischen zwei sichtbaren Flächen). Sie stehen nie zusammen in einer Frage;
  * statt der zweiten Lage kommt das Rhombendodekaeder in derselben Lage (Entscheidung Thomas).
  */
+/** @type {Record<string, [string, string][]>} */
 const AEHNLICH = { wuerfel: [['111', '110']] };
+/** @param {string} k @param {string} a @param {string} b */
 export const aehnlich = (k, a, b) => (AEHNLICH[k] || []).some(([p, q]) => (p === a && q === b) || (p === b && q === a));
+/** @param {string} l */
 const lageText = (l) => `[${l}]`;
 /** Was die Lage sichtbar macht (Skript Kap. 6, „Andere Projektionsrichtung, gleicher Kristall“). */
+/** @type {Record<string, string>} */
 const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${ov(3)}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
 
+/** @type {Generator} */
 export const LAGE = {
   id: 'gen-lage', kapitel: 6, stufen: [2], status: 'geprüft',
   params: () => Object.keys(LAGE_MUSTER).flatMap((k) => LAGEN.flatMap((l) => [`k:${k}:${l}`, `s:${k}:${l}`])),
@@ -390,9 +443,10 @@ export const LAGE = {
     const [richtung, k, lage] = param.split(':');
     const e = KOERPER[k], x = LAGE_ANDERER[k];
     const andere = LAGEN.filter((l) => l !== lage);
+    /** @param {string} kk @param {string} l */
     const muster = (kk, l) => LAGE_MUSTER[kk][l][0];
     const gemeinsam = {
-      typ: 'bild-bild',
+      typ: /** @type {const} */ ('bild-bild'),
       lernziel: 'erklären, was sich bei einer anderen Projektionsrichtung am Stereogramm ändert und was gleich bleibt',
       richtig: [0],
       erklaerung: `Hier ist ${lageText(lage)} die Projektionsrichtung; man sieht ${LAGE_SYMMETRIE[lage]} um diese Richtung. Stereogramm ${e.des}: ${muster(k, lage)}. `
@@ -412,7 +466,7 @@ export const LAGE = {
           `Das ist das Stereogramm ${KOERPER[x].des} in derselben Lage: ${muster(x, lage)}.`],
       };
     }
-    const lagenZ = andere.reduce((acc, l) => ([lage, ...acc].some((m) => aehnlich(k, m, l)) ? acc : [...acc, l]), []);
+    const lagenZ = andere.reduce((acc, l) => ([lage, ...acc].some((m) => aehnlich(k, m, l)) ? acc : [...acc, l]), /** @type {string[]} */ ([]));
     const koerperZ = [x, ...(lagenZ.length < andere.length ? ['rhombendodekaeder'] : [])];
     return {
       ...gemeinsam,
@@ -430,10 +484,13 @@ export const LAGE = {
 /** Kubische Gerüste mit vielen Elementen sind als feste Zeichnung nicht lesbar; sie bleiben bei gen-geruest. */
 export const GERUEST3D_OHNE = ['m-3m', '432', '-43m', 'm-3'];
 /** Elemente mit Richtung, z. B. „eine 4-zählige Drehachse ∥ c, vier 2-zählige Drehachsen ⊥ c, … und ein Inversionszentrum“. */
-function elementeRichtung(info) {
+function elementeRichtung(/** @type {Elemente} */ info) {
+  /** @type {string[]} */
   const t = [];
   for (const sym of ['6', '-6', '4', '-4', '3', '-3', '2']) {
-    for (const [lage, test] of [['∥ c', (d) => Math.abs(d[2]) > 1 - 1e-6], ['⊥ c', (d) => Math.abs(d[2]) < 1e-6]]) {
+    /** @type {[string, (d: Vec3) => boolean][]} */
+    const lagen = [['∥ c', (d) => Math.abs(d[2]) > 1 - 1e-6], ['⊥ c', (d) => Math.abs(d[2]) < 1e-6]];
+    for (const [lage, test] of lagen) {
       const n = info.axes.filter((a) => a.symbol === sym && test(a.dir)).length;
       if (n) t.push(`${nennen(sym, n)} ${lage}`);
     }
@@ -444,30 +501,36 @@ function elementeRichtung(info) {
   if (info.centro) t.push('ein Inversionszentrum');
   return t.length ? und(t) : 'keine Symmetrieelemente';
 }
+/** @param {string} id */
 const geruest3d = (id) => ({ app: `3d#m=pg&g=${encodeURIComponent(id)}`, alt: `Räumliche Zeichnung eines Symmetriegerüsts: ${elementeRichtung(buildPointGroup(id))}` });
+/** @param {string} id */
 const geruest2d = (id) => ({ app: `#m=pg&g=${encodeURIComponent(id)}&obj=0&farbe=0`, alt: `Stereogramm eines Symmetriegerüsts: ${elementeRichtung(buildPointGroup(id))}` });
 
 /** Ablenker wie bei gen-geruest, ohne die unlesbaren kubischen Gerüste (23 hat damit keine). */
+/** @param {string} id */
 const abl3d = (id) => geruestAblenker(id).filter((x) => !GERUEST3D_OHNE.includes(x.id));
 /** Abstand zweier Gerüste: Zahl der Elemente, in denen sie sich unterscheiden (Achsen je Symbol, Spiegelebenen, 1̄). */
-function abstand(a, b) {
+function abstand(/** @type {Elemente} */ a, /** @type {Elemente} */ b) {
   const p = zaehle(a), q = zaehle(b);
   return Object.keys({ ...p, ...q }).reduce((n, k) => n + Math.abs((p[k] || 0) - (q[k] || 0)), 0);
 }
 /** Zahl der Symmetrieelemente eines Gerüsts (Achsen, Spiegelebenen, Inversionszentrum). */
+/** @param {Elemente} info */
 const elementZahl = (info) => Object.values(zaehle(info)).reduce((s, k) => s + k, 0);
 /** Verwandte Kristallsysteme, aus denen Ablenker kommen dürfen, wenn das eigene System zu wenige liefert. */
+/** @type {Record<string, string[]>} */
 const VERWANDT3D = { tetragonal: ['orthorhombisch'], hexagonal: ['trigonal'] };
 /**
  * Die drei ähnlichsten Ablenker, damit keiner auf einen Blick falsch ist: möglichst höchstens zwei Elemente mehr
  * oder weniger als das gezeigte Gerüst (ein Gerüst mit deutlich mehr Elementen fällt sofort auf, z. B. 4̄2m neben 4̄),
  * sortiert nach dem Abstand und bei gleichem Abstand zuerst aus demselben Kristallsystem.
  */
-function wahl3d(id) {
+function wahl3d(/** @type {string} */ id) {
   const info = buildPointGroup(id);
   const g = groupById(id);
   const n0 = elementZahl(info);
   const systeme = [g.system, ...(NACHBARN[g.system] || []), ...(VERWANDT3D[g.system] || [])];
+  /** @type {Punktgruppe[]} */
   const pool = [];
   for (const sys of systeme) for (const x of GERUEST_ALLE.map(groupById)) if (x.system === sys && x.hm !== g.hm && !GERUEST3D_OHNE.includes(x.id) && !pool.includes(x)) pool.push(x);
   // ein leeres Gerüst (Punktgruppe 1) neben einem mit Elementen fällt ebenso sofort auf
@@ -477,17 +540,22 @@ function wahl3d(id) {
     kand = pool2.filter((x) => Math.abs(elementZahl(buildPointGroup(x.id)) - n0) <= tol);
     if (kand.length >= 3) break;
   }
+  /** @param {Punktgruppe[]} l */
   const ordne = (l) => l.map((x, i) => ({ x, i, d: abstand(info, buildPointGroup(x.id)) })).sort((u, v) => u.d - v.d || u.i - v.i).map((u) => u.x);
   const sortiert = ordne(kand), alle = ordne(pool2);
   // Damit die richtige Antwort nicht als einzige ein Merkmal zeigt: mindestens ein Ablenker mit demselben Symbol
   // in der Mitte (Achse ∥ c) und einer mit derselben Lage der Spiegelebene ⊥ c (kräftiger Grundkreis oder nicht)
-  const merkmal = (inf) => ({ achse: (inf.axes.find((a) => Math.abs(a.dir[2]) > 1 - 1e-6) || {}).symbol || '', mh: inf.mirrors.some((m) => spiegelLage(m) === 'mh') });
+  /** @param {Elemente} inf */
+  const merkmal = (inf) => ({ achse: (inf.axes.find((a) => Math.abs(a.dir[2]) > 1 - 1e-6) || /** @type {Partial<Achse>} */ ({})).symbol || '', mh: inf.mirrors.some((m) => spiegelLage(m) === 'mh') });
   const m0 = merkmal(info);
+  /** @type {Punktgruppe[]} */
   const wahl = [];
   // (notfalls auch ein Gerüst mit bis zu vier Elementen weniger, aber nie mit mehr als zwei Elementen mehr)
   const weiter = alle.filter((x) => { const n = elementZahl(buildPointGroup(x.id)); return n <= n0 + 2 && n >= n0 - 4; });
+  /** @param {(m: ReturnType<typeof merkmal>) => boolean} f @param {boolean} auchWeiter */
   const nimm = (f, auchWeiter) => {
     if (wahl.some((y) => f(merkmal(buildPointGroup(y.id))))) return;
+    /** @param {Punktgruppe} y */
     const passt = (y) => !wahl.includes(y) && f(merkmal(buildPointGroup(y.id)));
     const x = sortiert.find(passt) || (auchWeiter ? weiter.find(passt) : undefined);
     if (x) wahl.push(x);
@@ -499,32 +567,53 @@ function wahl3d(id) {
 }
 
 /** Nach „statt“ (Genitiv): „der 3-zähligen Drehachse“, „der 4-zähligen Drehachsen“. */
+/** @param {string} sym @param {number} n */
 const ACHSE_GEN = (sym, n) => `der ${(n === 1 ? ACHSE : ACHSEN)[sym].replace('zählige', 'zähligen')}`;
+/** @param {string[]} l */
 const und = (l) => (l.length === 1 ? l[0] : `${l.slice(0, -1).join(', ')} und ${l[l.length - 1]}`);
+/** @param {string} sym @param {number} n */
 const nennen = (sym, n) => `${n === 1 ? 'eine' : ZAHL[n]} ${n === 1 ? ACHSE[sym] : ACHSEN[sym]}`;
 /**
  * Hinweis zu einem Ablenker: was sein Gerüst gegenüber dem gezeigten zusätzlich hat bzw. was ihm fehlt. Achsen werden
  * nach Richtung verglichen: Liegt im Ablenker an derselben Stelle eine Achse anderen Charakters (z. B. 3 statt 3̄ ∥ c),
  * heisst es „statt“; dieselbe Achse in anderer Richtung heisst „in anderer Richtung“, nicht „zusätzlich … fehlt“.
+ * @param {Elemente} gezeigt @param {Punktgruppe} x @param {string} [name]
  */
 export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' && x.setting ? x.setting : x.hm)) {
   const andere = buildPointGroup(x.id);
-  const richtung = (d) => { const l = Math.hypot(...d); const v = d.map((c) => c / l); const s = v.find((c) => Math.abs(c) > 1e-6) < 0 ? -1 : 1; return v.map((c) => (Math.abs(c) < 5e-5 ? 0 : c * s).toFixed(4)).join(','); };
+  // Schlüssel einer Richtung (Vorzeichen: erste von 0 verschiedene Komponente positiv; d ist nie 0)
+  /** @param {Vec3} d */
+  const richtung = (d) => { const l = Math.hypot(...d); const v = d.map((c) => c / l); const s = /** @type {number} */ (v.find((c) => Math.abs(c) > 1e-6)) < 0 ? -1 : 1; return v.map((c) => (Math.abs(c) < 5e-5 ? 0 : c * s).toFixed(4)).join(','); };
+  /** @param {Elemente} info */
   const achsen = (info) => new Map(info.axes.filter((a) => ACHSE[a.symbol]).map((a) => [richtung(a.dir), a.symbol]));
   const A = achsen(gezeigt), B = achsen(andere);
-  const statt = new Map(), mehr = {}, weniger = {};
+  /** @type {Map<string, number>} */
+  const statt = new Map();
+  /** @type {Record<string, number>} */
+  const mehr = {};
+  /** @type {Record<string, number>} */
+  const weniger = {};
   for (const [k, sym] of B) {
     if (!A.has(k)) mehr[sym] = (mehr[sym] || 0) + 1;
     else if (A.get(k) !== sym) { const key = `${sym}|${A.get(k)}`; statt.set(key, (statt.get(key) || 0) + 1); }
   }
   for (const [k, sym] of A) if (!B.has(k)) weniger[sym] = (weniger[sym] || 0) + 1;
   // Spiegelebenen wie Achsen über ihre Normale vergleichen, getrennt nach Lage (⊥ c, ∥ c, schräg)
+  /** @param {Elemente} info */
   const spiegel = (info) => new Map(info.mirrors.map((m) => [richtung(m), spiegelLage(m)]));
   const SA = spiegel(gezeigt), SB = spiegel(andere);
-  const mMehr = {}, mWeniger = {};
+  /** @type {Record<string, number>} */
+  const mMehr = {};
+  /** @type {Record<string, number>} */
+  const mWeniger = {};
   for (const [k, lage] of SB) if (!SA.has(k)) mMehr[lage] = (mMehr[lage] || 0) + 1;
   for (const [k, lage] of SA) if (!SB.has(k)) mWeniger[lage] = (mWeniger[lage] || 0) + 1;
-  const plus = [], minus = [], anders = [];
+  /** @type {string[]} */
+  const plus = [];
+  /** @type {string[]} */
+  const minus = [];
+  /** @type {string[]} */
+  const anders = [];
   for (const sym of ['6', '-6', '4', '-4', '3', '-3', '2']) {
     // gleiche Achse in anderer Richtung (z. B. 2 ∥ b statt 2 ∥ c) nicht als „zusätzlich“ und „fehlt“ zählen
     const n = Math.min(mehr[sym] || 0, weniger[sym] || 0);
@@ -552,7 +641,8 @@ export function unterschied(gezeigt, x, name = hmHTML(x.system === 'trigonal' &&
 }
 
 /** Wie die Elemente im Stereogramm erscheinen, nur für die Elemente dieses Gerüsts (Skript Kap. 4). */
-function darstellungText(info) {
+function darstellungText(/** @type {Elemente} */ info) {
+  /** @type {string[]} */
   const t = [];
   const zAchse = info.axes.find((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
   const ebene = info.axes.filter((a) => Math.abs(a.dir[2]) < 1e-6);
@@ -567,6 +657,7 @@ function darstellungText(info) {
   return `Im Stereogramm erscheinen ${und(t)}.`;
 }
 
+/** @type {Generator} */
 export const GERUEST3D = {
   id: 'gen-geruest3d', kapitel: 4, stufen: [1, 2], status: 'geprüft',
   /** r:… Zeichnung → Stereogramm, s:… Stereogramm → Zeichnung */
@@ -577,7 +668,7 @@ export const GERUEST3D = {
     const info = buildPointGroup(id);
     const wahl = wahl3d(id);
     const gemeinsam = {
-      typ: 'bild-bild',
+      typ: /** @type {const} */ ('bild-bild'),
       richtig: [0],
       hinweise: [null, ...wahl.map((x) => unterschied(info, x))],
       erklaerung: `Das ist das Symmetriegerüst von ${gruppenSymbol(g)}: ${elementeText(info)}. ${darstellungText(info)}`,

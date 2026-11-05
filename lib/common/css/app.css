@@ -73,6 +73,7 @@ select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-r
   font-family: var(--font-mono);
 }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.seg button:disabled { opacity: 0.45; cursor: not-allowed; } /* gesperrt sichtbar (Leitfaden Abschn. 5.2) */
 .seg.seg-text button { font-family: var(--font-ui); font-size: 0.85rem; }
 .range input:disabled { opacity: 0.45; cursor: not-allowed; }
 .range:has(input:disabled) output { color: var(--muted); }
@@ -202,7 +203,10 @@ select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-r
 .panel-head .t small { font-weight: 400; color: var(--muted); margin-left: 6px; }
 .tools { display: flex; gap: 6px; flex-wrap: wrap; }
 .tools button { border: 1px solid var(--line); background: var(--paper); border-radius: 6px; padding: 4px 9px; font-size: 0.8rem; cursor: pointer; }
-.tools button:hover { border-color: var(--muted); }
+.tools button:enabled:not([aria-pressed="true"]):hover { border-color: var(--muted); } /* nur freie, nicht gewählte Knöpfe */
+/* Werkzeuge und Knöpfe für die Ansicht in der Tafel: gewählt in der Akzentfarbe, gesperrt blass (Leitfaden Abschn. 5.2) */
+.tools button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+.tools button:disabled { opacity: 0.45; cursor: not-allowed; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 8px 12px 10px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--muted); }
 .lg { display: inline-flex; align-items: center; gap: 6px; }
 .lg .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
@@ -247,7 +251,8 @@ footer a { color: inherit; }
   .figswitch { display: inline-flex; }
   .panel-head .t, .export { display: none; }
   .panel-head { padding: 6px; }
-  .legend { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; padding: 5px 10px 6px; font-size: 0.75rem; scrollbar-width: none; }
+  /* Legende umbrechen statt waagrecht scrollen: Die Scrollleiste war unsichtbar, der Rest nicht zu entdecken */
+  .legend { gap: 3px 10px; padding: 5px 10px 6px; font-size: 0.75rem; }
   .panel-foot { display: none; }
   .legend .lg.hint { display: none; }
   #copy-link { display: none; }

@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Gemeinsame Grundlage** auf crystallography-common v0.9.0 (von v0.7.0, mit v0.8.0 und v0.8.1): Im Quiz gelten die Grenzen für erzeugte Fragen (30 % je Generator, 50 % insgesamt) streng, solange die gewählte Länge erreichbar ist; sonst nie mehr erzeugte als handgeschriebene Fragen. Querstriche (Millersche Indizes, Drehinversionen) werden von Screenreadern als „−“ vorgelesen; die Legende bricht auf dem Telefon um statt unsichtbar zu scrollen. Gemeinsame Regeln für gewählte und gesperrte Knöpfe (v0.8.0) betreffen diese App nicht (Zone und Winkel stehen in `.stereo-tools`, #93).
+
 ### Behoben
 
 - **Gitterparameter** (#95): Winkel, die zusammen kein Gitter ergeben (z. B. α = β = 60°, γ = 150° bei „Alle Parameter frei“ oder triklin), erzeugten stillschweigend ein Gitter mit anderen Parametern. Jetzt bleibt der Regler beim letzten gültigen Wert stehen, und ein Hinweis nennt den Grund; fast flache Zellen sind ebenfalls ausgeschlossen. Links mit solchen Winkeln erhalten die Winkel der Vorgabe, gespeicherte Stände das Gitter der Vorgabe.

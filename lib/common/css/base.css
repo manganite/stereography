@@ -66,7 +66,9 @@ body {
 /* Querstrich (Drehinversion, negative Indizes): knapp über der Ziffer statt auf Höhe der Oberlänge.
    --ovt: Abstand von der Oberkante der Schriftzeile (Plex Sans 0,17 em, Source Serif 0,22 em). */
 .ov { position: relative; text-decoration: none; }
-.ov::before { content: ''; position: absolute; left: 0.06em; right: 0.06em; top: var(--ovt, 0.17em); border-top: max(1px, 0.07em) solid currentColor; }
+/* Für Screenreader: Der Strich ist nur gezeichnet; der Alternativtext „−“ des ::before trägt die Bedeutung (x̄ = −x).
+   Browser ohne Alternativtext in content (vor Chrome 77, Safari 17.4, Firefox 128) zeigen den Strich ohne Text. */
+.ov::before { content: ''; content: '' / '−'; position: absolute; left: 0.06em; right: 0.06em; top: var(--ovt, 0.17em); border-top: max(1px, 0.07em) solid currentColor; }
 .pgb, .hm-big:not(.form-sym), .dirhm, .brand h1 { --ovt: 0.22em; }
 button, select, input { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

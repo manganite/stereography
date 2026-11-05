@@ -5,7 +5,7 @@
 import { POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart, HEX_A, HEX_B } from './pointgroups.js';
 import {
   buildCrystal, zoneOf, zoneByUvw, zoneKey, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, SYSTEM_OF,
-  STRETCH_DIRS, stretchDir, constrainLattice, latticeFromParams, stretchLattice, paramsOfLattice,
+  STRETCH_DIRS, stretchDir, constrainLattice, latticeFromParams, stretchLattice, paramsOfLattice, gitterGueltig,
 } from './polyhedra.js';
 import { CATALOG, formEig, entryById } from './forms.js';
 import { hklParts } from '../lib/common/js/format.js';
@@ -375,6 +375,8 @@ export function applyHashTo(state, hash, DEFAULTS) {
       const v = k === 'ba' || k === 'ca' ? num(q.get(k), 0.25, 3) : num(q.get(k), 60, 150);
       if (v != null) lat[k] = v;
     }
+    // Winkel, die zusammen kein Gitter ergeben: die Winkel der Vorgabe (#95)
+    if (!gitterGueltig(lat)) for (const k of /** @type {const} */ (['al', 'be', 'ga'])) lat[k] = { ...LATTICE_DEFAULTS[state.poly.system], ...(ex && ex.sys === state.poly.system ? ex.lat : {}) }[k];
     bools(URL_FORM, state.poly);
     // str=<Richtung>,<Faktor>, z. B. str=111,1.3 (Richtung als Gitterrichtung ohne Klammern): Symmetrie
     // brechen durch Streckung (auch ohne br=1, Links aus v1.4.0). Nur ohne Beispielkristall; ungültige

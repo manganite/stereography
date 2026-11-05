@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Behoben
+
+- **Gitterparameter** (#95): Winkel, die zusammen kein Gitter ergeben (z. B. α = β = 60°, γ = 150° bei „Alle Parameter frei“ oder triklin), erzeugten stillschweigend ein Gitter mit anderen Parametern. Jetzt bleibt der Regler beim letzten gültigen Wert stehen, und ein Hinweis nennt den Grund; fast flache Zellen sind ebenfalls ausgeschlossen. Links und gespeicherte Stände mit solchen Winkeln erhalten die Winkel der Vorgabe.
+
 ## [1.13.0] - 2026-11-05
 
 Erste Schritte je Modus, neu auch für „Punktgruppen“; „Alle Einstellungen zurücksetzen“ über die gemeinsame Funktion; Typprüfung und ESLint für den ganzen Code; gemeinsame Grundlage v0.7.0. Für Nutzer: Erste Schritte erscheinen beim ersten Aufruf jedes Modus, und Abb. 7.1 im Skript zeigt die Zone [001] wieder vollständig.

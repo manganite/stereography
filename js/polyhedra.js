@@ -152,7 +152,20 @@ export function constrainLattice(lat, sys) {
   return out;
 }
 
-/** Gittermatrix aus a = 1, b/a, c/a, α, β, γ. @param {Gitterparameter} p */
+/**
+ * Kleinster zulässiger Wert von V / (a b c) = √(1 − cos²α − cos²β − cos²γ + 2 cosα cosβ cosγ). Die Wurzel ist 1 für
+ * rechtwinklige Achsen und 0, wenn die drei Achsen in einer Ebene liegen. Nicht jede Kombination dreier Winkel
+ * zwischen 60° und 150° ergibt ein Gitter (z. B. 60°, 60°, 150°); fast flache Zellen sind ausgeschlossen.
+ */
+export const GITTER_MIN = 0.1;
+
+/** Ergeben die drei Winkel ein (nicht fast flaches) Gitter? @param {Pick<Gitterparameter, 'al' | 'be' | 'ga'>} p */
+export function gitterGueltig(p) {
+  const [ca, cb, cg] = [p.al, p.be, p.ga].map((w) => Math.cos(w * deg));
+  return 1 - ca * ca - cb * cb - cg * cg + 2 * ca * cb * cg >= GITTER_MIN * GITTER_MIN;
+}
+
+/** Gittermatrix aus a = 1, b/a, c/a, α, β, γ; die Winkel müssen ein Gitter ergeben (gitterGueltig). @param {Gitterparameter} p */
 export function latticeFromParams(p) {
   const a = 1, b = p.ba, c = p.ca;
   const al = p.al * deg, be = p.be * deg, ga = p.ga * deg;
@@ -162,7 +175,7 @@ export function latticeFromParams(p) {
   const bv = [0, b * Math.sin(al), b * Math.cos(al)];
   const az = a * Math.cos(be);
   const ay = (a * (Math.cos(ga) - Math.cos(al) * Math.cos(be))) / Math.sin(al);
-  const ax = Math.sqrt(Math.max(1e-9, a * a - ay * ay - az * az));
+  const ax = Math.sqrt(Math.max(0, a * a - ay * ay - az * az)); // max nur gegen Rundungsfehler, siehe gitterGueltig
   return fromColumns([ax, ay, az], bv, cv);
 }
 

@@ -32,7 +32,7 @@ const PRINT_CSS = `
   .teil { break-before: page; break-inside: avoid; }
   .teil + section { break-before: avoid; }
   h2, h3, h4, h5 { break-after: avoid; }
-  figure, .fig-row, table, .tabwrap, .schema, .symlegende li, pre, .fig-note,
+  figure, .fig-row, .fig-grid5, table, .tabwrap, .schema, .symlegende li, pre, .fig-note,
   .box.merke, .box.app, .box.ziele, .box.zusammen { break-inside: avoid; }
   p { orphans: 3; widows: 3; }
   .tabwrap { overflow: visible !important; }

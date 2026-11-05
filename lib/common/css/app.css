@@ -1,5 +1,32 @@
 /* Werkbank der App: Seitenleiste mit Karten und Bedienelementen, Tafeln mit Kopf und Legende,
-   Kenndaten, Hilfen (Erste Schritte, Tooltip, ⓘ). Die Anordnung der Tafeln (.layout) legt jede App selbst fest. */
+   Kenndaten, Hilfen (Erste Schritte, Tooltip, ⓘ). */
+
+/* Anordnung der Tafeln (Leitfaden Abschn. 5.1): links die Seitenleiste, rechts zwei gleich grosse Tafeln
+   (.p-a, .p-b), darunter die Kenndaten; iPad hochkant untereinander; Telefon eine Tafel oben angeheftet,
+   Umschalter .figswitch (body[data-fig="a"|"b"]). */
+.layout {
+  max-width: 1480px; margin-inline: auto; display: grid; gap: 16px;
+  grid-template-columns: 300px minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "side a b" "side info info";
+  align-items: start;
+}
+.figs { display: contents; }
+.p-a { grid-area: a; }
+.p-b { grid-area: b; }
+.info { grid-area: info; }
+@media (max-width: 999px) {
+  .layout { grid-template-columns: 270px minmax(0, 1fr); grid-template-areas: "side a" "side b" "side info"; }
+}
+@media (max-width: 719px) {
+  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "figs" "side" "info"; gap: 12px; }
+  .figs {
+    display: block; grid-area: figs; position: sticky; top: 0; z-index: 5;
+    background: var(--bg); padding-top: 6px; margin-inline: -4px; padding-inline: 4px;
+    box-shadow: 0 8px 10px -10px rgb(0 0 0 / 0.35);
+  }
+  body[data-fig="a"] .p-b, body[data-fig="b"] .p-a { display: none; }
+}
+
 .side {
   grid-area: side; display: grid; gap: 12px; min-width: 0;
   position: sticky; top: 12px; max-height: calc(100dvh - 24px); overflow-y: auto;
@@ -208,7 +235,7 @@ footer a { color: inherit; }
 @media (max-width: 1399px) {
   .brand p { display: none; }
 }
-/* Telefon: eine Tafel oben angeheftet (Umschalter Stereogramm/3D), Bedienung darunter */
+/* Telefon: Seitenleiste unter den Tafeln (nicht angeheftet), Kopfzeile und Tafeln kompakt, Umschalter sichtbar */
 @media (max-width: 719px) {
   .brand p { display: none; }
   .brand { flex: 1; }
@@ -224,14 +251,10 @@ footer a { color: inherit; }
   .panel-foot { display: none; }
   .legend .lg.hint { display: none; }
   #copy-link { display: none; }
-  .wide-only { display: none; }
   .panel-head { gap: 6px; }
   .figswitch button { padding: 5px 8px; }
   .tools { gap: 4px; flex-wrap: nowrap; }
   .tools button { padding: 4px 6px; font-size: 0.78rem; }
-}
-@media (min-width: 720px) {
-  .narrow-only { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }

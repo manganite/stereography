@@ -33,7 +33,7 @@ import { siteOf, distinctPoles } from './sitesym.js';
  * @property {number} blick
  * @property {number[]} zoneSel
  * @property {number[]} pgSel
- * @property {string} fig
+ * @property {'a' | 'b'} fig
  */
 /**
  * Zustand im Modus Kristallformen (siehe Zustand).
@@ -101,7 +101,7 @@ export function createState() {
     blick: 0,
     zoneSel: [],
     pgSel: [], // Punktgruppenmodus: gewählte Pole (Werkzeug Winkel)
-    fig: 'stereo', // Telefon: sichtbare Tafel
+    fig: 'a', // Telefon: sichtbare Tafel (a: Stereogramm, b: 3D)
   };
 }
 

@@ -19,8 +19,6 @@ body { font-size: 16px; line-height: 1.6; }
 .toc a:hover { background: var(--paper); }
 .toc a[aria-current="true"] { background: var(--paper); color: var(--accent); font-weight: 600; box-shadow: inset 2px 0 0 var(--accent); }
 .toc .nr { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 0.35em; }
-.toc .todo { display: block; padding: 4px 8px; color: var(--muted); }
-.toc .todo small { display: block; font-size: 0.75rem; }
 .toc-foot { margin: 12px 0 0; font-size: 0.78rem; color: var(--muted); }
 article { min-width: 0; max-width: 780px; }
 article > header { margin-bottom: 28px; }
@@ -112,8 +110,9 @@ figure { margin: 20px 0; }
 .fig-grid5 figcaption { font-size: 0.8rem; margin-top: 4px; }
 .fig-note { font-size: 0.86rem; color: var(--muted); }
 .fig-note b { color: var(--ink); }
-.tabwrap { overflow-x: auto; margin: 12px 0 16px; }
-.tab caption { caption-side: top; text-align: left; font-size: 0.86rem; color: var(--muted); padding-bottom: 6px; white-space: normal; }
+.tabwrap { overflow-x: auto; margin: 12px 0 16px; container-type: inline-size; }
+/* Unterschrift nie breiter als der Rahmen: sonst läuft sie auf dem Telefon mit der breiten Tabelle aus dem Bild */
+.tab caption { caption-side: top; text-align: left; font-size: 0.86rem; color: var(--muted); padding-bottom: 6px; white-space: normal; max-width: 100cqw; }
 .tab caption b { color: var(--ink); font-weight: 600; }
 .tab { border-collapse: collapse; font-size: 0.9rem; min-width: 460px; }
 .tab th, .tab td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }

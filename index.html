@@ -20,26 +20,9 @@
 <link rel="stylesheet" href="lib/common/css/base.css">
 <link rel="stylesheet" href="lib/common/css/app.css">
 <style>
-/* Nur in dieser App: Anordnung der Tafeln, Stereogramm und 3D-Konstruktion, Blickrichtungen, Zonen, Formtabelle.
-   Die gemeinsamen Bausteine der Werkbank stehen in lib/common/css/app.css. */
-/* Layout: Lehrmittel-Werkbank. Links Bedienung, rechts zwei gleich grosse Tafeln
-   (Stereogramm | 3D-Konstruktion), darunter die Kenndaten. Auf dem Telefon untereinander. */
-/* Raster: links eine angeheftete Seitenleiste mit allen Bedienelementen, rechts die Tafeln,
-   darunter die Kenndaten. So bleiben Bedienung und Bild gleichzeitig sichtbar. */
-.layout {
-  max-width: 1480px; margin-inline: auto; display: grid; gap: 16px;
-  grid-template-columns: 300px minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-areas: "side stereo d3" "side info info";
-  align-items: start;
-}
-.figs { display: contents; }
-.p-stereo { grid-area: stereo; }
-.p-3d { grid-area: d3; }
-.info { grid-area: info; }
-/* iPad hochkant: Seitenleiste neben den untereinander liegenden Tafeln */
-@media (max-width: 999px) {
-  .layout { grid-template-columns: 270px minmax(0, 1fr); grid-template-areas: "side stereo" "side d3" "side info"; }
-}
+/* Nur in dieser App: Stereogramm und 3D-Konstruktion, Blickrichtungen, Zonen, Formtabelle. Die gemeinsamen
+   Bausteine der Werkbank, auch die Anordnung der Tafeln (Tafel a: Stereogramm, b: 3D), stehen in
+   lib/common/css/app.css. */
 .stereo-wrap { position: relative; }
 .stereo-tools { position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 6px; }
 .stereo-tools button {
@@ -139,13 +122,6 @@
 #form-select { font-size: 0.92rem; }
 .sel-hkl small { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 @media (max-width: 719px) {
-  .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "figs" "side" "info"; gap: 12px; }
-  .figs {
-    display: block; grid-area: figs; position: sticky; top: 0; z-index: 5;
-    background: var(--bg); padding-top: 6px; margin-inline: -4px; padding-inline: 4px;
-    box-shadow: 0 8px 10px -10px rgb(0 0 0 / 0.35);
-  }
-  body[data-fig="stereo"] .p-3d, body[data-fig="3d"] .p-stereo { display: none; }
   #stereo, #view3d { width: min(100%, 38svh); margin-inline: auto; }
   .dir-tools .cap { display: none; }
   .viewbar { padding: 5px 6px; gap: 4px; justify-content: center; }
@@ -153,7 +129,7 @@
 }
 </style>
 </head>
-<body>
+<body data-fig="a">
 <header class="top">
   <div class="brand">
     <h1>Stereographische Projektion</h1>
@@ -328,9 +304,9 @@
   </aside>
 
   <div class="figs">
-    <figure class="panel p-stereo">
+    <figure class="panel p-a">
       <div class="panel-head">
-        <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="stereo">Stereogramm</button><button type="button" data-fig="3d">3D</button></div>
+        <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="a">Stereogramm</button><button type="button" data-fig="b">3D</button></div>
         <span class="t">Stereogramm<small id="stereo-sub">Projektion ∥ c</small></span>
         <div class="tools export" role="group" aria-label="Stereogramm exportieren"><button id="copy-stereo" type="button" title="Stereogramm als Bild in die Zwischenablage kopieren">Kopieren</button><button id="save-svg" type="button" title="Stereogramm als SVG-Datei speichern">SVG</button><button id="save-stereo-png" type="button" title="Stereogramm als PNG-Datei speichern">PNG</button></div>
       </div>
@@ -344,9 +320,9 @@
       <div class="legend" id="legend"></div>
     </figure>
 
-    <figure class="panel p-3d">
+    <figure class="panel p-b">
       <div class="panel-head">
-        <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="stereo">Stereogramm</button><button type="button" data-fig="3d">3D</button></div>
+        <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="a">Stereogramm</button><button type="button" data-fig="b">3D</button></div>
         <span class="t">3D-Konstruktion</span>
         <div class="tools export" role="group" aria-label="3D-Konstruktion exportieren"><button id="copy-3d" type="button" title="3D-Konstruktion als Bild in die Zwischenablage kopieren">Kopieren</button><button id="save-3d" type="button" title="3D-Konstruktion als PNG-Datei speichern">PNG</button></div>
       </div>

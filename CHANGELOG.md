@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-11-05
+
+Erste Schritte je Modus, neu auch für „Punktgruppen“; „Alle Einstellungen zurücksetzen“ über die gemeinsame Funktion; Typprüfung und ESLint für den ganzen Code; gemeinsame Grundlage v0.7.0. Für Nutzer: Erste Schritte erscheinen beim ersten Aufruf jedes Modus, und Abb. 7.1 im Skript zeigt die Zone [001] wieder vollständig.
+
 ### Hinzugefügt
 
 - **ESLint** als CI-Job `lint` mit den gemeinsamen Regeln (`eslint.config.mjs`, `tools/common/eslint-basis.mjs`; LEITFADEN Abschn. 9). Die Pakete installiert auch der Job `typen`.
@@ -317,7 +321,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.12.1...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/manganite/stereography/compare/v1.12.1...v1.13.0
 [1.12.1]: https://github.com/manganite/stereography/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/manganite/stereography/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/manganite/stereography/compare/v1.10.0...v1.11.0

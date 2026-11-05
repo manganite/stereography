@@ -16,7 +16,7 @@ import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
 import { TIPS, SECTIONS, LABELS } from './hilfetexte.js';
-import { offline, $, eingabe, auswahl, abschnitt, grafik, elemente } from '../lib/common/js/seite.js';
+import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, abschnitt, grafik, elemente } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
 import * as S from './scene.js';
 import { snapPole } from './sitesym.js';
@@ -115,9 +115,7 @@ try {
   }
 } catch { /* Speicher nicht verfügbar */ }
 if (location.hash.length > 1) applyHash(location.hash); // Link hat Vorrang
-let resetting = false;
 const save = () => {
-  if (resetting) return;
   try { localStorage.setItem('stereo-state', JSON.stringify({ v: 4, mode: state.mode, pg: state.pg, poly: state.poly, view: state.view })); } catch { /* ignorieren */ }
   try {
     const h = stateToHash();
@@ -1692,11 +1690,8 @@ function init() {
     setTimeout(() => { btn.textContent = 'Link kopieren'; }, 1600);
   });
 
-  $('reset-all').addEventListener('click', () => {
-    resetting = true;
-    try { for (const k of ['stereo-state', 'stereo-intro', 'stereo-sections', 'stereo-explain']) localStorage.removeItem(k); } catch { /* ignorieren */ }
-    location.replace(location.pathname + location.search);
-  });
+  // Alle Einträge „stereo-…“ im Speicher ausser denen des Quiz löschen, ohne Hash neu laden (Leitfaden Abschn. 5.2)
+  $('reset-alles').addEventListener('click', () => alleEinstellungenZuruecksetzen('stereo'));
 
   // Trefferradien hängen von der dargestellten Grösse ab
   let lastW = 0;

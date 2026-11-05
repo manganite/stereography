@@ -1532,10 +1532,10 @@ function init() {
   eingabe('v-wulff').addEventListener('change', () => { $('row-wulffrot').hidden = !state.view.wulff; });
   $('row-wulffrot').hidden = !state.view.wulff;
 
-  // Telefon: Umschalter Stereogramm/3D
+  // Telefon: Umschalter Stereogramm (Tafel a) / 3D (Tafel b)
   /** @param {string | undefined} f */
   const setFig = (f) => {
-    state.fig = f === '3d' ? '3d' : 'stereo';
+    state.fig = f === 'b' ? 'b' : 'a';
     document.body.dataset.fig = state.fig;
     for (const b of elemente('.figswitch button', HTMLButtonElement)) b.setAttribute('aria-pressed', String(b.dataset.fig === state.fig));
   };
@@ -1543,7 +1543,7 @@ function init() {
   // Link mit blick=…: die 3D-Konstruktion in dieser Ansicht zeigen (auf dem Telefon die 3D-Tafel), sobald die
   // Blickrichtungen nach dem ersten Zeichnen bekannt sind
   const linkBlick = state.blick;
-  if (linkBlick && window.matchMedia('(max-width: 719px)').matches) state.fig = '3d'; // Telefon (wie isPhone unten)
+  if (linkBlick && window.matchMedia('(max-width: 719px)').matches) state.fig = 'b'; // Telefon (wie isPhone unten)
   setFig(state.fig);
   if (linkBlick) requestAnimationFrame(() => requestAnimationFrame(() => selectView('d' + (linkBlick - 1))));
 
@@ -1659,21 +1659,21 @@ function init() {
   const generalPole = () => { state.pg.theta = DEFAULTS.pg.theta; state.pg.phi = DEFAULTS.pg.phi; };
   /** @type {Record<string, () => void>} */
   const STEPS = {
-    p1: () => { choose4mm(); generalPole(); syncSliders(); render(); if (isPhone()) setFig('stereo'); },
-    p2: () => { choose4mm(); generalPole(); state.pg.phi = 0; syncSliders(); render(); if (isPhone()) setFig('stereo'); },
-    p3: () => { choose4mm(); generalPole(); state.pg.colorful = true; eingabe('pg-colorful').checked = true; syncSliders(); render(); if (isPhone()) setFig('stereo'); },
-    p4: () => { choose4mm(); render(); afterRender(() => selectView('d0')); if (isPhone()) setFig('3d'); },
-    1: () => { loadGalena(); selectView('oblique'); if (isPhone()) setFig('3d'); },
-    2: () => { if (!galenaShown()) loadGalena(); afterRender(() => selectFace([0, 0, 1])); if (isPhone()) setFig('stereo'); },
+    p1: () => { choose4mm(); generalPole(); syncSliders(); render(); if (isPhone()) setFig('a'); },
+    p2: () => { choose4mm(); generalPole(); state.pg.phi = 0; syncSliders(); render(); if (isPhone()) setFig('a'); },
+    p3: () => { choose4mm(); generalPole(); state.pg.colorful = true; eingabe('pg-colorful').checked = true; syncSliders(); render(); if (isPhone()) setFig('a'); },
+    p4: () => { choose4mm(); render(); afterRender(() => selectView('d0')); if (isPhone()) setFig('b'); },
+    1: () => { loadGalena(); selectView('oblique'); if (isPhone()) setFig('b'); },
+    2: () => { if (!galenaShown()) loadGalena(); afterRender(() => selectFace([0, 0, 1])); if (isPhone()) setFig('a'); },
     3: () => {
       if (!galenaShown()) loadGalena();
       afterRender(() => { selectFace([0, 0, 1]); selectView(sideViewKey()); });
-      if (isPhone()) setFig('3d');
+      if (isPhone()) setFig('b');
     },
     4: () => {
       if (!galenaShown()) loadGalena();
       state.poly.frame = true; eingabe('poly-frame').checked = true;
-      render(); if (isPhone()) setFig('stereo');
+      render(); if (isPhone()) setFig('a');
     },
   };
   $('intro').addEventListener('click', (e) => {

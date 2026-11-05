@@ -34,6 +34,8 @@ const PRINT_CSS = `
   h2, h3, h4, h5 { break-after: avoid; }
   figure, .fig-row, .fig-grid5, table, .tabwrap, .schema, .symlegende li, pre, .fig-note,
   .box.merke, .box.app, .box.ziele, .box.zusammen { break-inside: avoid; }
+  /* zwei Reihen derselben Abbildung und ihre gemeinsame Anmerkung nicht trennen */
+  .fig-row + .fig-row, .fig-row + .fig-note, .fig-grid5 + .fig-note { break-before: avoid; }
   p { orphans: 3; widows: 3; }
   .tabwrap { overflow: visible !important; }
   .static3d img { display: block; width: 100%; height: auto; }

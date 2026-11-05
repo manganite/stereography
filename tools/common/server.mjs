@@ -27,8 +27,12 @@ export const MIME = {
 export function server(root, port = 0) {
   root = resolve(root);
   const srv = createServer(async (req, res) => {
-    const adresse = new URL(req.url ?? '/', 'http://x'), pfad = adresse.pathname;
-    const path = normalize(decodeURIComponent(pfad)).replace(/^([/\\])+/, '');
+    // ungültige Adresse (z. B. /%ZZ): 400, statt dass der Fehler den Server beendet
+    let adresse, pfad, path;
+    try {
+      adresse = new URL(req.url ?? '/', 'http://x'); pfad = adresse.pathname;
+      path = normalize(decodeURIComponent(pfad)).replace(/^([/\\])+/, '');
+    } catch { res.writeHead(400).end(); return; }
     let file = resolve(root, path || 'index.html');
     // nur Dateien innerhalb von root (auch kein Nachbarordner mit gleichem Namensanfang wie root-privat)
     const rel = relative(root, file);

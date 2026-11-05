@@ -5,7 +5,7 @@ import {
 } from './pointgroups.js';
 import {
   habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, isHexSystem, auxFormName,
-  STRETCH_DIRS, stretchDir,
+  STRETCH_DIRS, stretchDir, naechsterGueltiger,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
@@ -112,6 +112,7 @@ try {
       }
     }
     if (state.poly.breakMode !== 'free') state.poly.breakMode = 'stretch';
+    S.gitterBereinigen(state);
   }
 } catch { /* Speicher nicht verfügbar */ }
 if (location.hash.length > 1) applyHash(location.hash); // Link hat Vorrang
@@ -377,6 +378,7 @@ function syncLattice() {
   $('lat-fixed').hidden = free.size > 0;
   $('lat-locked').hidden = mode !== 'stretch';
   $('lat-title').hidden = !mode;
+  latHinweis(false);
   syncLatSliders();
 }
 
@@ -394,6 +396,12 @@ function buildStretch() {
 function syncStretch() {
   eingabe('stretch-s').value = String(state.poly.stretch.s);
   $('stretch-s-out').textContent = state.poly.stretch.s.toFixed(2);
+}
+
+/** Hinweis bei Winkeln, die kein Gitter ergeben; Live-Bereich bleibt im Dokument, nur der Text wechselt. @param {boolean} an */
+function latHinweis(an) {
+  const el = $('lat-ungueltig');
+  el.textContent = an ? 'Diese Winkel ergeben kein Gitter (oder nur ein fast flaches): Jeder Winkel muss kleiner sein als die Summe der beiden anderen, alle drei zusammen kleiner als 360°.' : '';
 }
 
 function syncLatSliders() {
@@ -1448,8 +1456,14 @@ function init() {
       if (mode === 'stretch') return; // gesperrt: das Gitter legt die Streckung fest
       const lat = mode === 'free' ? S.freeLat(state) : currentLat();
       if (!mode) Object.assign(lat, constrainLattice(lat, state.poly.system));
-      lat[k] = Number(/** @type {HTMLInputElement} */ (ev.target).value);
-      syncLatSliders(); render();
+      const regler = /** @type {HTMLInputElement} */ (ev.target), wunsch = Number(regler.value);
+      // Winkel, die zusammen kein Gitter ergeben: Der Regler bleibt am letzten gültigen Wert vor der Grenze stehen,
+      // der Grund steht darunter (#95)
+      const wert = naechsterGueltiger(lat, /** @type {keyof Gitterparameter} */ (k), wunsch, Number(regler.step) || 1);
+      latHinweis(wert !== wunsch);
+      const geaendert = wert !== lat[k];
+      lat[k] = wert;
+      syncLatSliders(); if (geaendert) render();
     });
   }
   eingabe('poly-broken').checked = state.poly.broken;

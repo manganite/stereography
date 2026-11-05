@@ -42,6 +42,11 @@ stabil halten).
   tetragonal [100], [110]; trigonal/hexagonal [100], [210]. Die Projektionsrichtung folgt der Streckung
   nicht. Bei Beispielkristallen ausgeblendet (Zentralabstände würden nicht affin mitgestreckt).
   Umschalten in die trigonale Form im Katalog bewusst nicht umgesetzt.
+- **Winkel des Gitters gemeinsam geprüft** (5.11.2026, Thomas): Nicht jede Kombination dreier Winkel
+  zwischen 60° und 150° ergibt ein Gitter; bisher entstand stillschweigend eine andere Geometrie. Ein Regler
+  bleibt deshalb beim letzten gültigen Wert stehen, der Grund steht darunter; so entspricht das Eingestellte
+  immer dem Dargestellten. Link mit solchen Winkeln: Winkel der Vorgabe; gespeicherter Zustand: Gitter der Vorgabe. Fast flache
+  Zellen sind ausgeschlossen (`GITTER_MIN` in `js/polyhedra.js`: V/(abc) ≥ 0,1).
 - **Einrasten** des Ausgangspols immer (Achse 4°, Spiegelebene 3°), kein Schalter.
 - **Bildexport** (24.10.): Stereogramm als Kopie (PNG), SVG, PNG (2048 px); 3D als Kopie und PNG. Kein
   Formatmenü; auf dem Telefon kein Export.

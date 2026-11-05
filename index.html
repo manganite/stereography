@@ -249,12 +249,12 @@
           <div class="range" id="row-lat-ca"><label for="lat-ca">c/a</label><output id="lat-ca-out"></output>
             <input type="range" id="lat-ca" min="0.25" max="3" step="0.01"></div>
           <div class="range" id="row-lat-al"><label for="lat-al">α</label><output id="lat-al-out"></output>
-            <input type="range" id="lat-al" min="60" max="150" step="1"></div>
+            <input type="range" id="lat-al" min="60" max="150" step="1" aria-describedby="lat-ungueltig"></div>
           <div class="range" id="row-lat-be"><label for="lat-be">β</label><output id="lat-be-out"></output>
-            <input type="range" id="lat-be" min="60" max="150" step="1"></div>
+            <input type="range" id="lat-be" min="60" max="150" step="1" aria-describedby="lat-ungueltig"></div>
           <div class="range" id="row-lat-ga"><label for="lat-ga">γ</label><output id="lat-ga-out"></output>
-            <input type="range" id="lat-ga" min="60" max="150" step="1"></div>
-          <p class="hintline" id="lat-ungueltig" role="status" hidden>Diese Winkel ergeben kein Gitter (oder nur ein fast flaches): Jeder Winkel muss kleiner sein als die Summe der beiden anderen, alle drei zusammen kleiner als 360°.</p>
+            <input type="range" id="lat-ga" min="60" max="150" step="1" aria-describedby="lat-ungueltig"></div>
+          <p class="hintline" id="lat-ungueltig" role="status"></p>
           <p class="hintline" id="lat-locked" hidden>Die Regler zeigen das gestreckte Gitter und sind gesperrt. Einzeln ändern lassen sich die Gitterparameter mit „Alle Parameter frei“.</p>
           <button class="linkbtn" id="lat-reset" type="button">Gitter zurücksetzen</button>
         </div>

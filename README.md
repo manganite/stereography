@@ -104,7 +104,7 @@ Modus „Kristallformen“ (`m=form`):
 | `ab` | Abstände der Formen eines Beispiels als Faktoren, je Form einer | 0.5–2, z. B. `1,1.2` |
 | `lage` | Projektionsrichtung | kubisch **`001`**, `111`, `110`; sonst **`c`**, `a`, `b` |
 | `ba`, `ca` | Gitter: *b*/*a*, *c*/*a* | 0.25–3; Startwerte je System |
-| `al`, `be`, `ga` | Gitter: α, β, γ in Grad | 60–150; Startwerte je System |
+| `al`, `be`, `ga` | Gitter: α, β, γ in Grad; ergeben sie zusammen kein Gitter (V/(abc) < 0,1), gelten die Winkel der Vorgabe | 60–150; Startwerte je System |
 | `br` | Symmetrie brechen; ohne `str` alle Gitterparameter frei | **`0`**, `1` |
 | `str` | Streckung `<Richtung>,<Faktor>` (schaltet „Symmetrie brechen“ ein, auch ohne `br`) | Richtung kubisch `001`, `111`, `110`; tetragonal `100`, `110`; trigonal und hexagonal `100`, `210`; Faktor 0.5–2 |
 | `offen` | offene Form zeigen (Ergänzungsformen ausblenden) | **`0`**, `1` |

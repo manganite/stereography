@@ -165,6 +165,19 @@ export function gitterGueltig(p) {
   return 1 - ca * ca - cb * cb - cg * cg + 2 * ca * cb * cg >= GITTER_MIN * GITTER_MIN;
 }
 
+/**
+ * Wert für den Parameter k, der dem Wunsch am nächsten kommt und ein Gitter ergibt: der Wunsch selbst, sonst der erste
+ * gültige Wert auf dem Weg zurück zum alten Wert (Schritte des Reglers, zuletzt genau der alte Wert). Die gültigen Werte
+ * eines Winkels bilden ein Intervall, das ist also die nächste Grenze. Ist auch der alte Wert ungültig, bleibt er.
+ * @param {Gitterparameter} lat @param {keyof Gitterparameter} k @param {number} wunsch @param {number} [schritt]
+ */
+export function naechsterGueltiger(lat, k, wunsch, schritt = 1) {
+  const alt = lat[k], richtung = Math.sign(alt - wunsch);
+  const p = { ...lat, [k]: wunsch };
+  while (Math.abs(p[k] - alt) > 1e-9 && !gitterGueltig(p)) p[k] = richtung * (alt - p[k]) <= schritt ? alt : p[k] + richtung * schritt;
+  return p[k];
+}
+
 /** Gittermatrix aus a = 1, b/a, c/a, α, β, γ; die Winkel müssen ein Gitter ergeben (gitterGueltig). @param {Gitterparameter} p */
 export function latticeFromParams(p) {
   const a = 1, b = p.ba, c = p.ca;

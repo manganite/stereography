@@ -8,7 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Behoben
 
-- **Gitterparameter** (#95): Winkel, die zusammen kein Gitter ergeben (z. B. α = β = 60°, γ = 150° bei „Alle Parameter frei“ oder triklin), erzeugten stillschweigend ein Gitter mit anderen Parametern. Jetzt bleibt der Regler beim letzten gültigen Wert stehen, und ein Hinweis nennt den Grund; fast flache Zellen sind ebenfalls ausgeschlossen. Links und gespeicherte Stände mit solchen Winkeln erhalten die Winkel der Vorgabe.
+- **Gitterparameter** (#95): Winkel, die zusammen kein Gitter ergeben (z. B. α = β = 60°, γ = 150° bei „Alle Parameter frei“ oder triklin), erzeugten stillschweigend ein Gitter mit anderen Parametern. Jetzt bleibt der Regler beim letzten gültigen Wert stehen, und ein Hinweis nennt den Grund; fast flache Zellen sind ebenfalls ausgeschlossen. Links mit solchen Winkeln erhalten die Winkel der Vorgabe, gespeicherte Stände das Gitter der Vorgabe.
 
 ## [1.13.0] - 2026-11-05
 

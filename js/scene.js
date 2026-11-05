@@ -250,6 +250,17 @@ export const freeLat = (state) => {
   if (!state.poly.freeLats[sys]) state.poly.freeLats[sys] = constrainLattice(currentLat(state), sys);
   return state.poly.freeLats[sys];
 };
+/**
+ * Gespeicherte Gitter, deren Winkel kein Gitter ergeben (Stände vor #95), verwerfen: Das System beginnt dann mit
+ * seiner Vorgabe (currentLat, freeLat). Geprüft wird das verwendete Gitter wie im Link.
+ * @param {Zustand} state
+ */
+export function gitterBereinigen(state) {
+  for (const [sys, lat] of Object.entries(state.poly.lats || {})) {
+    if (!LATTICE_DEFAULTS[sys] || !lat || !gitterGueltig(constrainLattice(lat, sys))) delete state.poly.lats[sys];
+  }
+  for (const [sys, lat] of Object.entries(state.poly.freeLats || {})) if (!LATTICE_DEFAULTS[sys] || !lat || !gitterGueltig(lat)) delete state.poly.freeLats[sys];
+}
 /** Wirksame Gitterparameter (was die Gitterregler zeigen). @param {Zustand} state @returns {Gitterparameter} */
 export function effectiveLat(state) {
   const sys = state.poly.system;
@@ -375,8 +386,6 @@ export function applyHashTo(state, hash, DEFAULTS) {
       const v = k === 'ba' || k === 'ca' ? num(q.get(k), 0.25, 3) : num(q.get(k), 60, 150);
       if (v != null) lat[k] = v;
     }
-    // Winkel, die zusammen kein Gitter ergeben: die Winkel der Vorgabe (#95)
-    if (!gitterGueltig(lat)) for (const k of /** @type {const} */ (['al', 'be', 'ga'])) lat[k] = { ...LATTICE_DEFAULTS[state.poly.system], ...(ex && ex.sys === state.poly.system ? ex.lat : {}) }[k];
     bools(URL_FORM, state.poly);
     // str=<Richtung>,<Faktor>, z. B. str=111,1.3 (Richtung als Gitterrichtung ohne Klammern): Symmetrie
     // brechen durch Streckung (auch ohne br=1, Links aus v1.4.0). Nur ohne Beispielkristall; ungültige
@@ -397,6 +406,12 @@ export function applyHashTo(state, hash, DEFAULTS) {
       state.poly.breakMode = 'free';
       state.poly.freeLats = { [sysNow]: lat };
     } else state.poly.breakMode = 'stretch';
+    // Winkel, die zusammen kein Gitter ergeben: die Winkel der Vorgabe (#95). Geprüft wird das verwendete Gitter:
+    // alle Parameter frei oder auf die Bedingungen des Systems gesetzt (lat ist auch das freie Gitter).
+    if (!gitterGueltig(state.poly.breakMode === 'free' ? lat : constrainLattice(lat, sysNow))) {
+      const vorgabe = { ...LATTICE_DEFAULTS[sysNow], ...(ex && ex.sys === sysNow ? ex.lat : {}) };
+      for (const k of /** @type {const} */ (['al', 'be', 'ga'])) lat[k] = vorgabe[k];
+    }
     state.poly.lats[sysNow] = constrainLattice(lat, sysNow);
     if (q.has('abstand')) state.poly.auxDist = num(q.get('abstand'), 0.3, 3) ?? state.poly.auxDist;
     if (q.has('gr')) state.poly.size = num(q.get('gr'), 0.3, 1.2) ?? state.poly.size;

@@ -11,7 +11,8 @@ import {
   solve3, vecEq, fromRows, matEq,
 } from './linalg.js';
 import { buildPointGroup, analyzeGroup, POINT_GROUPS } from './pointgroups.js';
-import { entryById, FORM_TYPES } from './forms.js';
+import { entryById } from './forms.js';
+import { FORM_TYPES, FACE_COUNT } from './formen.js';
 
 /** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
 /** @import { Analyse } from './pointgroups.js' */
@@ -58,7 +59,7 @@ const HEX_SYSTEMS = new Set(['trigonal', 'hexagonal']);
 /** @param {string} sys */
 export const isHexSystem = (sys) => HEX_SYSTEMS.has(sys);
 
-/** Holoedrie je System (für Kandidaten der Restsymmetrie). @type {Record<string, string>} */
+/** Gittersymmetrie je System, trigonal mit hexagonalen Achsen (für Kandidaten der Restsymmetrie). @type {Record<string, string>} */
 const HOLOHEDRY = { triklin: '-1', monoklin: '2/mb', orthorhombisch: 'mmm', tetragonal: '4/mmm', trigonal: '6/mmm', hexagonal: '6/mmm', kubisch: 'm-3m' };
 
 /** Voreinstellungen der Gitterparameter je System (a = 1). @type {Record<string, Gitterparameter>} */
@@ -627,13 +628,6 @@ export function auxFormName(groupId, hkls) {
   if (cands.length === 1) return { type: Number(cands[0][0]), name: cands[0][1].name };
   return null;
 }
-
-/** Flächenzahl der 47 Formen (ITA Tab. 10.1.2.3). @type {Record<number, number>} */
-const FACE_COUNT = {
-  1: 1, 2: 2, 3: 2, 4: 4, 5: 4, 6: 4, 7: 8, 8: 4, 9: 4, 10: 4, 11: 8, 12: 8, 13: 8, 14: 8, 15: 8, 16: 16,
-  17: 3, 18: 3, 19: 6, 20: 6, 21: 6, 22: 6, 23: 6, 24: 6, 25: 6, 26: 12, 27: 12, 28: 12, 29: 12, 30: 12, 31: 12, 32: 24,
-  33: 4, 34: 6, 35: 8, 36: 12, 37: 12, 38: 12, 39: 12, 40: 12, 41: 24, 42: 24, 43: 24, 44: 24, 45: 24, 46: 24, 47: 48,
-};
 
 /** @param {number} a @param {number} b @returns {number} */
 const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));

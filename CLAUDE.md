@@ -101,6 +101,18 @@ stabil halten).
 - **Vorschau der App** (nicht öffentlich, angelegt 4.11.2026): Artifact
   https://claude.ai/artifact/3zax7EQn7ngSiQtqABDevW; Ablauf in der `CLAUDE.md` von common, Abschnitt
   „Vorschau einer App“.
+- **Daten getrennt vom Code** (6.11.2026, #75, Leitfaden Abschn. 9): Datendateien sind `punktgruppen.js`
+  (Kenndaten der Punktgruppen, Systeme), `formen.js` (Formtypen, Flächenzahlen, Formen je Punktgruppe),
+  `aufstellungen.js`, `examples.js`, `quiz-bank.js`, `hilfetexte.js`. Die Erzeugenden der Punktgruppen
+  (`ERZEUGENDE` in `pointgroups.js`) und der Aufbau des Katalogs mit Kennung und Stelle (`forms.js`) sind
+  Code; Kennungen und Reihenfolge des Katalogs sind Schnittstelle (Links `f=…`). Je Fall entschieden, bleibt
+  im Code: `HOLOHEDRY`, `LATTICE_DEFAULTS`, `FREE_PARAMS`, `STRETCH_DIRS` in `polyhedra.js` (Rechengrundlagen
+  und Voreinstellungen der App, an die Gitterparameter gebunden), `SKRIPT_ANCHORS` in `skriptlinks.js`
+  (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js`,
+  `ALT_SETTINGS` in `sitesym.js` (bewusst zweite, unabhängige Angabe nach ITA, gegen die die Tests den
+  Katalog prüfen). Noch offen in #75: `VIEW_FAMILIES` (`scene.js`), `PRISM_TYPES`, `EIG_ALIAS`/`EIG_SAME`,
+  `DEFAULT_ENTRY` und die Tabellen in `quiz-gen.js`. Weitere Texte
+  in `main.js` (Kenndaten, Hinweise) gehören zu #104.
 
 ### Familie
 - **`blick=1–3` als allgemeiner Link-Parameter** (31.10.): plane-groups verlinkt damit die 10 polaren

@@ -11,10 +11,11 @@ import {
   I3, rot, rotInv, mirror, inversion, mul, mulVec, det, trace, matEq, neg, normalize,
   add, scale, cross, EPS,
 } from './linalg.js';
+import { PUNKTGRUPPEN } from './punktgruppen.js';
 
 /** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
 /**
- * Eintrag der Gruppenliste (Bedeutung der Felder bei POINT_GROUPS).
+ * Eintrag der Gruppenliste: Zeile aus js/punktgruppen.js (Bedeutung der Felder dort) mit den Erzeugenden.
  * @typedef {object} Punktgruppe
  * @property {string} id
  * @property {string} hm
@@ -70,64 +71,65 @@ const D111 = [1, 1, 1];
 const inv = inversion;
 
 /**
- * Gruppenliste. hm: Kurzsymbol ('-' setzt einen Querstrich über das folgende Zeichen),
- * setting: Aufstellung (falls ITA mehrere führt), full: volles HM-Symbol (Leerzeichen trennen
- * Symmetrierichtungen), sf: Schoenflies, laue: Laue-Klasse, gens: Generatoren.
- * @type {Punktgruppe[]}
+ * Erzeugende je Punktgruppe (kartesisch). Die Kenndaten der Gruppen stehen in js/punktgruppen.js.
+ * @type {Record<string, () => Mat3[]>}
  */
-export const POINT_GROUPS = [
+const ERZEUGENDE = {
   // --- triklin
-  { id: '1', hm: '1', system: 'triklin', sf: 'C1', full: '1', laue: '-1', gens: () => [] },
-  { id: '-1', hm: '-1', system: 'triklin', sf: 'Ci', full: '-1', laue: '-1', gens: () => [inv()] },
+  '1': () => [],
+  '-1': () => [inv()],
   // --- monoklin
-  { id: '2b', hm: '2', setting: 'Achse b', system: 'monoklin', sf: 'C2', full: '1 2 1', laue: '2/m', gens: () => [rot(Y, 2)] },
-  { id: '2c', hm: '2', setting: 'Achse c', system: 'monoklin', sf: 'C2', full: '1 1 2', laue: '2/m', gens: () => [rot(Z, 2)] },
-  { id: 'mb', hm: 'm', setting: 'Achse b', system: 'monoklin', sf: 'Cs', full: '1 m 1', laue: '2/m', gens: () => [mirror(Y)] },
-  { id: 'mc', hm: 'm', setting: 'Achse c', system: 'monoklin', sf: 'Cs', full: '1 1 m', laue: '2/m', gens: () => [mirror(Z)] },
-  { id: '2/mb', hm: '2/m', setting: 'Achse b', system: 'monoklin', sf: 'C2h', full: '1 2/m 1', laue: '2/m', gens: () => [rot(Y, 2), inv()] },
-  { id: '2/mc', hm: '2/m', setting: 'Achse c', system: 'monoklin', sf: 'C2h', full: '1 1 2/m', laue: '2/m', gens: () => [rot(Z, 2), inv()] },
+  '2b': () => [rot(Y, 2)],
+  '2c': () => [rot(Z, 2)],
+  'mb': () => [mirror(Y)],
+  'mc': () => [mirror(Z)],
+  '2/mb': () => [rot(Y, 2), inv()],
+  '2/mc': () => [rot(Z, 2), inv()],
   // --- orthorhombisch
-  { id: '222', hm: '222', system: 'orthorhombisch', sf: 'D2', full: '2 2 2', laue: 'mmm', gens: () => [rot(X, 2), rot(Y, 2)] },
-  { id: 'mm2', hm: 'mm2', system: 'orthorhombisch', sf: 'C2v', full: 'm m 2', laue: 'mmm', gens: () => [mirror(X), mirror(Y)] },
-  { id: 'mmm', hm: 'mmm', system: 'orthorhombisch', sf: 'D2h', full: '2/m 2/m 2/m', laue: 'mmm', gens: () => [rot(X, 2), rot(Y, 2), inv()] },
+  '222': () => [rot(X, 2), rot(Y, 2)],
+  'mm2': () => [mirror(X), mirror(Y)],
+  'mmm': () => [rot(X, 2), rot(Y, 2), inv()],
   // --- tetragonal
-  { id: '4', hm: '4', system: 'tetragonal', sf: 'C4', full: '4', laue: '4/m', gens: () => [rot(Z, 4)] },
-  { id: '-4', hm: '-4', system: 'tetragonal', sf: 'S4', full: '-4', laue: '4/m', gens: () => [rotInv(Z, 4)] },
-  { id: '4/m', hm: '4/m', system: 'tetragonal', sf: 'C4h', full: '4/m', laue: '4/m', gens: () => [rot(Z, 4), inv()] },
-  { id: '422', hm: '422', system: 'tetragonal', sf: 'D4', full: '4 2 2', laue: '4/mmm', gens: () => [rot(Z, 4), rot(X, 2)] },
-  { id: '4mm', hm: '4mm', system: 'tetragonal', sf: 'C4v', full: '4 m m', laue: '4/mmm', gens: () => [rot(Z, 4), mirror(X)] },
-  { id: '-42m', hm: '-42m', system: 'tetragonal', sf: 'D2d', full: '-4 2 m', laue: '4/mmm', gens: () => [rotInv(Z, 4), rot(X, 2)] },
-  { id: '-4m2', hm: '-4m2', system: 'tetragonal', sf: 'D2d', full: '-4 m 2', laue: '4/mmm', gens: () => [rotInv(Z, 4), mirror(X)] },
-  { id: '4/mmm', hm: '4/mmm', system: 'tetragonal', sf: 'D4h', full: '4/m 2/m 2/m', laue: '4/mmm', gens: () => [rot(Z, 4), rot(X, 2), inv()] },
+  '4': () => [rot(Z, 4)],
+  '-4': () => [rotInv(Z, 4)],
+  '4/m': () => [rot(Z, 4), inv()],
+  '422': () => [rot(Z, 4), rot(X, 2)],
+  '4mm': () => [rot(Z, 4), mirror(X)],
+  '-42m': () => [rotInv(Z, 4), rot(X, 2)],
+  '-4m2': () => [rotInv(Z, 4), mirror(X)],
+  '4/mmm': () => [rot(Z, 4), rot(X, 2), inv()],
   // --- trigonal (hexagonale Achsen)
-  { id: '3', hm: '3', system: 'trigonal', hex: true, sf: 'C3', full: '3', laue: '-3', gens: () => [rot(Z, 3)] },
-  { id: '-3', hm: '-3', system: 'trigonal', hex: true, sf: 'C3i', full: '-3', laue: '-3', gens: () => [rot(Z, 3), inv()] },
-  { id: '321', hm: '32', setting: '321', system: 'trigonal', hex: true, sf: 'D3', full: '3 2 1', laue: '-3m', gens: () => [rot(Z, 3), rot(HEX_A, 2)] },
-  { id: '312', hm: '32', setting: '312', system: 'trigonal', hex: true, sf: 'D3', full: '3 1 2', laue: '-3m', gens: () => [rot(Z, 3), rot(HEX_A_MINUS_B, 2)] },
-  { id: '3m1', hm: '3m', setting: '3m1', system: 'trigonal', hex: true, sf: 'C3v', full: '3 m 1', laue: '-3m', gens: () => [rot(Z, 3), mirror(HEX_A)] },
-  { id: '31m', hm: '3m', setting: '31m', system: 'trigonal', hex: true, sf: 'C3v', full: '3 1 m', laue: '-3m', gens: () => [rot(Z, 3), mirror(HEX_A_MINUS_B)] },
-  { id: '-3m1', hm: '-3m', setting: '-3m1', system: 'trigonal', hex: true, sf: 'D3d', full: '-3 2/m 1', laue: '-3m', gens: () => [rot(Z, 3), mirror(HEX_A), inv()] },
-  { id: '-31m', hm: '-3m', setting: '-31m', system: 'trigonal', hex: true, sf: 'D3d', full: '-3 1 2/m', laue: '-3m', gens: () => [rot(Z, 3), mirror(HEX_A_MINUS_B), inv()] },
+  '3': () => [rot(Z, 3)],
+  '-3': () => [rot(Z, 3), inv()],
+  '321': () => [rot(Z, 3), rot(HEX_A, 2)],
+  '312': () => [rot(Z, 3), rot(HEX_A_MINUS_B, 2)],
+  '3m1': () => [rot(Z, 3), mirror(HEX_A)],
+  '31m': () => [rot(Z, 3), mirror(HEX_A_MINUS_B)],
+  '-3m1': () => [rot(Z, 3), mirror(HEX_A), inv()],
+  '-31m': () => [rot(Z, 3), mirror(HEX_A_MINUS_B), inv()],
   // --- hexagonal
-  { id: '6', hm: '6', system: 'hexagonal', hex: true, sf: 'C6', full: '6', laue: '6/m', gens: () => [rot(Z, 6)] },
-  { id: '-6', hm: '-6', system: 'hexagonal', hex: true, sf: 'C3h', full: '-6', laue: '6/m', gens: () => [rotInv(Z, 6)] },
-  { id: '6/m', hm: '6/m', system: 'hexagonal', hex: true, sf: 'C6h', full: '6/m', laue: '6/m', gens: () => [rot(Z, 6), inv()] },
-  { id: '622', hm: '622', system: 'hexagonal', hex: true, sf: 'D6', full: '6 2 2', laue: '6/mmm', gens: () => [rot(Z, 6), rot(HEX_A, 2)] },
-  { id: '6mm', hm: '6mm', system: 'hexagonal', hex: true, sf: 'C6v', full: '6 m m', laue: '6/mmm', gens: () => [rot(Z, 6), mirror(HEX_A)] },
-  { id: '-6m2', hm: '-6m2', system: 'hexagonal', hex: true, sf: 'D3h', full: '-6 m 2', laue: '6/mmm', gens: () => [rotInv(Z, 6), mirror(HEX_A)] },
-  { id: '-62m', hm: '-62m', system: 'hexagonal', hex: true, sf: 'D3h', full: '-6 2 m', laue: '6/mmm', gens: () => [rotInv(Z, 6), rot(HEX_A, 2)] },
-  { id: '6/mmm', hm: '6/mmm', system: 'hexagonal', hex: true, sf: 'D6h', full: '6/m 2/m 2/m', laue: '6/mmm', gens: () => [rot(Z, 6), rot(HEX_A, 2), inv()] },
+  '6': () => [rot(Z, 6)],
+  '-6': () => [rotInv(Z, 6)],
+  '6/m': () => [rot(Z, 6), inv()],
+  '622': () => [rot(Z, 6), rot(HEX_A, 2)],
+  '6mm': () => [rot(Z, 6), mirror(HEX_A)],
+  '-6m2': () => [rotInv(Z, 6), mirror(HEX_A)],
+  '-62m': () => [rotInv(Z, 6), rot(HEX_A, 2)],
+  '6/mmm': () => [rot(Z, 6), rot(HEX_A, 2), inv()],
   // --- kubisch
-  { id: '23', hm: '23', system: 'kubisch', sf: 'T', full: '2 3', laue: 'm-3', gens: () => [rot(Z, 2), rot(X, 2), rot(D111, 3)] },
-  { id: 'm-3', hm: 'm-3', system: 'kubisch', sf: 'Th', full: '2/m -3', laue: 'm-3', gens: () => [rot(Z, 2), rot(X, 2), rot(D111, 3), inv()] },
-  { id: '432', hm: '432', system: 'kubisch', sf: 'O', full: '4 3 2', laue: 'm-3m', gens: () => [rot(Z, 4), rot(D111, 3)] },
-  { id: '-43m', hm: '-43m', system: 'kubisch', sf: 'Td', full: '-4 3 m', laue: 'm-3m', gens: () => [rotInv(Z, 4), rot(D111, 3)] },
-  { id: 'm-3m', hm: 'm-3m', system: 'kubisch', sf: 'Oh', full: '4/m -3 2/m', laue: 'm-3m', gens: () => [rot(Z, 4), rot(D111, 3), inv()] },
-];
+  '23': () => [rot(Z, 2), rot(X, 2), rot(D111, 3)],
+  'm-3': () => [rot(Z, 2), rot(X, 2), rot(D111, 3), inv()],
+  '432': () => [rot(Z, 4), rot(D111, 3)],
+  '-43m': () => [rotInv(Z, 4), rot(D111, 3)],
+  'm-3m': () => [rot(Z, 4), rot(D111, 3), inv()],
+};
 
-export const SYSTEMS = ['triklin', 'monoklin', 'orthorhombisch', 'tetragonal', 'trigonal', 'hexagonal', 'kubisch'];
-/** Namen der Kristallsysteme für die Anzeige (Auswahl, Kenndaten), in der Reihenfolge von SYSTEMS. @type {Record<string, string>} */
-export const SYSTEM_NAMEN = { triklin: 'Triklin', monoklin: 'Monoklin', orthorhombisch: 'Orthorhombisch', tetragonal: 'Tetragonal', trigonal: 'Trigonal', hexagonal: 'Hexagonal', kubisch: 'Kubisch' };
+/** Gruppenliste: Zeilen aus js/punktgruppen.js mit ihren Erzeugenden. @type {Punktgruppe[]} */
+export const POINT_GROUPS = PUNKTGRUPPEN.map((z) => {
+  if (!ERZEUGENDE[z.id]) throw new Error(`Erzeugende fehlen: ${z.id}`);
+  return { ...z, gens: ERZEUGENDE[z.id] };
+});
+if (Object.keys(ERZEUGENDE).length !== PUNKTGRUPPEN.length) throw new Error('Erzeugende ohne Zeile in js/punktgruppen.js');
 
 /** Gruppe zur id. Alle Aufrufer übergeben ids aus der Liste (eine unbekannte ergäbe undefined). @param {string} id */
 export const groupById = (id) => /** @type {Punktgruppe} */ (POINT_GROUPS.find((g) => g.id === id));

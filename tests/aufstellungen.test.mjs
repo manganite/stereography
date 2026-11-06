@@ -2,7 +2,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { FAMILIEN, AUFSTELLUNG_TIPPS, MONO_ACHSE_TIPPS, AUFSTELLUNG_AB } from '../js/aufstellungen.js';
-import { POINT_GROUPS, SYSTEMS, SYSTEM_NAMEN } from '../js/pointgroups.js';
+import { POINT_GROUPS } from '../js/pointgroups.js';
+import { SYSTEMS, SYSTEM_NAMEN } from '../js/punktgruppen.js';
 
 test('Aufstellungen: zwei bekannte Punktgruppen je Familie, Tooltip und A/B für jede', () => {
   const ids = new Set(POINT_GROUPS.map((g) => g.id));

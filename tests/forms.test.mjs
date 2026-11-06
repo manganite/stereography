@@ -1,7 +1,8 @@
 // Formenkatalog und Polyeder: Flächenzahlen nach ITA, geschlossene Körper, reduzierte Formliste.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CATALOG, FORM_TYPES, formEig } from '../js/forms.js';
+import { CATALOG, formEig } from '../js/forms.js';
+import { FORM_TYPES } from '../js/formen.js';
 import { POINT_GROUPS, buildPointGroup } from '../js/pointgroups.js';
 import { buildCrystal, latticeOps, hklOrbit, LATTICE_DEFAULTS, SYSTEM_OF, habitOf } from '../js/polyhedra.js';
 

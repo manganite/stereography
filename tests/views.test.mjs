@@ -6,7 +6,8 @@ import {
   createState, hashOf, applyHashTo, pgScene, polyCrystal, polyScene, pgViewDirections, polyViewDirections, viewDirections,
   pgPolesOn, polyLabelsOn,
 } from '../js/scene.js';
-import { POINT_GROUPS, SYSTEMS } from '../js/pointgroups.js';
+import { POINT_GROUPS } from '../js/pointgroups.js';
+import { SYSTEMS } from '../js/punktgruppen.js';
 import { CATALOG } from '../js/forms.js';
 import { SYSTEM_OF } from '../js/polyhedra.js';
 

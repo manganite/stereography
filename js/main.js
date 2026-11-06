@@ -1,13 +1,15 @@
 // Steuerung der App: Zustand, Bedienelemente, Verknüpfung von Stereogramm und 3D-Ansicht.
 
 import {
-  POINT_GROUPS, SYSTEMS, SYSTEM_NAMEN, buildPointGroup,
+  POINT_GROUPS, buildPointGroup,
 } from './pointgroups.js';
+import { SYSTEMS, SYSTEM_NAMEN } from './punktgruppen.js';
 import {
   habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, isHexSystem, auxFormName,
   STRETCH_DIRS, stretchDir, naechsterGueltiger,
 } from './polyhedra.js';
-import { CATALOG, formName, formEig, FORM_TYPES } from './forms.js';
+import { CATALOG, formName, formEig } from './forms.js';
+import { FORM_TYPES } from './formen.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
 import { hmHTML, hmText, hklHTML, indices, esc } from '../lib/common/js/format.js';
 import { normalize } from './linalg.js';

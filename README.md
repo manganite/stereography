@@ -99,7 +99,7 @@ Modus „Kristallformen“ (`m=form`):
 | Schlüssel | Bedeutung | Werte (Startwert fett) |
 |---|---|---|
 | `sys` | Kristallsystem | `triklin`, `monoklin`, `orthorhombisch`, `tetragonal`, `trigonal`, `hexagonal`, **`kubisch`** |
-| `f` | Form | `<Punktgruppe>:<Kennung>` aus `js/forms.js`, z. B. `m-3m:b35`; Startwert je System in `DEFAULT_ENTRY` (`js/scene.js`). `-43m:c38` = {112} und `-43m:c39` = {221} wie in v1.0.0. Ohne `muster=1` stehen je Punktgruppe nur die allgemeine Form und die Formen mit dieser Eigensymmetrie zur Wahl; eine andere Form (z. B. das Pedion `4mm:a1`) ersetzt die App dann durch dieselbe Form dort, wo sie ihre Eigensymmetrie hat, sonst durch den Startwert. Links auf solche Formen brauchen `muster=1`. |
+| `f` | Form | `<Punktgruppe>:<Kennung>` aus `js/forms.js` (Katalog in `js/formen.js`), z. B. `m-3m:b35`; Startwert je System in `DEFAULT_ENTRY` (`js/scene.js`). `-43m:c38` = {112} und `-43m:c39` = {221} wie in v1.0.0. Ohne `muster=1` stehen je Punktgruppe nur die allgemeine Form und die Formen mit dieser Eigensymmetrie zur Wahl; eine andere Form (z. B. das Pedion `4mm:a1`) ersetzt die App dann durch dieselbe Form dort, wo sie ihre Eigensymmetrie hat, sonst durch den Startwert. Links auf solche Formen brauchen `muster=1`. |
 | `bsp` | Beispielkristall (statt `f`) | `galenit`, `pyrit`, `dipyramiden`, `rutil`, `mm2`, `topas`, `gips`, `triklin`, `magnesium`, `quarz`, `rechtsquarz`, `turmalin` |
 | `ab` | Abstände der Formen eines Beispiels als Faktoren, je Form einer | 0.5–2, z. B. `1,1.2` |
 | `lage` | Projektionsrichtung | kubisch **`001`**, `111`, `110`; sonst **`c`**, `a`, `b` |
@@ -158,7 +158,10 @@ Darstellung (beide Modi):
 | `tools/moodle-export.mjs` | Export der geprüften Fragen als Moodle-XML |
 | `tools/quiz-quelle.mjs` | Fragen und Bilder für die gemeinsame Fragenliste der App-Familie (crystallography-common, `fragenliste/`) |
 | `js/pointgroups.js` | Generatoren der Punktgruppen, Gruppenerzeugung, automatische Bestimmung der Symmetrieelemente |
-| `js/forms.js` | Formenkatalog nach ITA Tab. 10.1.2.2/10.1.2.3 |
+| `js/forms.js` | Einträge des Formenkatalogs mit Kennung und Stelle (aus `formen.js`) |
+| `js/formen.js` | Datendatei: Formenkatalog nach ITA Tab. 10.1.2.2/10.1.2.3 |
+| `js/punktgruppen.js` | Datendatei: Kenndaten der Punktgruppen und Kristallsysteme |
+| `js/aufstellungen.js` | Datendatei: Punktgruppen mit zwei Aufstellungen |
 | `js/sitesym.js` | Lage eines Pols: Einrasten, Lagesymmetrie, Multiplizität, Wyckoff-Lage |
 | `js/examples.js` | Beispielkristalle (Formen, Gitter, Abstände, Quellen) |
 | `js/polyhedra.js` | Gitter aller Systeme, Flächenbahnen, Ergänzungsformen, Restsymmetrie, Halbraumschnitt, Lagen |

@@ -134,7 +134,7 @@ test('alle Formen in allen Streckrichtungen ergeben geschlossene Körper', () =>
   }
 });
 
-test('Link-Adresse: str=Richtung,Faktor hin und zurück; ungültige Werte werden verworfen', () => {
+test('Link-Adresse: str=Richtung,Faktor hin und zurück; ungültige Werte werden verworfen oder begrenzt', () => {
   const D = createState();
   const a = createState();
   applyHashTo(a, '#m=form&sys=kubisch&f=m-3m:a34&str=111,1.3', D);
@@ -151,10 +151,16 @@ test('Link-Adresse: str=Richtung,Faktor hin und zurück; ungültige Werte werden
   assert.equal(breakModeOf(one), 'stretch');
   assert.equal(currentStretch(one), null);
   assert.match(hashOf(one, D), /br=1.*str=111,1(&|$)/);
-  // Richtung eines anderen Systems, symmetrieerhaltende Richtung, Beispielkristall, ungültiger Faktor: keine Streckung
+  // Faktor ausserhalb 0,5 … 2: nächster gültiger Wert (Leitfaden 5.2)
+  for (const [f, s] of [['-1', 0.5], ['3', 2]]) {
+    const c = createState();
+    applyHashTo(c, `#m=form&sys=kubisch&f=m-3m:a34&str=111,${f}`, D);
+    assert.deepEqual([currentStretch(c)?.id, currentStretch(c)?.s], ['111', s], String(f));
+  }
+  // Richtung eines anderen Systems, symmetrieerhaltende Richtung, Beispielkristall, fehlender Faktor oder keine Zahl: keine Streckung
   for (const bad of ['#m=form&sys=kubisch&f=m-3m:a34&str=210,1.3', '#m=form&sys=tetragonal&f=4/mmm:f14&str=001,1.3',
     '#m=form&sys=kubisch&bsp=galenit&str=111,1.3', '#m=form&sys=kubisch&f=m-3m:a34&str=111,',
-    '#m=form&sys=kubisch&f=m-3m:a34&str=111,-1', '#m=form&sys=kubisch&f=m-3m:a34&str=111,3', '#m=form&sys=kubisch&f=m-3m:a34&str=111,x']) {
+    '#m=form&sys=kubisch&f=m-3m:a34&str=111,x']) {
     const c = createState();
     applyHashTo(c, bad, D);
     assert.equal(currentStretch(c), null, bad);

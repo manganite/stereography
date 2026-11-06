@@ -24,13 +24,13 @@
    Bausteine der Werkbank, auch die Anordnung der Tafeln (Tafel a: Stereogramm, b: 3D), stehen in
    lib/common/css/app.css. */
 .stereo-wrap { position: relative; }
-.stereo-tools { position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 6px; }
+.stereo-tools { position: absolute; top: 8px; left: 8px; flex-direction: column; gap: 6px; flex-wrap: nowrap; }
+/* Werkzeuge Zone und Winkel: gewählt, gesperrt und Hover aus .tools in lib/common/css/app.css (Leitfaden Abschn. 5.2,
+   #93); hier nur Lage über der Tafel, Symbol neben dem Text und Schatten */
 .stereo-tools button {
-  display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--paper); color: var(--ink);
-  border-radius: 7px; padding: 4px 9px; font-size: 0.8rem; cursor: pointer; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  display: inline-flex; align-items: center; gap: 6px; color: var(--ink);
+  border-radius: 7px; padding: 4px 9px; font-size: 0.8rem; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
 }
-.stereo-tools button:hover { border-color: var(--muted); }
-.stereo-tools button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
 .lg .sym-icon { flex: none; }
 /* Blickrichtungen: Infobox und Schalter in der 3D-Ansicht */
 .dirlist { display: grid; gap: 8px 18px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
@@ -314,7 +314,7 @@
       </div>
       <div class="stereo-wrap">
         <svg id="stereo" viewBox="0 0 520 520" role="img" aria-label="Stereogramm"></svg>
-        <div class="stereo-tools" id="stereo-tools" role="toolbar" aria-label="Werkzeuge" hidden>
+        <div class="tools stereo-tools" id="stereo-tools" role="toolbar" aria-label="Werkzeuge" hidden>
           <button class="tool-toggle" data-tool="zone" id="zone-btn" type="button" aria-pressed="false" title="Zone bestimmen: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
           <button class="tool-toggle" data-tool="angle" id="angle-btn" type="button" aria-pressed="false" title="Winkel messen: zwei Pole oder Flächen antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><path d="M-6 5 L6 5 M-6 5 L4 -6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M0 5 A 6 6 0 0 0 -2.2 0.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Winkel</button>
         </div>
@@ -331,7 +331,7 @@
       <div class="stereo-wrap">
         <div id="view3d"></div>
         <div class="dir-tools" id="v3d-dirs" role="group" aria-label="Blickrichtungen in 3D ein- und ausblenden" hidden></div>
-        <div class="stereo-tools" id="v3d-tools" role="toolbar" aria-label="Werkzeuge" hidden>
+        <div class="tools stereo-tools" id="v3d-tools" role="toolbar" aria-label="Werkzeuge" hidden>
           <button class="tool-toggle" data-tool="zone" id="zone-btn-3d" type="button" aria-pressed="false" title="Zone bestimmen: zwei Flächen oder Pole hier oder zwei Pole im Stereogramm antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Zone</button>
           <button class="tool-toggle" data-tool="angle" id="angle-btn-3d" type="button" aria-pressed="false" title="Winkel messen: zwei Pole oder Flächen antippen"><svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><path d="M-6 5 L6 5 M-6 5 L4 -6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M0 5 A 6 6 0 0 0 -2.2 0.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Winkel</button>
         </div>

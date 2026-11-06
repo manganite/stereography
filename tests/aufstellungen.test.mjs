@@ -14,9 +14,12 @@ test('Aufstellungen: zwei bekannte Punktgruppen je Familie, Tooltip und A/B für
       assert.ok(ids.has(id), `${fam}: ${id} unbekannt`);
       assert.ok(typeof AUFSTELLUNG_TIPPS[id] === 'string' && AUFSTELLUNG_TIPPS[id].endsWith('.'), `${id}: Tooltip`);
     }
-    // erste Aufstellung A, zweite B (Skript Kap. 5)
-    assert.deepEqual([AUFSTELLUNG_AB[a], AUFSTELLUNG_AB[b]], ['A', 'B'], fam);
   }
+  // Aufstellung A und B wie in der Tabelle im Skript (Kap. 5, Aufstellungen A und B)
+  /** @type {Record<string, string>} */
+  const SKRIPT = { 321: 'A', 312: 'B', '3m1': 'A', '31m': 'B', '-3m1': 'A', '-31m': 'B', '-42m': 'A', '-4m2': 'B', '-6m2': 'A', '-62m': 'B' };
+  assert.deepEqual(AUFSTELLUNG_AB, SKRIPT);
+  for (const [a, b] of Object.values(FAMILIEN)) assert.deepEqual([SKRIPT[a], SKRIPT[b]], ['A', 'B'], 'Button der Familie zeigt zuerst Aufstellung A');
   assert.deepEqual(Object.keys(AUFSTELLUNG_TIPPS).sort(), [...alle].sort());
   assert.deepEqual(Object.keys(AUFSTELLUNG_AB).sort(), [...alle].sort());
   assert.deepEqual(Object.keys(MONO_ACHSE_TIPPS), ['b', 'c']);
@@ -24,5 +27,5 @@ test('Aufstellungen: zwei bekannte Punktgruppen je Familie, Tooltip und A/B für
 
 test('Namen der Kristallsysteme: einer je System, in derselben Reihenfolge', () => {
   assert.deepEqual(Object.keys(SYSTEM_NAMEN), SYSTEMS);
-  for (const s of SYSTEMS) assert.equal(SYSTEM_NAMEN[s], s[0].toUpperCase() + s.slice(1));
+  assert.deepEqual(Object.values(SYSTEM_NAMEN), ['Triklin', 'Monoklin', 'Orthorhombisch', 'Tetragonal', 'Trigonal', 'Hexagonal', 'Kubisch']);
 });

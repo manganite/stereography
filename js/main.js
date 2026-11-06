@@ -141,7 +141,7 @@ function buildGroupPicker() {
       }
     }
     if (sys === 'monoklin') {
-      sets += `<span class="mono-axis setrow" data-setrow="mono" hidden><span>Aufstellung: eindeutige Achse</span><button class="pgb" data-axis="b" type="button" aria-label="Achse b" data-tip="${MONO_ACHSE_TIPPS.b}">b</button><button class="pgb" data-axis="c" type="button" aria-label="Achse c" data-tip="${MONO_ACHSE_TIPPS.c}">c</button></span>`;
+      sets += `<span class="mono-axis setrow" data-setrow="mono" hidden><span>Aufstellung: eindeutige Achse</span><button class="pgb" data-axis="b" type="button" aria-label="Achse b" data-tip="${attr(MONO_ACHSE_TIPPS.b)}">b</button><button class="pgb" data-axis="c" type="button" aria-label="Achse c" data-tip="${attr(MONO_ACHSE_TIPPS.c)}">c</button></span>`;
     }
     row.innerHTML = `<span class="sys">${name}</span><div class="btns">${btns}${sets}</div>`;
     box.appendChild(row);

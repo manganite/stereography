@@ -1,3 +1,5 @@
+
+import { esc } from '../lib/common/js/format.js';
 /**
  * Verweise aus der App ins Skript: Anker eines Abschnitts (oder Kastens) in skript.html und das
  * Kapitel, in dem er steht. tests/skript.test.mjs prüft, dass jeder Anker existiert und im
@@ -21,8 +23,7 @@ export const SKRIPT_ANCHORS = {
   'verzerrung-prinzip': 11, // Symmetriebruch, Restgruppe
 };
 
-/** @param {string} s */
-const attr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+const attr = esc; // Leitfaden Abschn. 9
 
 /** Begriff als Link ins Skript (z. B. die Bezeichnung einer Zeile der Infobox). @param {string} label @param {string} anchor */
 export function skriptTerm(label, anchor) {

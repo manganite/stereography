@@ -9,7 +9,7 @@ import {
 } from './polyhedra.js';
 import { CATALOG, formName, formEig, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
-import { hmHTML, hmText, hklHTML, indices } from '../lib/common/js/format.js';
+import { hmHTML, hmText, hklHTML, indices, esc } from '../lib/common/js/format.js';
 import { normalize } from './linalg.js';
 import { View3D, OBLIQUE } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
@@ -154,9 +154,9 @@ const SETTING_TIPS = {
   '-6m2': 'Spiegelebenen senkrecht zu a₁, a₂, a₃.',
   '-62m': '2-zählige Achsen entlang a₁, a₂, a₃.',
 };
-/** Text für ein HTML-Attribut (Tooltip-Inhalt mit Markup). */
-/** @param {string} s */
-const attr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+// Text für ein HTML-Attribut (Tooltip-Inhalt mit Markup): esc aus der gemeinsamen Grundlage (Leitfaden Abschn. 9);
+// getAttribute liefert das Markup unverändert zurück
+const attr = esc;
 /** Tooltip eines Punktgruppen-Buttons: Symbol, Schoenflies, System, Ordnung (als Attributwert). @param {string} id @param {string} [extra] */
 function groupTip(id, extra) {
   const g = groupOf(id);

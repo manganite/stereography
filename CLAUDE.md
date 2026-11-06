@@ -102,7 +102,7 @@ stabil halten).
   https://claude.ai/artifact/3zax7EQn7ngSiQtqABDevW; Ablauf in der `CLAUDE.md` von common, Abschnitt
   „Vorschau einer App“.
 - **Daten getrennt vom Code** (6.11.2026, #75, Leitfaden Abschn. 9): Datendateien sind `punktgruppen.js`
-  (Kenndaten der Punktgruppen, Systeme), `formen.js` (Formtypen, Flächenzahlen, Formen je Punktgruppe),
+  (Kenndaten der Punktgruppen, Systeme), `formen.js` (Formtypen, Flächenzahlen, Prismen, Schreibweise der Eigensymmetrie, Formen je Punktgruppe),
   `aufstellungen.js`, `examples.js`, `quiz-bank.js`, `hilfetexte.js`. Die Erzeugenden der Punktgruppen
   (`ERZEUGENDE` in `pointgroups.js`) und der Aufbau des Katalogs mit Kennung und Stelle (`forms.js`) sind
   Code; Kennungen und Reihenfolge des Katalogs sind Schnittstelle (Links `f=…`). Je Fall entschieden, bleibt
@@ -110,8 +110,11 @@ stabil halten).
   und Voreinstellungen der App, an die Gitterparameter gebunden), `SKRIPT_ANCHORS` in `skriptlinks.js`
   (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js`,
   `ALT_SETTINGS` in `sitesym.js` (bewusst zweite, unabhängige Angabe nach ITA, gegen die die Tests den
-  Katalog prüfen). Noch offen in #75: `VIEW_FAMILIES` (`scene.js`), `PRISM_TYPES`, `EIG_ALIAS`/`EIG_SAME`,
-  `DEFAULT_ENTRY` und die Tabellen in `quiz-gen.js`. Weitere Texte
+  Katalog prüfen), `DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen
+  in `quiz-gen.js` (Wortlisten und Auswahl des Generators, kein Fachinhalt), `VIEW_FAMILIES` in `scene.js`
+  (Ansichten der 3D-Konstruktion; doppelt mit `symmetryDirections()`, Vereinheitlichung #111). `PRISMEN` und
+  die Schreibweise der Eigensymmetrie (`EIG_SCHREIBWEISE`, vorher zweimal als `EIG_ALIAS` und `EIG_SAME`)
+  stehen in `formen.js`. Weitere Texte
   in `main.js` (Kenndaten, Hinweise) gehören zu #104.
 
 ### Familie

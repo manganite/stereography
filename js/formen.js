@@ -70,6 +70,17 @@ export const FACE_COUNT = {
   33: 4, 34: 6, 35: 8, 36: 12, 37: 12, 38: 12, 39: 12, 40: 12, 41: 24, 42: 24, 43: 24, 44: 24, 45: 24, 46: 24, 47: 48,
 };
 
+/** Formtypen der Prismen und des Pinakoids (Flächen parallel zu einer gemeinsamen Richtung; Pedion und Sphenoid/Doma erfüllen das auch, gehören aber nicht dazu, auxFormName erkennt sie über die Flächenzahl). */
+export const PRISMEN = [2, 6, 10, 15, 18, 22, 25, 30];
+
+/**
+ * Eigensymmetrie in der Schreibweise von FORM_TYPES: das Symbol der jeweils anderen Aufstellung derselben
+ * Punktgruppe (6̄m2 → 6̄2m, 4̄m2 → 4̄2m). Für die Suche in FORM_TYPES (auxFormName) und den Vergleich einer
+ * Eigensymmetrie mit dem Symbol einer Punktgruppe.
+ * @type {Record<string, string>}
+ */
+export const EIG_SCHREIBWEISE = { '-6m2': '-62m', '-4m2': '-42m' };
+
 /** Formen je Punktgruppe, in der Reihenfolge des Katalogs: monoklin Achse b; beide Aufstellungen bei 32, 3m, 3̄m, 4̄2m und 6̄m2 (A: 321, 3m1, 3̄m1, 4̄2m, 6̄m2; B: 312, 31m, 3̄1m, 4̄m2, 6̄2m). @type {Formengruppe[]} */
 export const FORMEN = [
   // triklin

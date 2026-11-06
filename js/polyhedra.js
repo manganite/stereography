@@ -12,7 +12,7 @@ import {
 } from './linalg.js';
 import { buildPointGroup, analyzeGroup, POINT_GROUPS } from './pointgroups.js';
 import { entryById } from './forms.js';
-import { FORM_TYPES, FACE_COUNT } from './formen.js';
+import { FORM_TYPES, FACE_COUNT, PRISMEN, EIG_SCHREIBWEISE } from './formen.js';
 
 /** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
 /** @import { Analyse } from './pointgroups.js' */
@@ -586,9 +586,7 @@ export function buildCrystal(params) {
   };
 }
 
-const PRISM_TYPES = new Set([2, 6, 10, 15, 18, 22, 25, 30]);
-/** @type {Record<string, string>} */
-const EIG_ALIAS = { '-6m2': '-62m', '-4m2': '-42m' };
+const PRISM_TYPES = new Set(PRISMEN);
 
 /**
  * Geometrische Benennung einer Form (auch Grenzformen) nach ITA Tab. 10.1.2.3:
@@ -623,7 +621,7 @@ export function auxFormName(groupId, hkls) {
   const keys = new Set(hkls.map(hklKey));
   const Hs = latticeOps(HOLOHEDRY[sys]).filter((W) => hkls.every((h) => keys.has(hklKey(transformHKL(W, h)))));
   const eigId = identifyGroup(Hs.map((W) => mul(mul(A0, W), inverse(A0)))).hm;
-  const eig = EIG_ALIAS[eigId] || eigId;
+  const eig = EIG_SCHREIBWEISE[eigId] || eigId;
   const cands = Object.entries(FORM_TYPES).filter(([t, f]) => f.eig === eig && FACE_COUNT[Number(t)] === n && PRISM_TYPES.has(Number(t)) === open);
   if (cands.length === 1) return { type: Number(cands[0][0]), name: cands[0][1].name };
   return null;

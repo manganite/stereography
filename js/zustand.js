@@ -51,7 +51,7 @@ function gitterOderNull(lat, sys, frei) {
 
 /**
  * Die eine Prüfung für Link und Speicher: alle Felder mit ihren Abhängigkeiten; Ungültiges wird zum Startwert.
- * Zahlen werden wie in der Link-Adresse in ihre Bereiche gesetzt (CLAUDE.md, Entscheidungen). Neue Felder des
+ * Zahlen werden wie in der Link-Adresse auf den nächsten gültigen Wert gesetzt (Leitfaden 5.2). Neue Felder des
  * Zustands gehören hierher und in tests/rundlauf.test.mjs. Ändert state und gibt es zurück.
  * @param {Zustand} state
  */

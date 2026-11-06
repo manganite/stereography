@@ -250,17 +250,6 @@ export const freeLat = (state) => {
   if (!state.poly.freeLats[sys]) state.poly.freeLats[sys] = constrainLattice(currentLat(state), sys);
   return state.poly.freeLats[sys];
 };
-/**
- * Gespeicherte Gitter, deren Winkel kein Gitter ergeben (Stände vor #95), verwerfen: Das System beginnt dann mit
- * seiner Vorgabe (currentLat, freeLat). Geprüft wird das verwendete Gitter wie im Link.
- * @param {Zustand} state
- */
-export function gitterBereinigen(state) {
-  for (const [sys, lat] of Object.entries(state.poly.lats || {})) {
-    if (!LATTICE_DEFAULTS[sys] || !lat || !gitterGueltig(constrainLattice(lat, sys))) delete state.poly.lats[sys];
-  }
-  for (const [sys, lat] of Object.entries(state.poly.freeLats || {})) if (!LATTICE_DEFAULTS[sys] || !lat || !gitterGueltig(lat)) delete state.poly.freeLats[sys];
-}
 /** Wirksame Gitterparameter (was die Gitterregler zeigen). @param {Zustand} state @returns {Gitterparameter} */
 export function effectiveLat(state) {
   const sys = state.poly.system;

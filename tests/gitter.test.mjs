@@ -4,7 +4,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { LATTICE_DEFAULTS, GITTER_MIN, STRETCH_DIRS, gitterGueltig, naechsterGueltiger, latticeFromParams, paramsOfLattice } from '../js/polyhedra.js';
 import { EXAMPLES } from '../js/examples.js';
-import { createState, applyHashTo, effectiveLat, gitterBereinigen } from '../js/scene.js';
+import { createState, applyHashTo, effectiveLat } from '../js/scene.js';
+import { zustandPruefen } from '../js/zustand.js';
 
 /** @import { Gitterparameter } from '../js/polyhedra.js' */
 
@@ -97,7 +98,7 @@ test('Speicher: Gitter mit ungültigen Winkeln werden verworfen, gültige bleibe
   const st = createState();
   st.poly.lats = { triklin: { ba: 1.2, ca: 0.9, al: 60, be: 60, ga: 150 }, monoklin: { ba: 1.3, ca: 0.8, al: 60, be: 100, ga: 150 } };
   st.poly.freeLats = { kubisch: { ba: 1, ca: 1, al: 60, be: 60, ga: 150 }, tetragonal: { ba: 1, ca: 1.2, al: 80, be: 90, ga: 95 } };
-  gitterBereinigen(st);
+  zustandPruefen(st);
   assert.deepEqual(Object.keys(st.poly.lats), ['monoklin']); // α, γ gelten monoklin nicht
   assert.deepEqual(Object.keys(st.poly.freeLats), ['tetragonal']);
 });

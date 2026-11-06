@@ -126,6 +126,8 @@ export const POINT_GROUPS = [
 ];
 
 export const SYSTEMS = ['triklin', 'monoklin', 'orthorhombisch', 'tetragonal', 'trigonal', 'hexagonal', 'kubisch'];
+/** Namen der Kristallsysteme für die Anzeige (Auswahl, Kenndaten), in der Reihenfolge von SYSTEMS. @type {Record<string, string>} */
+export const SYSTEM_NAMEN = { triklin: 'Triklin', monoklin: 'Monoklin', orthorhombisch: 'Orthorhombisch', tetragonal: 'Tetragonal', trigonal: 'Trigonal', hexagonal: 'Hexagonal', kubisch: 'Kubisch' };
 
 /** Gruppe zur id. Alle Aufrufer übergeben ids aus der Liste (eine unbekannte ergäbe undefined). @param {string} id */
 export const groupById = (id) => /** @type {Punktgruppe} */ (POINT_GROUPS.find((g) => g.id === id));

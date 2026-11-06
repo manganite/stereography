@@ -1,7 +1,7 @@
 // Steuerung der App: Zustand, Bedienelemente, Verknüpfung von Stereogramm und 3D-Ansicht.
 
 import {
-  POINT_GROUPS, SYSTEMS, buildPointGroup,
+  POINT_GROUPS, SYSTEMS, SYSTEM_NAMEN, buildPointGroup,
 } from './pointgroups.js';
 import {
   habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, isHexSystem, auxFormName,
@@ -18,6 +18,7 @@ import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
 import { TIPS, SECTIONS, LABELS } from './hilfetexte.js';
 import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, abschnitt, grafik, element, elemente, modusTabs } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
+import { FAMILIEN, AUFSTELLUNG_TIPPS, MONO_ACHSE_TIPPS, AUFSTELLUNG_AB } from './aufstellungen.js';
 import { ausSpeicher, speicherStand, zustandPruefen } from './zustand.js';
 import * as S from './scene.js';
 import { snapPole } from './sitesym.js';
@@ -99,28 +100,8 @@ window.addEventListener('hashchange', () => { if (location.hash !== lastHash) lo
 // ------------------------------------------------------------------ Farben aus CSS-Tokens
 
 // ------------------------------------------------------------------ Bedienelemente aufbauen
-/** Punktgruppen mit zwei Aufstellungen in ITA: ein Button je Punktgruppe, die Aufstellung darunter. */
-/** @type {Record<string, string[]>} */
-const FAMILIES = {
-  '32': ['321', '312'], '3m': ['3m1', '31m'], '-3m': ['-3m1', '-31m'],
-  '-42m': ['-42m', '-4m2'], '-6m2': ['-6m2', '-62m'],
-};
 /** @param {string} id */
-const famOf = (id) => Object.keys(FAMILIES).find((k) => FAMILIES[k].includes(id)) || null;
-/** Unterschied der Aufstellungen (Tooltip). */
-/** @type {Record<string, string>} */
-const SETTING_TIPS = {
-  '321': '2-zählige Achsen entlang a₁, a₂, a₃.',
-  '312': '2-zählige Achsen zwischen den a-Achsen (um 30° gedreht).',
-  '3m1': 'Spiegelebenen senkrecht zu a₁, a₂, a₃.',
-  '31m': 'Spiegelebenen enthalten die a-Achsen (um 30° gedreht).',
-  '-3m1': 'Spiegelebenen senkrecht zu a₁, a₂, a₃, 2-zählige Achsen entlang der a-Achsen.',
-  '-31m': 'Spiegelebenen enthalten die a-Achsen, 2-zählige Achsen dazwischen.',
-  '-42m': '2-zählige Achsen entlang a und b, Spiegelebenen diagonal.',
-  '-4m2': 'Spiegelebenen senkrecht zu a und b, 2-zählige Achsen diagonal.',
-  '-6m2': 'Spiegelebenen senkrecht zu a₁, a₂, a₃.',
-  '-62m': '2-zählige Achsen entlang a₁, a₂, a₃.',
-};
+const famOf = (id) => Object.keys(FAMILIEN).find((k) => FAMILIEN[k].includes(id)) || null;
 // Text für ein HTML-Attribut (Tooltip-Inhalt mit Markup): esc aus der gemeinsamen Grundlage (Leitfaden Abschn. 9);
 // getAttribute liefert das Markup unverändert zurück
 const attr = esc;
@@ -137,7 +118,7 @@ function buildGroupPicker() {
   for (const sys of SYSTEMS) {
     const row = document.createElement('div');
     row.className = 'sysrow';
-    const name = (sys[0].toUpperCase() + sys.slice(1)).replace('Orthorhombisch', 'Ortho­rhombisch');
+    const name = SYSTEM_NAMEN[sys].replace('Orthorhombisch', 'Ortho­rhombisch'); // weiches Trennzeichen
     let btns = '', sets = '';
     const seen = new Set();
     for (const g of POINT_GROUPS.filter((x) => x.system === sys)) {
@@ -153,14 +134,14 @@ function buildGroupPicker() {
       } else if (!seen.has(fam)) {
         seen.add(fam);
         btns += `<button class="pgb" data-fam="${fam}" type="button" data-tip="${groupTip(g.id, 'Zwei Aufstellungen, Auswahl darunter.')}">${hmHTML(fam)}</button>`;
-        sets += `<span class="mono-axis setrow" data-setrow="${fam}" hidden><span>Aufstellung</span>${FAMILIES[fam].map((id) => {
+        sets += `<span class="mono-axis setrow" data-setrow="${fam}" hidden><span>Aufstellung</span>${FAMILIEN[fam].map((id) => {
           const m = groupOf(id);
-          return `<button class="pgb" data-id="${id}" type="button" data-tip="${attr(`Aufstellung ${hmHTML(m.setting || m.hm)}: ${SETTING_TIPS[id]}`)}">${hmHTML(m.setting || m.hm)}</button>`;
+          return `<button class="pgb" data-id="${id}" type="button" data-tip="${attr(`Aufstellung ${hmHTML(m.setting || m.hm)}: ${AUFSTELLUNG_TIPPS[id]}`)}">${hmHTML(m.setting || m.hm)}</button>`;
         }).join('')}</span>`;
       }
     }
     if (sys === 'monoklin') {
-      sets += `<span class="mono-axis setrow" data-setrow="mono" hidden><span>Aufstellung: eindeutige Achse</span><button class="pgb" data-axis="b" type="button" aria-label="Achse b" data-tip="Eindeutige Achse b (Standard der International Tables): 2-zählige Achse bzw. Normale der Spiegelebene entlang b.">b</button><button class="pgb" data-axis="c" type="button" aria-label="Achse c" data-tip="Eindeutige Achse c: 2-zählige Achse bzw. Normale der Spiegelebene entlang c.">c</button></span>`;
+      sets += `<span class="mono-axis setrow" data-setrow="mono" hidden><span>Aufstellung: eindeutige Achse</span><button class="pgb" data-axis="b" type="button" aria-label="Achse b" data-tip="${attr(MONO_ACHSE_TIPPS.b)}">b</button><button class="pgb" data-axis="c" type="button" aria-label="Achse c" data-tip="${attr(MONO_ACHSE_TIPPS.c)}">c</button></span>`;
     }
     row.innerHTML = `<span class="sys">${name}</span><div class="btns">${btns}${sets}</div>`;
     box.appendChild(row);
@@ -173,7 +154,7 @@ function buildGroupPicker() {
     state.pgSel = [];
     if (b.dataset.fam) {
       const pref = state.pg.famPref[b.dataset.fam];
-      state.pg.id = FAMILIES[b.dataset.fam].includes(pref) ? pref : FAMILIES[b.dataset.fam][0];
+      state.pg.id = FAMILIEN[b.dataset.fam].includes(pref) ? pref : FAMILIEN[b.dataset.fam][0];
     } else if (b.dataset.id) state.pg.id = b.dataset.id;
     else if (b.dataset.mono) state.pg.id = monoId(b.dataset.mono, state.pg.monoAxis);
     else if (b.dataset.axis) {
@@ -206,10 +187,8 @@ function syncPicker() {
   }
 }
 
-/** @type {Record<string, string>} */
-const SYSTEM_NAMES = { triklin: 'Triklin', monoklin: 'Monoklin', orthorhombisch: 'Orthorhombisch', tetragonal: 'Tetragonal', trigonal: 'Trigonal', hexagonal: 'Hexagonal', kubisch: 'Kubisch' };
 /** @param {string} sys */
-const sysOK = (sys) => Object.prototype.hasOwnProperty.call(SYSTEM_NAMES, sys);
+const sysOK = (sys) => Object.prototype.hasOwnProperty.call(SYSTEM_NAMEN, sys);
 if (!sysOK(state.poly.system)) state.poly.system = 'kubisch';
 /**
  * Ohne „Flächensymmetrie zeigen“ enthält die Auswahl je Punktgruppe nur die allgemeine Form und die
@@ -245,16 +224,13 @@ function setExample(id) {
 const currentLat = () => S.currentLat(state);
 
 function buildSystemSelect() {
-  auswahl('sys-select').innerHTML = Object.entries(SYSTEM_NAMES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+  auswahl('sys-select').innerHTML = Object.entries(SYSTEM_NAMEN).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
   auswahl('sys-select').value = state.poly.system;
 }
 
-/** Punktgruppen mit zwei Aufstellungen im Formenkatalog (Skript Kap. 5, Tabelle der Aufstellungen A und B). */
-/** @type {Record<string, string>} */
-const ZWEI_AUFSTELLUNGEN = { 321: 'A', 312: 'B', '3m1': 'A', '31m': 'B', '-3m1': 'A', '-31m': 'B', '-42m': 'A', '-4m2': 'B', '-6m2': 'A', '-62m': 'B' };
 /** Symbol der Punktgruppe einer Form; bei zwei Aufstellungen das vollständige Symbol (321, 312, 3m1, 31m, …). */
 /** @param {Punktgruppe} g */
-const formGroupSym = (g) => (ZWEI_AUFSTELLUNGEN[g.id] && g.setting ? g.setting : g.hm);
+const formGroupSym = (g) => (AUFSTELLUNG_AB[g.id] && g.setting ? g.setting : g.hm);
 
 function buildFormSelect() {
   const sys = state.poly.system;
@@ -263,7 +239,7 @@ function buildFormSelect() {
   auswahl('form-select').innerHTML = groups.map((g) => {
     const opts = CATALOG.filter((e) => e.pg === g.id && formListed(e))
       .map((e) => `<option value="${e.id}">${formName(e)} ${formLabelText(e.hkl, hex4)}</option>`).join('');
-    const aufst = ZWEI_AUFSTELLUNGEN[g.id] ? `, Aufstellung ${ZWEI_AUFSTELLUNGEN[g.id]}` : '';
+    const aufst = AUFSTELLUNG_AB[g.id] ? `, Aufstellung ${AUFSTELLUNG_AB[g.id]}` : '';
     return `<optgroup label="Punktgruppe ${hmText(formGroupSym(g))} (${g.sf})${aufst}">${opts}</optgroup>`;
   }).join('');
   const ex = currentExample();
@@ -276,7 +252,7 @@ function buildExampleSelect() {
   const order = [...new Set(EXAMPLES.map((x) => x.sys))];
   const bySys = order.map((sys) => /** @type {[string, Beispiel[]]} */ ([sys, EXAMPLES.filter((x) => x.sys === sys)]));
   auswahl('ex-select').innerHTML = '<option value="">– keiner (einzelne Form) –</option>' + bySys.map(([sys, l]) =>
-    `<optgroup label="${SYSTEM_NAMES[sys]}">${l.map((x) => `<option value="${x.id}">${x.name}${x.formula ? ' (' + x.formula + ')' : ''}, ${hmText(groupOf(x.pg).hm)}</option>`).join('')}</optgroup>`).join('');
+    `<optgroup label="${SYSTEM_NAMEN[sys]}">${l.map((x) => `<option value="${x.id}">${x.name}${x.formula ? ' (' + x.formula + ')' : ''}, ${hmText(groupOf(x.pg).hm)}</option>`).join('')}</optgroup>`).join('');
   const ex = currentExample();
   auswahl('ex-select').value = ex ? ex.id : '';
 }
@@ -1038,7 +1014,7 @@ function updateInfoPoly(C, col) {
   /** @param {number} x */
   const r2 = (x) => x.toFixed(2).replace('.', ',');
   const habitHTML = hab ? `${HABIT_NAMES[hab.type]} <span class="muted">(L₁ : L₂ : L₃ = 1 : ${r2(hab.L[1] / hab.L[0])} : ${r2(hab.L[2] / hab.L[0])})</span>` : '–';
-  const sysName = SYSTEM_NAMES[C.sys];
+  const sysName = SYSTEM_NAMEN[C.sys];
   const habitNote = '<p class="note">Tracht: die Menge der am Kristall auftretenden Formen. Habitus: das relative Grössenverhältnis der Flächen, mit den drei Grundtypen isometrisch, planar oder taflig, prismatisch oder nadelig (nach Borchardt-Ott). Gleiche Tracht kann verschiedenen Habitus haben (z. B. über c/a oder die Abstände der Formen), verschiedene Tracht gleichen Habitus (Würfel, Oktaeder, Rhombendodekaeder: isometrisch). Die Einteilung hier: L₁ ≥ L₂ ≥ L₃ sind die Hauptausdehnungen des dargestellten Kristalls; isometrisch, wenn L₃/L₁ mindestens 2/3 ist (dann auch L₂/L₁ und L₃/L₂), sonst prismatisch (eine Richtung lang, L₂/L₁ &lt; 2/3) oder planar (eine Richtung kurz, L₃/L₂ &lt; 2/3); im Zweifel entscheidet das kleinere der beiden Verhältnisse.</p>';
   if (C.example) {
     const ex = C.example;
@@ -1093,7 +1069,7 @@ function updateInfoPoly(C, col) {
   setInfo(`
     <div class="info-head">
       <div class="hm-big form-sym">${brace(e.hkl)}</div>
-      <div class="hm-meta"><span class="form-name">${formName(e)}</span><span>Punktgruppe <b>${hmHTML(formGroupSym(g))}</b> (${g.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}${ZWEI_AUFSTELLUNGEN[g.id] ? ` · ${skriptTerm('Aufstellung', 'aufstellung-pg')} ${ZWEI_AUFSTELLUNGEN[g.id]}` : ''}</span></div>
+      <div class="hm-meta"><span class="form-name">${formName(e)}</span><span>Punktgruppe <b>${hmHTML(formGroupSym(g))}</b> (${g.sf.replace(/^([A-Z])(.*)$/, '$1<sub>$2</sub>')}), ${sysName.toLowerCase()}${AUFSTELLUNG_AB[g.id] ? ` · ${skriptTerm('Aufstellung', 'aufstellung-pg')} ${AUFSTELLUNG_AB[g.id]}` : ''}</span></div>
     </div>
     ${broken}
     ${zoneBox}

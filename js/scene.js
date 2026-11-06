@@ -8,6 +8,7 @@ import {
   STRETCH_DIRS, stretchDir, constrainLattice, latticeFromParams, stretchLattice, paramsOfLattice, gitterGueltig,
 } from './polyhedra.js';
 import { CATALOG, formEig, entryById } from './forms.js';
+import { EIG_SCHREIBWEISE } from './formen.js';
 import { hklParts } from '../lib/common/js/format.js';
 import { normalize, mulVec } from './linalg.js';
 import { exampleById } from './examples.js';
@@ -181,8 +182,6 @@ export const DEFAULT_ENTRY = {
   triklin: '-1:a2', monoklin: '2/mb:c6', orthorhombisch: 'mmm:g7', tetragonal: '4/mmm:f14',
   trigonal: '-3m1:c21', hexagonal: '6/mmm:e31', kubisch: 'm-3m:b35',
 };
-/** @type {Record<string, string>} */
-export const EIG_SAME = { '-62m': '-6m2', '-4m2': '-42m' };
 /** @type {Map<string, number>} */
 export const groupOrder = new Map();
 /** @param {Zustand} state @param {Formeintrag} e */
@@ -191,7 +190,7 @@ export function formListed(state, e) {
   const g = groupOf(e.pg);
   if (!groupOrder.has(g.id)) groupOrder.set(g.id, buildPointGroup(g.id).order);
   /** @param {string} s */
-  const norm = (s) => EIG_SAME[s] || s;
+  const norm = (s) => EIG_SCHREIBWEISE[s] || s;
   return e.mult === groupOrder.get(g.id) || norm(formEig(e)) === norm(g.hm);
 }
 /** @param {Zustand} state @returns {string} */

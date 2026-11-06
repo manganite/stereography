@@ -110,8 +110,11 @@ stabil halten).
   und Voreinstellungen der App, an die Gitterparameter gebunden), `SKRIPT_ANCHORS` in `skriptlinks.js`
   (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js`,
   `ALT_SETTINGS` in `sitesym.js` (bewusst zweite, unabhängige Angabe nach ITA, gegen die die Tests den
-  Katalog prüfen). Noch offen in #75: `VIEW_FAMILIES` (`scene.js`), `PRISM_TYPES`, `EIG_ALIAS`/`EIG_SAME`,
-  `DEFAULT_ENTRY` und die Tabellen in `quiz-gen.js`. Weitere Texte
+  Katalog prüfen), `DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen
+  in `quiz-gen.js` (Wortlisten und Auswahl des Generators, kein Fachinhalt), `VIEW_FAMILIES` in `scene.js`
+  (Ansichten der 3D-Konstruktion; doppelt mit `symmetryDirections()`, Vereinheitlichung #111). `PRISMEN` und
+  die Schreibweise der Eigensymmetrie (`EIG_SCHREIBWEISE`, vorher zweimal als `EIG_ALIAS` und `EIG_SAME`)
+  stehen in `formen.js`. Weitere Texte
   in `main.js` (Kenndaten, Hinweise) gehören zu #104.
 
 ### Familie

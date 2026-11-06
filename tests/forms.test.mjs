@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { CATALOG, formEig } from '../js/forms.js';
-import { FORM_TYPES } from '../js/formen.js';
+import { FORM_TYPES, PRISMEN, EIG_SCHREIBWEISE } from '../js/formen.js';
 import { POINT_GROUPS, buildPointGroup } from '../js/pointgroups.js';
 import { buildCrystal, latticeOps, hklOrbit, LATTICE_DEFAULTS, SYSTEM_OF, habitOf } from '../js/polyhedra.js';
 
@@ -62,10 +62,11 @@ test('jede Form ergibt einen geschlossenen Körper (Euler = 2), keine Hauptfläc
 });
 
 test('reduzierte Formliste ohne Flächensymmetrie: 78 Formen (67 in Aufstellung A)', () => {
+  // unabhängig von js/formen.js: dieselbe Punktgruppe in beiden Aufstellungen
   /** @type {Record<string, string>} */
-  const EIG_SAME = { '-62m': '-6m2', '-4m2': '-42m' };
+  const gleich = { '-62m': '-6m2', '-4m2': '-42m' };
   /** @param {string} s */
-  const norm = (s) => EIG_SAME[s] || s;
+  const norm = (s) => gleich[s] || s;
   const listed = CATALOG.filter((e) => {
     const g = groupOf(e.pg);
     return e.mult === buildPointGroup(g.id).order || norm(formEig(e)) === norm(g.hm);
@@ -146,4 +147,14 @@ test('Habitus: isometrisch nur bei L₃/L₁ ≥ 2/3; hexagonales Prisma je nach
   const h = habit('#m=form&sys=orthorhombisch&f=mmm:a2');
   assert.ok(h.e >= 2 / 3 && h.p >= 2 / 3 && h.L[2] / h.L[0] < 2 / 3);
   assert.notEqual(h.type, 'isometrisch');
+});
+
+test('Prismen: genau die Formtypen mit „Prisma“ im Namen und das Pinakoid', () => {
+  const erwartet = Object.entries(FORM_TYPES).filter(([, f]) => /Prisma|Pinakoid/.test(f.name)).map(([t]) => Number(t));
+  assert.deepEqual([...PRISMEN].sort((a, b) => a - b), erwartet.sort((a, b) => a - b));
+});
+
+test('Schreibweise der Eigensymmetrie: Ziel kommt in FORM_TYPES vor, Quelle nicht', () => {
+  const eig = new Set(Object.values(FORM_TYPES).map((f) => f.eig));
+  for (const [von, zu] of Object.entries(EIG_SCHREIBWEISE)) { assert.ok(eig.has(zu), zu); assert.ok(!eig.has(von), von); }
 });

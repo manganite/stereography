@@ -9,7 +9,7 @@ import {
   STRETCH_DIRS, stretchDir, naechsterGueltiger,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig } from './forms.js';
-import { FORM_TYPES } from './formen.js';
+import { FORM_TYPES, EIG_SCHREIBWEISE } from './formen.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
 import { hmHTML, hmText, hklHTML, indices, esc } from '../lib/common/js/format.js';
 import { normalize } from './linalg.js';
@@ -25,7 +25,7 @@ import { ausSpeicher, speicherStand, zustandPruefen } from './zustand.js';
 import * as S from './scene.js';
 import { snapPole } from './sitesym.js';
 import {
-  createState, hashOf, applyHashTo, rhoText, palette, formColor, groupOf, groupOrder, EIG_SAME, crystalAxesFor, ORBIT_COLORS, pgScene, polyCrystal, polyScene, normalizeZones,
+  createState, hashOf, applyHashTo, rhoText, palette, formColor, groupOf, groupOrder, crystalAxesFor, ORBIT_COLORS, pgScene, polyCrystal, polyScene, normalizeZones,
   pgPolesOn, polyLabelsOn, pgViewDirections, polyViewDirections, lightPalette,
 } from './scene.js';
 
@@ -1057,7 +1057,7 @@ function updateInfoPoly(C, col) {
   // allgemeine Form mit höherer Eigensymmetrie: auf die geometrisch gleiche Form hinweisen
   let twinNote = '';
   /** @param {string} s */
-  const normE = (s) => EIG_SAME[s] || s;
+  const normE = (s) => EIG_SCHREIBWEISE[s] || s;
   if (!groupOrder.has(g.id)) groupOrder.set(g.id, buildPointGroup(g.id).order);
   if (e.mult === groupOrder.get(g.id) && normE(formEig(e)) !== normE(g.hm)) {
     // nur Aufstellung A, damit die Flächensymmetrie aus einer einzigen Punktgruppe stammt

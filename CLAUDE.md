@@ -102,7 +102,7 @@ stabil halten).
   https://claude.ai/artifact/3zax7EQn7ngSiQtqABDevW; Ablauf in der `CLAUDE.md` von common, Abschnitt
   „Vorschau einer App“.
 - **Daten getrennt vom Code** (6.11.2026, #75, Leitfaden Abschn. 9): Datendateien sind `punktgruppen.js`
-  (Kenndaten der Punktgruppen, Systeme), `formen.js` (Formtypen, Flächenzahlen, Formen je Punktgruppe),
+  (Kenndaten der Punktgruppen, Systeme), `formen.js` (Formtypen, Flächenzahlen, Prismen, Schreibweise der Eigensymmetrie, Formen je Punktgruppe),
   `aufstellungen.js`, `examples.js`, `quiz-bank.js`, `hilfetexte.js`. Die Erzeugenden der Punktgruppen
   (`ERZEUGENDE` in `pointgroups.js`) und der Aufbau des Katalogs mit Kennung und Stelle (`forms.js`) sind
   Code; Kennungen und Reihenfolge des Katalogs sind Schnittstelle (Links `f=…`). Je Fall entschieden, bleibt

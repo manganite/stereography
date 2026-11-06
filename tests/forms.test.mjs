@@ -156,5 +156,10 @@ test('Prismen: genau die Formtypen mit „Prisma“ im Namen und das Pinakoid', 
 
 test('Schreibweise der Eigensymmetrie: Ziel kommt in FORM_TYPES vor, Quelle nicht', () => {
   const eig = new Set(Object.values(FORM_TYPES).map((f) => f.eig));
-  for (const [von, zu] of Object.entries(EIG_SCHREIBWEISE)) { assert.ok(eig.has(zu), zu); assert.ok(!eig.has(von), von); }
+  const hm = new Set(POINT_GROUPS.map((g) => g.hm));
+  for (const [von, zu] of Object.entries(EIG_SCHREIBWEISE)) {
+    assert.ok(eig.has(zu), zu); assert.ok(!eig.has(von), von);
+    assert.ok(hm.has(von) && hm.has(zu), `${von}, ${zu}: Symbole einer Punktgruppe`);
+    assert.ok(!(zu in EIG_SCHREIBWEISE), zu);
+  }
 });

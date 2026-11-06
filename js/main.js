@@ -9,14 +9,14 @@ import {
 } from './polyhedra.js';
 import { CATALOG, formName, formEig, FORM_TYPES } from './forms.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
-import { hmHTML, hmText, hklHTML, indices } from '../lib/common/js/format.js';
+import { hmHTML, hmText, hklHTML, indices, esc } from '../lib/common/js/format.js';
 import { normalize } from './linalg.js';
 import { View3D, OBLIQUE } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
 import { TIPS, SECTIONS, LABELS } from './hilfetexte.js';
-import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, abschnitt, grafik, elemente } from '../lib/common/js/seite.js';
+import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, abschnitt, grafik, element, elemente, modusTabs } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
 import * as S from './scene.js';
 import { snapPole } from './sitesym.js';
@@ -154,9 +154,9 @@ const SETTING_TIPS = {
   '-6m2': 'Spiegelebenen senkrecht zu a₁, a₂, a₃.',
   '-62m': '2-zählige Achsen entlang a₁, a₂, a₃.',
 };
-/** Text für ein HTML-Attribut (Tooltip-Inhalt mit Markup). */
-/** @param {string} s */
-const attr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+// Text für ein HTML-Attribut (Tooltip-Inhalt mit Markup): esc aus der gemeinsamen Grundlage (Leitfaden Abschn. 9);
+// getAttribute liefert das Markup unverändert zurück
+const attr = esc;
 /** Tooltip eines Punktgruppen-Buttons: Symbol, Schoenflies, System, Ordnung (als Attributwert). @param {string} id @param {string} [extra] */
 function groupTip(id, extra) {
   const g = groupOf(id);
@@ -1395,12 +1395,13 @@ function syncSliders() { sliders.forEach((s) => s()); }
 
 /** Erste Schritte des aktiven Modus zeigen, wenn er neu ist (gesetzt in init). */
 let introSync = () => {};
+/** Moduswahl als Tab-Muster (Leitfaden Abschn. 5.4); entsteht in init() vor dem ersten setMode. @type {{ markieren: (id: string) => void } | null} */
+let modi = null;
 /** @param {'pg' | 'poly'} mode */
 function setMode(mode) {
   state.mode = mode;
   state.selected = null;
-  $('tab-pg').setAttribute('aria-selected', String(mode === 'pg'));
-  $('tab-poly').setAttribute('aria-selected', String(mode === 'poly'));
+  modi?.markieren(mode === 'pg' ? 'tab-pg' : 'tab-poly');
   for (const id of ['ctl-pg', 'ctl-pg-opts']) $(id).hidden = mode !== 'pg';
   for (const id of ['ctl-poly', 'ctl-poly-lat', 'ctl-poly-shape', 'row-normals', 'row-poly-poles', 'row-poly-lower', 'v3d-tools']) $(id).hidden = mode !== 'poly';
   for (const id of ['row-pg-poles', 'row-pg-colorful']) $(id).hidden = mode !== 'pg';
@@ -1716,6 +1717,7 @@ function init() {
     if (Math.abs(w - lastW) > 4) { lastW = w; render(); }
   }).observe(svg);
 
+  modi = modusTabs(element('.tabs'), $('inhalt'));
   $('tab-pg').addEventListener('click', () => setMode('pg'));
   $('tab-poly').addEventListener('click', () => setMode('poly'));
 

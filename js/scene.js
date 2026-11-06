@@ -378,11 +378,11 @@ export function applyHashTo(state, hash, DEFAULTS) {
     bools(URL_FORM, state.poly);
     // str=<Richtung>,<Faktor>, z. B. str=111,1.3 (Richtung als Gitterrichtung ohne Klammern): Symmetrie
     // brechen durch Streckung (auch ohne br=1, Links aus v1.4.0). Nur ohne Beispielkristall; ungültige
-    // Richtung oder Faktor ausserhalb 0,5 … 2: keine Streckung.
+    // Richtung oder kein Faktor: keine Streckung; Faktor ausserhalb 0,5 … 2: nächster gültiger Wert (Leitfaden 5.2).
     let stretched = false;
     if (q.has('str') && !state.poly.example) {
       const [id, f] = da('str').split(',');
-      const s = f != null && f.trim() !== '' ? Number(f) : NaN;
+      const s = f != null && f.trim() !== '' ? Math.min(2, Math.max(0.5, Number(f))) : NaN;
       if (STRETCH_DIRS[state.poly.system].some((x) => x.id === id) && s >= 0.5 && s <= 2) {
         state.poly.stretch = { dir: id, s };
         state.poly.broken = true;

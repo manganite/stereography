@@ -164,3 +164,18 @@ test('Rundlauf: Zustände aus der Bedienung bleiben im Speicher (Streckung → �
     assert.deepEqual(ausSpeicher({ v: 4, pg: {}, view: {}, poly: { freeLats: { kubisch: l } } }).poly.freeLats, {});
   }
 });
+
+test('Streckfaktor ausserhalb 0,5 … 2: nächster gültiger Wert in Link und Speicher (Leitfaden 5.2, Review #107)', () => {
+  for (const [f, erwartet] of [[2.5, 2], [0.1, 0.5], [1.5, 1.5]]) {
+    const l = ausLink(`#m=form&sys=kubisch&str=001,${f}`);
+    assert.deepEqual(l.poly.stretch, { dir: '001', s: erwartet }, `Link s=${f}`);
+    const roh = speicherStand(createState());
+    roh.poly = { ...roh.poly, system: 'kubisch', broken: true, breakMode: 'stretch', stretch: { dir: '001', s: f } };
+    assert.deepEqual(ausSpeicher(JSON.parse(JSON.stringify(roh))).poly.stretch, { dir: '001', s: erwartet }, `Speicher s=${f}`);
+  }
+  // kein Faktor oder keine Zahl: keine Streckung
+  for (const f of ['', 'x']) {
+    const l = ausLink(`#m=form&sys=kubisch&str=001,${f}`);
+    assert.equal(l.poly.stretch.dir, '', `Link s='${f}'`);
+  }
+});

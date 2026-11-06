@@ -50,8 +50,8 @@ stabil halten).
 - **Eine Prüfung für Link und Speicher** (6.11.2026, #96, Leitfaden Abschn. 5.2): `zustandPruefen()` in
   `js/zustand.js` prüft jedes Feld des Zustands, für den Speicher (`ausSpeicher`, mit Übernahme der Stände v2–v4)
   und nach dem Lesen eines Links. Neue Felder gehören dorthin und in `tests/rundlauf.test.mjs`. Zahlen werden
-  wie im Link seit jeher in ihre Bereiche gesetzt statt durch den Startwert ersetzt, damit Link und Speicher
-  gleich bleiben (der Leitfaden sieht den Startwert vor; zur Entscheidung durch Thomas offen). Das freie Gitter
+  wie im Link seit jeher auf den nächsten gültigen Wert gesetzt, nach Leitfaden 5.2 (Entscheidung Thomas,
+  6.11.2026, crystallography-common#84). Das freie Gitter
   bleibt ungeschnitten, weil „Alle Parameter frei“ das gestreckte Gitter übernimmt.
 - **Einrasten** des Ausgangspols immer (Achse 4°, Spiegelebene 3°), kein Schalter.
 - **Bildexport** (24.10.): Stereogramm als Kopie (PNG), SVG, PNG (2048 px); 3D als Kopie und PNG. Kein

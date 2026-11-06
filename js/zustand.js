@@ -51,7 +51,7 @@ function gitterOderNull(lat, sys, frei) {
 
 /**
  * Die eine Prüfung für Link und Speicher: alle Felder mit ihren Abhängigkeiten; Ungültiges wird zum Startwert.
- * Zahlen werden wie in der Link-Adresse in ihre Bereiche gesetzt (CLAUDE.md, Entscheidungen). Neue Felder des
+ * Zahlen werden wie in der Link-Adresse auf den nächsten gültigen Wert gesetzt (Leitfaden 5.2). Neue Felder des
  * Zustands gehören hierher und in tests/rundlauf.test.mjs. Ändert state und gibt es zurück.
  * @param {Zustand} state
  */
@@ -66,7 +66,7 @@ export function zustandPruefen(state) {
   for (const [, key] of URL_PG) if (typeof (/** @type {Record<string, unknown>} */ (pg))[key] !== 'boolean') (/** @type {Record<string, unknown>} */ (pg))[key] = (/** @type {Record<string, unknown>} */ (d.pg))[key];
   pg.theta = num(pg.theta, 0, 180) ?? d.pg.theta;
   const phi = num(pg.phi, -1e6, 1e6);
-  pg.phi = phi == null ? d.pg.phi : ((phi % 360) + 360) % 360;
+  pg.phi = phi == null ? d.pg.phi : ((phi % 360) + 360) % 360; // Azimut läuft um: modulo 360° statt begrenzt
   pg.hideDirs = Array.isArray(pg.hideDirs) ? pg.hideDirs.filter((k) => Number.isInteger(k) && k >= 0 && k <= 2) : [];
   if (pg.tool !== 'angle') pg.tool = null;
   // Kristallformen
@@ -90,7 +90,9 @@ export function zustandPruefen(state) {
   p.zones = Array.isArray(p.zones) ? p.zones.filter((k) => typeof k === 'string' && ZONE.test(k) && k !== '0,0,0') : [];
   if (p.breakMode !== 'free') p.breakMode = 'stretch';
   const st = p.stretch;
-  if (!istObjekt(st) || typeof st.dir !== 'string' || !(typeof st.s === 'number' && st.s >= 0.5 && st.s <= 2)) p.stretch = { dir: '', s: 1 };
+  const sf = istObjekt(st) ? num(st.s, 0.5, 2) : null;
+  if (!istObjekt(st) || typeof st.dir !== 'string' || sf == null) p.stretch = { dir: '', s: 1 };
+  else st.s = sf;
   // Darstellung
   for (const [, key] of URL_VIEW) if (typeof (/** @type {Record<string, unknown>} */ (state.view))[key] !== 'boolean') (/** @type {Record<string, unknown>} */ (state.view))[key] = (/** @type {Record<string, unknown>} */ (d.view))[key];
   state.view.wulffRot = num(state.view.wulffRot, 0, 180) ?? 0;

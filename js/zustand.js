@@ -28,9 +28,10 @@ function felderUebernehmen(ziel, quelle) {
 }
 
 /**
- * Gitter eines Systems wie in der Link-Adresse: alle Parameter Zahlen in den Bereichen der Regler (b/a, c/a
- * 0,25 … 3, Winkel 60 … 150°) und, auf die Bedingungen des Systems gesetzt (frei: wie sie sind), ein gültiges
- * Gitter (#95); sonst null (wie gitterBereinigen in scene.js).
+ * Gitter eines Systems: alle fünf Parameter Zahlen und, auf die Bedingungen des Systems gesetzt, ein gültiges
+ * Gitter (#95); sonst null. Das unverzerrte Gitter in den Bereichen der Link-Adresse (b/a, c/a 0,25 … 3, Winkel
+ * 60 … 150°). Das freie Gitter (frei) bleibt, wie es ist: Es entsteht auch aus einer Streckung („Alle Parameter
+ * frei“ übernimmt das gestreckte Gitter) und kann dann ausserhalb dieser Bereiche liegen (Review #105).
  * @param {unknown} lat @param {string} sys @param {boolean} frei @returns {Gitterparameter | null}
  */
 function gitterOderNull(lat, sys, frei) {
@@ -38,7 +39,9 @@ function gitterOderNull(lat, sys, frei) {
   /** @type {Record<string, number>} */
   const g = {};
   for (const k of LAT_KEYS) {
-    const v = k === 'ba' || k === 'ca' ? num(lat[k], 0.25, 3) : num(lat[k], 60, 150);
+    const v = frei ? num(lat[k], -Infinity, Infinity) : k === 'ba' || k === 'ca' ? num(lat[k], 0.25, 3) : num(lat[k], 60, 150);
+    // frei: Längen positiv, Winkel zwischen 0° und 180° (gitterGueltig prüft nur die Winkel zusammen)
+    if (v != null && frei && !(k === 'ba' || k === 'ca' ? v > 0 : v > 0 && v < 180)) return null;
     if (v == null) return null; // fehlt oder keine Zahl: das System beginnt mit seiner Vorgabe
     g[k] = v;
   }
@@ -48,7 +51,8 @@ function gitterOderNull(lat, sys, frei) {
 
 /**
  * Die eine Prüfung für Link und Speicher: alle Felder mit ihren Abhängigkeiten; Ungültiges wird zum Startwert.
- * Zahlen werden wie in der Link-Adresse in ihre Bereiche gesetzt. Ändert state und gibt es zurück.
+ * Zahlen werden wie in der Link-Adresse in ihre Bereiche gesetzt (CLAUDE.md, Entscheidungen). Neue Felder des
+ * Zustands gehören hierher und in tests/rundlauf.test.mjs. Ändert state und gibt es zurück.
  * @param {Zustand} state
  */
 export function zustandPruefen(state) {
@@ -67,7 +71,7 @@ export function zustandPruefen(state) {
   if (pg.tool !== 'angle') pg.tool = null;
   // Kristallformen
   const p = state.poly;
-  if (!Object.hasOwn(LATTICE_DEFAULTS, p.system)) p.system = d.poly.system;
+  if (typeof p.system !== 'string' || !Object.hasOwn(LATTICE_DEFAULTS, p.system)) p.system = d.poly.system;
   p.entryBySys = istObjekt(p.entryBySys) ? Object.fromEntries(Object.entries(p.entryBySys).filter(([s, v]) => Object.hasOwn(LATTICE_DEFAULTS, s) && typeof v === 'string')) : {};
   const presets = orientationPresets(p.system);
   if (!presets.some((x) => x.id === p.presetId)) p.presetId = presets[0].id;

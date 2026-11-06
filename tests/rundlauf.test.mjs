@@ -4,6 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, applyHashTo, hashOf, currentExample, effectiveLat } from '../js/scene.js';
+import { STRETCH_DIRS } from '../js/polyhedra.js';
 import { ausSpeicher, speicherStand, zustandPruefen } from '../js/zustand.js';
 import { POINT_GROUPS } from '../js/pointgroups.js';
 import { EXAMPLES } from '../js/examples.js';
@@ -140,5 +141,26 @@ test('Rundlauf: Zurücksetzen vor und nach dem Neuladen gleich (Speicher und Lin
       assert.equal(n.poly.system, s.poly.system, h);
       assert.equal(currentExample(n)?.id ?? null, currentExample(s)?.id ?? null, h);
     }
+  }
+});
+
+test('Rundlauf: Zustände aus der Bedienung bleiben im Speicher (Streckung → „Alle Parameter frei“, Review #105)', () => {
+  // main.js übernimmt beim Umschalten auf „frei“ das gestreckte Gitter (effectiveLat); es kann ausserhalb der
+  // Bereiche der Regler liegen, z. B. kubisch, ⟨110⟩, s = 2: γ ≈ 53°
+  for (const [sys, dirs] of Object.entries(STRETCH_DIRS)) for (const d of dirs) for (const s of [0.5, 2]) {
+    const st = createState();
+    Object.assign(st.poly, { system: sys, broken: true, breakMode: 'stretch', stretch: { dir: d.id, s } });
+    st.poly.freeLats[sys] = effectiveLat(st);
+    st.poly.breakMode = 'free';
+    const n = neuLaden(st);
+    assert.deepEqual(n.poly.freeLats[sys], st.poly.freeLats[sys], `${sys} [${d.id}] ${s}`);
+    assert.deepEqual(effectiveLat(n), effectiveLat(st));
+  }
+  // manipuliert: System als Liste statt Zeichenkette
+  assert.equal(ausSpeicher({ v: 4, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.system, 'kubisch');
+  assert.equal(ausSpeicher({ v: 4, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.presetId, '001');
+  // freies Gitter mit negativer Länge oder Winkel ≥ 180°: verworfen
+  for (const l of [{ ba: -1, ca: 1, al: 90, be: 90, ga: 90 }, { ba: 1, ca: 1, al: 90, be: 90, ga: 200 }]) {
+    assert.deepEqual(ausSpeicher({ v: 4, pg: {}, view: {}, poly: { freeLats: { kubisch: l } } }).poly.freeLats, {});
   }
 });

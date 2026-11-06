@@ -5,7 +5,7 @@
 // festhält. Diese Operationen bilden seine Lagesymmetrie (bei Flächen: Flächensymmetrie); die Zahl
 // der äquivalenten Pole ist Ordnung der Gruppe / Ordnung der Lagesymmetrie. Die Wyckoff-Lage fasst
 // alle Pole zusammen, deren Lagesymmetrien zueinander konjugiert sind. Buchstabe und orientiertes
-// Symbol stammen aus dem Formkatalog (forms.js, nach ITA); für die Aufstellungen monoklin Achse c, 312,
+// Symbol stammen aus dem Formkatalog (formen.js, nach ITA); für die Aufstellungen monoklin Achse c, 312,
 // 31m, 3̄1m, 4̄m2 und 6̄2m stehen sie in ALT_SETTINGS. Die Aufstellungen B (312 … 6̄2m) haben inzwischen auch
 // Katalogeinträge; die Lagentabelle hier bleibt als unabhängige Angabe nach ITA, gegen die die Tests sie prüfen.
 

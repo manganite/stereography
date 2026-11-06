@@ -133,7 +133,7 @@ export const GERUEST = {
 };
 
 // ------------------------------------------------------------------ Flächenzahl und Flächensymmetrie (Kap. 10, Stufe 3)
-// Daten aus dem Formenkatalog (js/forms.js): Wyckoff-Lage, Flächensymmetrie, Flächenzahl je Form; die Tests rechnen
+// Daten aus dem Formenkatalog (js/formen.js, über js/forms.js): Wyckoff-Lage, Flächensymmetrie, Flächenzahl je Form; die Tests rechnen
 // Flächenzahl und Flächensymmetrie aus den Gruppenoperationen nach.
 /** @param {Vec3} hkl */
 const indizes = (hkl) => `{${hkl.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join('')}}`;

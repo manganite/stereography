@@ -18,10 +18,11 @@ import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
 import { TIPS, SECTIONS, LABELS } from './hilfetexte.js';
 import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, abschnitt, grafik, element, elemente, modusTabs } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
+import { ausSpeicher, speicherStand, zustandPruefen } from './zustand.js';
 import * as S from './scene.js';
 import { snapPole } from './sitesym.js';
 import {
-  createState, hashOf, applyHashTo, phiFromOld, rhoText, palette, formColor, groupOf, groupOrder, EIG_SAME, crystalAxesFor, ORBIT_COLORS, pgScene, polyCrystal, polyScene, normalizeZones,
+  createState, hashOf, applyHashTo, rhoText, palette, formColor, groupOf, groupOrder, EIG_SAME, crystalAxesFor, ORBIT_COLORS, pgScene, polyCrystal, polyScene, normalizeZones,
   pgPolesOn, polyLabelsOn, pgViewDirections, polyViewDirections, lightPalette,
 } from './scene.js';
 
@@ -68,7 +69,7 @@ const stateToHash = () => hashOf(state, DEFAULTS);
 
 /** Wendet einen Hash auf den Startzustand an. Gibt false zurück, wenn kein brauchbarer Hash vorliegt. */
 /** @param {string} hash */
-const applyHash = (hash) => applyHashTo(state, hash, DEFAULTS);
+const applyHash = (hash) => { const ok = applyHashTo(state, hash, DEFAULTS); if (ok) zustandPruefen(state); return ok; };
 
 let lastHash = '';
 // Ohne Hash geöffnet (oder nach „Alle Einstellungen zurücksetzen“): Adresse bleibt ohne Hash,
@@ -76,48 +77,14 @@ let lastHash = '';
 let hashActive = location.hash.length > 1;
 /** @type {string | null} */
 let baseHash = null; // Zustand beim ersten Speichern; erst eine Abweichung davon schreibt den Hash
-try {
-  const saved = JSON.parse(localStorage.getItem('stereo-state') || 'null');
-  if (saved && saved.v >= 2 && saved.v <= 4) {
-    Object.assign(state.pg, saved.pg); Object.assign(state.view, saved.view);
-    if (saved.v >= 3) Object.assign(state.poly, saved.poly);
-    if (saved.v < 4 && Number.isFinite(state.pg.phi)) state.pg.phi = phiFromOld(state.pg.phi); // alte Zählung von φ
-    if (saved.pg && typeof saved.pg.dirColors === 'boolean' && !('dirColors' in (saved.view || {}))) state.view.dirColors = saved.pg.dirColors;
-    // Felder älterer Zustände (gespeichert unter state.pg bzw. state.poly)
-    const altPg = /** @type {Record<string, unknown>} */ (/** @type {unknown} */ (state.pg));
-    const altPoly = /** @type {Record<string, unknown>} */ (/** @type {unknown} */ (state.poly));
-    delete altPg.dirColors;
-    if (altPoly.zoneMode) state.poly.tool = 'zone'; // älterer Zustand
-    delete altPoly.zoneMode;
-    if (!['zone', 'angle'].includes(/** @type {string} */ (state.poly.tool))) state.poly.tool = null;
-    if (state.pg.tool !== 'angle') state.pg.tool = null;
-    state.mode = saved.mode === 'poly' ? 'poly' : 'pg';
-    if (!POINT_GROUPS.some((g) => g.id === state.pg.id)) state.pg.id = 'mm2';
-    if (!Array.isArray(state.pg.hideDirs)) state.pg.hideDirs = [];
-    if (!exampleById(state.poly.example)) state.poly.example = null;
-    if (!state.poly.exScale || typeof state.poly.exScale !== 'object') state.poly.exScale = {};
-    if (!Array.isArray(state.poly.zones)) state.poly.zones = [];
-    const st = state.poly.stretch;
-    if (!st || typeof st !== 'object' || typeof st.dir !== 'string' || !(st.s >= 0.5 && st.s <= 2)) state.poly.stretch = { dir: '', s: 1 };
-    if (!state.poly.freeLats || typeof state.poly.freeLats !== 'object') state.poly.freeLats = {};
-    if (saved.poly && !('breakMode' in saved.poly)) {
-      // Zustand bis v1.4.0: „Symmetrie brechen“ bedeutete alle Gitterparameter frei, im Gitter selbst gespeichert
-      state.poly.breakMode = state.poly.broken ? 'free' : 'stretch';
-      if (state.poly.broken) {
-        for (const [sys, lat] of Object.entries(state.poly.lats || {})) {
-          if (!LATTICE_DEFAULTS[sys]) continue;
-          state.poly.freeLats[sys] = { ...lat };
-          state.poly.lats[sys] = constrainLattice(lat, sys);
-        }
-      }
-    }
-    if (state.poly.breakMode !== 'free') state.poly.breakMode = 'stretch';
-    S.gitterBereinigen(state);
-  }
-} catch { /* Speicher nicht verfügbar */ }
+/** @type {unknown} */
+let gespeichert = null;
+try { gespeichert = JSON.parse(localStorage.getItem('stereo-state') || 'null'); } catch { /* Speicher nicht verfügbar */ }
+// Speicher und Link durch dieselbe Prüfung (zustand.js, Leitfaden Abschn. 5.2)
+Object.assign(state, ausSpeicher(gespeichert));
 if (location.hash.length > 1) applyHash(location.hash); // Link hat Vorrang
 const save = () => {
-  try { localStorage.setItem('stereo-state', JSON.stringify({ v: 4, mode: state.mode, pg: state.pg, poly: state.poly, view: state.view })); } catch { /* ignorieren */ }
+  try { localStorage.setItem('stereo-state', JSON.stringify(speicherStand(state))); } catch { /* ignorieren */ }
   try {
     const h = stateToHash();
     if (baseHash === null) baseHash = h;

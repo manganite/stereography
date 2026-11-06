@@ -8,6 +8,8 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
+- **Moduswahl mit der Tastatur** (crystallography-common#68, Leitfaden Abschn. 5.4): Die Knöpfe „Punktgruppen“ und „Kristallformen“ verhalten sich jetzt wie Tabs. Pfeiltasten links und rechts, Pos1 und Ende wechseln den Modus. Nur der gewählte Modus liegt im Fokus-Ablauf, die Bedienung darunter ist mit ihm verbunden (`aria-controls`). Das `<main>` bleibt Hauptlandmarke.
+- **Gemeinsame Grundlage** auf crystallography-common v0.10.0: `modusTabs` und der gemeinsame Helfer `esc`. Die Stellen mit `innerHTML` sind durchgesehen (crystallography-common#64). Werte aus dem Link gelangen nicht roh hinein; sie werden in den Tabellen der App nachgeschlagen oder sind Zahlen in Bereichen. Gespeicherte Werte werden ebenfalls nicht roh eingesetzt. Ihre vollständige Prüfung folgt mit #96.
 - **Gemeinsame Grundlage** auf crystallography-common v0.9.0 (von v0.7.0, mit v0.8.0 und v0.8.1): Im Quiz gelten die Grenzen für erzeugte Fragen (30 % je Generator, 50 % insgesamt) streng, solange die gewählte Länge erreichbar ist; sonst nie mehr erzeugte als handgeschriebene Fragen. Querstriche (Millersche Indizes, Drehinversionen) werden von Screenreadern als „−“ vorgelesen; die Legende bricht auf dem Telefon um statt unsichtbar zu scrollen. Gemeinsame Regeln für gewählte und gesperrte Knöpfe (v0.8.0) betreffen diese App nicht (Zone und Winkel stehen in `.stereo-tools`, #93).
 
 ### Behoben

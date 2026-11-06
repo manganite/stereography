@@ -27,6 +27,8 @@ export function helleFarben(cssPfad) {
   return v;
 }
 
+// Eigene Maskierung für XML (nicht esc aus js/format.js): In Textknoten genügen & < >, in Attributen
+// kommt " dazu; so bleibt der Export bytegleich.
 /** @param {unknown} s */
 export const xmlEsc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 /** Wert eines Attributs in doppelten Anführungszeichen (z. B. alt="…"): zusätzlich " maskiert. @param {unknown} s */

@@ -8,7 +8,7 @@ import { SYSTEM_OF } from './polyhedra.js';
 import { createState, applyHashTo, hashOf, generalPole } from './scene.js';
 import { hmHTML, hklHTML } from '../lib/common/js/format.js';
 
-/** @import { Ablauf, Schritt } from '../lib/common/js/ablauf.js' */
+/** @import { Erzeugt, Schritt } from '../lib/common/js/ablauf.js' */
 /** @import { Punktgruppe } from './pointgroups.js' */
 /** @import { Formeintrag } from './forms.js' */
 
@@ -91,7 +91,7 @@ function antworten(richtig, falsch) {
   return { vermutung: alle.map(String), richtig: alle.indexOf(richtig) };
 }
 
-/** @type {Ablauf} */
+/** @type {Erzeugt} */
 export const POLZAHL = {
   id: 'polzahl', modus: 'pg', titel: 'Wie viele Pole?',
   params: () => POLZAHL_PARAMS,
@@ -130,7 +130,7 @@ export const FLAECHENZAHL_PARAMS = CATALOG
   .filter((e) => { const s = createState(); applyHashTo(s, formAdresse(e), DEFAULTS); return new URLSearchParams(hashOf(s, DEFAULTS).slice(1)).get('f') === e.id; })
   .map((e) => e.id);
 
-/** @type {Ablauf} */
+/** @type {Erzeugt} */
 export const FLAECHENZAHL = {
   id: 'flaechenzahl-n', modus: 'poly', titel: 'Wie viele Flächen hat die Form?',
   params: () => FLAECHENZAHL_PARAMS,

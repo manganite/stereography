@@ -13,7 +13,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
-- **Gemeinsame Grundlage** auf crystallography-common v0.12.0: Stand der Experimente (`ablauf.js`), „Alle Einstellungen zurücksetzen“ verschont ihn; ein unbrauchbarer Quiz-Fortschritt (Liste statt Objekt) verhinderte das Speichern.
+- **Gemeinsame Grundlage** auf crystallography-common v0.12.0: Stand der Experimente (`ablauf.js`), „Alle Einstellungen zurücksetzen“ verschont ihn (Tooltip nachgeführt); ein gespeicherter Quiz-Fortschritt mit `fragen` als Liste gilt jetzt als unbrauchbar (bisher wurde danach nichts mehr gespeichert).
 - **Gemeinsame Grundlage** auf crystallography-common v0.11.0: geführte Abläufe (`ablauf.js`) für Experimente und Erste Schritte; die Klasse `.sr` steht jetzt in `base.css`.
 - **Moduswahl mit der Tastatur** (crystallography-common#68, Leitfaden Abschn. 5.4): Die Knöpfe „Punktgruppen“ und „Kristallformen“ verhalten sich jetzt wie Tabs. Pfeiltasten links und rechts, Pos1 und Ende wechseln den Modus. Nur der gewählte Modus liegt im Fokus-Ablauf, die Bedienung darunter ist mit ihm verbunden (`aria-controls`). Das `<main>` bleibt Hauptlandmarke.
 - **Gemeinsame Grundlage** auf crystallography-common v0.10.0: `modusTabs` und der gemeinsame Helfer `esc`, der jetzt die eigenen `attr()` in `js/main.js` und `js/skriptlinks.js` ersetzt (Tooltips und Titel unverändert). Die Stellen mit `innerHTML` sind durchgesehen (crystallography-common#64). Werte aus dem Link gelangen nicht roh hinein; sie werden in den Tabellen der App nachgeschlagen, sind Schalter oder Zahlen in Bereichen, Zonen nach Muster. Gespeicherte Werte werden ebenfalls nicht roh eingesetzt. Ihre vollständige Prüfung folgt mit #96.

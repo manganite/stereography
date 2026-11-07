@@ -130,7 +130,7 @@ stabil halten).
 ## Konventionen
 
 - **Speicher im Browser, nie umbenennen:** `stereo-state` (Zustandsversion 4; ältere werden umgerechnet),
-  `stereo-intro` (Wert: gesehene Modi, z. B. `pg,poly`; `zu` bis v1.12.1 gilt als `poly`), `stereo-sections`, `stereo-explain`; Quiz `stereo-quiz-v1`, `-entwurf`, `-lauf`. Jeder Eintrag heisst `stereo-…` (Leitfaden Abschn. 5.2, „Alle Einstellungen zurücksetzen“).
+  `stereo-intro` (Wert: gesehene Modi, z. B. `pg,poly`; `zu` bis v1.12.1 gilt als `poly`), `stereo-sections`, `stereo-explain`; Quiz `stereo-quiz-v1`, `-entwurf`, `-lauf`; Stand der Experimente `stereo-experimente` (bleibt beim Zurücksetzen wie das Quiz). Jeder Eintrag heisst `stereo-…` (Leitfaden Abschn. 5.2, „Alle Einstellungen zurücksetzen“).
 - **Cache des Service Workers:** `stereogramm-<Version>`.
 - **Stabile Kennungen in Links:** `-43m:c38` = {112}, `-43m:c39` = {221} (wie in v1.0.0). Alte `phi=`
   (Zählung ab ↓, Gegenuhrzeigersinn) werden umgerechnet; `rho=` über 90° gilt weiter.

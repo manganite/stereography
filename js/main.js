@@ -1672,7 +1672,7 @@ function init() {
   };
   const skriptUrl = (/** @type {string} */ anker) => `skript.html#${anker}`;
   einstieg = ablaufKarte($('ablauf'), ERSTE_SCHRITTE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, liste: false, beiAbschluss: closeIntro });
-  experimente = ablaufKarte($('experimente'), ABLAEUFE, { anwenden, adresse: stateToHash, aktionen, skriptUrl });
+  experimente = ablaufKarte($('experimente'), ABLAEUFE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, speicher: 'stereo-experimente' });
   einstieg.modus(state.mode); experimente.modus(state.mode);
 
   $('copy-link').addEventListener('click', async () => {

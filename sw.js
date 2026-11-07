@@ -42,6 +42,7 @@ const FILES = [
   'js/version.js',
   'js/view3d.js',
   'js/zustand.js',
+  'lib/common/js/ablauf.js',
   'lib/common/js/format.js',
   'lib/common/js/help.js',
   'lib/common/js/quiz-core.js',

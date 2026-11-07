@@ -66,6 +66,16 @@ stabil halten).
   vier Bedienschritte je Modus, mit derselben Mechanik aus `lib/common/js/ablauf.js`. Texte in
   `js/hilfetexte.js`; `tests/ablauf.test.mjs` prüft die Pol- und Flächenzahlen, die Lage der Pole (oben,
   unten, Grundkreis), Formen und Formnamen gegen `pointgroups.js` und `forms.js`. Neue Aussagen dort mitprüfen.
+- **Erzeugte Experimente** (7.11.2026, Thomas, #114, crystallography-common#92): Code in `js/experimente.js`
+  (keine Datendatei, weil die Aufgaben aus Rechnungen entstehen). Die Frage nennt das Element so, wie es die App
+  zeigt: Ein Pol auf einer 4̄-, 3̄- oder 6̄-Achse liegt „auf einer 4̄-Achse“, auch wenn ihn nur der Drehanteil
+  festhält (die Erklärung sagt das). Polzahl: alle Lagen aller Gruppen ab 4 Operationen, gleicher Wortlaut nur
+  einmal (z. B. die drei 2-zähligen Achsen von 222). Flächenzahl: ohne die Formen, die die App unter der Gruppe
+  ihrer Eigensymmetrie zeigt (z. B. {111} in 432 als Oktaeder von m3̄m), sonst nennte die App eine andere Gruppe als
+  die Frage; zwei trigonale Prismen fallen auf die Vorgabe zurück (#118). Die Lagesymmetrie steht in den
+  Wyckoff-Tabellen orientiert („..m“, „4m.m“) und so auch in den Erklärungen; `lage()` liest daraus Achse, Zahl der
+  Spiegelebenen und Ordnung. Fallstrick: Der Azimut der App zählt von b zur a-Achse (`generalPole`), also
+  `atan2(x, y)`.
 
 ### Kristallformen
 - **Aufstellung B im Formenmodus** (v1.12.0): 312, 31m, 3̄1m, 4̄m2, 6̄2m. Erzeugte Quizfragen bleiben

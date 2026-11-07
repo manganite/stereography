@@ -5,10 +5,14 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { pruefeAblaeufe } from '../lib/common/js/ablauf.js';
 import { ABLAEUFE, ERSTE_SCHRITTE } from '../js/hilfetexte.js';
+import { ERZEUGTE, POLZAHL, FLAECHENZAHL, POLZAHL_PARAMS, FLAECHENZAHL_PARAMS, polzahlDaten, ordnung, lage, FZ_KANDIDATEN, gezeigteForm, ortText } from '../js/experimente.js';
+import { variante } from '../lib/common/js/ablauf.js';
 import { createState, applyHashTo, hashOf, generalPole } from '../js/scene.js';
-import { buildPointGroup, orbit } from '../js/pointgroups.js';
+import { buildPointGroup, orbit, POINT_GROUPS } from '../js/pointgroups.js';
 import { siteOf, distinctPoles } from '../js/sitesym.js';
 import { entryById, CATALOG, formName } from '../js/forms.js';
+import { wyckoffPositions, poleOfHKL } from '../js/sitesym.js';
+import { SYSTEM_OF } from '../js/polyhedra.js';
 import { PUNKTGRUPPEN } from '../js/punktgruppen.js';
 
 const ANKER = [...readFileSync(new URL('../skript.html', import.meta.url), 'utf8').matchAll(/ id="([^"]+)"/g)].map((m) => m[1]);
@@ -25,19 +29,20 @@ function gueltig(h) {
   return [...new URLSearchParams(h.slice(1))].every(([k, v]) => neu.get(k) === v);
 }
 /** @param {string} id @param {number} i */
-const adresse = (id, i) => /** @type {string} */ (ABLAEUFE.find((a) => a.id === id)?.schritte[i].handlung?.hash);
+const adresse = (id, i) => /** @type {string} */ (ABLAEUFE.find((a) => a.id === id)?.schritte?.[i].handlung?.hash);
 /** @param {string} h */
 const zustand = (h) => { const s = createState(); applyHashTo(s, h, DEFAULTS); return s; };
 
 test('Lernexperimente und Erste Schritte: Daten vollständig, Adressen gültig, Modi und Anker bekannt', () => {
   const o = { hashGueltig: gueltig, modi: ['pg', 'poly'], anker: ANKER, aktionen: AKTIONEN };
-  assert.deepEqual(pruefeAblaeufe(ABLAEUFE, o), []);
+  assert.deepEqual(pruefeAblaeufe([...ABLAEUFE, ...ERZEUGTE], o), []);
   assert.deepEqual(pruefeAblaeufe(ERSTE_SCHRITTE, o), []);
   for (const m of ['pg', 'poly']) {
     assert.ok(ABLAEUFE.filter((a) => a.modus === m).length >= 2, m);
     const e = ERSTE_SCHRITTE.filter((a) => a.modus === m);
     assert.equal(e.length, 1, m);
-    assert.ok(e[0].schritte.length >= 3 && e[0].schritte.length <= 4 && e[0].schritte.every((s) => !s.vermutung), m);
+    const sch = e[0].schritte ?? [];
+    assert.ok(sch.length >= 3 && sch.length <= 4 && sch.every((s) => !s.vermutung), m);
   }
 });
 
@@ -91,3 +96,59 @@ test('Regler ρ reicht bis 0°, damit er einen Pol auf der Achse (z. B. rho=0 im
   assert.equal(r?.[1], '0');
   assert.equal(zustand(adresse('lage', 2)).pg.theta, 0);
 });
+
+test('Erzeugte Experimente: Polzahl stimmt für jede Gruppe und Lage mit der App', () => {
+  // jede Lage jeder Gruppe ab 4 Operationen kommt vor, ausser bei gleichem Wortlaut der Frage
+  const alle = POINT_GROUPS.filter((g) => ordnung(g.id) >= 4).flatMap((g) => wyckoffPositions(g.id).map((w) => `${g.id}:${w.wy}`));
+  const fragen = new Set(POLZAHL_PARAMS().map((p) => variante(POLZAHL, p).schritte[0].frage));
+  for (const p of alle) assert.ok(fragen.has(variante(POLZAHL, p).schritte[0].frage), `${p} fehlt`);
+  assert.equal(fragen.size, POLZAHL_PARAMS().length, 'keine zwei gleichen Fragen');
+  for (const p of alle) {
+    const d = polzahlDaten(p);
+    const s = zustand(d.hash);
+    assert.equal(s.pg.id, d.id, p);
+    const info = buildPointGroup(s.pg.id);
+    const site = siteOf(s.pg.id, info, generalPole(s));
+    assert.equal(site.fs, d.fs, `${p}: Lagesymmetrie (orientiert)`);
+    // die Frage nennt das Element, das die App an dieser Stelle zeigt
+    const achse = d.achse;
+    if (achse?.startsWith('-')) assert.match(ortText(d.fs, achse), new RegExp(`<span class="ov">${achse.slice(1)}</span>-Achse`), p);
+    else if (achse) assert.match(ortText(d.fs, achse), new RegExp(`${achse}-zählige`), p);
+    else assert.doesNotMatch(ortText(d.fs, achse), /Achse/, p);
+    assert.equal(lage(d.fs).ordnung, site.stab.length, `${p}: Ordnung der Lagesymmetrie ${d.fs}`);
+    assert.equal(distinctPoles(orbit(info.ops, site.p)).length, d.mult, `${p}: Zahl der Pole`);
+    assert.equal(site.stab.length * d.mult, ordnung(d.id), `${p}: Pole mal Lagesymmetrie`);
+    const sch = variante(POLZAHL, p).schritte[0];
+    assert.equal(sch.vermutung?.[/** @type {number} */ (sch.richtig)], String(d.mult), p);
+    assert.equal(new Set(sch.vermutung).size, sch.vermutung?.length, `${p}: Antworten verschieden`);
+    assert.ok(sch.vermutung?.every((x) => Number(x) >= 1 && Number(x) <= d.n), `${p}: Antworten zwischen 1 und der Ordnung`);
+  }
+  // jede Art der Lage kommt vor
+  const arten = new Set(POLZAHL_PARAMS().map((p) => lage(polzahlDaten(p).fs).symbol));
+  for (const fs of ['1', 'm', '2', '3', '4', '6', 'mm2', '3m', '4mm', '6mm']) assert.ok(arten.has(fs), fs);
+});
+
+test('Erzeugte Experimente: Flächenzahl stimmt für jede Form mit dem Katalog und der Bahn', () => {
+  // ausgelassen sind genau die Formen, die die App unter der Holoedrie als denselben Körper zeigt
+  for (const e of FZ_KANDIDATEN()) {
+    if (FLAECHENZAHL_PARAMS().includes(e.id)) continue;
+    const g = /** @type {import('../js/forms.js').Formeintrag} */ (entryById(/** @type {string} */ (gezeigteForm(e))));
+    // dieselbe Form in der Gruppe ihrer Eigensymmetrie; trigonal gibt es dort keine, die App zeigt die Vorgabe (#118)
+    if (['321:b18', '-3m1:b25'].includes(e.id)) { assert.equal(g.id, '-3m1:c21', e.id); continue; }
+    assert.deepEqual([g.mult, formName(g)], [e.mult, formName(e)], `${e.id} als ${g.id}`);
+  }
+  assert.ok(FLAECHENZAHL_PARAMS().length >= 40, `${FLAECHENZAHL_PARAMS().length} Parameter`);
+  for (const id of FLAECHENZAHL_PARAMS()) {
+    const sch = variante(FLAECHENZAHL, id).schritte[0];
+    const s = zustand(/** @type {string} */ (sch.handlung?.hash));
+    const e = /** @type {import('../js/forms.js').Formeintrag} */ (entryById(s.poly.entryBySys[s.poly.system]));
+    assert.equal(e.id, id, 'die Adresse zeigt diese Form');
+    const n = distinctPoles(orbit(buildPointGroup(e.pg).ops, poleOfHKL(SYSTEM_OF[e.pg], e.hkl))).length;
+    assert.equal(n, e.mult, `${id}: Bahn der Normalen`);
+    assert.equal(sch.vermutung?.[/** @type {number} */ (sch.richtig)], String(e.mult), id);
+    assert.equal(lage(e.fs).ordnung * e.mult, ordnung(e.pg), `${id}: Flächensymmetrie mal Flächenzahl`);
+    assert.equal(new Set(sch.vermutung).size, sch.vermutung?.length, `${id}: Antworten verschieden`);
+    assert.ok(sch.vermutung?.every((x) => Number(x) >= 1 && Number(x) <= ordnung(e.pg)), `${id}: Antworten zwischen 1 und der Ordnung`);
+  }
+});
+

@@ -17,7 +17,8 @@ import { View3D, OBLIQUE } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
-import { TIPS, SECTIONS, LABELS } from './hilfetexte.js';
+import { TIPS, SECTIONS, LABELS, ERSTE_SCHRITTE, ABLAEUFE } from './hilfetexte.js';
+import { ablaufKarte } from '../lib/common/js/ablauf.js';
 import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, abschnitt, grafik, element, elemente, modusTabs } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
 import { FAMILIEN, AUFSTELLUNG_TIPPS, MONO_ACHSE_TIPPS, AUFSTELLUNG_AB } from './aufstellungen.js';
@@ -1324,10 +1325,13 @@ view3d.controls.addEventListener('change', () => {
 function bindCheck(id, obj, key) {
   const el = eingabe(id);
   el.checked = !!obj[key];
+  checks.push(() => { el.checked = !!obj[key]; });
   el.addEventListener('change', () => { obj[key] = el.checked; render(); });
 }
 /** @type {(() => void)[]} */
 const sliders = [];
+/** Kontrollkästchen aus dem Zustand nachführen (nach einer Link-Adresse zur Laufzeit). @type {(() => void)[]} */
+const checks = [];
 /** Regler mit einem Feld des Zustands verbinden. @param {string} id @param {Schalter} obj @param {string} key @param {(v: number) => string} fmt */
 function bindRange(id, obj, key, fmt) {
   const el = eingabe(id), out = $(id + '-out');
@@ -1340,6 +1344,10 @@ function syncSliders() { sliders.forEach((s) => s()); }
 
 /** Erste Schritte des aktiven Modus zeigen, wenn er neu ist (gesetzt in init). */
 let introSync = () => {};
+/** Erste Schritte und Experimente (lib/common/js/ablauf.js); entstehen in init(). @type {ReturnType<typeof ablaufKarte> | null} */
+let einstieg = null;
+/** @type {ReturnType<typeof ablaufKarte> | null} */
+let experimente = null;
 /** Moduswahl als Tab-Muster (Leitfaden Abschn. 5.4); entsteht in init() vor dem ersten setMode. @type {{ markieren: (id: string) => void } | null} */
 let modi = null;
 /** @param {'pg' | 'poly'} mode */
@@ -1561,7 +1569,7 @@ function init() {
   /** @type {Set<string>} */
   const viaLink = new Set(hashActive ? [state.mode] : []);
   /** @param {boolean} on */
-  const showIntro = (on) => { $('intro').hidden = !on; $('help-open').setAttribute('aria-expanded', String(on)); };
+  const showIntro = (on) => { $('intro').hidden = !on; $('help-open').setAttribute('aria-expanded', String(on)); if (!on) einstieg?.liste(); };
   const closeIntro = () => {
     showIntro(false);
     seen.add(state.mode);
@@ -1570,14 +1578,12 @@ function init() {
   /** @type {string | null} */
   let introMode = hashActive ? state.mode : null;
   introSync = () => {
-    $('steps-pg').hidden = state.mode !== 'pg';
-    $('steps-poly').hidden = state.mode !== 'poly';
     $('intro-quelle-pg').hidden = state.mode !== 'pg';
     $('intro-quelle').hidden = state.mode !== 'poly';
     if (state.mode === introMode) return;
     introMode = state.mode;
+    einstieg?.modus(state.mode); experimente?.modus(state.mode);
     showIntro(!seen.has(state.mode) && !viaLink.has(state.mode));
-    for (const li of elemente('#intro li.done')) li.classList.remove('done');
   };
   $('intro-close').addEventListener('click', closeIntro);
   $('help-open').addEventListener('click', () => {
@@ -1634,13 +1640,40 @@ function init() {
       render(); if (isPhone()) setFig('a');
     },
   };
-  $('intro').addEventListener('click', (e) => {
-    const b = /** @type {HTMLElement | null} */ (/** @type {Element} */ (e.target).closest('button[data-step]'));
-    if (!b) return;
-    STEPS[/** @type {string} */ (b.dataset.step)]();
-    /** @type {HTMLElement} */ (b.closest('li')).classList.add('done');
-  });
-
+  // Erste Schritte (kurz, zur Bedienung; Aktionen aus STEPS) und Experimente (eigener Abschnitt) mit derselben
+  // Mechanik (lib/common/js/ablauf.js). Experimente setzen den Zustand über die Link-Adresse.
+  /**
+   * Link-Adresse zur Laufzeit anwenden: applyHashTo ersetzt die Bereiche des Zustands, an die die Bedienelemente
+   * gebunden sind; deshalb auf eine Kopie anwenden und die Felder in die bestehenden Objekte übernehmen.
+   * @param {string} h
+   */
+  const anwenden = (h) => {
+    /** @type {Zustand} */
+    const neu = JSON.parse(JSON.stringify(state));
+    neu.pg.famPref = state.pg.famPref;
+    if (!applyHashTo(neu, h, DEFAULTS)) return;
+    zustandPruefen(neu);
+    Object.assign(state.pg, neu.pg); Object.assign(state.poly, neu.poly); Object.assign(state.view, neu.view);
+    state.blick = neu.blick; if (!state.blick) viewKey = null; // Kamera bleibt, die Markierung des Blicks geht
+    state.selected = null; state.zoneSel = []; state.pgSel = [];
+    for (const c of checks) c();
+    eingabe('poly-broken').checked = !!state.poly.broken;
+    $('row-wulffrot').hidden = !state.view.wulff;
+    auswahl('sys-select').value = state.poly.system;
+    syncPicker(); refreshPolyControls(); syncLattice(); syncSliders();
+    setMode(neu.mode);
+    render();
+    if (state.blick) { const b = state.blick; requestAnimationFrame(() => selectView('d' + (b - 1))); }
+    else if (isPhone()) setFig('a');
+  };
+  const aktionen = {
+    pg1: STEPS.p1, pg2: STEPS.p2, pg3: STEPS.p3, pg4: STEPS.p4,
+    poly1: STEPS[1], poly2: STEPS[2], poly3: STEPS[3], poly4: STEPS[4],
+  };
+  const skriptUrl = (/** @type {string} */ anker) => `skript.html#${anker}`;
+  einstieg = ablaufKarte($('ablauf'), ERSTE_SCHRITTE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, liste: false, beiAbschluss: closeIntro });
+  experimente = ablaufKarte($('experimente'), ABLAEUFE, { anwenden, adresse: stateToHash, aktionen, skriptUrl });
+  einstieg.modus(state.mode); experimente.modus(state.mode);
 
   $('copy-link').addEventListener('click', async () => {
     const btn = $('copy-link');

@@ -148,6 +148,34 @@ select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-r
 .steps .linkbtn { display: block; margin-top: 5px; }
 .steps li.done > b { color: var(--accent); }
 .intro-foot { margin: 12px 0 0; font-size: 0.78rem; color: var(--muted); }
+/* Geführte Abläufe (js/ablauf.js): Lernexperimente in der Karte „Erste Schritte“ */
+.ablauf-hinweis { margin: 0 0 8px; font-size: 0.84rem; color: var(--muted); }
+.ablauf-liste { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; font-size: 0.86rem; }
+.ablauf-liste li::marker { color: var(--accent); font-weight: 600; }
+.ablauf-liste li.done .linkbtn { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.ablauf-kopf { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 0.86rem; }
+.ablauf-fortschritt { color: var(--muted); font-size: 0.78rem; }
+.ablauf-frage { margin: 8px 0; font-size: 0.9rem; }
+.ablauf-frage:focus { outline: none; }
+.ablauf-frage:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.ablauf-vermutung { display: grid; gap: 6px; margin: 0 0 8px; }
+.ablauf-vermutung button { text-align: left; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 7px; padding: 6px 10px; font-size: 0.85rem; cursor: pointer; }
+.ablauf-vermutung button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.ablauf-vermutung button[aria-disabled="true"] { cursor: default; }
+.ablauf-tun:disabled { opacity: 0.45; cursor: default; }
+.ablauf-why { margin: -4px 0 8px; font-size: 0.78rem; color: var(--muted); }
+.ablauf-vermutung button.richtig { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.ablauf-vermutung button.falsch { color: var(--muted); border-style: dashed; box-shadow: none; border-color: var(--line); }
+.ablauf-marke { color: var(--accent); font-weight: 600; white-space: nowrap; }
+.ablauf-deine { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
+.ablauf-tun { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.ablauf-ergebnis p { margin: 6px 0; font-size: 0.86rem; }
+.ablauf-beobachtung { font-weight: 600; }
+.ablauf-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ablauf-nav .linkbtn:disabled { opacity: 0.45; cursor: default; }
+@media (pointer: coarse) {
+  .ablauf-vermutung button { min-height: 40px; }
+}
 /* Hilfen: Tooltip (Laptop), ⓘ-Erklärungen (Touch) */
 .tip {
   position: fixed; z-index: 50; max-width: 320px; padding: 7px 10px; border-radius: 7px; pointer-events: none;

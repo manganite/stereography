@@ -6,8 +6,13 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Experimente; Erste Schritte mit gemeinsamer Mechanik** (#77, crystallography-common#87): Neuer Abschnitt „Experimente“ mit kleinen Lernexperimenten: erst eine Vermutung wählen, dann per Knopf ausprobieren, dann Beobachtung und kurze Erklärung mit Link ins Skript, dazu „Vorher/Nachher“. „Punktgruppen“: allgemeine und spezielle Lage in 4*mm* (8, 4 oder 1 Pol), Drehinversion 4̄ gegen 4/*m* (4 oder 8 Pole), Laue-Klasse von 4̄. „Kristallformen“: Lage der Pole bei Prisma, Pyramide und Dipyramide (tetragonal), Flächenzahl von {110} in *m*3̄*m* (12) und von {111} in 4̄3*m* (4 statt 8 in *m*3̄*m*). Die „Erste Schritte“ sind die bisherigen Bedienschritte mit derselben Mechanik (je Knopf, überspringbar); der letzte nennt die Experimente. Texte in `js/hilfetexte.js`, ein Test prüft Adressen, Anker und Aussagen gegen die App. Gemeinsame Mechanik aus `lib/common/js/ablauf.js`. Der Abschnitt hat eine eigene Hilfe (ⓘ).
+
 ### Geändert
 
+- **Gemeinsame Grundlage** auf crystallography-common v0.11.0: geführte Abläufe (`ablauf.js`) für Experimente und Erste Schritte; die Klasse `.sr` steht jetzt in `base.css`.
 - **Moduswahl mit der Tastatur** (crystallography-common#68, Leitfaden Abschn. 5.4): Die Knöpfe „Punktgruppen“ und „Kristallformen“ verhalten sich jetzt wie Tabs. Pfeiltasten links und rechts, Pos1 und Ende wechseln den Modus. Nur der gewählte Modus liegt im Fokus-Ablauf, die Bedienung darunter ist mit ihm verbunden (`aria-controls`). Das `<main>` bleibt Hauptlandmarke.
 - **Gemeinsame Grundlage** auf crystallography-common v0.10.0: `modusTabs` und der gemeinsame Helfer `esc`, der jetzt die eigenen `attr()` in `js/main.js` und `js/skriptlinks.js` ersetzt (Tooltips und Titel unverändert). Die Stellen mit `innerHTML` sind durchgesehen (crystallography-common#64). Werte aus dem Link gelangen nicht roh hinein; sie werden in den Tabellen der App nachgeschlagen, sind Schalter oder Zahlen in Bereichen, Zonen nach Muster. Gespeicherte Werte werden ebenfalls nicht roh eingesetzt. Ihre vollständige Prüfung folgt mit #96.
 - **Gemeinsame Grundlage** auf crystallography-common v0.9.0 (von v0.7.0, mit v0.8.0 und v0.8.1): Im Quiz gelten die Grenzen für erzeugte Fragen (30 % je Generator, 50 % insgesamt) streng, solange die gewählte Länge erreichbar ist; sonst nie mehr erzeugte als handgeschriebene Fragen. Querstriche (Millersche Indizes, Drehinversionen) werden von Screenreadern als „−“ vorgelesen; die Legende bricht auf dem Telefon um statt unsichtbar zu scrollen. Gemeinsame Regeln für gewählte und gesperrte Knöpfe (v0.8.0) betreffen diese App nicht (Zone und Winkel stehen in `.stereo-tools`, #93).
@@ -19,6 +24,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Behoben
 
+- **Regler Poldistanz ρ** zeigte 1° statt 0°, wenn der Pol auf der Achse im Zentrum lag (z. B. Link mit `rho=0` oder nach dem Einrasten); er reicht jetzt bis 0°.
 - **Eine Prüfung für Link und Speicher** (#96, crystallography-common#63): Laden und Übernehmen gespeicherter Stände (v2–v4) stehen jetzt in `js/zustand.js` (`ausSpeicher`, `speicherStand`). `zustandPruefen()` prüft alle Felder mit ihren Abhängigkeiten, für den Speicher und nach dem Lesen eines Links; Ungültiges wird zum Startwert, Zahlen werden wie im Link in ihre Bereiche gesetzt. Neu geprüft sind unter anderem die Gitterparameter als Zahlen (ein ungültiger Wert liess die App hängen), Aufstellung der monoklinen Gruppen, Lage des Pols, Projektionsrichtung, Abstände der Formen, Zonen und das Netz. Aus dem Speicher kommen nur die Felder des Zustands. Gültige Stände und Links verhalten sich wie bisher (verglichen). Rundlauf-Tests (`tests/rundlauf.test.mjs`): Zustand → Link → Zustand, Zustand → Speicher → Zustand, alte Stände v2–v4, verdorbene Stände, Zurücksetzen vor und nach dem Neuladen.
 - **Gitterparameter** (#95): Winkel, die zusammen kein Gitter ergeben (z. B. α = β = 60°, γ = 150° bei „Alle Parameter frei“ oder triklin), erzeugten stillschweigend ein Gitter mit anderen Parametern. Jetzt bleibt der Regler beim letzten gültigen Wert stehen, und ein Hinweis nennt den Grund; fast flache Zellen sind ebenfalls ausgeschlossen. Links mit solchen Winkeln erhalten die Winkel der Vorgabe, gespeicherte Stände das Gitter der Vorgabe.
 

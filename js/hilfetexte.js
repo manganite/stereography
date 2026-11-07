@@ -71,6 +71,11 @@ export const TIPS = {
 /** ⓘ-Erklärungen: je Abschnitt ein Einleitungssatz und die Elemente, deren Texte gezeigt werden. */
 export const SECTIONS = [
   {
+    heading: '#sec-experimente > summary',
+    intro: 'Kleine Versuche: erst eine Vermutung wählen, dann per Knopf ausprobieren. „Vorher zeigen“ vergleicht mit der Ansicht davor.',
+    ids: [],
+  },
+  {
     heading: '#ctl-pg > h2',
     intro: 'Punktgruppe antippen: Das Stereogramm zeigt ihr Symmetriegerüst. Gruppen mit zwei Aufstellungen (z. B. 32) bieten darunter die Wahl der Aufstellung an.',
     ids: [],
@@ -102,3 +107,153 @@ export const SECTIONS = [
 export const LABELS = {
   'zone-btn': 'Zone', 'angle-btn': 'Winkel', 'angle-btn-3d': 'Winkel', 'view-oblique': 'Ansichten in 3D', 'ctl-ex-dists': 'Abstände der Formen', 'break-mode': 'Art des Symmetriebruchs',
 };
+
+/** @import { Ablauf } from '../lib/common/js/ablauf.js' */
+/**
+ * Erste Schritte (lib/common/js/ablauf.js mit liste: false, Leitfaden Abschn. 5.3): je Modus vier kurze
+ * Schritte zur Bedienung, ohne Vermutung. Die Handlungen sind Aktionen der App (js/main.js), weil sie Ansichten
+ * und die Auswahl einer Fläche setzen, die nicht in der Adresse stehen. Der letzte Schritt nennt die Experimente.
+ * @type {Ablauf[]}
+ */
+export const ERSTE_SCHRITTE = [
+  {
+    id: 'einstieg-pg', modus: 'pg', titel: 'Erste Schritte',
+    schritte: [
+      { frage: '<b>Punktgruppe wählen.</b> Das Stereogramm zeigt ihr Symmetriegerüst: Drehachsen als Symbole, Spiegelebenen als kräftige Grosskreise.', handlung: { text: '4<i>mm</i> wählen', aktion: 'pg1' } },
+      { frage: '<b>Ausgangspol ziehen.</b> Alle Operationen der Gruppe wirken auf ihn; in allgemeiner Lage entstehen so viele Pole, wie die Gruppe Operationen hat, bei 4<i>mm</i> acht. Nahe einer Spiegelebene oder Achse rastet er ein: spezielle Lage, weniger Pole.', handlung: { text: 'Auf eine Spiegelebene setzen', aktion: 'pg2' } },
+      { frage: '<b>Drehung oder Spiegelung?</b> Farbig erscheinen die Pole gleicher Händigkeit (aus Drehungen) in einer Farbe, die Spiegelbilder in der anderen.', handlung: { text: 'Farben einschalten', aktion: 'pg3' } },
+      { frage: '<b>Symbol lesen.</b> Das Symbol nennt die Symmetrie entlang der Blickrichtungen, bei 4<i>mm</i> [001], ⟨100⟩ und ⟨110⟩. Mit „Blick“ unter der 3D-Ansicht schaut man entlang einer von ihnen. Kleine Versuche dazu stehen unter „Experimente“.', handlung: { text: 'Entlang [001] sehen', aktion: 'pg4' } },
+    ],
+  },
+  {
+    id: 'einstieg-poly', modus: 'poly', titel: 'Erste Schritte',
+    schritte: [
+      { frage: '<b>Kristall wählen.</b> Der Galenit (PbS) steht im Zentrum einer Kugel; jede Fläche hat eine Normale.', handlung: { text: 'Galenit laden', aktion: 'poly1' } },
+      { frage: '<b>Fläche antippen.</b> Eine Fläche in der 3D-Ansicht antippen: Ihr Pol im Stereogramm leuchtet auf, und umgekehrt.', handlung: { text: 'Fläche (001) zeigen', aktion: 'poly2' } },
+      { frage: '<b>Projektion verfolgen.</b> Die Normale trifft die Kugel im Flächenpol; der Strahl zum Südpol schneidet die Äquatorebene im Punkt des Stereogramms. Pol oben: Punkt, unten: Kreis.', handlung: { text: 'Seitlich ansehen', aktion: 'poly3' } },
+      { frage: '<b>Symmetrie erkennen.</b> Das Symmetriegerüst von <i>m</i><span class="ov">3</span><i>m</i> erklärt, warum die Pole so liegen. Im Tab „Punktgruppen“ wirkt es auf einen einzelnen Pol. Kleine Versuche dazu stehen unter „Experimente“.', handlung: { text: 'Gerüst einblenden', aktion: 'poly4' } },
+    ],
+  },
+];
+
+/**
+ * Lernexperimente im Abschnitt „Experimente“ (lib/common/js/ablauf.js, Leitfaden Abschn. 5.3): erst vermuten,
+ * dann die Handlung (Link-Adresse), dann Beobachtung und Erklärung. Themen: Pole in allgemeiner und spezieller
+ * Lage, Drehinversion 4̄ gegen 4/m, Laue-Klasse, Lage der Pole bei Prisma, Pyramide und Dipyramide,
+ * Flächenzahl einer Form. tests/ablauf.test.mjs prüft Adressen, Anker und Aussagen gegen die App.
+ * @type {Ablauf[]}
+ */
+export const ABLAEUFE = [
+  {
+    id: 'lage', modus: 'pg', titel: 'Allgemeine und spezielle Lage',
+    schritte: [
+      {
+        frage: '4<i>mm</i> hat 8 Operationen. Wie viele Pole ergibt ein Ausgangspol in allgemeiner Lage, also auf keinem Symmetrieelement?',
+        vermutung: ['4', '8', '16'], richtig: 1,
+        handlung: { text: '4<i>mm</i> wählen', hash: '#m=pg&g=4mm' },
+        beobachtung: '8 Pole.',
+        erklaerung: 'Jede Operation bringt den Pol an eine andere Stelle: so viele Pole wie Operationen.',
+        skript: 'allgemein',
+      },
+      {
+        frage: 'Wie viele sind es, wenn der Pol auf einer Spiegelebene liegt?',
+        vermutung: ['8', '4', '2'], richtig: 1,
+        handlung: { text: 'Pol auf eine Spiegelebene setzen', hash: '#m=pg&g=4mm&az=0' },
+        beobachtung: '4 Pole: Je zwei fallen auf der Spiegelebene zusammen.',
+        erklaerung: 'Die Spiegelung hält den Pol fest. Zahl der Pole mal Ordnung der Lagesymmetrie ergibt die Ordnung der Gruppe: 4 · 2 = 8.',
+        skript: 'multiplizitaet',
+      },
+      {
+        frage: 'Und auf der 4-zähligen Drehachse, in der Mitte des Stereogramms?',
+        vermutung: ['4', '2', '1'], richtig: 2,
+        handlung: { text: 'Pol auf die Drehachse setzen', hash: '#m=pg&g=4mm&rho=0' },
+        beobachtung: 'Ein einziger Pol: Alle 8 Operationen halten ihn fest.',
+        erklaerung: 'Das ist die Form {001}, ein Pedion.',
+        skript: 'lage-pol',
+      },
+    ],
+  },
+  {
+    id: 'drehinversion', modus: 'pg', titel: 'Drehinversion <span class="ov">4</span> und 4/<i>m</i>',
+    schritte: [
+      {
+        frage: 'Wie viele Pole erzeugt die Drehinversionsachse <span class="ov">4</span> aus einem allgemeinen Pol?',
+        vermutung: ['2', '4', '8'], richtig: 1,
+        handlung: { text: '<span class="ov">4</span> wählen', hash: '#m=pg&g=-4' },
+        beobachtung: '4 Pole, abwechselnd oben (Punkt) und unten (Kreis).',
+        erklaerung: 'Jede Anwendung dreht um 90° und invertiert: Der Pol wechselt dabei die Halbkugel.',
+        skript: 'drehinversion',
+      },
+      {
+        frage: 'Und 4/<i>m</i>, eine 4-zählige Drehachse mit Spiegelebene senkrecht dazu?',
+        vermutung: ['4', '8'], richtig: 1,
+        handlung: { text: '4/<i>m</i> wählen', hash: '#m=pg&g=4/m' },
+        beobachtung: '8 Pole: Über jedem Punkt liegt ein Kreis, das Spiegelbild in der unteren Halbkugel.',
+        erklaerung: '4/<i>m</i> hat 8 Operationen: die 4 von <span class="ov">4</span> und dazu die Drehungen um 90° und 270°, die Spiegelung <i>m</i> und die Inversion <span class="ov">1</span>. Deshalb sind es doppelt so viele Pole.',
+        skript: 'untergruppe',
+      },
+    ],
+  },
+  {
+    id: 'laue', modus: 'pg', titel: 'Laue-Klasse',
+    schritte: [
+      {
+        frage: 'Die Laue-Klasse ist die Punktgruppe zusammen mit dem Inversionszentrum. Zu welcher Laue-Klasse gehört <span class="ov">4</span>?',
+        vermutung: ['<span class="ov">4</span>', '4/<i>m</i>', '4/<i>mmm</i>'], richtig: 1,
+        handlung: { text: '<span class="ov">4</span> wählen', hash: '#m=pg&g=-4' },
+        beobachtung: 'Die Kenndaten nennen die Laue-Klasse 4/<i>m</i>.',
+        erklaerung: '<span class="ov">4</span> zusammen mit <span class="ov">1</span> ergibt 4/<i>m</i>; ebenso 4 und 4/<i>m</i> selbst. Drei Punktgruppen, eine Laue-Klasse.',
+        skript: 'eigenschaften',
+      },
+    ],
+  },
+  {
+    id: 'prisma', modus: 'poly', titel: 'Prisma, Pyramide, Dipyramide',
+    schritte: [
+      {
+        frage: 'Wo liegen im Stereogramm die Pole der Flächen eines tetragonalen Prismas?',
+        vermutung: ['auf dem Grundkreis', 'nur in der oberen Halbkugel', 'oben und unten'], richtig: 0,
+        handlung: { text: 'Tetragonales Prisma zeigen', hash: '#m=form&sys=tetragonal&f=4/mmm:c10&offen=1' },
+        beobachtung: 'Auf dem Grundkreis: Die Flächen sind parallel zur 4-zähligen Achse, ihre Normalen liegen in der Äquatorebene.',
+        skript: 'form',
+      },
+      {
+        frage: 'Und die Pole der tetragonalen Pyramide {111} in 4<i>mm</i>?',
+        vermutung: ['auf dem Grundkreis', 'nur in der oberen Halbkugel', 'oben und unten'], richtig: 1,
+        handlung: { text: 'Tetragonale Pyramide zeigen', hash: '#m=form&sys=tetragonal&f=4mm:b8&offen=1' },
+        beobachtung: 'Nur oben (Punkte).',
+        erklaerung: 'Ohne Spiegelebene senkrecht zur Achse bleibt jede Fläche auf ihrer Seite; die Pyramide {111} liegt ganz oben, {11<span class="ov">1</span>} läge ganz unten.',
+        skript: 'form',
+      },
+      {
+        frage: 'Und die Pole der tetragonalen Dipyramide {111} in 4/<i>mmm</i>?',
+        vermutung: ['auf dem Grundkreis', 'nur in der oberen Halbkugel', 'oben und unten'], richtig: 2,
+        handlung: { text: 'Tetragonale Dipyramide zeigen', hash: '#m=form&sys=tetragonal&f=4/mmm:e14' },
+        beobachtung: 'Oben und unten: Über jedem Punkt liegt ein Kreis.',
+        erklaerung: 'Die Spiegelebene senkrecht zur Achse bildet die obere Pyramide auf die untere ab.',
+        skript: 'form',
+      },
+    ],
+  },
+  {
+    id: 'flaechenzahl', modus: 'poly', titel: 'Wie viele Flächen?',
+    schritte: [
+      {
+        frage: 'Wie viele Flächen hat die Form {110} in <i>m</i><span class="ov">3</span><i>m</i>?',
+        vermutung: ['6', '8', '12'], richtig: 2,
+        handlung: { text: '{110} zeigen', hash: '#m=form&sys=kubisch&f=m-3m:c40' },
+        beobachtung: '12 Flächen: das Rhombendodekaeder.',
+        erklaerung: 'Alle Vertauschungen und Vorzeichen von 1, 1, 0 ergeben 12 Normalen.',
+        skript: 'multiplizitaet',
+      },
+      {
+        frage: '{111} ist in <i>m</i><span class="ov">3</span><i>m</i> ein Oktaeder mit 8 Flächen. Wie viele Flächen hat {111} in <span class="ov">4</span>3<i>m</i>?',
+        vermutung: ['8', '4'], richtig: 1,
+        handlung: { text: '{111} in <span class="ov">4</span>3<i>m</i> zeigen', hash: '#m=form&sys=kubisch&f=-43m:a33' },
+        beobachtung: '4 Flächen: ein Tetraeder.',
+        erklaerung: 'Die Operationen von <span class="ov">4</span>3<i>m</i> vertauschen die Indizes und ändern immer eine gerade Zahl von Vorzeichen. Flächen wie (<span class="ov">1</span><span class="ov">1</span><span class="ov">1</span>) mit einer ungeraden Zahl gehören deshalb nicht zur Form von (111); sie bilden ein zweites Tetraeder.',
+        skript: 'multiplizitaet',
+      },
+    ],
+  },
+];

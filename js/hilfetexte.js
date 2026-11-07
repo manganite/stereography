@@ -71,6 +71,11 @@ export const TIPS = {
 /** ⓘ-Erklärungen: je Abschnitt ein Einleitungssatz und die Elemente, deren Texte gezeigt werden. */
 export const SECTIONS = [
   {
+    heading: '#sec-experimente > summary',
+    intro: 'Kleine Versuche: erst eine Vermutung wählen, dann per Knopf ausprobieren. „Vorher zeigen“ vergleicht mit der Ansicht davor.',
+    ids: [],
+  },
+  {
     heading: '#ctl-pg > h2',
     intro: 'Punktgruppe antippen: Das Stereogramm zeigt ihr Symmetriegerüst. Gruppen mit zwei Aufstellungen (z. B. 32) bieten darunter die Wahl der Aufstellung an.',
     ids: [],
@@ -143,12 +148,20 @@ export const ABLAEUFE = [
     id: 'lage', modus: 'pg', titel: 'Allgemeine und spezielle Lage',
     schritte: [
       {
-        frage: '4<i>mm</i> hat 8 Operationen; ein Ausgangspol in allgemeiner Lage ergibt 8 Pole. Wie viele sind es, wenn er auf einer Spiegelebene liegt?',
+        frage: '4<i>mm</i> hat 8 Operationen. Wie viele Pole ergibt ein Ausgangspol in allgemeiner Lage, also auf keinem Symmetrieelement?',
+        vermutung: ['4', '8', '16'], richtig: 1,
+        handlung: { text: '4<i>mm</i> wählen', hash: '#m=pg&g=4mm' },
+        beobachtung: '8 Pole.',
+        erklaerung: 'Jede Operation bringt den Pol an eine andere Stelle: so viele Pole wie Operationen.',
+        skript: 'allgemein',
+      },
+      {
+        frage: 'Wie viele sind es, wenn der Pol auf einer Spiegelebene liegt?',
         vermutung: ['8', '4', '2'], richtig: 1,
         handlung: { text: 'Pol auf eine Spiegelebene setzen', hash: '#m=pg&g=4mm&az=0' },
         beobachtung: '4 Pole: Je zwei fallen auf der Spiegelebene zusammen.',
         erklaerung: 'Die Spiegelung hält den Pol fest. Zahl der Pole mal Ordnung der Lagesymmetrie ergibt die Ordnung der Gruppe: 4 · 2 = 8.',
-        skript: 'speziell',
+        skript: 'multiplizitaet',
       },
       {
         frage: 'Und auf der 4-zähligen Drehachse, in der Mitte des Stereogramms?',
@@ -161,10 +174,10 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'drehinversion', modus: 'pg', titel: 'Drehinversion 4̄ und 4/m',
+    id: 'drehinversion', modus: 'pg', titel: 'Drehinversion <span class="ov">4</span> und 4/<i>m</i>',
     schritte: [
       {
-        frage: 'Wie viele Pole erzeugt die Drehinversionsachse 4̄ aus einem allgemeinen Pol?',
+        frage: 'Wie viele Pole erzeugt die Drehinversionsachse <span class="ov">4</span> aus einem allgemeinen Pol?',
         vermutung: ['2', '4', '8'], richtig: 1,
         handlung: { text: '<span class="ov">4</span> wählen', hash: '#m=pg&g=-4' },
         beobachtung: '4 Pole, abwechselnd oben (Punkt) und unten (Kreis).',
@@ -176,7 +189,7 @@ export const ABLAEUFE = [
         vermutung: ['4', '8'], richtig: 1,
         handlung: { text: '4/<i>m</i> wählen', hash: '#m=pg&g=4/m' },
         beobachtung: '8 Pole: Über jedem Punkt liegt ein Kreis, das Spiegelbild in der unteren Halbkugel.',
-        erklaerung: '4/<i>m</i> enthält 4̄ als Untergruppe; dazu kommen die Drehungen und die Spiegelung.',
+        erklaerung: '4/<i>m</i> hat 8 Operationen: die 4 von <span class="ov">4</span> und dazu die Drehungen um 90° und 270°, die Spiegelung <i>m</i> und die Inversion <span class="ov">1</span>. Deshalb sind es doppelt so viele Pole.',
         skript: 'untergruppe',
       },
     ],
@@ -205,15 +218,16 @@ export const ABLAEUFE = [
         skript: 'form',
       },
       {
-        frage: 'Und die Pole einer tetragonalen Pyramide?',
+        frage: 'Und die Pole der tetragonalen Pyramide {111} in 4<i>mm</i>?',
         vermutung: ['auf dem Grundkreis', 'nur in der oberen Halbkugel', 'oben und unten'], richtig: 1,
         handlung: { text: 'Tetragonale Pyramide zeigen', hash: '#m=form&sys=tetragonal&f=4mm:b8&offen=1' },
-        beobachtung: 'Nur oben (Punkte): Eine Pyramide ist offen, ihre Flächen zeigen alle nach oben.',
+        beobachtung: 'Nur oben (Punkte).',
+        erklaerung: 'Ohne Spiegelebene senkrecht zur Achse bleibt jede Fläche auf ihrer Seite; die Pyramide {111} liegt ganz oben, {11<span class="ov">1</span>} läge ganz unten.',
         skript: 'form',
       },
       {
-        frage: 'Und die einer tetragonalen Dipyramide?',
-        vermutung: ['nur in der oberen Halbkugel', 'oben und unten, übereinander'], richtig: 1,
+        frage: 'Und die Pole der tetragonalen Dipyramide {111} in 4/<i>mmm</i>?',
+        vermutung: ['auf dem Grundkreis', 'nur in der oberen Halbkugel', 'oben und unten'], richtig: 2,
         handlung: { text: 'Tetragonale Dipyramide zeigen', hash: '#m=form&sys=tetragonal&f=4/mmm:e14' },
         beobachtung: 'Oben und unten: Über jedem Punkt liegt ein Kreis.',
         erklaerung: 'Die Spiegelebene senkrecht zur Achse bildet die obere Pyramide auf die untere ab.',
@@ -237,7 +251,7 @@ export const ABLAEUFE = [
         vermutung: ['8', '4'], richtig: 1,
         handlung: { text: '{111} in <span class="ov">4</span>3<i>m</i> zeigen', hash: '#m=form&sys=kubisch&f=-43m:a33' },
         beobachtung: '4 Flächen: ein Tetraeder.',
-        erklaerung: 'Ohne Inversion gehört (<span class="ov">1</span><span class="ov">1</span><span class="ov">1</span>) nicht zur Form von (111); sie bildet ein eigenes, zweites Tetraeder.',
+        erklaerung: 'Die Operationen von <span class="ov">4</span>3<i>m</i> vertauschen die Indizes und ändern immer eine gerade Zahl von Vorzeichen. Flächen wie (<span class="ov">1</span><span class="ov">1</span><span class="ov">1</span>) mit einer ungeraden Zahl gehören deshalb nicht zur Form von (111); sie bilden ein zweites Tetraeder.',
         skript: 'multiplizitaet',
       },
     ],

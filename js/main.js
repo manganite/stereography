@@ -1654,14 +1654,17 @@ function init() {
     if (!applyHashTo(neu, h, DEFAULTS)) return;
     zustandPruefen(neu);
     Object.assign(state.pg, neu.pg); Object.assign(state.poly, neu.poly); Object.assign(state.view, neu.view);
+    state.blick = neu.blick; if (!state.blick) viewKey = null; // Kamera bleibt, die Markierung des Blicks geht
     state.selected = null; state.zoneSel = []; state.pgSel = [];
     for (const c of checks) c();
     eingabe('poly-broken').checked = !!state.poly.broken;
     $('row-wulffrot').hidden = !state.view.wulff;
+    auswahl('sys-select').value = state.poly.system;
     syncPicker(); refreshPolyControls(); syncLattice(); syncSliders();
     setMode(neu.mode);
     render();
-    if (isPhone()) setFig('a');
+    if (state.blick) { const b = state.blick; requestAnimationFrame(() => selectView('d' + (b - 1))); }
+    else if (isPhone()) setFig('a');
   };
   const aktionen = {
     pg1: STEPS.p1, pg2: STEPS.p2, pg3: STEPS.p3, pg4: STEPS.p4,

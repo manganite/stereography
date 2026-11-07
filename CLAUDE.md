@@ -62,10 +62,10 @@ stabil halten).
   Abschn. 5.4 (Galenit); „Punktgruppen“ an 4*mm* (allgemeine und spezielle Lage, Händigkeit, Blick entlang [001]).
   Wer die App zum ersten Mal öffnet, sieht also zuerst die Schritte zu „Punktgruppen“.
 - **Experimente, eigener Abschnitt** (7.11.2026, Thomas, crystallography-common#87): Lernexperimente
-  (vermuten, ausprobieren, erklären) stehen im Abschnitt „Experimente“; die Erste Schritte bleiben die
+  (vermuten, ausprobieren, erklären) stehen im Abschnitt „Experimente“; die „Erste Schritte“ bleiben die
   vier Bedienschritte je Modus, mit derselben Mechanik aus `lib/common/js/ablauf.js`. Texte in
-  `js/hilfetexte.js`; `tests/ablauf.test.mjs` prüft jede Aussage über Polzahlen und Flächenzahlen gegen
-  `pointgroups.js` und `forms.js`.
+  `js/hilfetexte.js`; `tests/ablauf.test.mjs` prüft die Pol- und Flächenzahlen, die Lage der Pole (oben,
+  unten, Grundkreis), Formen und Formnamen gegen `pointgroups.js` und `forms.js`. Neue Aussagen dort mitprüfen.
 
 ### Kristallformen
 - **Aufstellung B im Formenmodus** (v1.12.0): 312, 31m, 3̄1m, 4̄m2, 6̄2m. Erzeugte Quizfragen bleiben
@@ -157,8 +157,8 @@ stabil halten).
   nicht (deshalb ⓘ).
 - **Link zur Laufzeit anwenden** (Experimente): Die Bedienelemente halten Verweise auf `state.pg`,
   `state.poly` und `state.view`. `anwenden` in `js/main.js` liest den Link deshalb in eine Kopie und
-  überträgt die Felder mit `Object.assign`, statt die Objekte zu ersetzen; danach Schalter, Regler und
-  Auswahl neu abgleichen.
+  überträgt die Felder mit `Object.assign`, statt die Objekte zu ersetzen; dazu `state.blick`. Danach
+  Schalter, Regler, Auswahl (auch das Kristallsystem, das `refreshPolyControls` nicht setzt) neu abgleichen.
 - **Vergleich berechneter Stile:** verschobene `<link>` im Kopf ausfiltern (weiteres in der
   `CLAUDE.md` von common).
 

@@ -31,7 +31,7 @@ test('Quiz: Speicher im Browser behält seinen Namen (sonst ginge der Stand der 
 
 test('Experimente: Speicher im Browser behält seinen Namen und beginnt mit dem Präfix der App', () => {
   const main = read('js/main.js');
-  assert.match(main, /ablaufKarte\(\$\('experimente'\), ABLAEUFE, \{[^}]*speicher: 'stereo-experimente'/);
+  assert.match(main, /ablaufKarte\(\$\('experimente'\), [^{]*\{[^}]*speicher: 'stereo-experimente'/);
   assert.match(main, /alleEinstellungenZuruecksetzen\('stereo'\)/);
 });
 

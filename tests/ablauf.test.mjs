@@ -5,6 +5,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { pruefeAblaeufe } from '../lib/common/js/ablauf.js';
 import { ABLAEUFE, ERSTE_SCHRITTE } from '../js/hilfetexte.js';
+import { ERZEUGTE, POLZAHL, FLAECHENZAHL, POLZAHL_PARAMS, FLAECHENZAHL_PARAMS, polzahlDaten, ordnung, lage } from '../js/experimente.js';
+import { variante } from '../lib/common/js/ablauf.js';
 import { createState, applyHashTo, hashOf, generalPole } from '../js/scene.js';
 import { buildPointGroup, orbit } from '../js/pointgroups.js';
 import { siteOf, distinctPoles } from '../js/sitesym.js';
@@ -25,19 +27,20 @@ function gueltig(h) {
   return [...new URLSearchParams(h.slice(1))].every(([k, v]) => neu.get(k) === v);
 }
 /** @param {string} id @param {number} i */
-const adresse = (id, i) => /** @type {string} */ (ABLAEUFE.find((a) => a.id === id)?.schritte[i].handlung?.hash);
+const adresse = (id, i) => /** @type {string} */ (ABLAEUFE.find((a) => a.id === id)?.schritte?.[i].handlung?.hash);
 /** @param {string} h */
 const zustand = (h) => { const s = createState(); applyHashTo(s, h, DEFAULTS); return s; };
 
 test('Lernexperimente und Erste Schritte: Daten vollständig, Adressen gültig, Modi und Anker bekannt', () => {
   const o = { hashGueltig: gueltig, modi: ['pg', 'poly'], anker: ANKER, aktionen: AKTIONEN };
-  assert.deepEqual(pruefeAblaeufe(ABLAEUFE, o), []);
+  assert.deepEqual(pruefeAblaeufe([...ABLAEUFE, ...ERZEUGTE], o), []);
   assert.deepEqual(pruefeAblaeufe(ERSTE_SCHRITTE, o), []);
   for (const m of ['pg', 'poly']) {
     assert.ok(ABLAEUFE.filter((a) => a.modus === m).length >= 2, m);
     const e = ERSTE_SCHRITTE.filter((a) => a.modus === m);
     assert.equal(e.length, 1, m);
-    assert.ok(e[0].schritte.length >= 3 && e[0].schritte.length <= 4 && e[0].schritte.every((s) => !s.vermutung), m);
+    const sch = e[0].schritte ?? [];
+    assert.ok(sch.length >= 3 && sch.length <= 4 && sch.every((s) => !s.vermutung), m);
   }
 });
 
@@ -91,3 +94,40 @@ test('Regler ρ reicht bis 0°, damit er einen Pol auf der Achse (z. B. rho=0 im
   assert.equal(r?.[1], '0');
   assert.equal(zustand(adresse('lage', 2)).pg.theta, 0);
 });
+
+test('Erzeugte Experimente: Polzahl stimmt für jede Gruppe und Lage mit der App', () => {
+  assert.ok(POLZAHL_PARAMS.length >= 60, `${POLZAHL_PARAMS.length} Parameter`);
+  for (const p of POLZAHL_PARAMS) {
+    const d = polzahlDaten(p);
+    const s = zustand(d.hash);
+    assert.equal(s.pg.id, d.id, p);
+    const info = buildPointGroup(s.pg.id);
+    const site = siteOf(s.pg.id, info, generalPole(s));
+    assert.equal(lage(site.fs ?? '1').symbol, lage(d.fs).symbol, `${p}: Lagesymmetrie`);
+    assert.equal(lage(d.fs).ordnung, site.stab.length, `${p}: Ordnung der Lagesymmetrie ${d.fs}`);
+    assert.equal(distinctPoles(orbit(info.ops, site.p)).length, d.mult, `${p}: Zahl der Pole`);
+    assert.equal(site.stab.length * d.mult, ordnung(d.id), `${p}: Pole mal Lagesymmetrie`);
+    const sch = variante(POLZAHL, p).schritte[0];
+    assert.equal(sch.vermutung?.[/** @type {number} */ (sch.richtig)], String(d.mult), p);
+    assert.equal(new Set(sch.vermutung).size, sch.vermutung?.length, `${p}: Antworten verschieden`);
+  }
+  // jede Art der Lage kommt vor
+  const arten = new Set(POLZAHL_PARAMS.map((p) => lage(polzahlDaten(p).fs).symbol));
+  for (const fs of ['1', 'm', '2', '3', '4', '6', 'mm2', '3m', '4mm', '6mm']) assert.ok(arten.has(fs), fs);
+});
+
+test('Erzeugte Experimente: Flächenzahl stimmt für jede Form mit dem Katalog und der Bahn', () => {
+  assert.ok(FLAECHENZAHL_PARAMS.length >= 20, `${FLAECHENZAHL_PARAMS.length} Parameter`);
+  for (const id of FLAECHENZAHL_PARAMS) {
+    const sch = variante(FLAECHENZAHL, id).schritte[0];
+    const s = zustand(/** @type {string} */ (sch.handlung?.hash));
+    const e = /** @type {import('../js/forms.js').Formeintrag} */ (entryById(s.poly.entryBySys[s.poly.system]));
+    assert.equal(e.id, id, 'die Adresse zeigt diese Form');
+    const n = distinctPoles(orbit(buildPointGroup(e.pg).ops, /** @type {import('../lib/common/js/typen.js').Vec3} */ (e.hkl.map(Number)))).length;
+    assert.equal(n, e.mult, `${id}: Bahn der Normalen`);
+    assert.equal(sch.vermutung?.[/** @type {number} */ (sch.richtig)], String(e.mult), id);
+    assert.equal(lage(e.fs).ordnung * e.mult, ordnung(e.pg), `${id}: Flächensymmetrie mal Flächenzahl`);
+    assert.equal(new Set(sch.vermutung).size, sch.vermutung?.length, `${id}: Antworten verschieden`);
+  }
+});
+

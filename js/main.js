@@ -18,6 +18,7 @@ import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
 import { TIPS, SECTIONS, LABELS, ERSTE_SCHRITTE, ABLAEUFE } from './hilfetexte.js';
+import { ERZEUGTE } from './experimente.js';
 import { ablaufKarte } from '../lib/common/js/ablauf.js';
 import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, abschnitt, grafik, element, elemente, modusTabs } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
@@ -1672,7 +1673,7 @@ function init() {
   };
   const skriptUrl = (/** @type {string} */ anker) => `skript.html#${anker}`;
   einstieg = ablaufKarte($('ablauf'), ERSTE_SCHRITTE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, liste: false, beiAbschluss: closeIntro });
-  experimente = ablaufKarte($('experimente'), ABLAEUFE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, speicher: 'stereo-experimente' });
+  experimente = ablaufKarte($('experimente'), [...ABLAEUFE, ...ERZEUGTE], { anwenden, adresse: stateToHash, aktionen, skriptUrl, speicher: 'stereo-experimente' });
   einstieg.modus(state.mode); experimente.modus(state.mode);
 
   $('copy-link').addEventListener('click', async () => {

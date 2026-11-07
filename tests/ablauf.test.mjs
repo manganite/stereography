@@ -85,3 +85,9 @@ test('Lernexperimente: Beobachtungen stimmen mit der App', () => {
   // Prisma und Pyramide ohne Ergänzungsformen gezeigt (offen), damit nur ihre Pole erscheinen
   for (const i of [0, 1]) assert.ok(zustand(adresse('prisma', i)).poly.open);
 });
+
+test('Regler ρ reicht bis 0°, damit er einen Pol auf der Achse (z. B. rho=0 im Experiment) richtig anzeigt', () => {
+  const r = /<input type="range" id="pg-theta" min="(\d+)"/.exec(readFileSync(new URL('../index.html', import.meta.url), 'utf8'));
+  assert.equal(r?.[1], '0');
+  assert.equal(zustand(adresse('lage', 2)).pg.theta, 0);
+});

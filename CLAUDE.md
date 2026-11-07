@@ -66,6 +66,13 @@ stabil halten).
   vier Bedienschritte je Modus, mit derselben Mechanik aus `lib/common/js/ablauf.js`. Texte in
   `js/hilfetexte.js`; `tests/ablauf.test.mjs` prüft die Pol- und Flächenzahlen, die Lage der Pole (oben,
   unten, Grundkreis), Formen und Formnamen gegen `pointgroups.js` und `forms.js`. Neue Aussagen dort mitprüfen.
+- **Erzeugte Experimente** (7.11.2026, Thomas, #114, crystallography-common#92): Code in `js/experimente.js`
+  (keine Datendatei, weil die Aufgaben aus Rechnungen entstehen). Aufgaben nur, wenn die App an der Adresse genau
+  das zeigt, wonach gefragt wird: Polzahl ohne die monoklinen Lagen, deren Vertreter aus dem Formenkatalog im
+  Modus „Punktgruppen“ anders liegt; Flächenzahl ohne Formen, die die App unter der Holoedrie zeigt (z. B. {111}
+  in 432 als Oktaeder von m3̄m), und ohne trigonale und hexagonale Formen (vierzählige Indizes). Die
+  Lagesymmetrie steht in den Wyckoff-Tabellen orientiert („..m“, „4m.m“); `lage()` liest daraus Achse, Zahl der
+  Spiegelebenen, Symbol und Ordnung.
 
 ### Kristallformen
 - **Aufstellung B im Formenmodus** (v1.12.0): 312, 31m, 3̄1m, 4̄m2, 6̄2m. Erzeugte Quizfragen bleiben

@@ -22,6 +22,7 @@ const FILES = [
   'js/aufstellungen.js',
   'js/bild3d.js',
   'js/examples.js',
+  'js/experimente.js',
   'js/formen.js',
   'js/forms.js',
   'js/hilfetexte.js',

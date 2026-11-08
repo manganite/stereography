@@ -5,6 +5,7 @@ import { CATALOG, formEig } from '../js/forms.js';
 import { FORM_TYPES, PRISMEN, EIG_SCHREIBWEISE } from '../js/formen.js';
 import { POINT_GROUPS, buildPointGroup } from '../js/pointgroups.js';
 import { buildCrystal, latticeOps, hklOrbit, LATTICE_DEFAULTS, SYSTEM_OF, habitOf } from '../js/polyhedra.js';
+import { createState, formListed } from '../js/scene.js';
 
 /** @import { Vec3, Richtung } from '../lib/common/js/typen.js' */
 /** @import { Palette } from '../js/scene.js' */
@@ -61,18 +62,23 @@ test('jede Form ergibt einen geschlossenen Körper (Euler = 2), keine Hauptfläc
   }
 });
 
-test('reduzierte Formliste ohne Flächensymmetrie: 78 Formen (67 in Aufstellung A)', () => {
+test('reduzierte Formliste ohne Flächensymmetrie: 82 Formen (69 in Aufstellung A)', () => {
   // unabhängig von js/formen.js: dieselbe Punktgruppe in beiden Aufstellungen
   /** @type {Record<string, string>} */
   const gleich = { '-62m': '-6m2', '-4m2': '-42m' };
   /** @param {string} s */
   const norm = (s) => gleich[s] || s;
+  // Eigensymmetrie im hexagonalen System, Form im trigonalen: trigonales und hexagonales Prisma (#118)
+  const hexagonal = new Set(['6', '-6', '6/m', '622', '6mm', '-6m2', '6/mmm']);
   const listed = CATALOG.filter((e) => {
     const g = groupOf(e.pg);
-    return e.mult === buildPointGroup(g.id).order || norm(formEig(e)) === norm(g.hm);
+    return e.mult === buildPointGroup(g.id).order || norm(formEig(e)) === norm(g.hm) || (g.system === 'trigonal' && hexagonal.has(norm(formEig(e))));
   });
-  assert.equal(listed.length, 78);
-  assert.equal(listed.filter((e) => !e.aufst).length, 67);
+  assert.equal(listed.length, 82);
+  assert.equal(listed.filter((e) => !e.aufst).length, 69);
+  // dieselbe Liste wie in der App
+  const st = createState();
+  assert.deepEqual(CATALOG.filter((e) => formListed(st, e)).map((e) => e.id), listed.map((e) => e.id));
 });
 
 test('Flächenform der kubischen Formen passt zum Namen (Drei- bzw. Vierecke)', () => {

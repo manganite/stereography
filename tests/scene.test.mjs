@@ -105,3 +105,15 @@ test('Erste Schritte: gespeicherte Modi lesen, alter Wert „zu“ gilt als „p
   assert.deepEqual([...introSeen('zu,pg')].sort(), ['pg', 'poly']);
   assert.deepEqual([...introSeen('pg,poly')].sort(), ['pg', 'poly']);
 });
+
+test('Link auf ein Prisma im trigonalen System zeigt dieses Prisma (#118)', () => {
+  // Eigensymmetrie 6̄2m bzw. 6/mmm liegt im hexagonalen System: Die Liste führt die Prismen unter ihrer Gruppe
+  for (const f of ['321:b18', '312:b18', '-3m1:b25', '-31m:b25']) {
+    const { st, C } = sceneFor(`#m=form&sys=trigonal&f=${f}`);
+    assert.equal(currentEntryId(st), f, f);
+    assert.equal(/** @type {AppKristall} */ (C).faces.filter((x) => Math.abs(x.normal[2]) < 1e-9).length, f.endsWith('b18') ? 3 : 6, `${f}: Prismenflächen`);
+  }
+  // Pedion und Pinakoid erscheinen nur mit „Flächensymmetrie zeigen“; ohne muster=1 die Vorgabe des Systems
+  assert.equal(currentEntryId(sceneFor('#m=form&sys=tetragonal&f=4mm:a1').st), '4/mmm:f14');
+  assert.equal(currentEntryId(sceneFor('#m=form&sys=tetragonal&f=4mm:a1&muster=1').st), '4mm:a1');
+});

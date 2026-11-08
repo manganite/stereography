@@ -6,6 +6,7 @@ import { POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart
 import {
   buildCrystal, zoneOf, zoneByUvw, zoneKey, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, SYSTEM_OF,
   STRETCH_DIRS, stretchDir, constrainLattice, latticeFromParams, stretchLattice, paramsOfLattice, gitterGueltig,
+  GITTER_BEREICH,
 } from './polyhedra.js';
 import { CATALOG, formEig, entryById } from './forms.js';
 import { EIG_SCHREIBWEISE } from './formen.js';
@@ -184,14 +185,22 @@ export const DEFAULT_ENTRY = {
 };
 /** @type {Map<string, number>} */
 export const groupOrder = new Map();
-/** @param {Zustand} state @param {Formeintrag} e */
+/** @param {string} s */
+const eigNorm = (s) => EIG_SCHREIBWEISE[s] || s;
+/** Kristallsystem einer Eigensymmetrie; null für die Grenzgruppen ∞m und ∞/mm (Pedion, Pinakoid). @param {string} eig */
+const eigSystem = (eig) => POINT_GROUPS.find((g) => eigNorm(g.hm) === eigNorm(eig))?.system ?? null;
+/**
+ * Steht die Form ohne „Flächensymmetrie zeigen“ in der Liste? Die allgemeine Form jeder Punktgruppe, die Formen
+ * unter der Gruppe ihrer Eigensymmetrie und die Formen, deren Eigensymmetrie zu einem anderen Kristallsystem gehört
+ * (trigonales und hexagonales Prisma im trigonalen System, #118), unter ihrer Gruppe im Katalog.
+ * @param {Zustand} state @param {Formeintrag} e
+ */
 export function formListed(state, e) {
   if (state.poly.faceSym) return true;
   const g = groupOf(e.pg);
   if (!groupOrder.has(g.id)) groupOrder.set(g.id, buildPointGroup(g.id).order);
-  /** @param {string} s */
-  const norm = (s) => EIG_SCHREIBWEISE[s] || s;
-  return e.mult === groupOrder.get(g.id) || norm(formEig(e)) === norm(g.hm);
+  const eigSys = eigSystem(formEig(e));
+  return e.mult === groupOrder.get(g.id) || eigNorm(formEig(e)) === eigNorm(g.hm) || (eigSys != null && eigSys !== g.system);
 }
 /** @param {Zustand} state @returns {string} */
 export const currentEntryId = (state) => {
@@ -369,9 +378,10 @@ export function applyHashTo(state, hash, DEFAULTS) {
     if (!presets.some((p) => p.id === state.poly.presetId)) state.poly.presetId = presets[0].id;
     /** @type {Gitterparameter} */
     const lat = { ...LATTICE_DEFAULTS[state.poly.system], ...(ex && ex.sys === state.poly.system ? ex.lat : {}) };
+    // Bereiche (GITTER_BEREICH) erst, wenn feststeht, ob das Gitter frei ist (weiter) oder unverzerrt
     for (const k of LAT_KEYS) {
       if (!q.has(k)) continue;
-      const v = k === 'ba' || k === 'ca' ? num(q.get(k), 0.25, 3) : num(q.get(k), 60, 150);
+      const v = num(q.get(k), -Infinity, Infinity);
       if (v != null) lat[k] = v;
     }
     bools(URL_FORM, state.poly);
@@ -390,17 +400,22 @@ export function applyHashTo(state, hash, DEFAULTS) {
     }
     // br=1 ohne gültige Streckung: alle Gitterparameter frei (Links bis v1.4.0 meinen genau das)
     const sysNow = state.poly.system;
-    if (state.poly.broken && !state.poly.example && !stretched) {
-      state.poly.breakMode = 'free';
-      state.poly.freeLats = { [sysNow]: lat };
-    } else state.poly.breakMode = 'stretch';
+    const frei = state.poly.broken && !state.poly.example && !stretched;
+    state.poly.breakMode = frei ? 'free' : 'stretch';
+    // Zahlen ausserhalb ihres Bereichs: nächster gültiger Wert (Leitfaden 5.2)
+    const bereich = GITTER_BEREICH[frei ? 'frei' : 'unverzerrt'];
+    for (const k of LAT_KEYS) lat[k] = Math.min(bereich[k][1], Math.max(bereich[k][0], lat[k]));
+    if (frei) state.poly.freeLats = { [sysNow]: lat };
     // Winkel, die zusammen kein Gitter ergeben: die Winkel der Vorgabe (#95). Geprüft wird das verwendete Gitter:
     // alle Parameter frei oder auf die Bedingungen des Systems gesetzt (lat ist auch das freie Gitter).
     if (!gitterGueltig(state.poly.breakMode === 'free' ? lat : constrainLattice(lat, sysNow))) {
       const vorgabe = { ...LATTICE_DEFAULTS[sysNow], ...(ex && ex.sys === sysNow ? ex.lat : {}) };
       for (const k of /** @type {const} */ (['al', 'be', 'ga'])) lat[k] = vorgabe[k];
     }
-    state.poly.lats[sysNow] = constrainLattice(lat, sysNow);
+    // unverzerrtes Gitter; beim freien Gitter (weitere Bereiche) in die Bereiche des unverzerrten gesetzt
+    const unverzerrt = constrainLattice(lat, sysNow);
+    for (const k of LAT_KEYS) { const [lo, hi] = GITTER_BEREICH.unverzerrt[k]; unverzerrt[k] = Math.min(hi, Math.max(lo, unverzerrt[k])); }
+    state.poly.lats[sysNow] = unverzerrt;
     if (q.has('abstand')) state.poly.auxDist = num(q.get('abstand'), 0.3, 3) ?? state.poly.auxDist;
     if (q.has('gr')) state.poly.size = num(q.get('gr'), 0.3, 1.2) ?? state.poly.size;
     // nur eigene Schlüssel: w=toString o. ä. aus dem Prototyp gilt als kein Werkzeug

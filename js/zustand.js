@@ -4,7 +4,7 @@
 // Abhängigkeiten (z. B. die Winkel eines Gitters gemeinsam, #95); main.js ruft sie auch nach dem Lesen eines Links.
 
 import { POINT_GROUPS } from './pointgroups.js';
-import { LATTICE_DEFAULTS, constrainLattice, gitterGueltig, orientationPresets } from './polyhedra.js';
+import { LATTICE_DEFAULTS, GITTER_BEREICH, constrainLattice, gitterGueltig, orientationPresets } from './polyhedra.js';
 import { exampleById } from './examples.js';
 import { createState, phiFromOld, URL_VIEW, URL_PG, URL_FORM, LAT_KEYS } from './scene.js';
 
@@ -29,19 +29,17 @@ function felderUebernehmen(ziel, quelle) {
 
 /**
  * Gitter eines Systems: alle fünf Parameter Zahlen und, auf die Bedingungen des Systems gesetzt, ein gültiges
- * Gitter (#95); sonst null. Das unverzerrte Gitter in den Bereichen der Link-Adresse (b/a, c/a 0,25 … 3, Winkel
- * 60 … 150°). Das freie Gitter (frei) bleibt, wie es ist: Es entsteht auch aus einer Streckung („Alle Parameter
- * frei“ übernimmt das gestreckte Gitter) und kann dann ausserhalb dieser Bereiche liegen (Review #105).
+ * Gitter (#95); sonst null. Zahlen werden in die Bereiche der Regler gesetzt (GITTER_BEREICH): das unverzerrte
+ * Gitter in die engeren, das freie Gitter (frei) in die weiteren, in die jede Streckung passt (#100, #106).
  * @param {unknown} lat @param {string} sys @param {boolean} frei @returns {Gitterparameter | null}
  */
 function gitterOderNull(lat, sys, frei) {
   if (!istObjekt(lat)) return null;
+  const bereich = GITTER_BEREICH[frei ? 'frei' : 'unverzerrt'];
   /** @type {Record<string, number>} */
   const g = {};
   for (const k of LAT_KEYS) {
-    const v = frei ? num(lat[k], -Infinity, Infinity) : k === 'ba' || k === 'ca' ? num(lat[k], 0.25, 3) : num(lat[k], 60, 150);
-    // frei: Längen positiv, Winkel zwischen 0° und 180° (gitterGueltig prüft nur die Winkel zusammen)
-    if (v != null && frei && !(k === 'ba' || k === 'ca' ? v > 0 : v > 0 && v < 180)) return null;
+    const v = num(lat[k], ...bereich[k]);
     if (v == null) return null; // fehlt oder keine Zahl: das System beginnt mit seiner Vorgabe
     g[k] = v;
   }

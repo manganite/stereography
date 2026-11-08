@@ -6,7 +6,7 @@ import {
 import { SYSTEMS, SYSTEM_NAMEN } from './punktgruppen.js';
 import {
   habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, isHexSystem, auxFormName,
-  STRETCH_DIRS, stretchDir, naechsterGueltiger,
+  STRETCH_DIRS, stretchDir, naechsterGueltiger, GITTER_BEREICH,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig } from './forms.js';
 import { FORM_TYPES, EIG_SCHREIBWEISE } from './formen.js';
@@ -198,7 +198,9 @@ if (!sysOK(state.poly.system)) state.poly.system = 'kubisch';
  * Ohne „Flächensymmetrie zeigen“ enthält die Auswahl je Punktgruppe nur die allgemeine Form und die
  * Formen, deren Eigensymmetrie die Punktgruppe selbst ist (z. B. Würfel nur in m3̄m, Tetraeder nur
  * in 4̄3m). Geometrisch gleiche Formen anderer Punktgruppen unterscheiden sich erst durch die
- * Flächensymmetrie; sie erscheinen, sobald diese gezeigt wird. (Absprache mit dem Autor.)
+ * Flächensymmetrie; sie erscheinen, sobald diese gezeigt wird. (Absprache mit dem Autor.) Ausnahme: Formen,
+ * deren Eigensymmetrie zu einem anderen Kristallsystem gehört (trigonales und hexagonales Prisma im trigonalen
+ * System), stehen unter ihrer Gruppe im Katalog (#118, Entscheidung Thomas, 8.11.2026).
  */
 // Formen und Beispiele des aktuellen Zustands (Kern in scene.js)
 /** @param {Formeintrag} e */
@@ -304,6 +306,26 @@ function refreshPolyControls() {
 }
 
 /**
+ * b/a und c/a mit logarithmischem Regler (#100, Entscheidung Thomas 8.11.2026): Der Regler steht auf ln(Wert), so liegt
+ * 1 in der Mitte zwischen 1/2 und 2, und der weite Bereich 0,125 … 6 bleibt im üblichen Bereich fein einstellbar.
+ */
+const LOG_REGLER = new Set(['ba', 'ca']);
+/**
+ * Wert eines Gitterreglers. Die Schritte des logarithmischen Reglers zählen ab dem Minimum und treffen das Maximum
+ * meist nicht; der letzte Schritt davor gilt deshalb als Maximum (sonst endete c/a bei 2,99 statt 3). b/a und c/a
+ * werden auf 0,01 gerundet wie in Anzeige und Link: Die Schritte ab ln(Minimum) treffen 1 und andere runde Werte nicht
+ * (Review #122: c/a = 1,0006 statt 1 brach im kubischen System die Symmetrie, während überall 1,00 stand).
+ * @param {string} k @param {HTMLInputElement} regler
+ */
+const reglerWert = (k, regler) => {
+  const v = Number(regler.max) - Number(regler.value) < Number(regler.step) ? Number(regler.max) : Number(regler.value);
+  if (!LOG_REGLER.has(k)) return v;
+  // gerundet, aber im Bereich: 0,125 ergäbe 0,12 bzw. 0,13 je nach Rundungsfehler, gültig ist 0,13
+  const lo = Math.ceil(Math.exp(Number(regler.min)) * 100 - 1e-6) / 100, hi = Math.floor(Math.exp(Number(regler.max)) * 100 + 1e-6) / 100;
+  return Math.min(hi, Math.max(lo, Math.round(Math.exp(v) * 100) / 100));
+};
+
+/**
  * Box „Gitter“: ohne Symmetriebruch nur die freien Parameter des Systems; mit Symmetriebruch alle
  * Parameter, bei „Streckung“ gesperrt (sie zeigen das gestreckte Gitter), bei „Alle Parameter frei“ bedienbar.
  */
@@ -325,6 +347,13 @@ function syncLattice() {
   $('lat-fixed').hidden = free.size > 0;
   $('lat-locked').hidden = mode !== 'stretch';
   $('lat-title').hidden = !mode;
+  // Bereiche der Regler: mit Symmetriebruch weiter, damit jede Streckung hineinpasst (#100, #106)
+  const bereich = GITTER_BEREICH[mode ? 'frei' : 'unverzerrt'];
+  for (const k of LAT) {
+    const [lo, hi] = bereich[k];
+    eingabe('lat-' + k).min = String(LOG_REGLER.has(k) ? Math.log(lo) : lo);
+    eingabe('lat-' + k).max = String(LOG_REGLER.has(k) ? Math.log(hi) : hi);
+  }
   latHinweis(false);
   syncLatSliders();
 }
@@ -351,11 +380,20 @@ function latHinweis(an) {
   el.textContent = an ? 'Diese Winkel ergeben kein Gitter (oder nur ein fast flaches): Jeder Winkel muss kleiner sein als die Summe der beiden anderen, alle drei zusammen kleiner als 360°.' : '';
 }
 
-function syncLatSliders() {
+/**
+ * Regler des Gitters auf das wirksame Gitter setzen. ausser: der gerade bewegte logarithmische Regler bleibt, wo er
+ * ist; sonst setzte ihn der gerundete Wert zurück, und bei kleinen Werten (1 % von 0,13 rundet auf 0,13) käme die
+ * Pfeiltaste nicht weiter.
+ * @param {string} [ausser]
+ */
+function syncLatSliders(ausser) {
   const lat = S.effectiveLat(state);
   for (const k of LAT) {
-    eingabe('lat-' + k).value = String(lat[k]);
-    $('lat-' + k + '-out').textContent = k.length === 2 && k !== 'ba' && k !== 'ca' ? lat[k].toFixed(0) + '°' : lat[k].toFixed(2);
+    const text = k.length === 2 && k !== 'ba' && k !== 'ca' ? lat[k].toFixed(0) + '°' : lat[k].toFixed(2);
+    if (k !== ausser) eingabe('lat-' + k).value = String(LOG_REGLER.has(k) ? Math.log(lat[k]) : lat[k]);
+    // Screenreader lesen den Wert, nicht ln(Wert) des logarithmischen Reglers
+    eingabe('lat-' + k).setAttribute('aria-valuetext', text);
+    $('lat-' + k + '-out').textContent = text;
   }
 }
 
@@ -1411,14 +1449,14 @@ function init() {
       if (mode === 'stretch') return; // gesperrt: das Gitter legt die Streckung fest
       const lat = mode === 'free' ? S.freeLat(state) : currentLat();
       if (!mode) Object.assign(lat, constrainLattice(lat, state.poly.system));
-      const regler = /** @type {HTMLInputElement} */ (ev.target), wunsch = Number(regler.value);
+      const regler = /** @type {HTMLInputElement} */ (ev.target), wunsch = reglerWert(k, regler);
       // Winkel, die zusammen kein Gitter ergeben: Der Regler bleibt am letzten gültigen Wert vor der Grenze stehen,
       // der Grund steht darunter (#95)
       const wert = naechsterGueltiger(lat, /** @type {keyof Gitterparameter} */ (k), wunsch, Number(regler.step) || 1);
       latHinweis(wert !== wunsch);
       const geaendert = wert !== lat[k];
       lat[k] = wert;
-      syncLatSliders(); if (geaendert) render();
+      syncLatSliders(LOG_REGLER.has(k) ? k : undefined); if (geaendert) render();
     });
   }
   eingabe('poly-broken').checked = state.poly.broken;

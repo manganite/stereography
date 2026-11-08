@@ -70,7 +70,7 @@ stabil halten).
 - **Startgruppe** mm2. **Erste Schritte je Modus** (4.11.2026, Issue #77): „Kristallformen“ nach Borchardt-Ott
   Abschn. 5.4 (Galenit); „Punktgruppen“ an 4*mm* (allgemeine und spezielle Lage, Händigkeit, Blick entlang [001]).
   Wer die App zum ersten Mal öffnet, sieht also zuerst die Schritte zu „Punktgruppen“. Die Handlungen bleiben
-  Aktionen der App, auch für die Hilfeseite (8.11.2026, crystallography-common#24): Sie wählen Flächen und Ansichten,
+  Aktionen der App, auch für die Hilfeseite (Thomas, 8.11.2026, crystallography-common#24): Sie wählen Flächen und Ansichten,
   die nicht in der Adresse stehen, und zeigen auf dem Telefon die passende Tafel; die Bilder bekommen ihren Zustand
   über `bild`. Über Link-Adressen gäbe es auf der Hilfeseite „In der App zeigen“, dafür ginge das verloren.
 - **Experimente, eigener Abschnitt** (7.11.2026, Thomas, crystallography-common#87): Lernexperimente
@@ -182,8 +182,8 @@ stabil halten).
 
 ## Fallstricke
 
-- **Deploy:** `deploy.yml` kopiert ausdrücklich `index.html skript.html quiz.html manifest.webmanifest
-  sw.js LICENSE js lib icons`. Neue Ordner oder Seiten dort und in der Offline-Liste von `sw.js`
+- **Deploy:** `deploy.yml` kopiert ausdrücklich `index.html skript.html quiz.html hilfe.html manifest.webmanifest
+  sw.js LICENSE js lib icons hilfe`. Neue Ordner oder Seiten dort und in der Offline-Liste von `sw.js`
   ergänzen (ein Test vergleicht beide; v1.3.0 hatte das Skript zuerst nicht veröffentlicht).
 - **WebGL-Kontexte:** Browser erlauben nur wenige. Das Skript hält 3D nur nahe dem sichtbaren Bereich
   offen (`View3D.destroy`, Kamera gemerkt).

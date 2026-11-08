@@ -43,7 +43,7 @@ stabil halten).
   nicht. Bei Beispielkristallen ausgeblendet (Zentralabstände würden nicht affin mitgestreckt).
   Umschalten in die trigonale Form im Katalog bewusst nicht umgesetzt.
 - **Winkel des Gitters gemeinsam geprüft** (5.11.2026, Thomas): Nicht jede Kombination dreier Winkel
-  zwischen 60° und 150° ergibt ein Gitter; bisher entstand stillschweigend eine andere Geometrie. Ein Regler
+  im Bereich der Regler (60–150°, mit Symmetriebruch 50–150°) ergibt ein Gitter; bisher entstand stillschweigend eine andere Geometrie. Ein Regler
   bleibt deshalb beim letzten gültigen Wert stehen, der Grund steht darunter; so entspricht das Eingestellte
   immer dem Dargestellten. Link mit solchen Winkeln: Winkel der Vorgabe; gespeicherter Zustand: Gitter der Vorgabe. Fast flache
   Zellen sind ausgeschlossen (`GITTER_MIN` in `js/polyhedra.js`: V/(abc) ≥ 0,1).
@@ -51,8 +51,17 @@ stabil halten).
   `js/zustand.js` prüft jedes Feld des Zustands, für den Speicher (`ausSpeicher`, mit Übernahme der Stände v2–v4)
   und nach dem Lesen eines Links. Neue Felder gehören dorthin und in `tests/rundlauf.test.mjs`. Zahlen werden
   wie im Link seit jeher auf den nächsten gültigen Wert gesetzt, nach Leitfaden 5.2 (Entscheidung Thomas,
-  6.11.2026, crystallography-common#84). Das freie Gitter
-  bleibt ungeschnitten, weil „Alle Parameter frei“ das gestreckte Gitter übernimmt.
+  6.11.2026, crystallography-common#84).
+- **Bereiche der Gitterregler je Modus** (8.11.2026, Thomas, #100, #106): „Alle Parameter frei“ übernimmt das
+  gestreckte Gitter, und das lag oft ausserhalb der Regler (c/a bis 0,125 bzw. 6, γ bis 53,13°). Statt das Gitter
+  beim Umschalten zu begrenzen (der Kristall spränge) sind die Bereiche mit Symmetriebruch weiter: c/a 0,125–6,
+  Winkel 50–150°, so weit wie eine Streckung des unverzerrten Gitters kommt; unverzerrt bleibt es bei c/a 0,25–3
+  und 60–150° (gleiche Bereiche hätten das Problem nur verschoben: c/a = 6, s = 0,5 ergäbe 12). b/a 0,4–3 überall,
+  im Link wie am Regler. Eine Quelle: `GITTER_BEREICH` in `js/polyhedra.js` für Regler, Link und Speicher; der
+  Speicher setzt auch das freie Gitter in seine Bereiche. b/a und c/a mit logarithmischem Regler (Wert ln x), damit
+  der übliche Bereich trotz 0,125–6 fein einstellbar bleibt; `aria-valuetext` nennt den Wert. Fallstrick: Die
+  Schritte des Reglers zählen ab ln(Minimum) und treffen 1 nicht; der Wert wird deshalb auf 0,01 gerundet wie im
+  Link, und der bewegte Regler wird danach nicht neu gesetzt (`reglerWert`, `syncLatSliders` in `js/main.js`).
 - **Einrasten** des Ausgangspols immer (Achse 4°, Spiegelebene 3°), kein Schalter.
 - **Bildexport** (24.10.): Stereogramm als Kopie (PNG), SVG, PNG (2048 px); 3D als Kopie und PNG. Kein
   Formatmenü; auf dem Telefon kein Export.
@@ -127,8 +136,9 @@ stabil halten).
   `aufstellungen.js`, `examples.js`, `quiz-bank.js`, `hilfetexte.js`. Die Erzeugenden der Punktgruppen
   (`ERZEUGENDE` in `pointgroups.js`) und der Aufbau des Katalogs mit Kennung und Stelle (`forms.js`) sind
   Code; Kennungen und Reihenfolge des Katalogs sind Schnittstelle (Links `f=…`). Je Fall entschieden, bleibt
-  im Code: `HOLOHEDRY`, `LATTICE_DEFAULTS`, `FREE_PARAMS`, `STRETCH_DIRS` in `polyhedra.js` (Rechengrundlagen
-  und Voreinstellungen der App, an die Gitterparameter gebunden), `SKRIPT_ANCHORS` in `skriptlinks.js`
+  im Code: `HOLOHEDRY`, `LATTICE_DEFAULTS`, `FREE_PARAMS`, `STRETCH_DIRS`, `GITTER_BEREICH` in `polyhedra.js`
+  (Rechengrundlagen und Voreinstellungen der App, an die Gitterparameter gebunden; `GITTER_BEREICH` folgt aus
+  den Streckungen), `SKRIPT_ANCHORS` in `skriptlinks.js`
   (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js`,
   `ALT_SETTINGS` in `sitesym.js` (bewusst zweite, unabhängige Angabe nach ITA, gegen die die Tests den
   Katalog prüfen), `DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen

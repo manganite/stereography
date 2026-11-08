@@ -85,6 +85,18 @@ export const FREE_PARAMS = {
 };
 
 /**
+ * Bereiche der Gitterparameter in Reglern, Link und Speicher (#100, #106, Entscheidung Thomas 8.11.2026).
+ * Unverzerrt: wie bisher. Mit Symmetriebruch (Streckung und „Alle Parameter frei“) weiter, sodass jede Streckung
+ * eines unverzerrten Gitters mit s = 0,5 … 2 hineinpasst: c/a bis 0,25 / 2 bzw. 3 · 2 (Streckung ⊥ c), γ bis
+ * 53,13° (⟨110⟩, s = 2). „Alle Parameter frei“ übernimmt das gestreckte Gitter, ohne dass es springt.
+ * @type {{ unverzerrt: Record<keyof Gitterparameter, [number, number]>, frei: Record<keyof Gitterparameter, [number, number]> }}
+ */
+export const GITTER_BEREICH = {
+  unverzerrt: { ba: [0.4, 3], ca: [0.25, 3], al: [60, 150], be: [60, 150], ga: [60, 150] },
+  frei: { ba: [0.4, 3], ca: [0.125, 6], al: [50, 150], be: [50, 150], ga: [50, 150] },
+};
+
+/**
  * Richtungen, entlang derer der Kristall gestreckt werden kann: je Blickrichtung des Kristallsystems
  * (Positionen des Hermann-Mauguin-Symbols, Borchardt-Ott Tab. 7.3) eine Gitterrichtung [uvw], aber nur
  * dort, wo die Streckung die Symmetrie ändert. Streckungen entlang c (tetragonal, trigonal, hexagonal)

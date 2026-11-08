@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, applyHashTo, hashOf, currentExample, effectiveLat } from '../js/scene.js';
-import { STRETCH_DIRS } from '../js/polyhedra.js';
+import { STRETCH_DIRS, LATTICE_DEFAULTS } from '../js/polyhedra.js';
 import { ausSpeicher, speicherStand, zustandPruefen } from '../js/zustand.js';
 import { POINT_GROUPS } from '../js/pointgroups.js';
 import { EXAMPLES } from '../js/examples.js';
@@ -145,8 +145,8 @@ test('Rundlauf: Zurücksetzen vor und nach dem Neuladen gleich (Speicher und Lin
 });
 
 test('Rundlauf: Zustände aus der Bedienung bleiben im Speicher (Streckung → „Alle Parameter frei“, Review #105)', () => {
-  // main.js übernimmt beim Umschalten auf „frei“ das gestreckte Gitter (effectiveLat); es kann ausserhalb der
-  // Bereiche der Regler liegen, z. B. kubisch, ⟨110⟩, s = 2: γ ≈ 53°
+  // main.js übernimmt beim Umschalten auf „frei“ das gestreckte Gitter (effectiveLat); es lag früher ausserhalb der
+  // Bereiche der Regler, z. B. kubisch, ⟨110⟩, s = 2: γ ≈ 53° (#100, #106), jetzt in den weiteren Bereichen des freien Gitters
   for (const [sys, dirs] of Object.entries(STRETCH_DIRS)) for (const d of dirs) for (const s of [0.5, 2]) {
     const st = createState();
     Object.assign(st.poly, { system: sys, broken: true, breakMode: 'stretch', stretch: { dir: d.id, s } });
@@ -159,10 +159,11 @@ test('Rundlauf: Zustände aus der Bedienung bleiben im Speicher (Streckung → �
   // manipuliert: System als Liste statt Zeichenkette
   assert.equal(ausSpeicher({ v: 4, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.system, 'kubisch');
   assert.equal(ausSpeicher({ v: 4, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.presetId, '001');
-  // freies Gitter mit negativer Länge oder Winkel ≥ 180°: verworfen
-  for (const l of [{ ba: -1, ca: 1, al: 90, be: 90, ga: 90 }, { ba: 1, ca: 1, al: 90, be: 90, ga: 200 }]) {
-    assert.deepEqual(ausSpeicher({ v: 4, pg: {}, view: {}, poly: { freeLats: { kubisch: l } } }).poly.freeLats, {});
-  }
+  // freies Gitter ausserhalb der Bereiche (b/a, c/a 0,4 bzw. 0,125 … 6, Winkel 50 … 150°): nächster gültiger Wert
+  /** @param {object} l */
+  const frei = (l) => ausSpeicher({ v: 4, pg: {}, view: {}, poly: { freeLats: { kubisch: l } } }).poly.freeLats.kubisch;
+  assert.deepEqual(frei({ ba: -1, ca: 9, al: 90, be: 90, ga: 90 }), { ba: 0.4, ca: 6, al: 90, be: 90, ga: 90 });
+  assert.deepEqual(frei({ ba: 1, ca: 0.1, al: 120, be: 40, ga: 200 }), { ba: 1, ca: 0.125, al: 120, be: 50, ga: 150 });
 });
 
 test('Streckfaktor ausserhalb 0,5 … 2: nächster gültiger Wert in Link und Speicher (Leitfaden 5.2, Review #107)', () => {
@@ -178,4 +179,39 @@ test('Streckfaktor ausserhalb 0,5 … 2: nächster gültiger Wert in Link und Sp
     const l = ausLink(`#m=form&sys=kubisch&str=001,${f}`);
     assert.equal(l.poly.stretch.dir, '', `Link s='${f}'`);
   }
+});
+
+test('Gitter nach Streckung in den Bereichen der Regler; „Alle Parameter frei“ übersteht den Link (#100, #106)', () => {
+  // Bereiche unabhängig vom Code: unverzerrt b/a 0,4 … 3, c/a 0,25 … 3, Winkel 60 … 150°; mit Symmetriebruch
+  // c/a 0,125 … 6 und Winkel 50 … 150°
+  /** @type {Record<string, [number, number]>} */
+  const FREI = { ba: [0.4, 3], ca: [0.125, 6], al: [50, 150], be: [50, 150], ga: [50, 150] };
+  const eps = 1e-9;
+  for (const [sys, dirs] of Object.entries(STRETCH_DIRS)) for (const d of dirs) {
+    for (const ca of sys === 'kubisch' ? [1] : [0.25, 0.5, 1, 1.1, 2, 3]) for (const s of [0.5, 0.75, 1.5, 2]) {
+      const st = createState();
+      st.mode = 'poly';
+      Object.assign(st.poly, { system: sys, broken: true, breakMode: 'stretch', stretch: { dir: d.id, s } });
+      st.poly.lats[sys] = { ...LATTICE_DEFAULTS[sys], ca };
+      const l = effectiveLat(st);
+      for (const [k, [lo, hi]] of Object.entries(FREI)) {
+        const v = l[/** @type {keyof typeof l} */ (k)];
+        assert.ok(v >= lo - eps && v <= hi + eps, `${sys} [${d.id}] c/a ${ca} s ${s}: ${k} = ${v}`);
+      }
+      // Wechsel zu „Alle Parameter frei“ wie in main.js; Link und Speicher behalten das Gitter (Link auf 0,01 gerundet)
+      st.poly.freeLats[sys] = l;
+      st.poly.breakMode = 'free';
+      const h = hashOf(st, D), n = ausLink(h);
+      assert.equal(n.poly.breakMode, 'free', h);
+      for (const k of /** @type {const} */ (['ba', 'ca', 'al', 'be', 'ga'])) assert.ok(Math.abs(effectiveLat(n)[k] - l[k]) <= 0.005 + eps, `${h}: ${k}`);
+      assert.equal(hashOf(n, D), h, 'Zustand → Link → Zustand stabil');
+      assert.deepEqual(effectiveLat(neuLaden(st)), l);
+    }
+  }
+  // Link: unverzerrt in den engeren Bereichen, frei in den weiteren; das unverzerrte Gitter eines freien Links in den engeren
+  assert.equal(ausLink('#m=form&sys=orthorhombisch&ba=0.3').poly.lats.orthorhombisch.ba, 0.4);
+  assert.equal(ausLink('#m=form&sys=tetragonal&ca=6').poly.lats.tetragonal.ca, 3);
+  const f = ausLink('#m=form&sys=tetragonal&br=1&ca=7&ga=45');
+  assert.deepEqual([f.poly.freeLats.tetragonal.ca, f.poly.freeLats.tetragonal.ga], [6, 50]);
+  assert.equal(f.poly.lats.tetragonal.ca, 3);
 });

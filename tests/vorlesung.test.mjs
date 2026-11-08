@@ -8,7 +8,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 
 const root = new URL('../', import.meta.url);
 const files = [
-  'index.html', 'skript.html', 'quiz.html', 'README.md',
+  'index.html', 'skript.html', 'quiz.html', 'hilfe.html', 'README.md',
   ...readdirSync(new URL('js/', root)).filter((f) => f.endsWith('.js')).map((f) => `js/${f}`),
   ...readdirSync(new URL('lib/common/js/', root)).filter((f) => f.endsWith('.js')).map((f) => `lib/common/js/${f}`),
 ];

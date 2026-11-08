@@ -8,11 +8,21 @@ const FILES = [
   'index.html',
   'skript.html',
   'quiz.html',
+  'hilfe.html',
   'lib/common/css/app.css',
   'lib/common/css/base.css',
+  'lib/common/css/hilfe.css',
   'lib/common/css/quiz.css',
   'lib/common/css/skript.css',
   'manifest.webmanifest',
+  'hilfe/einstieg-pg-1.png',
+  'hilfe/einstieg-pg-2.png',
+  'hilfe/einstieg-pg-3.png',
+  'hilfe/einstieg-pg-4.png',
+  'hilfe/einstieg-poly-1.png',
+  'hilfe/einstieg-poly-2.png',
+  'hilfe/einstieg-poly-3.png',
+  'hilfe/einstieg-poly-4.png',
   'icons/apple-touch-icon.png',
   'icons/favicon.ico',
   'icons/favicon.svg',
@@ -25,6 +35,8 @@ const FILES = [
   'js/experimente.js',
   'js/formen.js',
   'js/forms.js',
+  'js/hilfe-daten.js',
+  'js/hilfe.js',
   'js/hilfetexte.js',
   'js/linalg.js',
   'js/main.js',
@@ -46,6 +58,7 @@ const FILES = [
   'lib/common/js/ablauf.js',
   'lib/common/js/format.js',
   'lib/common/js/help.js',
+  'lib/common/js/hilfe-seite.js',
   'lib/common/js/quiz-core.js',
   'lib/common/js/quiz-seite.js',
   'lib/common/js/seite.js',
@@ -69,7 +82,7 @@ const FILES = [
 ];
 
 /** Eigenständige Seiten; jeder andere Seitenaufruf (z. B. ./ oder ?sw) führt zur App. */
-const PAGES = ['index.html', 'skript.html', 'quiz.html'];
+const PAGES = ['index.html', 'skript.html', 'quiz.html', 'hilfe.html'];
 
 self.addEventListener('install', (event) => {
   // cache: 'reload' umgeht den HTTP-Cache des Browsers, damit keine Dateien der Vorversion übernommen werden

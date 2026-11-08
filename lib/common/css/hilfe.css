@@ -1,0 +1,24 @@
+/* Hilfeseite (Leitfaden Abschn. 5.3, #24): nach skript.css geladen, gleicher Aufbau wie das Skript. Inhalt aus
+   js/hilfe-seite.js (hilfeHTML). */
+
+.hilfe-modus + .hilfe-modus { margin-top: 64px; }
+.hilfe-anleitung + .hilfe-anleitung, .hilfe-experimente { margin-top: 36px; }
+
+.hilfe-schritte { padding-left: 1.6em; margin: 0 0 12px; }
+.hilfe-schritt { margin: 0 0 22px; }
+.hilfe-schritt::marker { font-weight: 600; color: var(--muted); }
+.hilfe-schritt > p { margin: 0 0 8px; }
+
+/* Bilder sind Ausschnitte der App im hellen Modus mit doppelter Auflösung (tools/hilfe-bilder.mjs); hilfeSeite() setzt
+   die Breite auf die halbe Pixelbreite. Ohne Rahmen der Abbildungen des Skripts: der Ausschnitt hat seinen eigenen. */
+article figure.hilfe-bild { margin: 8px 0 10px; padding: 0; border: 0; background: none; box-shadow: none; }
+.hilfe-bild img { display: block; max-width: 100%; height: auto; border-radius: 10px; }
+
+.hilfe-liste { list-style: none; padding: 0; margin: 0 0 12px; }
+.hilfe-liste > li { padding: 12px 0; border-top: 1px solid var(--line); max-width: 70ch; }
+.hilfe-liste > li:last-child { border-bottom: 1px solid var(--line); }
+.hilfe-erzeugt { color: var(--muted); }
+
+@media print {
+  .hilfe-schritt, .hilfe-liste > li { break-inside: avoid; }
+}

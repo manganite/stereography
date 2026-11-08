@@ -132,8 +132,10 @@ select { width: 100%; padding: 8px 10px; border: 1px solid var(--field); border-
   color: var(--accent); font: 600 0.9rem/1 var(--font-ui); cursor: pointer; padding: 0;
 }
 .helpbtn:hover, .helpbtn[aria-expanded="true"] { border-color: var(--accent); }
+/* „?“ als Link zur Hilfeseite (Leitfaden Abschn. 5.3) */
+a.helpbtn { display: inline-grid; place-items: center; text-decoration: none; }
 @media (pointer: coarse) {
-  .helpbtn { width: 36px; height: 36px; }
+  .helpbtn { width: 40px; height: 40px; }
 }
 .intro { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
 .intro-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }

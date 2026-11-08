@@ -17,8 +17,9 @@ import { View3D, OBLIQUE } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
 import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
-import { TIPS, SECTIONS, LABELS, ERSTE_SCHRITTE, ABLAEUFE } from './hilfetexte.js';
-import { ERZEUGTE } from './experimente.js';
+import { TIPS, SECTIONS, LABELS, ERSTE_SCHRITTE } from './hilfetexte.js';
+import { EXPERIMENTE } from './hilfe-daten.js';
+import { experimentAusAdresse } from '../lib/common/js/hilfe-seite.js';
 import { ablaufKarte } from '../lib/common/js/ablauf.js';
 import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, abschnitt, grafik, element, elemente, modusTabs } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
@@ -1598,9 +1599,9 @@ function init() {
     || state.poly.showPoles !== DEFAULTS.poly.showPoles || state.poly.showLower !== DEFAULTS.poly.showLower;
   if (viewChanged && !abschnitt('sec-view').open) { abschnitt('sec-view').dataset.quiet = '1'; abschnitt('sec-view').open = true; } // nicht als Wahl des Nutzers merken
 
-  // Erste Schritte je Modus: beim ersten Aufruf eines Modus, wegklickbar (× oder „?“), über „?“ wieder zu
-  // öffnen; nicht für den Modus, in dem ein Link die App öffnet (für die Sitzung, nicht gespeichert).
-  // Gespeichert: die gesehenen Modi (S.introSeen).
+  // Erste Schritte je Modus: beim ersten Aufruf eines Modus, wegklickbar; nicht für den Modus, in dem ein Link die
+  // App öffnet (für die Sitzung, nicht gespeichert). Gespeichert: die gesehenen Modi (S.introSeen). „?“ führt zur
+  // Hilfeseite (hilfe.html), dort stehen sie als Anleitung.
   const INTRO_KEY = 'stereo-intro';
   /** @type {Set<string>} */
   let seen = new Set();
@@ -1608,7 +1609,7 @@ function init() {
   /** @type {Set<string>} */
   const viaLink = new Set(hashActive ? [state.mode] : []);
   /** @param {boolean} on */
-  const showIntro = (on) => { $('intro').hidden = !on; $('help-open').setAttribute('aria-expanded', String(on)); if (!on) einstieg?.liste(); };
+  const showIntro = (on) => { $('intro').hidden = !on; if (!on) einstieg?.liste(); };
   const closeIntro = () => {
     showIntro(false);
     seen.add(state.mode);
@@ -1625,11 +1626,6 @@ function init() {
     showIntro(!seen.has(state.mode) && !viaLink.has(state.mode));
   };
   $('intro-close').addEventListener('click', closeIntro);
-  $('help-open').addEventListener('click', () => {
-    if (!$('intro').hidden) { closeIntro(); return; }
-    showIntro(true);
-    /** @type {HTMLElement} */ ($('intro').closest('.side')).scrollTop = 0; $('intro').scrollIntoView({ block: 'nearest' });
-  });
   const isPhone = () => window.matchMedia('(max-width: 719px)').matches;
   /** @param {() => void} fn */
   const afterRender = (fn) => requestAnimationFrame(() => requestAnimationFrame(fn));
@@ -1711,8 +1707,12 @@ function init() {
   };
   const skriptUrl = (/** @type {string} */ anker) => `skript.html#${anker}`;
   einstieg = ablaufKarte($('ablauf'), ERSTE_SCHRITTE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, liste: false, beiAbschluss: closeIntro });
-  experimente = ablaufKarte($('experimente'), [...ABLAEUFE, ...ERZEUGTE], { anwenden, adresse: stateToHash, aktionen, skriptUrl, speicher: 'stereo-experimente' });
+  experimente = ablaufKarte($('experimente'), EXPERIMENTE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, speicher: 'stereo-experimente' });
   einstieg.modus(state.mode); experimente.modus(state.mode);
+  // Von der Hilfeseite: „In der App ausprobieren“ startet ein Experiment (index.html?experiment=<id>#…)
+  experimentAusAdresse(experimente, EXPERIMENTE.map((x) => x.id), () => {
+    const d = abschnitt('sec-experimente'); d.open = true; d.scrollIntoView({ block: 'nearest' });
+  });
 
   $('copy-link').addEventListener('click', async () => {
     const btn = $('copy-link');

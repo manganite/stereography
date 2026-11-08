@@ -1,7 +1,7 @@
 // Gemeinsame Dateien der App-Familie (crystallography-common): Kopie unverändert, eingebunden, Speicher stabil.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { pruefen } from '../tools/common/check.mjs';
 import { SPEICHER } from '../js/quiz-kapitel.js';
@@ -15,13 +15,14 @@ test('lib/common und tools/common entsprechen dem Manifest (Änderungen gehören
 });
 
 test('jede Seite bindet Schriften, base.css und das Stylesheet ihres Seitentyps aus lib/common ein', () => {
-  for (const [seite, typ] of [['index.html', 'app'], ['skript.html', 'skript'], ['quiz.html', 'quiz']]) {
+  // die Hilfeseite sieht aus wie das Skript und lädt hilfe.css danach
+  for (const [seite, ...typen] of [['index.html', 'app'], ['skript.html', 'skript'], ['quiz.html', 'quiz'], ['hilfe.html', 'skript', 'hilfe']]) {
     const html = read(seite);
     const links = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)">/g)].map((m) => m[1]);
-    assert.deepEqual(links, ['lib/common/fonts/fonts.css', 'lib/common/css/base.css', `lib/common/css/${typ}.css`], seite);
+    assert.deepEqual(links, ['lib/common/fonts/fonts.css', 'lib/common/css/base.css', ...typen.map((t) => `lib/common/css/${t}.css`)], seite);
     // eigene Stile der Seite stehen danach (überschreiben die gemeinsamen, nicht umgekehrt)
     const style = html.indexOf('<style>');
-    if (style >= 0) assert.ok(style > html.indexOf(`lib/common/css/${typ}.css`), seite);
+    if (style >= 0) assert.ok(style > html.indexOf(`lib/common/css/${typen.at(-1)}.css`), seite);
   }
 });
 
@@ -37,4 +38,13 @@ test('Experimente: Speicher im Browser behält seinen Namen und beginnt mit dem 
 
 test('keine Kopien gemeinsamer Module mehr in js/', () => {
   for (const f of ['format.js', 'help.js', 'quiz-core.js']) assert.throws(() => read(`js/${f}`), `js/${f}`);
+});
+
+test('Hilfeseite: Modi, abgebildete Bedienelemente und Bilder passen zur App (pruefeHilfe)', async () => {
+  const { pruefeHilfe } = await import('../lib/common/js/hilfe-seite.js');
+  const { HILFE } = await import('../js/hilfe-daten.js');
+  const dateien = readdirSync(new URL('../hilfe/', import.meta.url));
+  assert.deepEqual(pruefeHilfe(HILFE, { html: read('index.html'), dateien }), []);
+  // „?“ führt zur Hilfeseite (Leitfaden Abschn. 5.3)
+  assert.match(read('index.html'), /<a class="helpbtn" id="help-open" href="hilfe\.html"/);
 });

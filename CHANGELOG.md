@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-11-08
+
+Hilfeseite mit den Erste Schritten als bebilderte Anleitungen und der Liste der Experimente; Abschnitt „Experimente“ mit festen und erzeugten Lernexperimenten, Stand wie im Quiz; Moduswahl mit der Tastatur; Werkzeuge Zone und Winkel; eine Prüfung für Link und Speicher; Ansage von Symbolen für Screenreader und Kontraste nach WCAG 2.2; gemeinsame Grundlage v0.15.0.
+
 ### Hinzugefügt
 
 - **Hilfeseite** (crystallography-common#24, #77): „?“ in der Kopfzeile führt jetzt zur Seite `hilfe.html`, aufgebaut wie das Skript. Je Modus die Erste Schritte als Anleitung, jeder Schritt mit einem Bild der Bedienung (Ausschnitt, das Bedienelement umrahmt); danach die Experimente als Liste mit ihrer Frage und „In der App ausprobieren“, das die App öffnet und das Experiment startet. Die Erste Schritte erscheinen in der App weiter beim ersten Aufruf eines Modus, „?“ öffnet sie nicht mehr. Ihre Handlungen bleiben Aktionen der App (sie wählen auch Flächen und zeigen auf dem Telefon die passende Tafel); deshalb gibt es auf der Hilfeseite bei ihnen kein „In der App zeigen“, sondern je Modus „App im Modus … öffnen“. Bilder erzeugt `tools/common/hilfe-bilder.mjs`; ein Test prüft, dass Bilder und abgebildete Bedienelemente da sind.
@@ -353,7 +357,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.13.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.14.0...HEAD
+[1.14.0]: https://github.com/manganite/stereography/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/manganite/stereography/compare/v1.12.1...v1.13.0
 [1.12.1]: https://github.com/manganite/stereography/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/manganite/stereography/compare/v1.11.0...v1.12.0

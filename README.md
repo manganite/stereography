@@ -30,7 +30,7 @@ Teil einer Familie von Lern-Apps mit gemeinsamer Grundlage: [crystallography-com
 - **Verzerrung in zwei Stufen:** Standardmässig sind nur die Gitterparameter frei, die das Kristallsystem zulässt; die Symmetrie bleibt erhalten. Mit „Symmetrie brechen“ sind alle Parameter frei; die App bestimmt dann die verbleibende Punktgruppe und zeigt, in welche Formen die gewählte Form zerfällt (farbig).
 - **Streckung entlang einer Blickrichtung:** Kristall und Gitter entlang einer Blickrichtung des Systems strecken oder stauchen, z. B. den Würfel entlang [111] zum Rhomboeder (m3̄m → 3̄m). Bei trigonaler Restgruppe eines kubischen Kristalls nennt die Infobox die hexagonalen Achsen und die Formen in hexagonalen Indizes.
 - **Blickrichtungen:** Die Symmetrieelemente werden den Positionen des vollen Hermann-Mauguin-Symbols zugeordnet (Klassen äquivalenter Richtungen, z. B. in m3̄m ⟨100⟩, ⟨111⟩, ⟨110⟩) und auf Wunsch in deren Farbe gezeichnet, im Stereogramm, in der 3D-Ansicht, im vollen Symbol und in der nach Blickrichtungen gegliederten Liste der Infobox. In der 3D-Ansicht lassen sich einzelne Blickrichtungen ausblenden. Ohne Farben entspricht das Stereogramm der schwarzen ITA-Darstellung.
-- **Hilfen für den Einstieg:** Karte „Erste Schritte“ je Modus beim ersten Aufruf (über „?“ wieder zu öffnen), Tooltips am Laptop, ⓘ-Erklärungen je Abschnitt auf Touch-Geräten, Tooltip mit (hkl), ρ und φ über jedem Flächenpol. Selten gebrauchte Optionen liegen in zugeklappten Abschnitten.
+- **Hilfen für den Einstieg:** Karte „Erste Schritte“ je Modus beim ersten Aufruf, Experimente zum Vermuten und Ausprobieren, „?“ führt zur [Hilfeseite](https://manganite.github.io/stereography/hilfe.html) (Erste Schritte als bebilderte Anleitungen, Liste der Experimente), Tooltips am Laptop, ⓘ-Erklärungen je Abschnitt auf Touch-Geräten, Tooltip mit (hkl), ρ und φ über jedem Flächenpol. Selten gebrauchte Optionen liegen in zugeklappten Abschnitten.
 - **3D-Konstruktion,** gekoppelt an das Stereogramm: Umkugel, Flächennormalen, Projektionsstrahlen zum Süd- bzw. Nordpol und das Stereogramm in der Äquatorebene.
 
 ## Nutzung
@@ -169,7 +169,8 @@ Darstellung (beide Modi):
 | `js/view3d.js` | 3D-Ansicht (three.js) |
 | `js/scene.js` | Zustand, Link-Adresse und Szenen des Stereogramms (gemeinsam für App, Skript und Quiz) |
 | `js/main.js` | Bedienung der App |
-| `js/hilfetexte.js` | Texte der Tooltips und ⓘ-Erklärungen |
+| `js/hilfetexte.js` | Texte der Tooltips und ⓘ-Erklärungen, Erste Schritte und Experimente |
+| `hilfe.html`, `js/hilfe.js`, `js/hilfe-daten.js`, `hilfe/` | Hilfeseite: Erste Schritte als Anleitungen mit Bildern, Experimente als Liste (Reihenfolge `EXPERIMENTE` auch für die App); Bilder mit `node tools/common/hilfe-bilder.mjs` |
 | `js/version.js` | Versionsnummer der App |
 | `sw.js` | Service Worker für den Offline-Betrieb |
 | `tests/` | Automatische Tests (Node, ohne Abhängigkeiten) |

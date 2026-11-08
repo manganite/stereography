@@ -8,7 +8,7 @@ export const TIPS = {
   'tab-poly': 'Kristallformen und Beispielkristalle: Flächen, ihre Pole im Stereogramm und der Kristall in 3D.',
   'skript-link': 'Skript zur App: Indizes, Projektion, Symmetrie und Punktgruppen, Symmetriegerüste, Blickrichtungen, Kristallformen, Zonen, Tracht und Habitus, trigonale und hexagonale Kristalle.',
   'copy-link': 'Link auf genau diese Ansicht in die Zwischenablage kopieren, z. B. für Folien.',
-  'help-open': 'Erste Schritte: kurze Einführung in die App.',
+  'help-open': 'Hilfe: was man mit der App machen kann und wie, mit Anleitungen und den Experimenten.',
   // Punktgruppen
   'pg-elements': 'Symmetrieelemente im Stereogramm: Drehachsen als Symbole an ihren Durchstosspunkten, Spiegelebenen als kräftige Grosskreise.',
   'pg-object': 'Ein Pol, der auf keinem Symmetrieelement liegt. Alle Operationen der Gruppe wirken auf ihn; die Zahl der Pole ist die Ordnung der Gruppe.',
@@ -112,26 +112,29 @@ export const LABELS = {
 /**
  * Erste Schritte (lib/common/js/ablauf.js mit liste: false, Leitfaden Abschn. 5.3): je Modus vier kurze
  * Schritte zur Bedienung, ohne Vermutung. Die Handlungen sind Aktionen der App (js/main.js), weil sie Ansichten
- * und die Auswahl einer Fläche setzen, die nicht in der Adresse stehen. Der letzte Schritt nennt die Experimente.
+ * und die Auswahl einer Fläche setzen, die nicht in der Adresse stehen, und auf dem Telefon die passende Tafel zeigen.
+ * Der letzte Schritt nennt die Experimente. Zugleich die Anleitungen der Hilfeseite (js/hilfe-daten.js): zeige =
+ * Bedienelement, das ihr Bild markiert, bild = Zustand im Bild (Aktionen wirken nicht auf die Bilder;
+ * tools/common/hilfe-bilder.mjs).
  * @type {Ablauf[]}
  */
 export const ERSTE_SCHRITTE = [
   {
     id: 'einstieg-pg', modus: 'pg', titel: 'Erste Schritte',
     schritte: [
-      { frage: '<b>Punktgruppe wählen.</b> Das Stereogramm zeigt ihr Symmetriegerüst: Drehachsen als Symbole, Spiegelebenen als kräftige Grosskreise.', handlung: { text: '4<i>mm</i> wählen', aktion: 'pg1' } },
-      { frage: '<b>Ausgangspol ziehen.</b> Alle Operationen der Gruppe wirken auf ihn; in allgemeiner Lage entstehen so viele Pole, wie die Gruppe Operationen hat, bei 4<i>mm</i> acht. Nahe einer Spiegelebene oder Achse rastet er ein: spezielle Lage, weniger Pole.', handlung: { text: 'Auf eine Spiegelebene setzen', aktion: 'pg2' } },
-      { frage: '<b>Drehung oder Spiegelung?</b> Farbig erscheinen die Pole gleicher Händigkeit (aus Drehungen) in einer Farbe, die Spiegelbilder in der anderen.', handlung: { text: 'Farben einschalten', aktion: 'pg3' } },
-      { frage: '<b>Symbol lesen.</b> Das Symbol nennt die Symmetrie entlang der Blickrichtungen, bei 4<i>mm</i> [001], ⟨100⟩ und ⟨110⟩. Mit „Blick“ unter der 3D-Ansicht schaut man entlang einer von ihnen. Kleine Versuche dazu stehen unter „Experimente“.', handlung: { text: 'Entlang [001] sehen', aktion: 'pg4' } },
+      { frage: '<b>Punktgruppe wählen.</b> Das Stereogramm zeigt ihr Symmetriegerüst: Drehachsen als Symbole, Spiegelebenen als kräftige Grosskreise.', handlung: { text: '4<i>mm</i> wählen', aktion: 'pg1' }, zeige: '#pg-picker' },
+      { frage: '<b>Ausgangspol ziehen.</b> Alle Operationen der Gruppe wirken auf ihn; in allgemeiner Lage entstehen so viele Pole, wie die Gruppe Operationen hat, bei 4<i>mm</i> acht. Nahe einer Spiegelebene oder Achse rastet er ein: spezielle Lage, weniger Pole.', handlung: { text: 'Auf eine Spiegelebene setzen', aktion: 'pg2' }, zeige: '#stereo', bild: '#m=pg&g=4mm' },
+      { frage: '<b>Drehung oder Spiegelung?</b> Farbig erscheinen die Pole gleicher Händigkeit (aus Drehungen) in einer Farbe, die Spiegelbilder in der anderen.', handlung: { text: 'Farben einschalten', aktion: 'pg3' }, zeige: '#row-pg-colorful', bild: '#m=pg&g=4mm&az=0' },
+      { frage: '<b>Symbol lesen.</b> Das Symbol nennt die Symmetrie entlang der Blickrichtungen, bei 4<i>mm</i> [001], ⟨100⟩ und ⟨110⟩. Mit „Blick“ unter der 3D-Ansicht schaut man entlang einer von ihnen. Kleine Versuche dazu stehen unter „Experimente“.', handlung: { text: 'Entlang [001] sehen', aktion: 'pg4' }, zeige: '#inhalt .p-b .viewbar', bild: '#m=pg&g=4mm&hand=1' },
     ],
   },
   {
     id: 'einstieg-poly', modus: 'poly', titel: 'Erste Schritte',
     schritte: [
-      { frage: '<b>Kristall wählen.</b> Der Galenit (PbS) steht im Zentrum einer Kugel; jede Fläche hat eine Normale.', handlung: { text: 'Galenit laden', aktion: 'poly1' } },
-      { frage: '<b>Fläche antippen.</b> Eine Fläche in der 3D-Ansicht antippen: Ihr Pol im Stereogramm leuchtet auf, und umgekehrt.', handlung: { text: 'Fläche (001) zeigen', aktion: 'poly2' } },
-      { frage: '<b>Projektion verfolgen.</b> Die Normale trifft die Kugel im Flächenpol; der Strahl zum Südpol schneidet die Äquatorebene im Punkt des Stereogramms. Pol oben: Punkt, unten: Kreis.', handlung: { text: 'Seitlich ansehen', aktion: 'poly3' } },
-      { frage: '<b>Symmetrie erkennen.</b> Das Symmetriegerüst von <i>m</i><span class="ov">3</span><i>m</i> erklärt, warum die Pole so liegen. Im Tab „Punktgruppen“ wirkt es auf einen einzelnen Pol. Kleine Versuche dazu stehen unter „Experimente“.', handlung: { text: 'Gerüst einblenden', aktion: 'poly4' } },
+      { frage: '<b>Kristall wählen.</b> Der Galenit (PbS) steht im Zentrum einer Kugel; jede Fläche hat eine Normale.', handlung: { text: 'Galenit laden', aktion: 'poly1' }, zeige: '#ex-select' },
+      { frage: '<b>Fläche antippen.</b> Eine Fläche in der 3D-Ansicht antippen: Ihr Pol im Stereogramm leuchtet auf, und umgekehrt.', handlung: { text: 'Fläche (001) zeigen', aktion: 'poly2' }, zeige: '#view3d', bild: '#m=form&sys=kubisch&bsp=galenit' },
+      { frage: '<b>Projektion verfolgen.</b> Die Normale trifft die Kugel im Flächenpol; der Strahl zum Südpol schneidet die Äquatorebene im Punkt des Stereogramms. Pol oben: Punkt, unten: Kreis.', handlung: { text: 'Seitlich ansehen', aktion: 'poly3' }, zeige: '#inhalt .p-b .viewbar', bild: '#m=form&sys=kubisch&bsp=galenit' },
+      { frage: '<b>Symmetrie erkennen.</b> Das Symmetriegerüst von <i>m</i><span class="ov">3</span><i>m</i> erklärt, warum die Pole so liegen. Im Tab „Punktgruppen“ wirkt es auf einen einzelnen Pol. Kleine Versuche dazu stehen unter „Experimente“.', handlung: { text: 'Gerüst einblenden', aktion: 'poly4' }, zeige: '#ctl-poly label:has(#poly-frame)', bild: '#m=form&sys=kubisch&bsp=galenit&blick=3' },
     ],
   },
 ];

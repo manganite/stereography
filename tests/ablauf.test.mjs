@@ -7,8 +7,8 @@ import { pruefeAblaeufe } from '../lib/common/js/ablauf.js';
 import { ABLAEUFE, ERSTE_SCHRITTE } from '../js/hilfetexte.js';
 import { ERZEUGTE, POLZAHL, FLAECHENZAHL, POLZAHL_PARAMS, FLAECHENZAHL_PARAMS, polzahlDaten, ordnung, lage, FZ_KANDIDATEN, gezeigteForm, ortText } from '../js/experimente.js';
 import { variante } from '../lib/common/js/ablauf.js';
-import { createState, applyHashTo, hashOf, generalPole } from '../js/scene.js';
-import { buildPointGroup, orbit, POINT_GROUPS } from '../js/pointgroups.js';
+import { createState, applyHashTo, hashOf, generalPole, polyCrystal } from '../js/scene.js';
+import { buildPointGroup, orbit, POINT_GROUPS, symmetryDirections } from '../js/pointgroups.js';
 import { siteOf, distinctPoles } from '../js/sitesym.js';
 import { entryById, CATALOG, formName } from '../js/forms.js';
 import { wyckoffPositions, poleOfHKL } from '../js/sitesym.js';
@@ -17,6 +17,8 @@ import { PUNKTGRUPPEN } from '../js/punktgruppen.js';
 
 const ANKER = [...readFileSync(new URL('../skript.html', import.meta.url), 'utf8').matchAll(/ id="([^"]+)"/g)].map((m) => m[1]);
 const DEFAULTS = createState();
+// Farben ohne CSS (palette() liest sonst die CSS-Variablen der Seite)
+const FARBEN = /** @type {import('../js/scene.js').Palette} */ (/** @type {unknown} */ (new Proxy(/** @type {Record<string | symbol, unknown>} */ ({ form: Array(8).fill('#000'), dir: ['#000', '#000', '#000'] }), { get: (o, k) => (k in o ? o[k] : '#000') })));
 // Aktionen, wie js/main.js sie an ablaufKarte gibt (main.js braucht das DOM und lässt sich hier nicht laden)
 const AKTIONEN = [...(/const aktionen = \{([^}]*)\}/.exec(readFileSync(new URL('../js/main.js', import.meta.url), 'utf8'))?.[1] ?? '')
   .matchAll(/(\w+):/g)].map((m) => m[1]);
@@ -89,6 +91,74 @@ test('Lernexperimente: Beobachtungen stimmen mit der App', () => {
   assert.equal(CATALOG.find((e) => e.id === 'm-3m:b35')?.mult, 8);
   // Prisma und Pyramide ohne Ergänzungsformen gezeigt (offen), damit nur ihre Pole erscheinen
   for (const i of [0, 1]) assert.ok(zustand(adresse('prisma', i)).poly.open);
+});
+
+test('Lernexperimente (#115): Aussagen der neuen Experimente stimmen mit der App', () => {
+  /** Pole (Stellen und Halbkugel) zum allgemeinen Pol der Adresse. @param {string} h */
+  const pole = (h) => { const s = zustand(h); return distinctPoles(orbit(buildPointGroup(s.pg.id).ops, generalPole(s))).map((o) => o.p); };
+  /** @param {import('../lib/common/js/typen.js').Vec3[]} p */
+  const obenUnten = (p) => [p.filter((v) => v[2] > 1e-9).length, p.filter((v) => v[2] < -1e-9).length];
+  const ops = (/** @type {string} */ id) => buildPointGroup(id).ops;
+  const det = (/** @type {number[][]} */ m) => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+  const spur = (/** @type {number[][]} */ m) => m[0][0] + m[1][1] + m[2][2];
+  // 2/m: 4 Pole, darunter der Gegenpol des Ausgangspols (Inversion)
+  { const h = adresse('inversion-2m', 0), p = pole(h), p0 = generalPole(zustand(h));
+    assert.equal(p.length, 4);
+    assert.ok(p.some((v) => Math.hypot(v[0] + p0[0], v[1] + p0[1], v[2] + p0[2]) < 1e-9), 'Gegenpol');
+    assert.equal(ops('2/mc').length, 4); }
+  // 6mm hat keine 2-zählige Achse senkrecht zu c, 32 hat drei; 3 und 3m sind Untergruppen von 6mm, 32 nicht
+  {
+    /** Drehungen um 180° um eine Achse in der Ebene. @param {string} id */
+    const zweiInEbene = (id) => ops(id).filter((m) => det(m) > 0 && Math.abs(spur(m) + 1) < 1e-9 && Math.abs(m[2][2] + 1) < 1e-9).length;
+    assert.equal(zustand(adresse('untergruppe', 0)).pg.id, '6mm'); assert.equal(zweiInEbene('6mm'), 0);
+    assert.equal(zustand(adresse('untergruppe', 1)).pg.id, '321'); assert.equal(zweiInEbene('321'), 3);
+    /** @param {string} a @param {string} b */
+    const teil = (a, b) => ops(a).every((m) => ops(b).some((n) => m.every((z, i) => z.every((x, j) => Math.abs(x - n[i][j]) < 1e-9))));
+    assert.ok(teil('3', '6mm') && teil('3m1', '6mm') && !teil('321', '6mm')); }
+  // 222: zwei oben, zwei unten
+  assert.deepEqual(obenUnten(pole(adresse('oben-unten-222', 0))), [2, 2]);
+  // 3̄: 6 Pole, keine Spiegelung (Operation zweiter Art mit Spur 1); 3̄m: 12 Pole
+  assert.equal(pole(adresse('dreiquer', 0)).length, 6);
+  assert.ok(!ops('-3').some((m) => det(m) < 0 && Math.abs(spur(m) - 1) < 1e-9), '3̄ ohne Spiegelung');
+  assert.equal(pole(adresse('dreiquer', 1)).length, 12);
+  // 432: 2. Blickrichtung ⟨111⟩ mit vier 3-zähligen Achsen; 1. und 3. ausgeblendet
+  { const c = symmetryDirections(buildPointGroup('432'))[1];
+    assert.deepEqual([c.label, c.hm, c.axes.length], ['⟨111⟩', '3', 4]);
+    assert.deepEqual(zustand(adresse('symbol-432', 0)).pg.hideDirs, [0, 2]); }
+  // Händigkeit: 422 nur Drehungen, 4/mmm halb
+  assert.ok(zustand(adresse('chiral', 0)).pg.colorful && zustand(adresse('chiral', 1)).pg.colorful);
+  assert.equal(ops('422').filter((m) => det(m) > 0).length, 8); assert.equal(ops('422').length, 8);
+  assert.deepEqual([ops('4/mmm').length, ops('4/mmm').filter((m) => det(m) > 0).length], [16, 8]);
+  // Formen
+  /** @param {string} id @param {number} i */
+  const eintrag = (id, i) => { const s = zustand(adresse(id, i)); return /** @type {import('../js/forms.js').Formeintrag} */ (entryById(s.poly.entryBySys[s.poly.system])); };
+  { const s = zustand(adresse('lage-111', 0)), e = eintrag('lage-111', 0);
+    assert.deepEqual([formName(e), s.poly.presetId, s.poly.frame], ['Würfel (Hexaeder)', '111', true]);
+    const C = polyCrystal(s, FARBEN);
+    const rho = C.faces.map((f) => (Math.acos(Math.abs(f.normal[2])) * 180) / Math.PI);
+    assert.equal(C.faces.length, 6); assert.ok(rho.every((r) => Math.abs(r - 54.7356) < 1e-3), 'alle 54,7°');
+    assert.deepEqual(obenUnten(C.faces.map((f) => f.normal)), [3, 3]); }
+  { const [a, b] = [0, 1].map((i) => eintrag('flaechensymmetrie', i));
+    assert.deepEqual([a.pg, formName(a), a.fs, b.pg, formName(b), b.fs], ['m-3m', 'Würfel (Hexaeder)', '4m.m', '23', 'Würfel (Hexaeder)', '2..']);
+    assert.ok(zustand(adresse('flaechensymmetrie', 0)).poly.faceSym && zustand(adresse('flaechensymmetrie', 1)).poly.faceSym); }
+  // Zonen am Galenit: [001] enthält {100} und {110} (je 4), [1̄10] enthält (001), (110), (111)
+  { const C = polyCrystal(zustand(adresse('zone', 0)), FARBEN);
+    /** @param {number[]} uvw */
+    const inZone = (uvw) => C.faces.filter((f) => Math.abs(f.hkl[0] * uvw[0] + f.hkl[1] * uvw[1] + f.hkl[2] * uvw[2]) < 1e-9).map((f) => [...f.hkl].map(Math.abs).sort().join(''));
+    assert.deepEqual(inZone([0, 0, 1]).sort(), ['001', '001', '001', '001', '011', '011', '011', '011']);
+    const z2 = new Set(C.faces.filter((f) => f.hkl[0] === f.hkl[1]).map((f) => f.hkl.join(',')));
+    for (const k of ['0,0,1', '1,1,0', '1,1,1']) assert.ok(z2.has(k), k);
+    assert.deepEqual(zustand(adresse('zone', 1)).poly.zones, ['-1,1,0']); }
+  // Quarz: Punktgruppe 32, zwei Rhomboeder gleich weit von der Mitte
+  { const s = zustand(adresse('quarz', 0)), C = polyCrystal(s, FARBEN);
+    assert.equal(C.groupId, '321');
+    const oben = C.faces.filter((f) => f.normal[2] > 1e-9 && f.normal[2] < 1 - 1e-9);
+    const rho = new Set(oben.map((f) => ((Math.acos(f.normal[2]) * 180) / Math.PI).toFixed(3)));
+    assert.deepEqual([oben.length, rho.size], [6, 1], 'sechs Pole oben, gleiches ρ'); }
+  // Streckung: c/a ändert die Gruppe nicht; [100] → mmm; Würfel [111] → 3̄m
+  assert.equal(polyCrystal(zustand(adresse('streckung', 0)), FARBEN).isReduced, false);
+  assert.equal(polyCrystal(zustand(adresse('streckung', 1)), FARBEN).reduced?.hm, 'mmm');
+  assert.equal(polyCrystal(zustand(adresse('streckung', 2)), FARBEN).reduced?.hm, '-3m');
 });
 
 test('Regler ρ reicht bis 0°, damit er einen Pol auf der Achse (z. B. rho=0 im Experiment) richtig anzeigt', () => {

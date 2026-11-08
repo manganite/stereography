@@ -198,7 +198,9 @@ if (!sysOK(state.poly.system)) state.poly.system = 'kubisch';
  * Ohne „Flächensymmetrie zeigen“ enthält die Auswahl je Punktgruppe nur die allgemeine Form und die
  * Formen, deren Eigensymmetrie die Punktgruppe selbst ist (z. B. Würfel nur in m3̄m, Tetraeder nur
  * in 4̄3m). Geometrisch gleiche Formen anderer Punktgruppen unterscheiden sich erst durch die
- * Flächensymmetrie; sie erscheinen, sobald diese gezeigt wird. (Absprache mit dem Autor.)
+ * Flächensymmetrie; sie erscheinen, sobald diese gezeigt wird. (Absprache mit dem Autor.) Ausnahme: Formen,
+ * deren Eigensymmetrie zu einem anderen Kristallsystem gehört (trigonales und hexagonales Prisma im trigonalen
+ * System), stehen unter ihrer Gruppe im Katalog (#118, Entscheidung Thomas, 8.11.2026).
  */
 // Formen und Beispiele des aktuellen Zustands (Kern in scene.js)
 /** @param {Formeintrag} e */

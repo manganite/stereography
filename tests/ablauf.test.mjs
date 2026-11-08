@@ -133,11 +133,12 @@ test('Erzeugte Experimente: Flächenzahl stimmt für jede Form mit dem Katalog u
   for (const e of FZ_KANDIDATEN()) {
     if (FLAECHENZAHL_PARAMS().includes(e.id)) continue;
     const g = /** @type {import('../js/forms.js').Formeintrag} */ (entryById(/** @type {string} */ (gezeigteForm(e))));
-    // dieselbe Form in der Gruppe ihrer Eigensymmetrie; trigonal gibt es dort keine, die App zeigt die Vorgabe (#118)
-    if (['321:b18', '-3m1:b25'].includes(e.id)) { assert.equal(g.id, '-3m1:c21', e.id); continue; }
+    // dieselbe Form in der Gruppe ihrer Eigensymmetrie
     assert.deepEqual([g.mult, formName(g)], [e.mult, formName(e)], `${e.id} als ${g.id}`);
   }
   assert.ok(FLAECHENZAHL_PARAMS().length >= 40, `${FLAECHENZAHL_PARAMS().length} Parameter`);
+  // die Prismen des trigonalen Systems (Eigensymmetrie hexagonal) zeigt die App unter ihrer Gruppe (#118)
+  for (const id of ['321:b18', '-3m1:b25']) assert.ok(FLAECHENZAHL_PARAMS().includes(id), id);
   for (const id of FLAECHENZAHL_PARAMS()) {
     const sch = variante(FLAECHENZAHL, id).schritte[0];
     const s = zustand(/** @type {string} */ (sch.handlung?.hash));

@@ -138,8 +138,8 @@ export const ERSTE_SCHRITTE = [
 
 /**
  * Lernexperimente im Abschnitt „Experimente“ (lib/common/js/ablauf.js, Leitfaden Abschn. 5.3): erst vermuten,
- * dann die Handlung (Link-Adresse), dann Beobachtung und Erklärung. Je Modus in der Reihenfolge der Kapitel des
- * Skripts (#115; Gliederung der Liste nach Kapitel: crystallography-common#107). Jedes Experiment spricht eine
+ * dann die Handlung (Link-Adresse), dann Beobachtung und Erklärung. Je Modus in der Reihenfolge des Skripts (Anker des
+ * ersten Schritts; #115; Gliederung der Liste nach Kapitel: crystallography-common#107). Jedes Experiment spricht eine
  * Fehlvorstellung an. tests/ablauf.test.mjs prüft Adressen, Anker und Aussagen gegen die App.
  * @type {Ablauf[]}
  */
@@ -162,19 +162,6 @@ export const ABLAEUFE = [
         beobachtung: '8 Pole: Über jedem Punkt liegt ein Kreis, das Spiegelbild in der unteren Halbkugel.',
         erklaerung: '4/<i>m</i> hat 8 Operationen: die 4 von <span class="ov">4</span> und dazu die Drehungen um 90° und 270°, die Spiegelung <i>m</i> und die Inversion <span class="ov">1</span>. Deshalb sind es doppelt so viele Pole.',
         skript: 'untergruppe',
-      },
-    ],
-  },
-  {
-    id: 'inversion-2m', modus: 'pg', titel: '2/<i>m</i> und die Inversion',
-    schritte: [
-      {
-        frage: '2/<i>m</i> hat eine 2-zählige Drehachse und eine Spiegelebene senkrecht dazu. Wie viele Operationen hat die Gruppe?',
-        vermutung: ['2', '3', '4'], richtig: 2,
-        handlung: { text: '2/<i>m</i> (Achse c) wählen', hash: '#m=pg&g=2/mc' },
-        beobachtung: '4 Pole: an zwei gegenüberliegenden Stellen je ein Punkt über einem Kreis.',
-        erklaerung: 'Zum Ausgangspol gehört ein Kreis genau gegenüber, durch die Mitte gespiegelt: die Inversion <span class="ov">1</span>. Sie entsteht, wenn man 2 und <i>m</i> nacheinander ausführt. 2/<i>m</i> hat also vier Operationen: 1, 2, <i>m</i> und <span class="ov">1</span>.',
-        skript: 'drehinversion',
       },
     ],
   },
@@ -206,7 +193,20 @@ export const ABLAEUFE = [
         handlung: { text: '222 wählen', hash: '#m=pg&g=222' },
         beobachtung: '4 Pole: zwei oben (Punkte), zwei unten (Kreise).',
         erklaerung: 'Die Drehung um die senkrechte Achse lässt den Pol oben. Die Drehungen um die beiden Achsen in der Projektionsebene bringen ihn auf die untere Halbkugel.',
-        skript: 'bahn',
+        skript: 'abbilden',
+      },
+    ],
+  },
+  {
+    id: 'inversion-2m', modus: 'pg', titel: '2/<i>m</i> und die Inversion',
+    schritte: [
+      {
+        frage: '2/<i>m</i> hat eine 2-zählige Drehachse und eine Spiegelebene senkrecht dazu. Wie viele Operationen hat die Gruppe?',
+        vermutung: ['2', '3', '4'], richtig: 2,
+        handlung: { text: '2/<i>m</i> (Achse c) wählen', hash: '#m=pg&g=2/mc' },
+        beobachtung: '4 Pole: an zwei gegenüberliegenden Stellen je ein Punkt über einem Kreis.',
+        erklaerung: 'Zum Ausgangspol gehört ein Kreis genau gegenüber, durch die Mitte gespiegelt: die Inversion <span class="ov">1</span>. Sie entsteht, wenn man 2 und <i>m</i> nacheinander ausführt. 2/<i>m</i> hat also vier Operationen: 1, 2, <i>m</i> und <span class="ov">1</span>.',
+        skript: 'symmetriesaetze',
       },
     ],
   },
@@ -218,8 +218,8 @@ export const ABLAEUFE = [
         vermutung: ['ja', 'nein'], richtig: 1,
         handlung: { text: '<span class="ov">3</span> wählen', hash: '#m=pg&g=-3' },
         beobachtung: 'Das Symmetriegerüst zeigt nur die <span class="ov">3</span>-Achse in der Mitte, keine Spiegelebene.',
-        erklaerung: 'Die Pole einer einzigen Form können symmetrischer liegen als die Punktgruppe: Das Muster gleicht dem eines Rhomboeders in <span class="ov">3</span><i>m</i>. <span class="ov">3</span> hat 6 Operationen: drei Drehungen und drei Drehinversionen.',
-        skript: 'symmetrie',
+        erklaerung: 'Die Pole einer einzigen Form können symmetrischer liegen als die Punktgruppe: Das Muster gleicht dem eines Rhomboeders in <span class="ov">3</span><i>m</i>. <span class="ov">3</span> hat 6 Operationen: die Identität, zwei Drehungen um 120°, die Inversion und zwei Drehinversionen <span class="ov">3</span>; keine davon ist eine Spiegelung.',
+        skript: 'speziell',
       },
       {
         frage: 'Wie viele Pole ergibt derselbe Ausgangspol in <span class="ov">3</span><i>m</i>, das Spiegelebenen hat?',
@@ -228,6 +228,61 @@ export const ABLAEUFE = [
         beobachtung: '12 Pole.',
         erklaerung: '<span class="ov">3</span><i>m</i> hat 12 Operationen. Hätte <span class="ov">3</span> Spiegelebenen, ergäbe ein Pol in allgemeiner Lage auch dort 12 Pole.',
         skript: 'bahn',
+      },
+    ],
+  },
+  {
+    id: 'symbol-432', modus: 'pg', titel: 'Was bedeutet die 3 in 432?',
+    schritte: [
+      {
+        frage: 'Wofür steht die 3 im Symbol 432?',
+        vermutung: ['eine 3-zählige Achse entlang c', 'vier 3-zählige Achsen entlang der Raumdiagonalen', 'drei 3-zählige Achsen entlang a, b und c'], richtig: 1,
+        handlung: { text: '432 wählen, nur die 2. Blickrichtung in 3D', hash: '#m=pg&g=432&aus=1,3' },
+        beobachtung: 'In der 3D-Ansicht bleiben vier 3-zählige Achsen entlang der Raumdiagonalen; im Stereogramm haben sie die Farbe der 2. Blickrichtung.',
+        erklaerung: 'Jede Stelle des Symbols gehört zu einer Blickrichtung, kubisch der Reihe nach ⟨100⟩, ⟨111⟩ und ⟨110⟩. Die 3 an zweiter Stelle steht also für die Achsen entlang ⟨111⟩.',
+        skript: 'symbol',
+      },
+    ],
+  },
+  {
+    id: 'chiral', modus: 'pg', titel: 'Chiral trotz viel Symmetrie',
+    schritte: [
+      {
+        frage: '422 hat 8 Operationen. Färbt man die Pole nach Händigkeit, wie viele haben die Händigkeit des Ausgangspols?',
+        vermutung: ['alle 8', '4', '1'], richtig: 0,
+        handlung: { text: '422, Pole nach Händigkeit gefärbt', hash: '#m=pg&g=422&hand=1' },
+        beobachtung: 'Alle 8 Pole in derselben Farbe.',
+        erklaerung: '422 enthält nur Drehungen, also nur Operationen erster Art: Die Punktgruppe ist enantiomorph (chiral). Viel Symmetrie und Chiralität schliessen sich nicht aus.',
+        skript: 'eigenschaften',
+      },
+      {
+        frage: 'Und 432, mit 24 Operationen?',
+        vermutung: ['alle 24', '12', '1'], richtig: 0,
+        handlung: { text: '432, Pole nach Händigkeit gefärbt', hash: '#m=pg&g=432&hand=1' },
+        beobachtung: 'Alle 24 Pole in derselben Farbe.',
+        erklaerung: 'Auch 432 enthält nur Drehungen und ist enantiomorph, obwohl es die Hälfte der Würfelsymmetrie hat.',
+        skript: 'eigenschaften',
+      },
+      {
+        frage: 'Und in 4/<i>mmm</i>, mit 16 Operationen?',
+        vermutung: ['alle 16', '8', '4'], richtig: 1,
+        handlung: { text: '4/<i>mmm</i>, Pole nach Händigkeit gefärbt', hash: '#m=pg&g=4/mmm&hand=1' },
+        beobachtung: '8 Pole in der Farbe des Ausgangspols, 8 in der anderen.',
+        erklaerung: 'Die 8 Drehungen erhalten die Händigkeit; die 8 Spiegelungen, Drehinversionen und die Inversion bilden Spiegelbilder.',
+        skript: 'eigenschaften',
+      },
+    ],
+  },
+  {
+    id: 'laue', modus: 'pg', titel: 'Laue-Klasse',
+    schritte: [
+      {
+        frage: 'Die Laue-Klasse ist die Punktgruppe zusammen mit dem Inversionszentrum. Zu welcher Laue-Klasse gehört <span class="ov">4</span>?',
+        vermutung: ['<span class="ov">4</span>', '4/<i>m</i>', '4/<i>mmm</i>'], richtig: 1,
+        handlung: { text: '<span class="ov">4</span> wählen', hash: '#m=pg&g=-4' },
+        beobachtung: 'Die Kenndaten nennen die Laue-Klasse 4/<i>m</i>.',
+        erklaerung: '<span class="ov">4</span> zusammen mit <span class="ov">1</span> ergibt 4/<i>m</i>; ebenso 4 und 4/<i>m</i> selbst. Drei Punktgruppen, eine Laue-Klasse.',
+        skript: 'eigenschaften',
       },
     ],
   },
@@ -261,66 +316,6 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'symbol-432', modus: 'pg', titel: 'Was bedeutet die 3 in 432?',
-    schritte: [
-      {
-        frage: 'Wofür steht die 3 im Symbol 432?',
-        vermutung: ['eine 3-zählige Achse entlang c', 'vier 3-zählige Achsen entlang der Raumdiagonalen', 'drei 3-zählige Achsen entlang a, b und c'], richtig: 1,
-        handlung: { text: '432 wählen, nur die 2. Blickrichtung in 3D', hash: '#m=pg&g=432&aus=1,3' },
-        beobachtung: 'In der 3D-Ansicht bleiben vier 3-zählige Achsen entlang der Raumdiagonalen; im Stereogramm haben sie die Farbe der 2. Blickrichtung.',
-        erklaerung: 'Jede Stelle des Symbols gehört zu einer Blickrichtung, kubisch der Reihe nach ⟨100⟩, ⟨111⟩ und ⟨110⟩. Die 3 an zweiter Stelle steht also für die Achsen entlang ⟨111⟩.',
-        skript: 'symbol',
-      },
-    ],
-  },
-  {
-    id: 'chiral', modus: 'pg', titel: 'Chiral trotz viel Symmetrie',
-    schritte: [
-      {
-        frage: '422 hat 8 Operationen. Färbt man die Pole nach Händigkeit, wie viele haben die Händigkeit des Ausgangspols?',
-        vermutung: ['alle 8', '4', '1'], richtig: 0,
-        handlung: { text: '422, Pole nach Händigkeit gefärbt', hash: '#m=pg&g=422&hand=1' },
-        beobachtung: 'Alle 8 Pole in derselben Farbe.',
-        erklaerung: '422 enthält nur Drehungen, also nur Operationen erster Art: Die Punktgruppe ist enantiomorph (chiral). Viel Symmetrie und Chiralität schliessen sich nicht aus.',
-        skript: 'eigenschaften',
-      },
-      {
-        frage: 'Und in 4/<i>mmm</i>, mit 16 Operationen?',
-        vermutung: ['alle 16', '8', '4'], richtig: 1,
-        handlung: { text: '4/<i>mmm</i>, Pole nach Händigkeit gefärbt', hash: '#m=pg&g=4/mmm&hand=1' },
-        beobachtung: '8 Pole in der Farbe des Ausgangspols, 8 in der anderen.',
-        erklaerung: 'Die 8 Drehungen erhalten die Händigkeit; die 8 Spiegelungen, Drehinversionen und die Inversion bilden Spiegelbilder.',
-        skript: 'eigenschaften',
-      },
-    ],
-  },
-  {
-    id: 'laue', modus: 'pg', titel: 'Laue-Klasse',
-    schritte: [
-      {
-        frage: 'Die Laue-Klasse ist die Punktgruppe zusammen mit dem Inversionszentrum. Zu welcher Laue-Klasse gehört <span class="ov">4</span>?',
-        vermutung: ['<span class="ov">4</span>', '4/<i>m</i>', '4/<i>mmm</i>'], richtig: 1,
-        handlung: { text: '<span class="ov">4</span> wählen', hash: '#m=pg&g=-4' },
-        beobachtung: 'Die Kenndaten nennen die Laue-Klasse 4/<i>m</i>.',
-        erklaerung: '<span class="ov">4</span> zusammen mit <span class="ov">1</span> ergibt 4/<i>m</i>; ebenso 4 und 4/<i>m</i> selbst. Drei Punktgruppen, eine Laue-Klasse.',
-        skript: 'eigenschaften',
-      },
-    ],
-  },
-  {
-    id: 'lage-111', modus: 'poly', titel: 'Würfel mit [111] senkrecht',
-    schritte: [
-      {
-        frage: 'Der Würfel wird so gedreht, dass die Raumdiagonale [111] senkrecht zur Projektionsebene steht. Welche Zähligkeit hat die Drehachse in der Mitte des Stereogramms?',
-        vermutung: ['4', '3', '2'], richtig: 1,
-        handlung: { text: 'Würfel mit [111] senkrecht zeigen', hash: '#m=form&sys=kubisch&f=m-3m:a34&lage=111&geruest=1' },
-        beobachtung: 'In der Mitte eine 3-zählige Achse; drei Würfelpole liegen oben, drei unten dazwischen, alle 54,7° von der Mitte entfernt.',
-        erklaerung: 'Gleicher Kristall, andere Projektionsrichtung: Das Stereogramm ändert sich, die Punktgruppe nicht. Entlang [111] ist der Würfel 3-zählig.',
-        skript: 'lage',
-      },
-    ],
-  },
-  {
     id: 'prisma', modus: 'poly', titel: 'Prisma, Pyramide, Dipyramide',
     schritte: [
       {
@@ -349,6 +344,72 @@ export const ABLAEUFE = [
     ],
   },
   {
+    id: 'flaechensymmetrie', modus: 'poly', titel: 'Gleiche Form, andere Flächensymmetrie',
+    schritte: [
+      {
+        frage: 'Der Würfel kommt in allen fünf kubischen Punktgruppen vor, die Pole liegen immer gleich. Zuerst der Würfel in <i>m</i><span class="ov">3</span><i>m</i>; „Flächensymmetrie zeigen“ trägt auf jede Fläche ein Muster.',
+        handlung: { text: 'Würfel in <i>m</i><span class="ov">3</span><i>m</i> mit Flächenmuster', hash: '#m=form&sys=kubisch&f=m-3m:a34&muster=1' },
+        beobachtung: 'Das Muster auf jeder Fläche hat eine 4-zählige Achse und Spiegelebenen (4<i>m</i>.<i>m</i>).',
+        skript: 'allgemein',
+      },
+      {
+        frage: 'Hat der Würfel in 23 dieselbe Flächensymmetrie wie in <i>m</i><span class="ov">3</span><i>m</i>?',
+        vermutung: ['ja', 'nein'], richtig: 1,
+        handlung: { text: 'Würfel in 23 mit Flächenmuster', hash: '#m=form&sys=kubisch&f=23:b34&muster=1' },
+        beobachtung: 'Das Muster hat nur noch eine 2-zählige Achse (2..); die Pole liegen wie vorher.',
+        erklaerung: 'Die Form allein legt die Punktgruppe nicht fest. Erst die Flächensymmetrie unterscheidet die Würfel, an realen Kristallen z. B. Ätzfiguren oder Streifung.',
+        skript: 'allgemein',
+      },
+    ],
+  },
+  {
+    id: 'lage-111', modus: 'poly', titel: 'Würfel mit [111] senkrecht',
+    schritte: [
+      {
+        frage: 'Der Würfel wird so gedreht, dass die Raumdiagonale [111] senkrecht zur Projektionsebene steht. Welche Zähligkeit hat die Drehachse in der Mitte des Stereogramms?',
+        vermutung: ['4', '3', '2'], richtig: 1,
+        handlung: { text: 'Würfel mit [111] senkrecht zeigen', hash: '#m=form&sys=kubisch&f=m-3m:a34&lage=111&geruest=1' },
+        beobachtung: 'In der Mitte eine <span class="ov">3</span>-Achse (3-zählig); drei Würfelpole liegen oben, drei unten dazwischen, alle gleich weit von der Mitte (ρ = 54,7° bzw. −54,7°).',
+        erklaerung: 'Gleicher Kristall, andere Projektionsrichtung: Das Stereogramm ändert sich, die Punktgruppe nicht. Entlang der Raumdiagonalen liegen beim Würfel <span class="ov">3</span>-Achsen.',
+        skript: 'lage',
+      },
+    ],
+  },
+  {
+    id: 'zone', modus: 'poly', titel: 'Zone und Zonenachse',
+    schritte: [
+      {
+        frage: 'Welche Flächen des Galenits gehören zur Zone [001]?',
+        vermutung: ['die Flächen parallel zu [001]', 'die Flächen senkrecht zu [001]', 'die Flächen mit Pol nahe [001]'], richtig: 0,
+        handlung: { text: 'Zone [001] zeigen', hash: '#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,0,1' },
+        beobachtung: 'Der Zonenkreis ist der Grundkreis; auf ihm liegen die Pole von {100} und {110}.',
+        erklaerung: 'Zur Zone [<i>uvw</i>] gehören die Flächen, die parallel zu [<i>uvw</i>] liegen: <i>hu</i> + <i>kv</i> + <i>lw</i> = 0. Ihre Normalen stehen senkrecht auf der Zonenachse und liegen auf einem Grosskreis.',
+        skript: 'zone',
+      },
+      {
+        frage: 'Liegen (001), (110) und (111) in einer gemeinsamen Zone?',
+        vermutung: ['ja', 'nein'], richtig: 0,
+        handlung: { text: 'Zone durch (001) und (110) zeigen', hash: '#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=-1,1,0' },
+        beobachtung: 'Ja: Alle drei liegen auf dem Zonenkreis der Zone [<span class="ov">1</span>10], einer Geraden durch die Mitte.',
+        erklaerung: 'Für alle drei gilt <i>h</i> = <i>k</i>, also −<i>h</i> + <i>k</i> = 0. Ein Grosskreis durch die Projektionsrichtung erscheint im Stereogramm als Gerade.',
+        skript: 'zonenkreis',
+      },
+    ],
+  },
+  {
+    id: 'quarz', modus: 'poly', titel: 'Quarz sieht hexagonal aus',
+    schritte: [
+      {
+        frage: 'Im Stereogramm des Quarzes liegen oben sechs Pole im Abstand von 60°, alle gleich weit von der Mitte. Ist Quarz deshalb hexagonal?',
+        vermutung: ['ja', 'nein'], richtig: 1,
+        handlung: { text: 'Quarz mit Prisma und zwei Rhomboedern zeigen', hash: '#m=form&sys=trigonal&bsp=quarz&ab=1,1.25,1.15,2,2&geruest=1' },
+        beobachtung: 'Das Symmetriegerüst hat in der Mitte eine 3-zählige Achse; die Punktgruppe ist 32.',
+        erklaerung: 'Die sechs Pole gehören zu zwei Rhomboedern, {101} und {011}, um 60° gegeneinander gedreht. Zwei trigonale Formen ergeben zusammen ein sechszähliges Polmuster.',
+        skript: 'quarz',
+      },
+    ],
+  },
+  {
     id: 'flaechenzahl', modus: 'poly', titel: 'Wie viele Flächen?',
     schritte: [
       {
@@ -370,59 +431,6 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'flaechensymmetrie', modus: 'poly', titel: 'Gleiche Form, andere Flächensymmetrie',
-    schritte: [
-      {
-        frage: 'Der Würfel kommt in allen fünf kubischen Punktgruppen vor, die Pole liegen immer gleich. Haben seine Flächen in 23 und in <i>m</i><span class="ov">3</span><i>m</i> dieselbe Symmetrie?',
-        vermutung: ['ja', 'nein'], richtig: 1,
-        handlung: { text: 'Würfel in <i>m</i><span class="ov">3</span><i>m</i> mit Flächenmuster', hash: '#m=form&sys=kubisch&f=m-3m:a34&muster=1' },
-        beobachtung: 'Das Muster auf jeder Fläche hat eine 4-zählige Achse und Spiegelebenen (4<i>m</i>.<i>m</i>).',
-        skript: 'allgemein',
-      },
-      {
-        frage: 'Jetzt derselbe Würfel in 23.',
-        handlung: { text: 'Würfel in 23 mit Flächenmuster', hash: '#m=form&sys=kubisch&f=23:b34&muster=1' },
-        beobachtung: 'Das Muster hat nur noch eine 2-zählige Achse (2..); die Pole liegen wie vorher.',
-        erklaerung: 'Die Form allein legt die Punktgruppe nicht fest. Erst die Flächensymmetrie unterscheidet die Würfel, an realen Kristallen z. B. Ätzfiguren oder Streifung.',
-        skript: 'allgemein',
-      },
-    ],
-  },
-  {
-    id: 'zone', modus: 'poly', titel: 'Zone und Zonenachse',
-    schritte: [
-      {
-        frage: 'Welche Flächen des Galenits gehören zur Zone [001]?',
-        vermutung: ['die Flächen parallel zu [001]', 'die Flächen senkrecht zu [001]', 'die Flächen mit Pol nahe [001]'], richtig: 0,
-        handlung: { text: 'Zone [001] zeigen', hash: '#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=0,0,1' },
-        beobachtung: 'Der Zonenkreis ist der Grundkreis; auf ihm liegen die Pole von {100} und {110}.',
-        erklaerung: 'Zur Zone [<i>uvw</i>] gehören die Flächen, die parallel zu [<i>uvw</i>] liegen: <i>hu</i> + <i>kv</i> + <i>lw</i> = 0. Ihre Normalen stehen senkrecht auf der Zonenachse (nicht senkrecht zueinander) und liegen auf einem Grosskreis.',
-        skript: 'zone',
-      },
-      {
-        frage: 'Liegen (001), (110) und (111) in einer gemeinsamen Zone?',
-        vermutung: ['ja', 'nein'], richtig: 0,
-        handlung: { text: 'Zone [<span class="ov">1</span>10] zeigen', hash: '#m=form&sys=kubisch&bsp=galenit&w=zone&zonen=-1,1,0' },
-        beobachtung: 'Ja: Alle drei liegen auf dem Zonenkreis der Zone [<span class="ov">1</span>10], einer Geraden durch die Mitte.',
-        erklaerung: 'Für alle drei gilt <i>h</i> = <i>k</i>, also −<i>h</i> + <i>k</i> = 0. Ein Grosskreis durch die Projektionsrichtung erscheint im Stereogramm als Gerade.',
-        skript: 'zonenkreis',
-      },
-    ],
-  },
-  {
-    id: 'quarz', modus: 'poly', titel: 'Quarz sieht hexagonal aus',
-    schritte: [
-      {
-        frage: 'Im Stereogramm des Quarzes liegen oben sechs Pole im Abstand von 60°, alle gleich weit von der Mitte. Ist Quarz deshalb hexagonal?',
-        vermutung: ['ja', 'nein'], richtig: 1,
-        handlung: { text: 'Quarz mit Prisma und zwei Rhomboedern zeigen', hash: '#m=form&sys=trigonal&bsp=quarz&ab=1,1.25,1.15,2,2&geruest=1' },
-        beobachtung: 'Das Symmetriegerüst hat in der Mitte eine 3-zählige Achse; die Punktgruppe ist 32.',
-        erklaerung: 'Die sechs Pole gehören zu zwei Rhomboedern, {101} und {011}, um 60° gegeneinander gedreht. Zwei trigonale Formen ergeben zusammen ein sechszähliges Polmuster.',
-        skript: 'quarz',
-      },
-    ],
-  },
-  {
     id: 'streckung', modus: 'poly', titel: 'Strecken ändert die Symmetrie',
     schritte: [
       {
@@ -434,9 +442,9 @@ export const ABLAEUFE = [
         skript: 'verzerrung',
       },
       {
-        frage: 'Und wenn man den Kristall entlang [100] streckt?',
+        frage: 'Und wenn man den Kristall (weiter mit <i>c</i>/<i>a</i> = 2) entlang [100] streckt?',
         vermutung: ['4/<i>mmm</i> bleibt', 'es bleibt <i>mmm</i>', 'es bleibt 4<i>mm</i>'], richtig: 1,
-        handlung: { text: 'Entlang [100] strecken', hash: '#m=form&sys=tetragonal&f=4/mmm:e14&br=1&str=100,1.3' },
+        handlung: { text: 'Entlang [100] strecken', hash: '#m=form&sys=tetragonal&f=4/mmm:e14&ca=2&br=1&str=100,1.3' },
         beobachtung: 'Die 4-zählige Achse geht verloren; die Infobox nennt <i>mmm</i>.',
         erklaerung: 'Die Streckung macht <i>a</i> und <i>b</i> verschieden lang. Erhalten bleiben nur die Operationen, die die Streckrichtung auf sich selbst oder ihre Gegenrichtung abbilden.',
         skript: 'verzerrung',
@@ -446,7 +454,7 @@ export const ABLAEUFE = [
         vermutung: ['<i>m</i><span class="ov">3</span><i>m</i>', '<span class="ov">3</span><i>m</i>', '4/<i>mmm</i>'], richtig: 1,
         handlung: { text: 'Würfel entlang [111] strecken', hash: '#m=form&sys=kubisch&f=m-3m:a34&br=1&str=111,1.3' },
         beobachtung: 'Der Würfel wird zum Rhomboeder; die Infobox nennt <span class="ov">3</span><i>m</i>.',
-        erklaerung: 'Von den vier 3-zähligen Achsen bleibt nur die entlang der Streckrichtung, mit den Spiegelebenen und 2-zähligen Achsen, die sie enthält bzw. senkrecht zu ihr stehen.',
+        erklaerung: 'Von den vier <span class="ov">3</span>-Achsen bleibt nur die entlang der Streckrichtung, dazu die drei Spiegelebenen, die sie enthalten, und die drei 2-zähligen Achsen senkrecht zu ihr.',
         skript: 'streck-111',
       },
     ],

@@ -7,7 +7,7 @@ import { pruefeAblaeufe } from '../lib/common/js/ablauf.js';
 import { ABLAEUFE, ERSTE_SCHRITTE } from '../js/hilfetexte.js';
 import { ERZEUGTE, POLZAHL, FLAECHENZAHL, POLZAHL_PARAMS, FLAECHENZAHL_PARAMS, polzahlDaten, ordnung, lage, FZ_KANDIDATEN, gezeigteForm, ortText } from '../js/experimente.js';
 import { variante } from '../lib/common/js/ablauf.js';
-import { createState, applyHashTo, hashOf, generalPole, polyCrystal } from '../js/scene.js';
+import { createState, applyHashTo, hashOf, generalPole, polyCrystal, effectiveLat } from '../js/scene.js';
 import { buildPointGroup, orbit, POINT_GROUPS, symmetryDirections } from '../js/pointgroups.js';
 import { siteOf, distinctPoles } from '../js/sitesym.js';
 import { entryById, CATALOG, formName } from '../js/forms.js';
@@ -118,7 +118,13 @@ test('Lernexperimente (#115): Aussagen der neuen Experimente stimmen mit der App
   // 222: zwei oben, zwei unten
   assert.deepEqual(obenUnten(pole(adresse('oben-unten-222', 0))), [2, 2]);
   // 3̄: 6 Pole, keine Spiegelung (Operation zweiter Art mit Spur 1); 3̄m: 12 Pole
-  assert.equal(pole(adresse('dreiquer', 0)).length, 6);
+  { const p = pole(adresse('dreiquer', 0)).sort((a, b) => Math.atan2(a[0], a[1]) - Math.atan2(b[0], b[1]));
+    assert.equal(p.length, 6);
+    assert.ok(p.every((v, i) => Math.sign(v[2]) !== Math.sign(p[(i + 1) % 6][2])), 'abwechselnd oben und unten');
+    // das Polmuster (Stellen im Stereogramm mit oben/unten) ist spiegelsymmetrisch zur Ebene durch einen Pol und die Achse
+    const phi = Math.atan2(p[0][1], p[0][0]), c = Math.cos(2 * phi), s2 = Math.sin(2 * phi);
+    const gespiegelt = p.map((v) => [c * v[0] + s2 * v[1], s2 * v[0] - c * v[1], v[2]]);
+    assert.ok(gespiegelt.every((g) => p.some((v) => Math.hypot(g[0] - v[0], g[1] - v[1], g[2] - v[2]) < 1e-9)), 'Muster spiegelsymmetrisch'); }
   assert.ok(!ops('-3').some((m) => det(m) < 0 && Math.abs(spur(m) - 1) < 1e-9), '3̄ ohne Spiegelung');
   assert.equal(pole(adresse('dreiquer', 1)).length, 12);
   // 432: 2. Blickrichtung ⟨111⟩ mit vier 3-zähligen Achsen; 1. und 3. ausgeblendet
@@ -126,7 +132,9 @@ test('Lernexperimente (#115): Aussagen der neuen Experimente stimmen mit der App
     assert.deepEqual([c.label, c.hm, c.axes.length], ['⟨111⟩', '3', 4]);
     assert.deepEqual(zustand(adresse('symbol-432', 0)).pg.hideDirs, [0, 2]); }
   // Händigkeit: 422 nur Drehungen, 4/mmm halb
-  assert.ok(zustand(adresse('chiral', 0)).pg.colorful && zustand(adresse('chiral', 1)).pg.colorful);
+  assert.ok([0, 1, 2].every((i) => zustand(adresse('chiral', i)).pg.colorful));
+  assert.deepEqual([0, 1, 2].map((i) => zustand(adresse('chiral', i)).pg.id), ['422', '432', '4/mmm']);
+  assert.deepEqual([ops('432').length, ops('432').filter((m) => det(m) > 0).length], [24, 24]);
   assert.equal(ops('422').filter((m) => det(m) > 0).length, 8); assert.equal(ops('422').length, 8);
   assert.deepEqual([ops('4/mmm').length, ops('4/mmm').filter((m) => det(m) > 0).length], [16, 8]);
   // Formen
@@ -137,7 +145,11 @@ test('Lernexperimente (#115): Aussagen der neuen Experimente stimmen mit der App
     const C = polyCrystal(s, FARBEN);
     const rho = C.faces.map((f) => (Math.acos(Math.abs(f.normal[2])) * 180) / Math.PI);
     assert.equal(C.faces.length, 6); assert.ok(rho.every((r) => Math.abs(r - 54.7356) < 1e-3), 'alle 54,7°');
-    assert.deepEqual(obenUnten(C.faces.map((f) => f.normal)), [3, 3]); }
+    assert.deepEqual(obenUnten(C.faces.map((f) => f.normal)), [3, 3]);
+    // 3-zählig um die Mitte: Drehung um 120° um die Projektionsrichtung bildet die Pole aufeinander ab
+    const [c3, s3] = [Math.cos((2 * Math.PI) / 3), Math.sin((2 * Math.PI) / 3)];
+    assert.ok(C.faces.every((f) => { const [x, y, z] = f.normal, r = [c3 * x - s3 * y, s3 * x + c3 * y, z];
+      return C.faces.some((g) => Math.hypot(g.normal[0] - r[0], g.normal[1] - r[1], g.normal[2] - r[2]) < 1e-9); }), '3-zählig'); }
   { const [a, b] = [0, 1].map((i) => eintrag('flaechensymmetrie', i));
     assert.deepEqual([a.pg, formName(a), a.fs, b.pg, formName(b), b.fs], ['m-3m', 'Würfel (Hexaeder)', '4m.m', '23', 'Würfel (Hexaeder)', '2..']);
     assert.ok(zustand(adresse('flaechensymmetrie', 0)).poly.faceSym && zustand(adresse('flaechensymmetrie', 1)).poly.faceSym); }
@@ -154,9 +166,17 @@ test('Lernexperimente (#115): Aussagen der neuen Experimente stimmen mit der App
     assert.equal(C.groupId, '321');
     const oben = C.faces.filter((f) => f.normal[2] > 1e-9 && f.normal[2] < 1 - 1e-9);
     const rho = new Set(oben.map((f) => ((Math.acos(f.normal[2]) * 180) / Math.PI).toFixed(3)));
-    assert.deepEqual([oben.length, rho.size], [6, 1], 'sechs Pole oben, gleiches ρ'); }
+    assert.deepEqual([oben.length, rho.size], [6, 1], 'sechs Pole oben, gleiches ρ');
+    const az = oben.map((f) => (Math.atan2(f.normal[0], f.normal[1]) * 180) / Math.PI).sort((a, b) => a - b);
+    assert.ok(az.every((a, i) => Math.abs((((az[(i + 1) % 6] - a) % 360) + 360) % 360 - 60) < 1e-6), 'Abstand 60°'); }
   // Streckung: c/a ändert die Gruppe nicht; [100] → mmm; Würfel [111] → 3̄m
   assert.equal(polyCrystal(zustand(adresse('streckung', 0)), FARBEN).isReduced, false);
+  {
+    /** ρ der Pole der Dipyramide. @param {string} h */
+    const rho = (h) => (Math.acos(Math.abs(polyCrystal(zustand(h), FARBEN).faces[0].normal[2])) * 180) / Math.PI;
+    assert.ok(rho(adresse('streckung', 0)) > rho('#m=form&sys=tetragonal&f=4/mmm:e14') + 5, 'Pole rücken zum Grundkreis'); }
+  { const l = effectiveLat(zustand(adresse('streckung', 1)));
+    assert.equal(new Set([1, l.ba, l.ca].map((x) => x.toFixed(3))).size, 3, 'a, b, c verschieden lang'); }
   assert.equal(polyCrystal(zustand(adresse('streckung', 1)), FARBEN).reduced?.hm, 'mmm');
   assert.equal(polyCrystal(zustand(adresse('streckung', 2)), FARBEN).reduced?.hm, '-3m');
 });

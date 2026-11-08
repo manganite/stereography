@@ -75,6 +75,9 @@ stabil halten).
   vier Bedienschritte je Modus, mit derselben Mechanik aus `lib/common/js/ablauf.js`. Texte in
   `js/hilfetexte.js`; `tests/ablauf.test.mjs` prüft die Pol- und Flächenzahlen, die Lage der Pole (oben,
   unten, Grundkreis), Formen und Formnamen gegen `pointgroups.js` und `forms.js`. Neue Aussagen dort mitprüfen.
+  Ausbau (8.11.2026, Thomas, #115): alle Ideen, die ohne neue Bedienelemente gehen (Ideen aus dem Kursmaterial);
+  je Modus in der Reihenfolge des Skripts (Anker des ersten Schritts), bis die Liste nach Kapitel gegliedert ist
+  (crystallography-common#107). Was neue Bedienelemente bräuchte, steht in #115.
 - **Erzeugte Experimente** (7.11.2026, Thomas, #114, crystallography-common#92): Code in `js/experimente.js`
   (keine Datendatei, weil die Aufgaben aus Rechnungen entstehen). Die Frage nennt das Element so, wie es die App
   zeigt: Ein Pol auf einer 4̄-, 3̄- oder 6̄-Achse liegt „auf einer 4̄-Achse“, auch wenn ihn nur der Drehanteil

@@ -184,14 +184,22 @@ export const DEFAULT_ENTRY = {
 };
 /** @type {Map<string, number>} */
 export const groupOrder = new Map();
-/** @param {Zustand} state @param {Formeintrag} e */
+/** @param {string} s */
+const eigNorm = (s) => EIG_SCHREIBWEISE[s] || s;
+/** Kristallsystem einer Eigensymmetrie; null für die Grenzgruppen ∞m und ∞/mm (Pedion, Pinakoid). @param {string} eig */
+const eigSystem = (eig) => POINT_GROUPS.find((g) => eigNorm(g.hm) === eigNorm(eig))?.system ?? null;
+/**
+ * Steht die Form ohne „Flächensymmetrie zeigen“ in der Liste? Die allgemeine Form jeder Punktgruppe, die Formen
+ * unter der Gruppe ihrer Eigensymmetrie und die Formen, deren Eigensymmetrie zu einem anderen Kristallsystem gehört
+ * (trigonales und hexagonales Prisma im trigonalen System, #118), unter ihrer Gruppe im Katalog.
+ * @param {Zustand} state @param {Formeintrag} e
+ */
 export function formListed(state, e) {
   if (state.poly.faceSym) return true;
   const g = groupOf(e.pg);
   if (!groupOrder.has(g.id)) groupOrder.set(g.id, buildPointGroup(g.id).order);
-  /** @param {string} s */
-  const norm = (s) => EIG_SCHREIBWEISE[s] || s;
-  return e.mult === groupOrder.get(g.id) || norm(formEig(e)) === norm(g.hm);
+  const eigSys = eigSystem(formEig(e));
+  return e.mult === groupOrder.get(g.id) || eigNorm(formEig(e)) === eigNorm(g.hm) || (eigSys != null && eigSys !== g.system);
 }
 /** @param {Zustand} state @returns {string} */
 export const currentEntryId = (state) => {

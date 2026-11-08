@@ -72,7 +72,7 @@ stabil halten).
   festhält (die Erklärung sagt das). Polzahl: alle Lagen aller Gruppen ab 4 Operationen, gleicher Wortlaut nur
   einmal (z. B. die drei 2-zähligen Achsen von 222). Flächenzahl: ohne die Formen, die die App unter der Gruppe
   ihrer Eigensymmetrie zeigt (z. B. {111} in 432 als Oktaeder von m3̄m), sonst nennte die App eine andere Gruppe als
-  die Frage; zwei trigonale Prismen fallen auf die Vorgabe zurück (#118). Die Lagesymmetrie steht in den
+  die Frage. Die Lagesymmetrie steht in den
   Wyckoff-Tabellen orientiert („..m“, „4m.m“) und so auch in den Erklärungen; `lage()` liest daraus Achse, Zahl der
   Spiegelebenen und Ordnung. Fallstrick: Der Azimut der App zählt von b zur a-Achse (`generalPole`), also
   `atan2(x, y)`.
@@ -80,6 +80,12 @@ stabil halten).
 ### Kristallformen
 - **Aufstellung B im Formenmodus** (v1.12.0): 312, 31m, 3̄1m, 4̄m2, 6̄2m. Erzeugte Quizfragen bleiben
   auf Aufstellung A.
+- **Formauswahl ohne „Flächensymmetrie zeigen“**: je Punktgruppe die allgemeine Form und die Formen mit der
+  Punktgruppe als Eigensymmetrie; dazu die Formen, deren Eigensymmetrie zu einem anderen Kristallsystem gehört,
+  unter ihrer Gruppe im Katalog (8.11.2026, Thomas, #118). Das betrifft nur das trigonale und das hexagonale
+  Prisma im trigonalen System (Eigensymmetrie 6̄2m bzw. 6/mmm); sie erschienen vorher nirgends, und ein Link auf
+  sie zeigte die Vorgabe. Pedion und Pinakoid (Eigensymmetrie ∞m, ∞/mm) bleiben bewusst nur mit „Flächensymmetrie
+  zeigen“; ein Link ohne `muster=1` zeigt die Vorgabe des Systems (`formListed` in `js/scene.js`).
 - **Monoklin** mit eindeutiger Achse b (Aufstellung „monoklin c“ im Formenmodus: Issue #58).
 - **Hexagonal** standardmässig (hkl), (hkil) zuschaltbar; [uvtw] nicht.
 - **Quarz** nach Kleber S. 70–71 (Abb. 1.70): {101} ist das grosse Rhomboeder. Links/Rechts ist nicht

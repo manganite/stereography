@@ -42,7 +42,7 @@
 .stack { display: grid; gap: 12px; }
 .field { display: grid; gap: 5px; }
 .field > label, .lbl { font-size: 0.82rem; color: var(--muted); }
-select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); }
+select { width: 100%; padding: 8px 10px; border: 1px solid var(--field); border-radius: 7px; background: var(--paper); }
 .picker { display: grid; gap: 7px; }
 .sysrow { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 6px; align-items: start; }
 .sysrow .sys { font-size: 0.74rem; color: var(--muted); padding-top: 7px; overflow-wrap: anywhere; }

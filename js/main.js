@@ -310,12 +310,17 @@ function refreshPolyControls() {
 const LOG_REGLER = new Set(['ba', 'ca']);
 /**
  * Wert eines Gitterreglers. Die Schritte des logarithmischen Reglers zählen ab dem Minimum und treffen das Maximum
- * meist nicht; der letzte Schritt davor gilt deshalb als Maximum (sonst endete c/a bei 2,99 statt 3).
+ * meist nicht; der letzte Schritt davor gilt deshalb als Maximum (sonst endete c/a bei 2,99 statt 3). b/a und c/a
+ * werden auf 0,01 gerundet wie in Anzeige und Link: Die Schritte ab ln(Minimum) treffen 1 und andere runde Werte nicht
+ * (Review #122: c/a = 1,0006 statt 1 brach im kubischen System die Symmetrie, während überall 1,00 stand).
  * @param {string} k @param {HTMLInputElement} regler
  */
 const reglerWert = (k, regler) => {
   const v = Number(regler.max) - Number(regler.value) < Number(regler.step) ? Number(regler.max) : Number(regler.value);
-  return LOG_REGLER.has(k) ? Math.round(Math.exp(v) * 1e4) / 1e4 : v;
+  if (!LOG_REGLER.has(k)) return v;
+  // gerundet, aber im Bereich: 0,125 ergäbe 0,12 bzw. 0,13 je nach Rundungsfehler, gültig ist 0,13
+  const lo = Math.ceil(Math.exp(Number(regler.min)) * 100 - 1e-6) / 100, hi = Math.floor(Math.exp(Number(regler.max)) * 100 + 1e-6) / 100;
+  return Math.min(hi, Math.max(lo, Math.round(Math.exp(v) * 100) / 100));
 };
 
 /**
@@ -351,7 +356,6 @@ function syncLattice() {
   syncLatSliders();
 }
 
-
 /** Streckung entlang einer Blickrichtung: Auswahl der Richtung je System, Faktor. */
 /** @param {Streckrichtung} d */
 const stretchLabel = (d) => `[${d.id}]` + (/^[abc]$/.test(d.cls) ? ` = ${d.cls}` : `, Blickrichtung ${d.cls}`);
@@ -374,11 +378,17 @@ function latHinweis(an) {
   el.textContent = an ? 'Diese Winkel ergeben kein Gitter (oder nur ein fast flaches): Jeder Winkel muss kleiner sein als die Summe der beiden anderen, alle drei zusammen kleiner als 360°.' : '';
 }
 
-function syncLatSliders() {
+/**
+ * Regler des Gitters auf das wirksame Gitter setzen. ausser: der gerade bewegte logarithmische Regler bleibt, wo er
+ * ist; sonst setzte ihn der gerundete Wert zurück, und bei kleinen Werten (1 % von 0,13 rundet auf 0,13) käme die
+ * Pfeiltaste nicht weiter.
+ * @param {string} [ausser]
+ */
+function syncLatSliders(ausser) {
   const lat = S.effectiveLat(state);
   for (const k of LAT) {
     const text = k.length === 2 && k !== 'ba' && k !== 'ca' ? lat[k].toFixed(0) + '°' : lat[k].toFixed(2);
-    eingabe('lat-' + k).value = String(LOG_REGLER.has(k) ? Math.log(lat[k]) : lat[k]);
+    if (k !== ausser) eingabe('lat-' + k).value = String(LOG_REGLER.has(k) ? Math.log(lat[k]) : lat[k]);
     // Screenreader lesen den Wert, nicht ln(Wert) des logarithmischen Reglers
     eingabe('lat-' + k).setAttribute('aria-valuetext', text);
     $('lat-' + k + '-out').textContent = text;
@@ -1444,7 +1454,7 @@ function init() {
       latHinweis(wert !== wunsch);
       const geaendert = wert !== lat[k];
       lat[k] = wert;
-      syncLatSliders(); if (geaendert) render();
+      syncLatSliders(LOG_REGLER.has(k) ? k : undefined); if (geaendert) render();
     });
   }
   eingabe('poly-broken').checked = state.poly.broken;

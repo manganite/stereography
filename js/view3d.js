@@ -75,7 +75,16 @@ function drawLabels(ctx, root, sx, sy) {
     const fs = (parseFloat(cs.fontSize) || 12) * sy;
     ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${fs}px ${cs.fontFamily}`;
     const color = canvasColor(ctx, cs.color, '#000');
-    const parts = [...el.childNodes].map((n) => ({ t: n.textContent ?? '', bar: !!(/** @type {Element} */ (n).classList && /** @type {Element} */ (n).classList.contains('ov')) })).filter((p) => p.t);
+    // alle Textknoten, auch verschachtelte (hklHTML legt die Ziffern seit common 0.14.0 in ein <span role="img">);
+    // einen Querstrich trägt ein Text innerhalb von .ov
+    /** @type {{ t: string, bar: boolean }[]} */
+    const parts = [];
+    const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let n = tw.nextNode(); n; n = tw.nextNode()) {
+      const t = n.textContent ?? '';
+      const ov = n.parentElement?.closest('.ov');
+      if (t) parts.push({ t, bar: !!ov && el.contains(ov) });
+    }
     const widths = parts.map((p) => ctx.measureText(p.t).width);
     const total = widths.reduce((a, b) => a + b, 0);
     const m = ctx.measureText('(0)');

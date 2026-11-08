@@ -240,10 +240,11 @@
           </div>
           <p class="group-title" id="lat-title" hidden>Gitterparameter</p>
           <p class="hintline" id="lat-fixed">Kubisch: Das Gitter hat keine freien Parameter.</p>
+          <!-- Grenzen der Gitterregler setzt main.js je Modus (GITTER_BEREICH); b/a und c/a logarithmisch -->
           <div class="range" id="row-lat-ba"><label for="lat-ba">b/a</label><output id="lat-ba-out"></output>
-            <input type="range" id="lat-ba" min="0.4" max="3" step="0.01"></div>
+            <input type="range" id="lat-ba" min="-0.92" max="1.1" step="0.01"></div>
           <div class="range" id="row-lat-ca"><label for="lat-ca">c/a</label><output id="lat-ca-out"></output>
-            <input type="range" id="lat-ca" min="0.25" max="3" step="0.01"></div>
+            <input type="range" id="lat-ca" min="-1.39" max="1.1" step="0.01"></div>
           <div class="range" id="row-lat-al"><label for="lat-al">α</label><output id="lat-al-out"></output>
             <input type="range" id="lat-al" min="60" max="150" step="1" aria-describedby="lat-ungueltig"></div>
           <div class="range" id="row-lat-be"><label for="lat-be">β</label><output id="lat-be-out"></output>

@@ -6,7 +6,7 @@ import {
 import { SYSTEMS, SYSTEM_NAMEN } from './punktgruppen.js';
 import {
   habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, isHexSystem, auxFormName,
-  STRETCH_DIRS, stretchDir, naechsterGueltiger,
+  STRETCH_DIRS, stretchDir, naechsterGueltiger, GITTER_BEREICH,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig } from './forms.js';
 import { FORM_TYPES, EIG_SCHREIBWEISE } from './formen.js';
@@ -304,6 +304,21 @@ function refreshPolyControls() {
 }
 
 /**
+ * b/a und c/a mit logarithmischem Regler (#100, Entscheidung Thomas 8.11.2026): Der Regler steht auf ln(Wert), so liegt
+ * 1 in der Mitte zwischen 1/2 und 2, und der weite Bereich 0,125 … 6 bleibt im üblichen Bereich fein einstellbar.
+ */
+const LOG_REGLER = new Set(['ba', 'ca']);
+/**
+ * Wert eines Gitterreglers. Die Schritte des logarithmischen Reglers zählen ab dem Minimum und treffen das Maximum
+ * meist nicht; der letzte Schritt davor gilt deshalb als Maximum (sonst endete c/a bei 2,99 statt 3).
+ * @param {string} k @param {HTMLInputElement} regler
+ */
+const reglerWert = (k, regler) => {
+  const v = Number(regler.max) - Number(regler.value) < Number(regler.step) ? Number(regler.max) : Number(regler.value);
+  return LOG_REGLER.has(k) ? Math.round(Math.exp(v) * 1e4) / 1e4 : v;
+};
+
+/**
  * Box „Gitter“: ohne Symmetriebruch nur die freien Parameter des Systems; mit Symmetriebruch alle
  * Parameter, bei „Streckung“ gesperrt (sie zeigen das gestreckte Gitter), bei „Alle Parameter frei“ bedienbar.
  */
@@ -325,9 +340,17 @@ function syncLattice() {
   $('lat-fixed').hidden = free.size > 0;
   $('lat-locked').hidden = mode !== 'stretch';
   $('lat-title').hidden = !mode;
+  // Bereiche der Regler: mit Symmetriebruch weiter, damit jede Streckung hineinpasst (#100, #106)
+  const bereich = GITTER_BEREICH[mode ? 'frei' : 'unverzerrt'];
+  for (const k of LAT) {
+    const [lo, hi] = bereich[k];
+    eingabe('lat-' + k).min = String(LOG_REGLER.has(k) ? Math.log(lo) : lo);
+    eingabe('lat-' + k).max = String(LOG_REGLER.has(k) ? Math.log(hi) : hi);
+  }
   latHinweis(false);
   syncLatSliders();
 }
+
 
 /** Streckung entlang einer Blickrichtung: Auswahl der Richtung je System, Faktor. */
 /** @param {Streckrichtung} d */
@@ -354,8 +377,11 @@ function latHinweis(an) {
 function syncLatSliders() {
   const lat = S.effectiveLat(state);
   for (const k of LAT) {
-    eingabe('lat-' + k).value = String(lat[k]);
-    $('lat-' + k + '-out').textContent = k.length === 2 && k !== 'ba' && k !== 'ca' ? lat[k].toFixed(0) + '°' : lat[k].toFixed(2);
+    const text = k.length === 2 && k !== 'ba' && k !== 'ca' ? lat[k].toFixed(0) + '°' : lat[k].toFixed(2);
+    eingabe('lat-' + k).value = String(LOG_REGLER.has(k) ? Math.log(lat[k]) : lat[k]);
+    // Screenreader lesen den Wert, nicht ln(Wert) des logarithmischen Reglers
+    eingabe('lat-' + k).setAttribute('aria-valuetext', text);
+    $('lat-' + k + '-out').textContent = text;
   }
 }
 
@@ -1411,7 +1437,7 @@ function init() {
       if (mode === 'stretch') return; // gesperrt: das Gitter legt die Streckung fest
       const lat = mode === 'free' ? S.freeLat(state) : currentLat();
       if (!mode) Object.assign(lat, constrainLattice(lat, state.poly.system));
-      const regler = /** @type {HTMLInputElement} */ (ev.target), wunsch = Number(regler.value);
+      const regler = /** @type {HTMLInputElement} */ (ev.target), wunsch = reglerWert(k, regler);
       // Winkel, die zusammen kein Gitter ergeben: Der Regler bleibt am letzten gültigen Wert vor der Grenze stehen,
       // der Grund steht darunter (#95)
       const wert = naechsterGueltiger(lat, /** @type {keyof Gitterparameter} */ (k), wunsch, Number(regler.step) || 1);

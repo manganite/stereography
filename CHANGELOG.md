@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Behoben
+
+- **Leerer Wert im Link** (#123): Ein Schlüssel ohne Wert (z. B. `ba=` oder `rho=`) galt als 0 und setzte b/a auf die untere Grenze bzw. den Pol auf die Achse. Er gilt jetzt wie ein fehlender Schlüssel, also als Startwert (Leitfaden 5.2); ebenso ein leerer Faktor in `ab=`, ein leeres `az=` neben einem alten `phi=` und ein leerer Schalter (z. B. `pole=` schaltete die Pole aus). Ein Schalter mit unbekanntem Wert (weder `1`/`ja`/`true` noch `0`/`nein`/`false`) behält ebenfalls seinen Startwert, statt auszuschalten.
+
 ## [1.14.0] - 2026-11-08
 
 Hilfeseite mit den Erste Schritten als bebilderte Anleitungen und der Liste der Experimente; Abschnitt „Experimente“ mit festen und erzeugten Lernexperimenten, Stand wie im Quiz; Moduswahl mit der Tastatur; eine Prüfung für Link und Speicher; behoben: Gitterregler nach einer Streckung, Prismen im trigonalen System, Gitterwinkel, die zusammen kein Gitter ergeben; Ansage von Symbolen für Screenreader und Kontraste nach WCAG 2.2; gemeinsame Grundlage v0.15.0.

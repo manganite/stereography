@@ -6,6 +6,7 @@ import { createState, hashOf, applyHashTo, pgScene, polyCrystal, polyScene, norm
 import { buildSVG } from '../js/stereogram.js';
 
 /** @import { Palette, AppKristall } from '../js/scene.js' */
+/** @import { Richtung } from '../lib/common/js/typen.js' */
 
 // Farben ohne CSS (palette() liest sonst die CSS-Variablen der Seite)
 const K = '#336699';
@@ -116,4 +117,52 @@ test('Link auf ein Prisma im trigonalen System zeigt dieses Prisma (#118)', () =
   // Pedion und Pinakoid erscheinen nur mit „Flächensymmetrie zeigen“; ohne muster=1 die Vorgabe des Systems
   assert.equal(currentEntryId(sceneFor('#m=form&sys=tetragonal&f=4mm:a1').st), '4/mmm:f14');
   assert.equal(currentEntryId(sceneFor('#m=form&sys=tetragonal&f=4mm:a1&muster=1').st), '4mm:a1');
+});
+
+test('Pole über dem Symmetriegerüst mit Hof in der Papierfarbe, ohne Gerüst ohne (#119)', () => {
+  const PAPIER = '#fefefe', POL = '#123456';
+  const farben = /** @type {Palette} */ (/** @type {unknown} */ (new Proxy(/** @type {Record<string | symbol, unknown>} */ ({ paper: PAPIER, form: Array(8).fill(POL), dir: [K, K, K] }), { get: (o, k) => (k in o ? o[k] : K) })));
+  /** @param {string} hash */
+  const svg = (hash) => {
+    const st = createState();
+    assert.ok(applyHashTo(st, hash, createState()));
+    return buildSVG(polyScene(st, polyCrystal(st, farben), farben).scene).inner;
+  };
+  /** Mittelpunkte von Kreisen mit Radius r und Füllung bzw. Strich c. @param {string} s @param {string} r @param {string} c */
+  const kreise = (s, r, c) => [...s.matchAll(new RegExp(`<circle cx="([\\d.-]+)" cy="([\\d.-]+)" r="${r}" (?:fill|fill="none" stroke)="${c}"`, 'g'))].map((m) => `${m[1]},${m[2]}`);
+  const mit = svg('#m=form&sys=kubisch&bsp=galenit&geruest=1&idx=0');
+  const pole = kreise(mit, '4.2', POL);
+  assert.ok(pole.length >= 13, `obere Pole: ${pole.length}`);
+  assert.deepEqual(kreise(mit, '5.4', PAPIER).sort(), [...pole].sort(), 'jeder obere Pol mit Hof');
+  const unten = kreise(mit, '6.2', POL);
+  assert.ok(unten.length > 0, 'untere Pole');
+  assert.deepEqual(kreise(mit, '6.2', PAPIER).sort(), [...unten].sort(), 'jeder untere Pol mit Ring-Hof');
+  for (const [hash, grund] of [['#m=form&sys=kubisch&bsp=galenit&idx=0', 'ohne Gerüst'], ['#m=form&sys=triklin&f=1:a1&geruest=1', 'Gruppe 1, Gerüst leer']]) {
+    const s = svg(hash);
+    assert.equal(kreise(s, '5.4', PAPIER).length + kreise(s, '6.2', PAPIER).length, 0, `${grund}: kein Hof`);
+  }
+  // Reihenfolge: Hof unter den Zonenkreisen (sie laufen durch die Pole; [1̄10] ist kein Grundkreis), also vor dem ersten Zonenkreis gezeichnet
+  const z = svg('#m=form&sys=kubisch&bsp=galenit&geruest=1&idx=0&w=zone&zonen=1,-1,0');
+  const ersterHof = z.search(new RegExp(`r="5.4" fill="${PAPIER}"`)), letzterHof = z.lastIndexOf(`r="5.4" fill="${PAPIER}"`);
+  const zone = z.indexOf('stroke-width="2.2" stroke-linecap="round"/>');
+  assert.ok(ersterHof > 0 && zone > 0 && letzterHof < zone, 'Höfe vor den Zonenkreisen');
+});
+
+test('Richtungen als HTML über hklHTML, mit Ansagetext (dirHTML, #121)', async () => {
+  const { dirToFour } = await import('../js/polyhedra.js');
+  const { indices } = await import('../lib/common/js/format.js');
+  const { dirHTML } = await import('../js/scene.js');
+  /** @param {number[]} v */
+  const R = (v) => /** @type {Richtung} */ (/** @type {unknown} */ (v));
+  // [uvtw]: t = −(u + v) wie i bei (hkil), für alle [uvw] mit |u|, |v|, |w| ≤ 3 (-0 und 0 gelten als gleich)
+  for (let u = -3; u <= 3; u++) for (let v = -3; v <= 3; v++) for (let w = -3; w <= 3; w++) {
+    if (!u && !v && !w) continue;
+    const vier = dirToFour(R([u, v, w]));
+    assert.deepEqual(indices([vier[0], vier[1], vier[3]], true).map((x) => x + 0), vier.map((x) => x + 0), `[${u}${v}${w}]`);
+  }
+  // Ausgabe, Erwartungen von Hand
+  assert.equal(dirHTML(R([1, -1, 0]), false), '[<span role="img" aria-label="1, 1 quer, 0">1<span class="ov">1</span>0</span>]');
+  assert.equal(dirHTML(R([1, 0, 0]), true), '[<span role="img" aria-label="2, 1 quer, 1 quer, 0">2<span class="ov">1</span><span class="ov">1</span>0</span>]');
+  assert.equal(dirHTML(R([0, 0, 1]), true, ['⟨', '⟩']), '⟨<span role="img" aria-label="0, 0, 0, 1">0001</span>⟩');
+  assert.equal(dirHTML(R([12, 1, -1]), false), '[<span role="img" aria-label="12, 1, 1 quer">12 1 <span class="ov">1</span></span>]');
 });

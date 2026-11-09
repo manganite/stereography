@@ -1,5 +1,6 @@
 // Quiz: Aufbau der Fragen, Bezug zum Skript, nachgerechnete Antworten, erzeugte Fragen, Ablauf, Moodle-Export.
 import { test } from 'node:test';
+import { ohneSymbole, texte } from './symbole.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { BANK } from '../js/quiz-bank.js';
@@ -945,4 +946,11 @@ test('Fragen: Abbildungsverweise aufs Skript existieren und liegen im Kapitel de
     }
   }
   assert.deepEqual(fehler, []);
+});
+
+// ------------------------------------------------------------------ Symbole über format.js (#121, Leitfaden Abschn. 4)
+test('Erzeugte Fragen: Querstriche nur in Symbolen aus format.js (#121)', () => {
+  for (const g of GENERATOREN) for (const q of erzeugt(g)) {
+    for (const t of texte(q)) assert.doesNotMatch(ohneSymbole(t), /class="ov"/, `${q.id}: ${t}`);
+  }
 });

@@ -3,7 +3,7 @@
 // Die Frage hat denselben Aufbau wie in quiz-bank.js (ohne id, stufe, kapitel, status; die setzt quiz-core.js).
 
 import { POINT_GROUPS, groupById, buildPointGroup, symmetryDirections, elementSummary } from './pointgroups.js';
-import { hmHTML } from '../lib/common/js/format.js';
+import { hmHTML, hklHTML } from '../lib/common/js/format.js';
 import { CATALOG, entryById } from './forms.js';
 import { SYSTEM_OF } from './polyhedra.js';
 import { poleOfHKL, stabilizer } from './sitesym.js';
@@ -136,7 +136,7 @@ export const GERUEST = {
 // Daten aus dem Formenkatalog (js/formen.js, über js/forms.js): Wyckoff-Lage, Flächensymmetrie, Flächenzahl je Form; die Tests rechnen
 // Flächenzahl und Flächensymmetrie aus den Gruppenoperationen nach.
 /** @param {Vec3} hkl */
-const indizes = (hkl) => `{${hkl.map((x) => (x < 0 ? `<span class="ov">${-x}</span>` : x)).join('')}}`;
+const indizes = (hkl) => hklHTML(hkl, false, ['{', '}']);
 /** @param {string} id */
 const ORDNUNG = (id) => buildPointGroup(id).ops.length;
 /** Symbol der Punktgruppe; trigonal mit Aufstellung (3m1, 31m), damit die Positionen der Flächensymmetrie lesbar sind. */
@@ -231,12 +231,12 @@ function ablesenText(/** @type {Formeintrag} */ e) {
   // Drehinversionsachse (3̄, 4̄, 6̄): im Stereogramm ihr Symbol; den Pol hält nur ihr Drehanteil fest
   const inv = ax && ax.sym.startsWith('-');
   /** @param {{ n: number, sym: string }} x */
-  const achsName = (x) => (x.sym.startsWith('-') ? `die ${ov(x.sym.slice(1))}-Achse entlang der Flächennormalen (den Pol hält davon nur die ${x.n}-zählige Drehung fest)` : `die ${x.n}-zählige Achse entlang der Flächennormalen`);
+  const achsName = (x) => (x.sym.startsWith('-') ? `die ${hmHTML(x.sym)}-Achse entlang der Flächennormalen (den Pol hält davon nur die ${x.n}-zählige Drehung fest)` : `die ${x.n}-zählige Achse entlang der Flächennormalen`);
   // Spiegelebene ⊥ c durch den Pol: im Stereogramm der kräftige Grundkreis
   const info = buildPointGroup(e.pg), p = poleOfHKL(SYSTEM_OF[e.pg], e.hkl);
   const gk = info.mirrors.some((m) => Math.abs(m[2]) > (1 - 1e-6) * Math.hypot(...m)) && info.ops.every((o) => Math.abs(mulVec(o, p)[2]) < 1e-6);
   const linien = sp === 1 ? 'einer Spiegellinie' : `${ZAHL[sp]} Spiegellinien`;
-  const bild = [n ? (inv ? `auf dem Symbol einer ${ov(/** @type {{ sym: string }} */ (ax).sym.slice(1))}-Achse` : `auf dem Symbol einer ${n}-zähligen Achse`) : '', sp ? `auf ${linien}${gk ? (sp === 1 ? ', dem kräftigen Grundkreis' : ' (eine davon ist der kräftige Grundkreis)') : ''}` : ''].filter(Boolean);
+  const bild = [n ? (inv ? `auf dem Symbol einer ${hmHTML(/** @type {{ sym: string }} */ (ax).sym)}-Achse` : `auf dem Symbol einer ${n}-zähligen Achse`) : '', sp ? `auf ${linien}${gk ? (sp === 1 ? ', dem kräftigen Grundkreis' : ' (eine davon ist der kräftige Grundkreis)') : ''}` : ''].filter(Boolean);
   const teile = el.filter((x) => x.n || x.spiegel).map((x) => `zu ${x.label} ${[x.n ? achsName(x) : '', x.spiegel ? `${x.spiegel === 1 ? 'eine Spiegelebene' : `${ZAHL[x.spiegel]} Spiegelebenen`}` : ''].filter(Boolean).join(' und ')}`);
   const leer = el.filter((x) => !x.n && !x.spiegel).map((x) => x.label);
   // mehrere Spiegelebenen derselben Blickrichtung, die die Achse durch den Pol ineinander überführt: im Symbol nur ein m
@@ -285,8 +285,6 @@ export const FLAECHENSYM = {
 
 // ------------------------------------------------------------------ Räumliche Zeichnungen (js/bild3d.js)
 // Bildangabe "3d#…": feste Zeichnung des Kristalls bzw. Symmetriegerüsts; die Projektionsrichtung ist darin senkrecht.
-/** @param {number | string} d */
-const ov = (d) => `<span class="ov">${d}</span>`;
 const PFEIL = 'Die Projektionsrichtung ist in den Zeichnungen senkrecht (Pfeil).';
 /** Regel aus der Zusammenfassung von Kap. 6. */
 const REGEL = 'Flächen parallel zur Projektionsrichtung haben ihre Pole auf dem Grundkreis, Flächen senkrecht dazu im Mittelpunkt.';
@@ -435,7 +433,7 @@ export const aehnlich = (k, a, b) => (AEHNLICH[k] || []).some(([p, q]) => (p ===
 const lageText = (l) => `[${l}]`;
 /** Was die Lage sichtbar macht (Skript Kap. 6, „Andere Projektionsrichtung, gleicher Kristall“). */
 /** @type {Record<string, string>} */
-const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${ov(3)}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
+const LAGE_SYMMETRIE = { '001': 'die vierzählige Symmetrie', 111: `die dreizählige Symmetrie (genauer ${hmHTML('-3')}: ● und ○ wechseln ab)`, 110: 'die zweizählige Symmetrie' };
 
 /** @type {Generator} */
 export const LAGE = {

@@ -6,6 +6,7 @@ import { createState, hashOf, applyHashTo, pgScene, polyCrystal, polyScene, norm
 import { buildSVG } from '../js/stereogram.js';
 
 /** @import { Palette, AppKristall } from '../js/scene.js' */
+/** @import { Richtung } from '../lib/common/js/typen.js' */
 
 // Farben ohne CSS (palette() liest sonst die CSS-Variablen der Seite)
 const K = '#336699';
@@ -116,4 +117,18 @@ test('Link auf ein Prisma im trigonalen System zeigt dieses Prisma (#118)', () =
   // Pedion und Pinakoid erscheinen nur mit „Flächensymmetrie zeigen“; ohne muster=1 die Vorgabe des Systems
   assert.equal(currentEntryId(sceneFor('#m=form&sys=tetragonal&f=4mm:a1').st), '4/mmm:f14');
   assert.equal(currentEntryId(sceneFor('#m=form&sys=tetragonal&f=4mm:a1&muster=1').st), '4mm:a1');
+});
+
+test('[uvtw] über hklHTML: t = −(u + v) wie i bei (hkil) (#121)', async () => {
+  const { dirToFour } = await import('../js/polyhedra.js');
+  const { indices, hklLabel } = await import('../lib/common/js/format.js');
+  for (let u = -3; u <= 3; u++) for (let v = -3; v <= 3; v++) for (let w = -3; w <= 3; w++) {
+    if (!u && !v && !w) continue;
+    const vier = dirToFour(/** @type {Richtung} */ ([u, v, w]));
+    // -0 und 0 gelten als gleich (beide als „0“ gezeigt und angesagt)
+    assert.deepEqual(indices([vier[0], vier[1], vier[3]], true).map((x) => x + 0), vier.map((x) => x + 0), `[${u}${v}${w}]`);
+  }
+  // Beispiel von Hand: [100] hexagonal = [2 1̄ 1̄ 0]
+  assert.deepEqual(dirToFour(/** @type {Richtung} */ ([1, 0, 0])), [2, -1, -1, 0]);
+  assert.equal(hklLabel([2, -1, 0], true), '2, 1 quer, 1 quer, 0');
 });

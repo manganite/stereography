@@ -381,6 +381,18 @@ export function buildSVG(scene, { standalone = false } = {}) {
   // gedämpft, aber mit 3 : 1 auf dem Papier (WCAG 1.4.11, #119): Das Gerüst unter den Polen trägt Information (welcher
   // Pol auf welchem Element liegt, z. B. Abb. 4.8); 0,75 reicht für alle Farben der Blickrichtungen und --muted.
   if (fw.length) out.push(`<g${scene.faint ? ` opacity="${GERUEST_GEDAEMPFT}"` : ''}>${fw.join('')}</g>`);
+  const poles = (scene.poles || []).map((P) => ({ ...P, q: project(P.p) }));
+  // Pole über dem gedämpften Gerüst: schmaler Hof in der Papierfarbe, damit ein Pol auf einem Achsensymbol erkennbar
+  // bleibt (#119, Variante von Thomas gewählt). Direkt über dem Gerüst, unter Zonen und Winkelbogen, die ihn queren.
+  if (scene.faint && fw.length) {
+    const ps = scene.poleScale || 1;
+    for (const P of poles) {
+      if (!P.q.upper && !scene.showLower) continue;
+      const op = P.faint ? ' opacity="0.45"' : '';
+      if (P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(5.4 * ps)}" fill="${col.paper}"${op}/>`);
+      else out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(6.2 * ps)}" fill="none" stroke="${col.paper}" stroke-width="${f(3.2 * ps)}"${op}/>`);
+    }
+  }
 
   // Zonen: Zonenkreis (Grosskreis ⊥ Zonenachse) und Pol der Zonenachse, je Zone in ihrer Farbe
   const zoneList = scene.zoneList || (scene.zone ? [{ ...scene.zone, color: col.accent }] : []);
@@ -427,22 +439,17 @@ export function buildSVG(scene, { standalone = false } = {}) {
   }
 
   // Pole
-  const poles = (scene.poles || []).map((P) => ({ ...P, q: project(P.p) }));
   /** @type {(ScenePol & { q: Bildpunkt })[]} */
   const drawn = [];
   // Hof hinter ausgewählten Polen (deutlicher Kontrast zur übrigen Projektion)
   for (const P of poles) {
     if (P.selected && (P.q.upper || scene.showLower)) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="15" fill="${col.accent}" opacity="0.18"/>`);
   }
-  const hof = !!scene.faint && fw.length > 0;
   for (const P of poles) {
     if (!P.q.upper && !scene.showLower) continue;
     const cU = P.selected ? col.accent : P.color || (scene.colorByDet ? ((P.det ?? 0) > 0 ? col.upper : col.accent2) : col.ink);
     const op = P.faint ? ' opacity="0.45"' : '';
     const ps = scene.poleScale || 1;
-    // über dem Symmetriegerüst: Hof in der Papierfarbe, damit der Pol auf einem Achsensymbol erkennbar bleibt (#119)
-    if (hof && P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(5.4 * ps)}" fill="${col.paper}"${op}/>`);
-    if (hof && !P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(6.2 * ps)}" fill="none" stroke="${col.paper}" stroke-width="${f(3.2 * ps)}"${op}/>`);
     if (P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(4.2 * ps)}" fill="${cU}"${op}/>`);
     else out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(6.2 * ps)}" fill="none" stroke="${cU}" stroke-width="${f(1.6 * ps)}"${op}/>`);
     drawn.push(P);

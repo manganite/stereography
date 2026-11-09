@@ -97,9 +97,12 @@ stabil halten).
   Grafik mit 3 : 1; Deckkraft `GERUEST_GEDAEMPFT` in `js/stereogram.js` (0,75 statt 0,55). Damit gingen Pole auf
   einem Achsensymbol unter, besonders rote auf Gold und Grün (Thomas, 9.11.2026); deshalb haben die Pole über dem
   Gerüst einen schmalen Hof in der Papierfarbe (Thomas wählte ihn unter vier Varianten: 0,55, 0,75 ohne Hof, mit
-  breitem und mit schmalem Hof; der breite deckte kleine Symbole zu sehr ab). Erzeugte Zonenfarben ab
+  breitem und mit schmalem Hof; der breite deckte kleine Symbole zu sehr ab). Der Hof steht in `buildSVG` direkt über
+  dem Gerüst und unter Zonenkreisen und Winkelbogen, nur wenn ein Gerüst gezeichnet ist (Test in
+  `tests/scene.test.mjs`); das Kreuz einer Kristallachse (`achsen=1`) unter einem Pol verdeckt er bis auf die Spitzen,
+  die Beschriftung bleibt. Erzeugte Zonenfarben ab
   der neunten Zone werden so dunkel bzw. hell gewählt, dass ihre Beschriftung auf Papier und `--surface` (Kenndaten)
-  4,5 : 1 hat (`zoneColor` in `js/scene.js`). Beides prüft `tests/farben.test.mjs`. Die Tönung der Fläche in Abb. 1.1
+  4,5 : 1 hat (`zoneColor` in `js/scene.js`). Deckkraft und Zonenfarben prüft `tests/farben.test.mjs`. Die Tönung der Fläche in Abb. 1.1
   ist 14 %, weil Beschriftungen auf ihr liegen (bei 20 % 4,47 : 1). Als stützend unter 3 : 1 belassen: Tönungen mit
   eigenem Umriss (Abb. 1.1, 8.5, 11.5), Hilfslinien (Abb. 1.4, 2.1, 2.4) und die weisse Füllung des Inversionssymbols.
 

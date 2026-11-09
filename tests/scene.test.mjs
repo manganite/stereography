@@ -133,6 +133,16 @@ test('Pole über dem Symmetriegerüst mit Hof in der Papierfarbe, ohne Gerüst o
   const pole = kreise(mit, '4.2', POL);
   assert.ok(pole.length >= 13, `obere Pole: ${pole.length}`);
   assert.deepEqual(kreise(mit, '5.4', PAPIER).sort(), [...pole].sort(), 'jeder obere Pol mit Hof');
-  const ohne = svg('#m=form&sys=kubisch&bsp=galenit&idx=0');
-  assert.equal(kreise(ohne, '5.4', PAPIER).length, 0, 'ohne Gerüst kein Hof');
+  const unten = kreise(mit, '6.2', POL);
+  assert.ok(unten.length > 0, 'untere Pole');
+  assert.deepEqual(kreise(mit, '6.2', PAPIER).sort(), [...unten].sort(), 'jeder untere Pol mit Ring-Hof');
+  for (const [hash, grund] of [['#m=form&sys=kubisch&bsp=galenit&idx=0', 'ohne Gerüst'], ['#m=form&sys=triklin&f=1:a1&geruest=1', 'Gruppe 1, Gerüst leer']]) {
+    const s = svg(hash);
+    assert.equal(kreise(s, '5.4', PAPIER).length + kreise(s, '6.2', PAPIER).length, 0, `${grund}: kein Hof`);
+  }
+  // Reihenfolge: Hof unter den Zonenkreisen (sie laufen durch die Pole; [1̄10] ist kein Grundkreis), also vor dem ersten Zonenkreis gezeichnet
+  const z = svg('#m=form&sys=kubisch&bsp=galenit&geruest=1&idx=0&w=zone&zonen=1,-1,0');
+  const ersterHof = z.search(new RegExp(`r="5.4" fill="${PAPIER}"`)), letzterHof = z.lastIndexOf(`r="5.4" fill="${PAPIER}"`);
+  const zone = z.indexOf('stroke-width="2.2" stroke-linecap="round"/>');
+  assert.ok(ersterHof > 0 && zone > 0 && letzterHof < zone, 'Höfe vor den Zonenkreisen');
 });

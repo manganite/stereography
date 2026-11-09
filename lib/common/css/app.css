@@ -152,9 +152,12 @@ a.helpbtn { display: inline-grid; place-items: center; text-decoration: none; }
 .intro-foot { margin: 12px 0 0; font-size: 0.78rem; color: var(--muted); }
 /* Geführte Abläufe (js/ablauf.js): Experimente (Abschnitt „Experimente“) und Erste Schritte */
 .ablauf-hinweis { margin: 0 0 8px; font-size: 0.84rem; color: var(--muted); }
-.ablauf-liste { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; font-size: 0.86rem; }
+.ablauf-liste { margin: 0; padding-left: 1.9em; display: grid; gap: 8px; font-size: 0.86rem; }
 .ablauf-liste li::marker { color: var(--accent); font-weight: 600; }
 .ablauf-liste li.done .linkbtn { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+/* Gliederung nach Kapiteln ab 6 Experimenten je Modus (#107): Titel der Liste wie .group-title */
+.ablauf-kapitel { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin: 12px 0 6px; }
+.ablauf-hinweis + .ablauf-kapitel { margin-top: 4px; }
 .ablauf-neu { color: var(--muted); }
 .ablauf-stand { margin: 10px 0 0; font-size: 0.78rem; color: var(--muted); }
 .ablauf-stand .linkbtn { font-size: inherit; }
@@ -188,18 +191,19 @@ a.helpbtn { display: inline-grid; place-items: center; text-decoration: none; }
 }
 .tip[hidden] { display: none; }
 .tip .ov { text-decoration: overline; }
-.infobtn { display: none; }
-@media (hover: none) {
-  .infobtn {
-    display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; margin: -10px -8px -10px 2px;
-    padding: 0; border: 0; background: transparent; cursor: pointer; color: var(--accent);
-  }
-  .infobtn span {
-    display: grid; place-items: center; width: 22px; height: 22px; border: 1.5px solid currentColor; border-radius: 50%;
-    font: italic 600 0.82rem/1 var(--font-display); text-transform: none; letter-spacing: 0;
-  }
-  .infobtn[aria-expanded="true"] span { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+.infobtn {
+  display: none; place-items: center; flex: none; width: 40px; height: 40px; margin: -10px -8px -10px 2px;
+  padding: 0; border: 0; background: transparent; cursor: pointer; color: var(--accent);
 }
+.infobtn span {
+  display: grid; place-items: center; width: 22px; height: 22px; border: 1.5px solid currentColor; border-radius: 50%;
+  font: italic 600 0.82rem/1 var(--font-display); text-transform: none; letter-spacing: 0;
+}
+.infobtn[aria-expanded="true"] span { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+/* ⓘ auf Touch-Geräten; auch nach dem ersten Tippen auf den Touchscreen eines Laptops, der hover: hover meldet
+   (data-touch, help.js, #114) */
+@media (hover: none) { .infobtn { display: inline-grid; } }
+:root[data-touch] .infobtn { display: inline-grid; }
 .card h2 { display: flex; align-items: center; justify-content: space-between; }
 .sumlabel { display: inline-flex; align-items: center; }
 .helpbox {
@@ -226,6 +230,10 @@ a.helpbtn { display: inline-grid; place-items: center; text-decoration: none; }
   .only-coarse { display: inline; }
   .only-fine { display: none; }
 }
+/* Das zuletzt benutzte Zeigegerät (data-zeiger, help.js) geht der Media Query vor: Laptops mit Touchscreen melden
+   oft pointer: coarse, auch wenn mit der Maus gearbeitet wird (#114) */
+:root[data-zeiger="maus"] .only-fine, :root[data-zeiger="touch"] .only-coarse { display: revert; }
+:root[data-zeiger="maus"] .only-coarse, :root[data-zeiger="touch"] .only-fine { display: none; }
 /* Tafeln */
 .panel { margin: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; }
 .panel-head {

@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Gemeinsame Grundlage** auf crystallography-common v0.16.0: Hinweise für Maus oder Touch und das ⓘ richten sich nach dem zuletzt benutzten Gerät (crystallography-common#114); ab zehn Experimenten wird die Nummer in der Liste nicht mehr abgeschnitten. Die Gliederung der Experimente nach Kapiteln (crystallography-common#107) und die Prüfung der Tooltips stehen bereit, sind hier aber noch nicht eingeschaltet.
+
 ### Behoben
 
 - **Gemeinsame Grundlage** auf crystallography-common v0.15.1: Tooltips erscheinen auch auf Laptops mit Touchscreen, wenn mit Maus oder Tastatur gearbeitet wird (vorher blieben sie aus, wenn der Browser den Touchscreen als primäres Zeigegerät meldete; crystallography-common#114).

@@ -28,7 +28,7 @@ export function hellePalette() {
   /** @param {string} n */
   const g = (n) => v[n];
   return {
-    paper: g('paper'), ink: g('ink'), muted: g('muted'), net: g('net'),
+    paper: g('paper'), surface: g('surface'), ink: g('ink'), muted: g('muted'), net: g('net'),
     mirror: g('ink'), axis: g('ink'), dir: [g('dir1'), g('dir2'), g('dir3')],
     upper: g('upper'), accent: g('accent'), accent2: g('accent2'),
     ray: g('ray'), crystal: g('crystal'), crystal2: g('crystal2'), edge: g('edge'),

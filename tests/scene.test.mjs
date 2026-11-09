@@ -119,6 +119,35 @@ test('Link auf ein Prisma im trigonalen System zeigt dieses Prisma (#118)', () =
   assert.equal(currentEntryId(sceneFor('#m=form&sys=tetragonal&f=4mm:a1&muster=1').st), '4mm:a1');
 });
 
+test('Pole über dem Symmetriegerüst mit Hof in der Papierfarbe, ohne Gerüst ohne (#119)', () => {
+  const PAPIER = '#fefefe', POL = '#123456';
+  const farben = /** @type {Palette} */ (/** @type {unknown} */ (new Proxy(/** @type {Record<string | symbol, unknown>} */ ({ paper: PAPIER, form: Array(8).fill(POL), dir: [K, K, K] }), { get: (o, k) => (k in o ? o[k] : K) })));
+  /** @param {string} hash */
+  const svg = (hash) => {
+    const st = createState();
+    assert.ok(applyHashTo(st, hash, createState()));
+    return buildSVG(polyScene(st, polyCrystal(st, farben), farben).scene).inner;
+  };
+  /** Mittelpunkte von Kreisen mit Radius r und Füllung bzw. Strich c. @param {string} s @param {string} r @param {string} c */
+  const kreise = (s, r, c) => [...s.matchAll(new RegExp(`<circle cx="([\\d.-]+)" cy="([\\d.-]+)" r="${r}" (?:fill|fill="none" stroke)="${c}"`, 'g'))].map((m) => `${m[1]},${m[2]}`);
+  const mit = svg('#m=form&sys=kubisch&bsp=galenit&geruest=1&idx=0');
+  const pole = kreise(mit, '4.2', POL);
+  assert.ok(pole.length >= 13, `obere Pole: ${pole.length}`);
+  assert.deepEqual(kreise(mit, '5.4', PAPIER).sort(), [...pole].sort(), 'jeder obere Pol mit Hof');
+  const unten = kreise(mit, '6.2', POL);
+  assert.ok(unten.length > 0, 'untere Pole');
+  assert.deepEqual(kreise(mit, '6.2', PAPIER).sort(), [...unten].sort(), 'jeder untere Pol mit Ring-Hof');
+  for (const [hash, grund] of [['#m=form&sys=kubisch&bsp=galenit&idx=0', 'ohne Gerüst'], ['#m=form&sys=triklin&f=1:a1&geruest=1', 'Gruppe 1, Gerüst leer']]) {
+    const s = svg(hash);
+    assert.equal(kreise(s, '5.4', PAPIER).length + kreise(s, '6.2', PAPIER).length, 0, `${grund}: kein Hof`);
+  }
+  // Reihenfolge: Hof unter den Zonenkreisen (sie laufen durch die Pole; [1̄10] ist kein Grundkreis), also vor dem ersten Zonenkreis gezeichnet
+  const z = svg('#m=form&sys=kubisch&bsp=galenit&geruest=1&idx=0&w=zone&zonen=1,-1,0');
+  const ersterHof = z.search(new RegExp(`r="5.4" fill="${PAPIER}"`)), letzterHof = z.lastIndexOf(`r="5.4" fill="${PAPIER}"`);
+  const zone = z.indexOf('stroke-width="2.2" stroke-linecap="round"/>');
+  assert.ok(ersterHof > 0 && zone > 0 && letzterHof < zone, 'Höfe vor den Zonenkreisen');
+});
+
 test('Richtungen als HTML über hklHTML, mit Ansagetext (dirHTML, #121)', async () => {
   const { dirToFour } = await import('../js/polyhedra.js');
   const { indices } = await import('../lib/common/js/format.js');

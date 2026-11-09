@@ -9,6 +9,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Geändert
 
 - **Kontraste in den Abbildungen** (#119, crystallography-common#65): Das Symmetriegerüst unter den Flächenpolen („Symmetriegerüst“ im Modus „Kristallformen“, z. B. Abb. 4.8) ist weniger stark gedämpft und erreicht 3 : 1 (vorher 2,3–2,5 : 1); die Pole darüber haben einen schmalen Hof, damit sie auf den Achsensymbolen erkennbar bleiben. Zonen ab der neunten bekommen Farben, deren Beschriftung 4,5 : 1 hat (Abb. 7.4: vorher 3,3 : 1). Die Tönung der Fläche in Abb. 1.1 ist heller, damit die Beschriftung darauf 4,5 : 1 hat.
+- **Symbole und Indizes für Screenreader** (#121, crystallography-common#82): Weitere Stellen laufen über `format.js` und werden Zeichen für Zeichen angesagt (Querstrich „quer“): Richtungen und Zonenachsen in der Infobox und der Zonenliste, auch [*uvtw*] (`dirHTML` in `js/main.js`), Formen und Drehinversionsachsen in erzeugten Quizfragen (`js/quiz-gen.js`) und in den erzeugten Experimenten (`js/experimente.js`). Das volle Symbol in den Kenndaten ist jetzt eine Grafik mit einem Ansagetext („4 über m, 3 quer, 2 über m“) statt einer je Position; die Farben der Positionen bleiben. Tests prüfen, dass erzeugte Fragen und Experimente keine von Hand gezeichneten Querstriche mehr enthalten.
 
 ### Behoben
 

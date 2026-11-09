@@ -64,7 +64,7 @@ export function achseAmPol(id, p) {
 export function ortText(fs, achse) {
   const { n, spiegel } = lage(fs);
   const ebenen = spiegel ? `, in der sich ${spiegel} Spiegelebenen schneiden` : '';
-  if (achse && achse.startsWith('-')) return `auf einer <span class="ov">${achse.slice(1)}</span>-Achse${ebenen}`;
+  if (achse && achse.startsWith('-')) return `auf einer ${hmHTML(achse)}-Achse${ebenen}`;
   if (n === 1) return spiegel ? 'auf einer Spiegelebene' : 'in allgemeiner Lage, also auf keinem Symmetrieelement';
   if (!spiegel) return `auf einer ${n}-zähligen Drehachse`;
   return `auf einer ${n}-zähligen Achse${ebenen}`;
@@ -141,7 +141,7 @@ export const POLZAHL = {
     const k = lage(d.fs).ordnung;
     // typische Fehler: Lage vergessen (Ordnung der Gruppe), Ordnung der Lagesymmetrie, doppelt bzw. halb so viele
     const a = antworten(d.mult, ablenker(d.mult, d.n, [d.n, d.mult * 2, d.mult / 2, k, 1]));
-    const dreh = d.achse && d.achse.startsWith('-') ? `Von der <span class="ov">${d.achse.slice(1)}</span>-Achse ${DREHANTEIL[d.achse]} den Pol fest. ` : '';
+    const dreh = d.achse && d.achse.startsWith('-') ? `Von der ${hmHTML(d.achse)}-Achse ${DREHANTEIL[d.achse]} den Pol fest. ` : '';
     /** @type {Schritt} */
     const s = {
       frage: polzahlFrage(p),

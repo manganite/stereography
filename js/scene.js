@@ -126,7 +126,7 @@ export function palette(el = document.documentElement) {
   /** @param {string} n */
   const g = (n) => cs.getPropertyValue('--' + n).trim();
   return {
-    paper: g('paper'), ink: g('ink'), muted: g('muted'), net: g('net'),
+    paper: g('paper'), surface: g('surface'), ink: g('ink'), muted: g('muted'), net: g('net'),
     mirror: g('ink'), axis: g('ink'), dir: [g('dir1'), g('dir2'), g('dir3')],
     upper: g('upper'), accent: g('accent'), accent2: g('accent2'),
     ray: g('ray'), crystal: g('crystal'), crystal2: g('crystal2'), edge: g('edge'),
@@ -150,21 +150,29 @@ export function lightPalette() {
 /** Farbe der i-ten Form eines Beispielkristalls (Pol) bzw. ihrer Flächen in 3D (aufgehellt). */
 /** @param {Palette} col @param {number} i */
 export const formColor = (col, i) => col.form[i % col.form.length];
+/** Hex-Farbe (#rgb oder #rrggbb) als [r, g, b] von 0 bis 255. @param {string} h */
+function hexRGB(h) {
+  const x = h.replace('#', '');
+  const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x;
+  return [0, 2, 4].map((k) => parseInt(f.slice(k, k + 2), 16));
+}
 /** Farbe zwischen a und b (Hex), Anteil t von b. @param {string} a @param {string} b @param {number} t */
 export function mixHex(a, b, t) {
-  /** @param {string} h */
-  const p = (h) => { const x = h.replace('#', ''); const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x; return [0, 2, 4].map((k) => parseInt(f.slice(k, k + 2), 16)); };
   try {
-    const A = p(a), Bc = p(b);
+    const A = hexRGB(a), Bc = hexRGB(b);
     return '#' + A.map((v, k) => Math.round(v + (Bc[k] - v) * t).toString(16).padStart(2, '0')).join('');
   } catch { return a; }
 }
 /** @param {Palette} col @param {number} i */
 export const formFill = (col, i) => mixHex(formColor(col, i), col.paper, 0.38);
-/** Farbe der i-ten gewählten Zone: zuerst die Formfarben, danach weitere Farbtöne, keine Wiederholung. @param {Palette} col @param {number} i */
+/**
+ * Farbe der i-ten gewählten Zone: zuerst die Formfarben, danach weitere Farbtöne (bis zur 38. Zone alle verschieden,
+ * danach wiederholt der goldene Winkel Farbtöne).
+ * @param {Palette} col @param {number} i
+ */
 export function zoneColor(col, i) {
   if (i < col.form.length) return col.form[i];
-  const dark = (() => { const x = col.paper.replace('#', ''); return x.length >= 6 && parseInt(x.slice(0, 2), 16) + parseInt(x.slice(2, 4), 16) + parseInt(x.slice(4, 6), 16) < 384; })();
+  const dark = hexRGB(col.paper).reduce((a, b) => a + b, 0) < 384;
   // zuerst Farbtöne, die die Formfarben nicht belegen (Grün, Violett, Gold, Himmelblau …), danach goldener Winkel
   const GAPS = [125, 265, 45, 195, 290, 95, 345, 235];
   const j = i - col.form.length;
@@ -175,17 +183,19 @@ export function zoneColor(col, i) {
     const f = (n) => { const k = (n + h / 30) % 12; const c = l - sat * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(c * 255).toString(16).padStart(2, '0'); };
     return '#' + f(0) + f(8) + f(4);
   };
-  // Beschriftungen der Zonen sind Text: mindestens 4,5 : 1 auf dem Papier (WCAG 1.4.3, Leitfaden 5.4, #119), sonst
-  // dunkler (hell) bzw. heller (dunkel); Grün und Gelb brauchen das, Blau und Violett nicht.
+  // Beschriftungen der Zonen sind Text: mindestens 4,5 : 1 (WCAG 1.4.3, Leitfaden 5.4, #119) auf dem Papier
+  // (Stereogramm) und auf --surface (Kenndaten), sonst dunkler (hell) bzw. heller (dunkel); Grün und Gelb brauchen
+  // das, Blau und Violett nicht.
+  const gruende = [col.paper, ...(col.surface ? [col.surface] : [])];
+  /** @param {string} c */
+  const reicht = (c) => gruende.every((g) => kontrast(c, g) >= 4.5);
   let l = dark ? 0.66 : 0.4;
-  while (kontrast(hsl(l), col.paper) < 4.5 && l > 0.05 && l < 0.95) l += dark ? 0.01 : -0.01;
+  while (!reicht(hsl(l)) && l > 0.05 && l < 0.95) l += dark ? 0.01 : -0.01;
   return hsl(l);
 }
 /** Relative Leuchtdichte einer Hex-Farbe (WCAG 2.2). @param {string} hex */
 function leuchtdichte(hex) {
-  const x = hex.replace('#', '');
-  const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x;
-  const [r, g, b] = [0, 2, 4].map((k) => { const c = parseInt(f.slice(k, k + 2), 16) / 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
+  const [r, g, b] = hexRGB(hex).map((v) => { const c = v / 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 /** Kontrastverhältnis zweier Hex-Farben (WCAG 2.2). @param {string} a @param {string} b */

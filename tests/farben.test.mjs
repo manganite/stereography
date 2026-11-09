@@ -28,11 +28,14 @@ const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) +
 /** Farbe a mit Deckkraft t auf b. @param {string} a @param {string} b @param {number} t */
 const auf = (a, b, t) => '#' + rgb(a).map((v, k) => Math.round((v * t + rgb(b)[k] * (1 - t)) * 255).toString(16).padStart(2, '0')).join('');
 
-test('Erzeugte Zonenfarben: Text mit 4,5 : 1 auf dem Papier (#119)', () => {
+test('Erzeugte Zonenfarben: Text mit 4,5 : 1 auf Papier und --surface, bis zur 38. Zone verschieden (#119)', () => {
   for (const [modus, v] of Object.entries(MODI)) {
-    const col = /** @type {Palette} */ (/** @type {unknown} */ ({ paper: v.paper, form: [0, 1, 2, 3, 4, 5, 6, 7].map((i) => v['fc' + i]) }));
+    const col = /** @type {Palette} */ (/** @type {unknown} */ ({ paper: v.paper, surface: v.surface, form: [0, 1, 2, 3, 4, 5, 6, 7].map((i) => v['fc' + i]) }));
     const farben = Array.from({ length: 40 }, (_, i) => zoneColor(col, i));
-    for (const [i, c] of farben.entries()) assert.ok(ratio(c, v.paper) >= 4.5, `${modus}, Zone ${i + 1}: ${c} ${ratio(c, v.paper).toFixed(2)} : 1`);
+    for (const [i, c] of farben.entries()) for (const g of ['paper', 'surface']) {
+      assert.ok(ratio(c, v[g]) >= 4.5, `${modus}, Zone ${i + 1} auf --${g}: ${c} ${ratio(c, v[g]).toFixed(2)} : 1`);
+    }
+    assert.equal(new Set(farben.slice(0, 38)).size, 38, `${modus}: die ersten 38 Zonen verschieden`);
   }
 });
 

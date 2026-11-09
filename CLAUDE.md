@@ -92,13 +92,13 @@ stabil halten).
   Spiegelebenen und Ordnung. Fallstrick: Der Azimut der App zählt von b zur a-Achse (`generalPole`), also
   `atan2(x, y)`.
 
-- **Kontraste der Abbildungen** (9.11.2026, #119, Leitfaden Abschn. 5.4; Einstufung beim Umsetzen, Freigabe durch
-  Thomas offen): Das gedämpfte Symmetriegerüst unter den Flächenpolen (`geruest=1`) trägt Information (welcher Pol
-  auf welchem Element liegt, Abb. 4.8), gilt also als nötige Grafik mit 3 : 1; Deckkraft `GERUEST_GEDAEMPFT` in
-  `js/stereogram.js` (0,75 statt 0,55). Erzeugte Zonenfarben ab der neunten Zone werden so dunkel bzw. hell
-  gewählt, dass ihre Beschriftung 4,5 : 1 hat (`zoneColor` in `js/scene.js`). Beides prüft `tests/farben.test.mjs`.
-  Als stützend unter 3 : 1 belassen: Tönungen mit eigenem Umriss (Abb. 1.1, 8.5, 11.5), Hilfslinien (Abb. 1.4, 2.1,
-  2.4) und die weisse Füllung des Inversionssymbols.
+- **Kontraste der Abbildungen** (9.11.2026, #119, Leitfaden Abschn. 5.4): Das gedämpfte Symmetriegerüst unter den
+  Flächenpolen (`geruest=1`) trägt Information (welcher Pol auf welchem Element liegt, Abb. 4.8), gilt also als nötige
+  Grafik mit 3 : 1; Deckkraft `GERUEST_GEDAEMPFT` in `js/stereogram.js` (0,75 statt 0,55). Erzeugte Zonenfarben ab
+  der neunten Zone werden so dunkel bzw. hell gewählt, dass ihre Beschriftung auf Papier und `--surface` (Kenndaten)
+  4,5 : 1 hat (`zoneColor` in `js/scene.js`). Beides prüft `tests/farben.test.mjs`. Die Tönung der Fläche in Abb. 1.1
+  ist 14 %, weil Beschriftungen auf ihr liegen (bei 20 % 4,47 : 1). Als stützend unter 3 : 1 belassen: Tönungen mit
+  eigenem Umriss (Abb. 1.1, 8.5, 11.5), Hilfslinien (Abb. 1.4, 2.1, 2.4) und die weisse Füllung des Inversionssymbols.
 
 ### Kristallformen
 - **Aufstellung B im Formenmodus** (v1.12.0): 312, 31m, 3̄1m, 4̄m2, 6̄2m. Erzeugte Quizfragen bleiben

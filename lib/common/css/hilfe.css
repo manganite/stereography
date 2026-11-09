@@ -18,6 +18,8 @@ article figure.hilfe-bild { margin: 8px 0 10px; padding: 0; border: 0; backgroun
 .hilfe-liste > li { padding: 12px 0; border-top: 1px solid var(--line); max-width: 70ch; }
 .hilfe-liste > li:last-child { border-bottom: 1px solid var(--line); }
 .hilfe-erzeugt { color: var(--muted); }
+/* Experimente nach Kapiteln (#107, ab 6 je Modus) */
+.hilfe-experimente h4 { margin: 24px 0 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
 
 @media print {
   .hilfe-schritt, .hilfe-liste > li { break-inside: avoid; }

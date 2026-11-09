@@ -434,11 +434,15 @@ export function buildSVG(scene, { standalone = false } = {}) {
   for (const P of poles) {
     if (P.selected && (P.q.upper || scene.showLower)) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="15" fill="${col.accent}" opacity="0.18"/>`);
   }
+  const hof = !!scene.faint && fw.length > 0;
   for (const P of poles) {
     if (!P.q.upper && !scene.showLower) continue;
     const cU = P.selected ? col.accent : P.color || (scene.colorByDet ? ((P.det ?? 0) > 0 ? col.upper : col.accent2) : col.ink);
     const op = P.faint ? ' opacity="0.45"' : '';
     const ps = scene.poleScale || 1;
+    // über dem Symmetriegerüst: Hof in der Papierfarbe, damit der Pol auf einem Achsensymbol erkennbar bleibt (#119)
+    if (hof && P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(5.4 * ps)}" fill="${col.paper}"${op}/>`);
+    if (hof && !P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(6.2 * ps)}" fill="none" stroke="${col.paper}" stroke-width="${f(3.2 * ps)}"${op}/>`);
     if (P.q.upper) out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(4.2 * ps)}" fill="${cU}"${op}/>`);
     else out.push(`<circle cx="${f(P.q.x)}" cy="${f(P.q.y)}" r="${f(6.2 * ps)}" fill="none" stroke="${cU}" stroke-width="${f(1.6 * ps)}"${op}/>`);
     drawn.push(P);

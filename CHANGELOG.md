@@ -8,7 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
-- **Kontraste in den Abbildungen** (#119, crystallography-common#65): Das Symmetriegerüst unter den Flächenpolen („Symmetriegerüst“ im Modus „Kristallformen“, z. B. Abb. 4.8) ist weniger stark gedämpft und erreicht 3 : 1 (vorher 2,3–2,5 : 1). Zonen ab der neunten bekommen Farben, deren Beschriftung 4,5 : 1 hat (Abb. 7.4: vorher 3,3 : 1). Die Tönung der Fläche in Abb. 1.1 ist heller, damit die Beschriftung darauf 4,5 : 1 hat.
+- **Kontraste in den Abbildungen** (#119, crystallography-common#65): Das Symmetriegerüst unter den Flächenpolen („Symmetriegerüst“ im Modus „Kristallformen“, z. B. Abb. 4.8) ist weniger stark gedämpft und erreicht 3 : 1 (vorher 2,3–2,5 : 1); die Pole darüber haben einen schmalen Hof, damit sie auf den Achsensymbolen erkennbar bleiben. Zonen ab der neunten bekommen Farben, deren Beschriftung 4,5 : 1 hat (Abb. 7.4: vorher 3,3 : 1). Die Tönung der Fläche in Abb. 1.1 ist heller, damit die Beschriftung darauf 4,5 : 1 hat.
 
 ## [1.14.0] - 2026-11-08
 

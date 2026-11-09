@@ -117,3 +117,22 @@ test('Link auf ein Prisma im trigonalen System zeigt dieses Prisma (#118)', () =
   assert.equal(currentEntryId(sceneFor('#m=form&sys=tetragonal&f=4mm:a1').st), '4/mmm:f14');
   assert.equal(currentEntryId(sceneFor('#m=form&sys=tetragonal&f=4mm:a1&muster=1').st), '4mm:a1');
 });
+
+test('Pole über dem Symmetriegerüst mit Hof in der Papierfarbe, ohne Gerüst ohne (#119)', () => {
+  const PAPIER = '#fefefe', POL = '#123456';
+  const farben = /** @type {Palette} */ (/** @type {unknown} */ (new Proxy(/** @type {Record<string | symbol, unknown>} */ ({ paper: PAPIER, form: Array(8).fill(POL), dir: [K, K, K] }), { get: (o, k) => (k in o ? o[k] : K) })));
+  /** @param {string} hash */
+  const svg = (hash) => {
+    const st = createState();
+    assert.ok(applyHashTo(st, hash, createState()));
+    return buildSVG(polyScene(st, polyCrystal(st, farben), farben).scene).inner;
+  };
+  /** Mittelpunkte von Kreisen mit Radius r und Füllung bzw. Strich c. @param {string} s @param {string} r @param {string} c */
+  const kreise = (s, r, c) => [...s.matchAll(new RegExp(`<circle cx="([\\d.-]+)" cy="([\\d.-]+)" r="${r}" (?:fill|fill="none" stroke)="${c}"`, 'g'))].map((m) => `${m[1]},${m[2]}`);
+  const mit = svg('#m=form&sys=kubisch&bsp=galenit&geruest=1&idx=0');
+  const pole = kreise(mit, '4.2', POL);
+  assert.ok(pole.length >= 13, `obere Pole: ${pole.length}`);
+  assert.deepEqual(kreise(mit, '5.4', PAPIER).sort(), [...pole].sort(), 'jeder obere Pol mit Hof');
+  const ohne = svg('#m=form&sys=kubisch&bsp=galenit&idx=0');
+  assert.equal(kreise(ohne, '5.4', PAPIER).length, 0, 'ohne Gerüst kein Hof');
+});

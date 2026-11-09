@@ -309,8 +309,16 @@ export const currentLat = (state) => {
 export const B = (v) => (v ? '1' : '0');
 /** @param {string | null} s */
 export const isOn = (s) => s === '1' || s === 'ja' || s === 'true';
-/** Zahl im Bereich [lo, hi] oder null. @param {string | null} s @param {number} lo @param {number} hi */
-export const num = (s, lo, hi) => { const x = Number(s); return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : null; };
+/** Schalter aus dem Link: ein, aus oder null (leer oder unbekannt gilt als fehlend, Startwert; Leitfaden 5.2, #123).
+ * @param {string | null} s */
+export const schalter = (s) => (isOn(s) ? true : s === '0' || s === 'nein' || s === 'false' ? false : null);
+/** Zahl im Bereich [lo, hi] oder null. Leer oder nur Leerzeichen gilt als fehlend (`Number('') === 0`, #123).
+ * @param {string | null} s @param {number} lo @param {number} hi */
+export const num = (s, lo, hi) => {
+  if (s == null || s.trim() === '') return null;
+  const x = Number(s);
+  return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : null;
+};
 /** @type {[string, string][]} */
 export const URL_VIEW = [
   ['farbe', 'dirColors'], ['wulff', 'wulff'], ['achsen', 'axes'], ['kugel', 'sphere'], ['ns', 'globe'], ['ebene', 'plane'], ['strahlen', 'rays'], ['normalen', 'normals'],
@@ -391,16 +399,16 @@ export function applyHashTo(state, hash, DEFAULTS) {
   if (q.get('m') === 'form') state.poly = clone(DEFAULTS.poly);
   else state.pg = { ...clone(DEFAULTS.pg), famPref: state.pg.famPref || {} };
   /** @param {[string, string][]} list @param {Schalter} obj */
-  const bools = (list, obj) => { for (const [k, key] of list) if (q.has(k)) obj[key] = isOn(q.get(k)); };
+  const bools = (list, obj) => { for (const [k, key] of list) { const b = schalter(q.get(k)); if (b != null) obj[key] = b; } };
   if (q.get('m') === 'form') {
     state.mode = 'poly';
     const sys = q.get('sys');
     if (sys && Object.prototype.hasOwnProperty.call(LATTICE_DEFAULTS, sys)) state.poly.system = sys;
-    if (q.has('f')) state.poly.entryBySys[state.poly.system] = da('f');
+    if (q.get('f')) state.poly.entryBySys[state.poly.system] = da('f');
     const ex = exampleById(q.get('bsp'));
     if (ex && ex.sys === state.poly.system) {
       state.poly.example = ex.id;
-      if (q.has('ab')) state.poly.exScale[ex.id] = da('ab').split(',').map((x) => num(x, 0.5, 2) ?? 1);
+      if (q.get('ab')?.trim()) state.poly.exScale[ex.id] = da('ab').split(',').map((x) => num(x, 0.5, 2) ?? 1);
     }
     if (q.has('lage')) state.poly.presetId = da('lage');
     // ungültige Lage für das System (fehlt lage, bleibt die kubische Startlage 001): die erste des Systems
@@ -458,8 +466,10 @@ export function applyHashTo(state, hash, DEFAULTS) {
     // rho nach Borchardt-Ott (untere Halbkugel negativ); Werte über 90° aus Links bis v1.0.0 gelten weiter
     if (q.has('rho')) { const r = num(q.get('rho'), -90, 180); if (r != null) state.pg.theta = thetaOf(r); }
     // az: Azimut nach Borchardt-Ott (ab →, im Uhrzeigersinn); phi: alte Zählung bis v1.0.0 (ab ↓, Gegenuhrzeigersinn)
-    if (q.has('az')) { const p = num(q.get('az'), -1e6, 1e6); if (p != null) state.pg.phi = ((p % 360) + 360) % 360; }
-    else if (q.has('phi')) { const p = num(q.get('phi'), -1e6, 1e6); if (p != null) state.pg.phi = phiFromOld(p); }
+    // ein leeres az gilt als fehlend, dann zählt ein altes phi
+    const az = num(q.get('az'), -1e6, 1e6), phi = num(q.get('phi'), -1e6, 1e6);
+    if (az != null) state.pg.phi = ((az % 360) + 360) % 360;
+    else if (phi != null) state.pg.phi = phiFromOld(phi);
     bools(URL_PG, state.pg);
     if (q.has('aus')) state.pg.hideDirs = da('aus').split(',').map((s) => Number(s) - 1).filter((k) => k >= 0 && k <= 2);
     state.pg.tool = q.get('w') === 'winkel' ? 'angle' : null;

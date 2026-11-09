@@ -10,6 +10,11 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 - **Kontraste in den Abbildungen** (#119, crystallography-common#65): Das Symmetriegerüst unter den Flächenpolen („Symmetriegerüst“ im Modus „Kristallformen“, z. B. Abb. 4.8) ist weniger stark gedämpft und erreicht 3 : 1 (vorher 2,3–2,5 : 1); die Pole darüber haben einen schmalen Hof, damit sie auf den Achsensymbolen erkennbar bleiben. Zonen ab der neunten bekommen Farben, deren Beschriftung 4,5 : 1 hat (Abb. 7.4: vorher 3,3 : 1). Die Tönung der Fläche in Abb. 1.1 ist heller, damit die Beschriftung darauf 4,5 : 1 hat.
 
+### Behoben
+
+- **Gemeinsame Grundlage** auf crystallography-common v0.15.1: Tooltips erscheinen auch auf Laptops mit Touchscreen, wenn mit Maus oder Tastatur gearbeitet wird (vorher blieben sie aus, wenn der Browser den Touchscreen als primäres Zeigegerät meldete; crystallography-common#114).
+- **Leerer Wert im Link** (#123): Ein Schlüssel ohne Wert (z. B. `ba=` oder `rho=`) galt als 0 und setzte b/a auf die untere Grenze bzw. den Pol auf die Achse. Er gilt jetzt wie ein fehlender Schlüssel, also als Startwert (Leitfaden 5.2); ebenso ein leerer Faktor in `ab=`, ein leeres `az=` neben einem alten `phi=` und ein leerer Schalter (z. B. `pole=` schaltete die Pole aus). Ein Schalter mit unbekanntem Wert (weder `1`/`ja`/`true` noch `0`/`nein`/`false`) behält ebenfalls seinen Startwert, statt auszuschalten.
+
 ## [1.14.0] - 2026-11-08
 
 Hilfeseite mit den Erste Schritten als bebilderte Anleitungen und der Liste der Experimente; Abschnitt „Experimente“ mit festen und erzeugten Lernexperimenten, Stand wie im Quiz; Moduswahl mit der Tastatur; eine Prüfung für Link und Speicher; behoben: Gitterregler nach einer Streckung, Prismen im trigonalen System, Gitterwinkel, die zusammen kein Gitter ergeben; Ansage von Symbolen für Screenreader und Kontraste nach WCAG 2.2; gemeinsame Grundlage v0.15.0.

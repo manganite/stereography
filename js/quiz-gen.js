@@ -3,7 +3,7 @@
 // Die Frage hat denselben Aufbau wie in quiz-bank.js (ohne id, stufe, kapitel, status; die setzt quiz-core.js).
 
 import { POINT_GROUPS, groupById, buildPointGroup, symmetryDirections, elementSummary } from './pointgroups.js';
-import { hmHTML, hklHTML } from '../lib/common/js/format.js';
+import { hmHTML, hmLabel, hklHTML } from '../lib/common/js/format.js';
 import { CATALOG, entryById } from './forms.js';
 import { SYSTEM_OF } from './polyhedra.js';
 import { poleOfHKL, stabilizer } from './sitesym.js';
@@ -271,7 +271,7 @@ export const FLAECHENSYM = {
       lernziel: 'ein orientiertes Symbol der Flächensymmetrie lesen, z. B. 4m.m oder ..m',
       frage: `Das Stereogramm zeigt die Form ${indizes(e.hkl)} der Punktgruppe ${gruppenSymbol(g)} über ihrem Symmetriegerüst. Welche Flächensymmetrie haben ihre Flächen?`,
       bild: `#m=form&sys=${sys}&f=${encodeURIComponent(e.id)}&geruest=1&idx=0&muster=1`,
-      bildAlt: `Stereogramm einer Form der Punktgruppe ${g.hm} über dem Symmetriegerüst`,
+      bildAlt: `Stereogramm einer Form der Punktgruppe ${hmLabel(g.hm)} über dem Symmetriegerüst`,
       antworten: [hmHTML(e.fs), ...abl.map((x) => hmHTML(x.fs))],
       richtig: [0],
       hinweise: [null, ...abl.map(hinweis)],

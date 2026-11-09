@@ -1,7 +1,6 @@
 // Erste Schritte und Lernexperimente (js/hilfetexte.js, lib/common/js/ablauf.js): Daten vollständig, jede
 // Adresse übersteht die Prüfung der App unverändert, und die Aussagen der Beobachtungen stimmen mit der App.
 import { test } from 'node:test';
-import { ohneSymbole, texte } from './symbole.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { pruefeAblaeufe } from '../lib/common/js/ablauf.js';
@@ -15,6 +14,7 @@ import { entryById, CATALOG, formName } from '../js/forms.js';
 import { wyckoffPositions, poleOfHKL } from '../js/sitesym.js';
 import { SYSTEM_OF } from '../js/polyhedra.js';
 import { PUNKTGRUPPEN } from '../js/punktgruppen.js';
+import { ohneSymbole, texte } from './symbole.mjs';
 
 const ANKER = [...readFileSync(new URL('../skript.html', import.meta.url), 'utf8').matchAll(/ id="([^"]+)"/g)].map((m) => m[1]);
 const DEFAULTS = createState();

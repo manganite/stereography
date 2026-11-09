@@ -5,7 +5,7 @@ import {
 } from './pointgroups.js';
 import { SYSTEMS, SYSTEM_NAMEN } from './punktgruppen.js';
 import {
-  habitOf, zoneOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, isHexSystem, auxFormName,
+  habitOf, zoneOf, orientationPresets, LATTICE_DEFAULTS, FREE_PARAMS, constrainLattice, isHexSystem, auxFormName,
   STRETCH_DIRS, stretchDir, naechsterGueltiger, GITTER_BEREICH,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig } from './forms.js';
@@ -29,7 +29,7 @@ import * as S from './scene.js';
 import { snapPole } from './sitesym.js';
 import {
   createState, hashOf, applyHashTo, rhoText, palette, formColor, groupOf, groupOrder, crystalAxesFor, ORBIT_COLORS, pgScene, polyCrystal, polyScene, normalizeZones,
-  pgPolesOn, polyLabelsOn, pgViewDirections, polyViewDirections, lightPalette,
+  pgPolesOn, polyLabelsOn, pgViewDirections, polyViewDirections, lightPalette, dirHTML,
 } from './scene.js';
 
 /** @import { Vec3, Richtung, Normale } from '../lib/common/js/typen.js' */
@@ -866,7 +866,8 @@ function updateInfoPG(info, orb, col, classes, pgAngle, site, distinct) {
   const mirrorIcon = (c) => `<svg class="sym-icon" width="22" height="22" viewBox="0 0 26 26"><line x1="3" y1="13" x2="23" y2="13" stroke="${c}" stroke-width="3.2" stroke-linecap="round"/></svg>`;
   // Volles Symbol: jede Position in der Farbe ihrer Blickrichtung
   // Eine Grafik mit dem Ansagetext des ganzen Symbols (#121); die Positionen darin sind nur Darstellung, sonst sagte
-  // ein Screenreader je Position „Grafik“.
+  // ein Screenreader je Position „Grafik“. Das Innere entspricht dem von hmHTML (format.js); ändert sich dort die
+  // Darstellung, hier nachziehen.
   /** @param {string} p */
   const darstellung = (p) => hmParts(p).map((t) => (t.bar ? `<span class="ov">${esc(t.t)}</span>` : esc(t.t))).join('');
   const parts = info.full.split(' ');
@@ -1136,16 +1137,6 @@ function updateInfoPoly(C, col) {
     ${habitNote}`)}`);
 }
 
-/**
- * Richtung [uvw] (bei hexagonalen Achsen wahlweise [uvtw]) als HTML, über `hklHTML` mit Ansagetext (#121, Leitfaden
- * Abschn. 4). [uvtw]: t = −(u + v) wie i bei (hkil), deshalb `hklHTML([u, v, w], true)`.
- * @param {Richtung} v @param {boolean} four @param {[string, string]} [br]
- */
-function dirHTML(v, four, br = ['[', ']']) {
-  if (!four) return hklHTML(v, false, br);
-  const [u, vv, , w] = dirToFour(v);
-  return hklHTML([u, vv, w], true, br);
-}
 
 /** Zonenliste in der Infobox: Gruppen gleichwertiger Zonen, einzeln oder als Gruppe wählbar, und die gewählten Zonen. */
 /** @param {AppKristall} C @param {boolean} hex4 */
@@ -1161,7 +1152,7 @@ function zoneListHTML(C, hex4) {
       return `<button type="button" class="zbtn" data-zone="${z.key}" aria-pressed="${sel.has(z.key)}"${c ? ` style="--zc:${c}"` : ''}>${dirHTML(z.uvw, hex4)}</button>`;
     }).join('');
     const count = cl.zones.length === 1 ? '1 Zone' : `${cl.zones.length} Zonen`;
-    return `<div class="zclass"><button type="button" class="zgroup" data-zclass="${ci}" aria-pressed="${pressed}">${dirHTML(cl.rep, hex4, ['⟨', '⟩'])} <span>${count}, je ${cl.faces} Flächen</span></button><div class="zmembers">${members}</div></div>`;
+    return `<div class="zclass"><button type="button" class="zgroup" data-zclass="${ci}" aria-pressed="${pressed}">${dirHTML(cl.rep, hex4, ['⟨', '⟩'])} <span class="zn">${count}, je ${cl.faces} Flächen</span></button><div class="zmembers">${members}</div></div>`;
   }).join('');
   const chosen = C.selZones.map((z) => `<li><i class="sw" style="background:${z.color}"></i><b style="color:${z.color}">${dirHTML(z.uvw, hex4)}</b>, ${z.inZone.length} Flächen: ${z.inZone.map((k) => hklHTML(C.faces[k].hkl, hex4)).join(' ')}</li>`).join('');
   return `<div class="zlist"><h3>Zonen dieses Kristalls</h3>

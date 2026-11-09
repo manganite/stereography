@@ -10,7 +10,7 @@ import {
 } from './polyhedra.js';
 import { CATALOG, formEig, entryById } from './forms.js';
 import { EIG_SCHREIBWEISE } from './formen.js';
-import { hklParts } from '../lib/common/js/format.js';
+import { hklParts, hklHTML } from '../lib/common/js/format.js';
 import { normalize, mulVec } from './linalg.js';
 import { exampleById } from './examples.js';
 import { siteOf, distinctPoles } from './sitesym.js';
@@ -470,6 +470,16 @@ export function crystalAxesFor(hex) {
 /** @type {Vec3[]} */
 export const CUBIC_ZONES = [[1, 0, 0], [0, 1, 0], [1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]];
 
+/**
+ * Richtung [uvw] (bei hexagonalen Achsen wahlweise [uvtw]) als HTML, über `hklHTML` mit Ansagetext (#121, Leitfaden
+ * Abschn. 4). [uvtw]: t = −(u + v) wie i bei (hkil), deshalb `hklHTML([u, v, w], true)`.
+ * @param {Richtung} v @param {boolean} four @param {[string, string]} [br]
+ */
+export function dirHTML(v, four, br = ['[', ']']) {
+  if (!four) return hklHTML(v, false, br);
+  const [u, vv, , w] = dirToFour(v);
+  return hklHTML([u, vv, w], true, br);
+}
 /** Richtung [uvw] als Teile für SVG-Text. @param {Richtung} v @param {boolean} hex4 */
 export function dirParts(v, hex4) {
   /** @type {number[]} */

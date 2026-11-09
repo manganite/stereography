@@ -23,6 +23,7 @@ import { moodleXML } from '../tools/moodle-export.mjs';
 import { project, C as SC, R as SR } from '../js/stereogram.js';
 import { latticeFromParams, LATTICE_DEFAULTS, orientationPresets, orientationMatrix, identifyGroup } from '../js/polyhedra.js';
 import { inverse, transpose, mulVec, mul, matEq, neg, I3, vecEq } from '../js/linalg.js';
+import { ohneSymbole, texte } from './symbole.mjs';
 
 /** @import { Vec3, Mat3, Normale, Richtung } from '../lib/common/js/typen.js' */
 /** @import { Frage, Frageinhalt, Generator, Bildantwort } from '../lib/common/js/quiz-core.js' */
@@ -945,4 +946,11 @@ test('Fragen: Abbildungsverweise aufs Skript existieren und liegen im Kapitel de
     }
   }
   assert.deepEqual(fehler, []);
+});
+
+// ------------------------------------------------------------------ Symbole über format.js (#121, Leitfaden Abschn. 4)
+test('Erzeugte Fragen: Querstriche nur in Symbolen aus format.js (#121)', () => {
+  for (const g of GENERATOREN) for (const q of erzeugt(g)) {
+    for (const t of texte(q)) assert.doesNotMatch(ohneSymbole(t), /class="ov"/, `${q.id}: ${t}`);
+  }
 });

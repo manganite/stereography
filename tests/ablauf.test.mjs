@@ -14,6 +14,7 @@ import { entryById, CATALOG, formName } from '../js/forms.js';
 import { wyckoffPositions, poleOfHKL } from '../js/sitesym.js';
 import { SYSTEM_OF } from '../js/polyhedra.js';
 import { PUNKTGRUPPEN } from '../js/punktgruppen.js';
+import { ohneSymbole, texte } from './symbole.mjs';
 
 const ANKER = [...readFileSync(new URL('../skript.html', import.meta.url), 'utf8').matchAll(/ id="([^"]+)"/g)].map((m) => m[1]);
 const DEFAULTS = createState();
@@ -202,7 +203,8 @@ test('Erzeugte Experimente: Polzahl stimmt für jede Gruppe und Lage mit der App
     assert.equal(site.fs, d.fs, `${p}: Lagesymmetrie (orientiert)`);
     // die Frage nennt das Element, das die App an dieser Stelle zeigt
     const achse = d.achse;
-    if (achse?.startsWith('-')) assert.match(ortText(d.fs, achse), new RegExp(`<span class="ov">${achse.slice(1)}</span>-Achse`), p);
+    // als Symbol über format.js, mit Ansagetext „4 quer“ (#121)
+    if (achse?.startsWith('-')) assert.match(ortText(d.fs, achse), new RegExp(`aria-label="${achse.slice(1)} quer"><span class="ov">${achse.slice(1)}</span></span>-Achse`), p);
     else if (achse) assert.match(ortText(d.fs, achse), new RegExp(`${achse}-zählige`), p);
     else assert.doesNotMatch(ortText(d.fs, achse), /Achse/, p);
     assert.equal(lage(d.fs).ordnung, site.stab.length, `${p}: Ordnung der Lagesymmetrie ${d.fs}`);
@@ -243,3 +245,8 @@ test('Erzeugte Experimente: Flächenzahl stimmt für jede Form mit dem Katalog u
   }
 });
 
+test('Erzeugte Experimente: Querstriche nur in Symbolen aus format.js (#121)', () => {
+  for (const g of ERZEUGTE) for (const p of g.params()) {
+    for (const t of texte(g.make(p))) assert.doesNotMatch(ohneSymbole(t), /class="ov"/, `${g.id}:${p}: ${t}`);
+  }
+});

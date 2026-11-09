@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Symbole und Indizes für Screenreader** (#121, crystallography-common#82): Weitere Stellen laufen über `format.js` und werden Zeichen für Zeichen angesagt (Querstrich „quer“): Richtungen und Zonenachsen in der Infobox und der Zonenliste, auch [*uvtw*] (`dirHTML` in `js/main.js`), Formen und Drehinversionsachsen in erzeugten Quizfragen (`js/quiz-gen.js`) und in den erzeugten Experimenten (`js/experimente.js`). Das volle Symbol in den Kenndaten ist jetzt eine Grafik mit einem Ansagetext („4 über m, 3 quer, 2 über m“) statt einer je Position; die Farben der Positionen bleiben. Tests prüfen, dass erzeugte Fragen und Experimente keine von Hand gezeichneten Querstriche mehr enthalten.
+
 ### Behoben
 
 - **Gemeinsame Grundlage** auf crystallography-common v0.15.1: Tooltips erscheinen auch auf Laptops mit Touchscreen, wenn mit Maus oder Tastatur gearbeitet wird (vorher blieben sie aus, wenn der Browser den Touchscreen als primäres Zeigegerät meldete; crystallography-common#114).

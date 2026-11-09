@@ -279,8 +279,13 @@ export const currentLat = (state) => {
 export const B = (v) => (v ? '1' : '0');
 /** @param {string | null} s */
 export const isOn = (s) => s === '1' || s === 'ja' || s === 'true';
-/** Zahl im Bereich [lo, hi] oder null. @param {string | null} s @param {number} lo @param {number} hi */
-export const num = (s, lo, hi) => { const x = Number(s); return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : null; };
+/** Zahl im Bereich [lo, hi] oder null. Leer oder nur Leerzeichen gilt als fehlend (`Number('') === 0`, #123).
+ * @param {string | null} s @param {number} lo @param {number} hi */
+export const num = (s, lo, hi) => {
+  if (s == null || s.trim() === '') return null;
+  const x = Number(s);
+  return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : null;
+};
 /** @type {[string, string][]} */
 export const URL_VIEW = [
   ['farbe', 'dirColors'], ['wulff', 'wulff'], ['achsen', 'axes'], ['kugel', 'sphere'], ['ns', 'globe'], ['ebene', 'plane'], ['strahlen', 'rays'], ['normalen', 'normals'],

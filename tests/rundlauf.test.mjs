@@ -166,6 +166,28 @@ test('Rundlauf: Zustände aus der Bedienung bleiben im Speicher (Streckung → �
   assert.deepEqual(frei({ ba: 1, ca: 0.1, al: 120, be: 40, ga: 200 }), { ba: 1, ca: 0.125, al: 120, be: 50, ga: 150 });
 });
 
+test('Leerer Wert im Link gilt als fehlend: Startwert, nicht 0 (Leitfaden 5.2, #123)', () => {
+  // Erwartung: derselbe Zustand wie ohne den Schlüssel (und nicht wie mit dem Wert 0)
+  const faelle = [
+    ['#m=form&sys=orthorhombisch', ['ba', 'ca', 'abstand', 'gr', 'netz']],
+    ['#m=form&sys=triklin&br=1', ['ba', 'ca', 'al', 'be', 'ga']],
+    ['#m=pg&g=4mm', ['rho', 'az', 'phi', 'netz']],
+  ];
+  for (const [basis, schluessel] of /** @type {[string, string[]][]} */ (faelle)) for (const k of schluessel) {
+    const ohne = gespeichert(ausLink(basis + (k === 'netz' ? '&wulff=1' : '')));
+    for (const leer of ['', '%20', '+']) {
+      const h = `${basis}${k === 'netz' ? '&wulff=1' : ''}&${k}=${leer}`;
+      assert.deepEqual(gespeichert(ausLink(h)), ohne, h);
+    }
+    // Gegenprobe: 0 ist ein Wert (gesetzt oder auf die Bereichsgrenze)
+    if (!['az', 'phi', 'netz'].includes(k)) assert.notDeepEqual(gespeichert(ausLink(`${basis}&${k}=0`)), ohne, `${basis}&${k}=0`);
+  }
+  // leerer Faktor eines Beispielkristalls: 1, nicht die Grenze 0,5
+  const e = EXAMPLES.find((x) => x.forms.length >= 2);
+  assert.ok(e, 'Beispiel mit zwei Formen');
+  assert.deepEqual(ausLink(`#m=form&sys=${e.sys}&bsp=${e.id}&ab=,1.2`).poly.exScale[e.id].slice(0, 2), [1, 1.2]);
+});
+
 test('Streckfaktor ausserhalb 0,5 … 2: nächster gültiger Wert in Link und Speicher (Leitfaden 5.2, Review #107)', () => {
   for (const [f, erwartet] of [[2.5, 2], [0.1, 0.5], [1.5, 1.5]]) {
     const l = ausLink(`#m=form&sys=kubisch&str=001,${f}`);

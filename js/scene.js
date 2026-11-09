@@ -168,10 +168,30 @@ export function zoneColor(col, i) {
   // zuerst Farbtöne, die die Formfarben nicht belegen (Grün, Violett, Gold, Himmelblau …), danach goldener Winkel
   const GAPS = [125, 265, 45, 195, 290, 95, 345, 235];
   const j = i - col.form.length;
-  const h = j < GAPS.length ? GAPS[j] : (GAPS[0] + j * 137.508) % 360, sat = 0.6, l = dark ? 0.66 : 0.4;
-  /** @param {number} n */
-  const f = (n) => { const k = (n + h / 30) % 12; const c = l - sat * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(c * 255).toString(16).padStart(2, '0'); };
-  return '#' + f(0) + f(8) + f(4);
+  const h = j < GAPS.length ? GAPS[j] : (GAPS[0] + j * 137.508) % 360, sat = 0.6;
+  /** HSL → Hex. @param {number} l */
+  const hsl = (l) => {
+    /** @param {number} n */
+    const f = (n) => { const k = (n + h / 30) % 12; const c = l - sat * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(c * 255).toString(16).padStart(2, '0'); };
+    return '#' + f(0) + f(8) + f(4);
+  };
+  // Beschriftungen der Zonen sind Text: mindestens 4,5 : 1 auf dem Papier (WCAG 1.4.3, Leitfaden 5.4, #119), sonst
+  // dunkler (hell) bzw. heller (dunkel); Grün und Gelb brauchen das, Blau und Violett nicht.
+  let l = dark ? 0.66 : 0.4;
+  while (kontrast(hsl(l), col.paper) < 4.5 && l > 0.05 && l < 0.95) l += dark ? 0.01 : -0.01;
+  return hsl(l);
+}
+/** Relative Leuchtdichte einer Hex-Farbe (WCAG 2.2). @param {string} hex */
+function leuchtdichte(hex) {
+  const x = hex.replace('#', '');
+  const f = x.length === 3 ? x.split('').map((c) => c + c).join('') : x;
+  const [r, g, b] = [0, 2, 4].map((k) => { const c = parseInt(f.slice(k, k + 2), 16) / 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+/** Kontrastverhältnis zweier Hex-Farben (WCAG 2.2). @param {string} a @param {string} b */
+function kontrast(a, b) {
+  const x = leuchtdichte(a), y = leuchtdichte(b);
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
 }
 export const FONT = "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif";
 

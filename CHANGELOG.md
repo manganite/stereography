@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Kontraste in den Abbildungen** (#119, crystallography-common#65): Das Symmetriegerüst unter den Flächenpolen („Symmetriegerüst“ im Modus „Kristallformen“, z. B. Abb. 4.8) ist weniger stark gedämpft und erreicht 3 : 1 (vorher 2,3–2,5 : 1). Zonen ab der neunten bekommen Farben, deren Beschriftung 4,5 : 1 hat (Abb. 7.4: vorher 3,3 : 1). Die Tönung der Fläche in Abb. 1.1 ist heller, damit die Beschriftung darauf 4,5 : 1 hat.
+
 ## [1.14.0] - 2026-11-08
 
 Hilfeseite mit den Erste Schritten als bebilderte Anleitungen und der Liste der Experimente; Abschnitt „Experimente“ mit festen und erzeugten Lernexperimenten, Stand wie im Quiz; Moduswahl mit der Tastatur; eine Prüfung für Link und Speicher; behoben: Gitterregler nach einer Streckung, Prismen im trigonalen System, Gitterwinkel, die zusammen kein Gitter ergeben; Ansage von Symbolen für Screenreader und Kontraste nach WCAG 2.2; gemeinsame Grundlage v0.15.0.

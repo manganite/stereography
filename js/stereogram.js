@@ -59,6 +59,8 @@ export const SIZE = 520;
 export const C = SIZE / 2;
 export const R = 210;
 const SYM = 17; // Grösse der Achsensymbole
+/** Deckkraft des Symmetriegerüsts unter Flächenpolen (scene.faint); Kontrast im Test (#119). */
+export const GERUEST_GEDAEMPFT = 0.75;
 
 /** @param {number} x */
 const f = (x) => (Math.round(x * 100) / 100).toString();
@@ -376,7 +378,9 @@ export function buildSVG(scene, { standalone = false } = {}) {
   for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, false, fc, true)}</g>`);
   for (const P of placed) fw.push(`<g transform="${tr(P)}">${axisSymbolSVG(P.ax.symbol, P.centre, P.ax.color ? { ...fc, axis: P.ax.color } : fc)}</g>`);
   if (scene.centreAtOrigin) fw.push(`<circle cx="${C}" cy="${C}" r="${f(SYM * 0.38)}" fill="${col.paper}" stroke="${fc.axis}" stroke-width="1.4"/>`);
-  if (fw.length) out.push(`<g${scene.faint ? ' opacity="0.55"' : ''}>${fw.join('')}</g>`);
+  // gedämpft, aber mit 3 : 1 auf dem Papier (WCAG 1.4.11, #119): Das Gerüst unter den Polen trägt Information (welcher
+  // Pol auf welchem Element liegt, z. B. Abb. 4.8); 0,75 reicht für alle Farben der Blickrichtungen und --muted.
+  if (fw.length) out.push(`<g${scene.faint ? ` opacity="${GERUEST_GEDAEMPFT}"` : ''}>${fw.join('')}</g>`);
 
   // Zonen: Zonenkreis (Grosskreis ⊥ Zonenachse) und Pol der Zonenachse, je Zone in ihrer Farbe
   const zoneList = scene.zoneList || (scene.zone ? [{ ...scene.zone, color: col.accent }] : []);

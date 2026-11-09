@@ -8,7 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
-- **Gemeinsame Grundlage** auf crystallography-common v0.16.0: Hinweise für Maus oder Touch und das ⓘ richten sich nach dem zuletzt benutzten Gerät (crystallography-common#114); ab zehn Experimenten wird die Nummer in der Liste nicht mehr abgeschnitten. Die Gliederung der Experimente nach Kapiteln (crystallography-common#107) und die Prüfung der Tooltips stehen bereit, sind hier aber noch nicht eingeschaltet.
+- **Gemeinsame Grundlage** auf crystallography-common v0.16.0: Hinweise für Maus oder Touch richten sich nach dem zuletzt benutzten Gerät, das ⓘ erscheint ab dem ersten Tippen (crystallography-common#114); ab zehn Experimenten wird die Nummer in der Liste nicht mehr abgeschnitten. Die Gliederung der Experimente nach Kapiteln (crystallography-common#107) und die Prüfung der Tooltips stehen bereit, sind hier aber noch nicht eingeschaltet.
 
 ### Behoben
 

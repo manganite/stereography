@@ -182,10 +182,32 @@ test('Leerer Wert im Link gilt als fehlend: Startwert, nicht 0 (Leitfaden 5.2, #
     // Gegenprobe: 0 ist ein Wert (gesetzt oder auf die Bereichsgrenze)
     if (!['az', 'phi', 'netz'].includes(k)) assert.notDeepEqual(gespeichert(ausLink(`${basis}&${k}=0`)), ohne, `${basis}&${k}=0`);
   }
-  // leerer Faktor eines Beispielkristalls: 1, nicht die Grenze 0,5
+  // feste Startwerte (README, Tabelle der Link-Adressen; nicht aus dem Code)
+  assert.equal(ausLink('#m=form&sys=orthorhombisch&ba=').poly.lats.orthorhombisch.ba, 1.25);
+  assert.equal(ausLink('#m=pg&g=4mm&rho=').pg.theta, 59);
+  // leerer Faktor eines Beispielkristalls: 1, nicht die Grenze 0,5; ganz leer: wie ohne ab
   const e = EXAMPLES.find((x) => x.forms.length >= 2);
   assert.ok(e, 'Beispiel mit zwei Formen');
   assert.deepEqual(ausLink(`#m=form&sys=${e.sys}&bsp=${e.id}&ab=,1.2`).poly.exScale[e.id].slice(0, 2), [1, 1.2]);
+  /** @type {string} */
+  const mitBeispiel = `#m=form&sys=${e.sys}&bsp=${e.id}`;
+  for (const k of ['ab', 'f']) assert.deepEqual(gespeichert(ausLink(`${mitBeispiel}&${k}=`)), gespeichert(ausLink(mitBeispiel)), `${k}=`);
+  // leeres az: ein altes phi zählt wie ohne az
+  assert.equal(ausLink('#m=pg&g=4mm&az=&phi=10').pg.phi, ausLink('#m=pg&g=4mm&phi=10').pg.phi);
+  assert.notEqual(ausLink('#m=pg&g=4mm&phi=10').pg.phi, 75.5);
+});
+
+test('Schalter im Link: 1/0 (auch ja/nein, true/false); leer oder unbekannt gilt als fehlend (Leitfaden 5.2, Review #128)', () => {
+  // Startwert ein: Pole (pg), Umkugel; Startwert aus: Achsen
+  for (const [basis, k, pfad, start] of /** @type {[string, string, (s: Zustand) => boolean, boolean][]} */ ([
+    ['#m=pg&g=4mm', 'pole', (s) => s.pg.showPoles, true],
+    ['#m=pg&g=4mm', 'kugel', (s) => s.view.sphere, true],
+    ['#m=form&sys=kubisch', 'achsen', (s) => s.view.axes, false],
+  ])) {
+    for (const leer of ['', '%20', 'x', '2']) assert.equal(pfad(ausLink(`${basis}&${k}=${leer}`)), start, `${k}=${leer}`);
+    for (const ein of ['1', 'ja', 'true']) assert.equal(pfad(ausLink(`${basis}&${k}=${ein}`)), true, `${k}=${ein}`);
+    for (const aus of ['0', 'nein', 'false']) assert.equal(pfad(ausLink(`${basis}&${k}=${aus}`)), false, `${k}=${aus}`);
+  }
 });
 
 test('Streckfaktor ausserhalb 0,5 … 2: nächster gültiger Wert in Link und Speicher (Leitfaden 5.2, Review #107)', () => {

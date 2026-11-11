@@ -73,10 +73,6 @@ jobs:
           npx playwright install chromium
       - name: Skript als PDF
         run: node tools/skript-pdf.mjs skript.pdf
-      - name: Systemschriften für Zeichen ausserhalb der eigenen Schriften (vorübergehend, crystallography-common#128)
-        run: |
-          fc-list : family | sort -u
-          for z in 1D40 202F 2074 207A 207B 2080 2081 2082 2083 2084 2085 2086 2087 2088 2089 2153 2154 2157 2159 215A 215B 215C 2192 2194 2208 2218 221A 221E 2220 2225 2245 2248 2260 2261 2264 2265 2299 22A5 24D8 25B6 25C0 25CB 25CF 27E8 27E9; do echo "U+$z: $(fc-list ":charset=$z" family | sort -u | head -3 | tr '\n' ';')"; done
       - name: PDF als Artefakt
         uses: actions/upload-artifact@v4
         with:

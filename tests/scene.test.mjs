@@ -34,20 +34,19 @@ test('Link-Adresse: Zustand → Hash → Zustand ergibt denselben Hash', () => {
   }
 });
 
-test('Link-Adresse: Links bis v1.0.0 (phi= ab ↓ im Gegenuhrzeigersinn, rho= über 90°) werden umgerechnet', () => {
+test('Link-Adresse: rho nach Borchardt-Ott (untere Halbkugel negativ), az im Uhrzeigersinn ab b', () => {
   const D = createState();
   const lies = (/** @type {string} */ h) => { const st = createState(); assert.ok(applyHashTo(st, h, D), h); return st; };
-  // alte Zählung phi ab a (↓) im Gegenuhrzeigersinn, neue az ab b (→) im Uhrzeigersinn: az = 90° − phi
-  assert.equal(lies('#m=pg&g=mm2&rho=40&phi=0').pg.phi, 90);
-  assert.equal(lies('#m=pg&g=mm2&rho=40&phi=90').pg.phi, 0);
-  assert.equal(lies('#m=pg&g=mm2&rho=40&phi=120').pg.phi, 330);
-  // az hat Vorrang vor phi
-  assert.equal(lies('#m=pg&g=mm2&az=10&phi=0').pg.phi, 10);
-  // rho über 90° (vom Nordpol gezählt) ist die untere Halbkugel; neu geschrieben als negatives rho
-  const unten = lies('#m=pg&g=mm2&rho=120&az=30');
+  // untere Halbkugel: rho = −60° heisst 120° vom Nordpol; so auch wieder geschrieben
+  const unten = lies('#m=pg&g=mm2&rho=-60&az=30');
   assert.equal(unten.pg.theta, 120);
+  assert.equal(unten.pg.phi, 30);
   assert.match(hashOf(unten, D), /rho=-60(&|$)/);
-  assert.equal(lies('#m=pg&g=mm2&rho=-60&az=30').pg.theta, 120);
+  // rho ausserhalb −90 … 90°: nächster gültiger Wert (Leitfaden 5.2); az läuft um
+  assert.equal(lies('#m=pg&g=mm2&rho=120&az=30').pg.theta, 90);
+  assert.equal(lies('#m=pg&g=mm2&rho=40&az=-30').pg.phi, 330);
+  // phi gibt es nicht (mehr): gilt als fehlend
+  assert.equal(lies('#m=pg&g=mm2&rho=40&phi=0').pg.phi, D.pg.phi);
 });
 
 test('Skript: jede Abbildung ist ein gültiger Link der App und ergibt ein Stereogramm', () => {
@@ -99,11 +98,9 @@ test('Link-Adresse: unbekanntes Werkzeug, auch ein Schlüssel aus dem Prototyp, 
   assert.match(hashOf(lies('#m=form&sys=kubisch&w=winkel'), D), /w=winkel(&|$)/);
 });
 
-test('Erste Schritte: gespeicherte Modi lesen, alter Wert „zu“ gilt als „poly“', () => {
+test('Erste Schritte: gespeicherte Modi lesen', () => {
   assert.deepEqual([...introSeen(null)], []);
   assert.deepEqual([...introSeen('')], []);
-  assert.deepEqual([...introSeen('zu')], ['poly']);
-  assert.deepEqual([...introSeen('zu,pg')].sort(), ['pg', 'poly']);
   assert.deepEqual([...introSeen('pg,poly')].sort(), ['pg', 'poly']);
 });
 

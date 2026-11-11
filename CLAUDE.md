@@ -8,8 +8,8 @@ gilt.
 
 **Zweck:** Stereogramme der Symmetriegerüste der 32 Punktgruppen mit optionalem Objekt in allgemeiner
 Lage; Stereogramme einfacher Polyeder in verschiedenen Lagen, skalierbar in Grösse und
-Seitenverhältnissen. Live: https://manganite.github.io/stereography/ (wird genutzt; Adressen und Links
-stabil halten).
+Seitenverhältnissen. Live: https://manganite.github.io/stereography/ (wird genutzt, ist aber **in Entwicklung**: Link-Adressen
+und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystallography-common#126).
 
 ## Entscheidungen (mit Grund)
 
@@ -48,7 +48,7 @@ stabil halten).
   immer dem Dargestellten. Link mit solchen Winkeln: Winkel der Vorgabe; gespeicherter Zustand: Gitter der Vorgabe. Fast flache
   Zellen sind ausgeschlossen (`GITTER_MIN` in `js/polyhedra.js`: V/(abc) ≥ 0,1).
 - **Eine Prüfung für Link und Speicher** (6.11.2026, #96, Leitfaden Abschn. 5.2): `zustandPruefen()` in
-  `js/zustand.js` prüft jedes Feld des Zustands, für den Speicher (`ausSpeicher`, mit Übernahme der Stände v2–v4)
+  `js/zustand.js` prüft jedes Feld des Zustands, für den Speicher (`ausSpeicher`, nur Stände der aktuellen Version)
   und nach dem Lesen eines Links. Neue Felder gehören dorthin und in `tests/rundlauf.test.mjs`. Zahlen werden
   wie im Link seit jeher auf den nächsten gültigen Wert gesetzt, nach Leitfaden 5.2 (Entscheidung Thomas,
   6.11.2026, crystallography-common#84).
@@ -173,20 +173,21 @@ stabil halten).
 ### Familie
 - **`blick=1–3` als allgemeiner Link-Parameter** (31.10.): plane-groups verlinkt damit die 10 polaren
   Punktgruppen, die den 10 ebenen entsprechen (z. B. Pedion mit Flächenmuster von oben ohne Umkugel).
-  Diese Link-Form ist Schnittstelle und bleibt stabil.
+  Diese Link-Form nutzt eine andere App; ändern nur nach Leitfaden Abschn. 8 (PR in plane-groups, Releases abstimmen).
 
 ## Konventionen
 
-- **Speicher im Browser, nie umbenennen:** `stereo-state` (Zustandsversion 4; ältere werden umgerechnet),
-  `stereo-intro` (Wert: gesehene Modi, z. B. `pg,poly`; `zu` bis v1.12.1 gilt als `poly`), `stereo-sections`, `stereo-explain`; Quiz `stereo-quiz-v1`, `-entwurf`, `-lauf`; Stand der Experimente `stereo-experimente` (bleibt beim Zurücksetzen wie das Quiz). Jeder Eintrag heisst `stereo-…` (Leitfaden Abschn. 5.2, „Alle Einstellungen zurücksetzen“).
+- **Speicher im Browser** (Namen nur nach Leitfaden Abschn. 7 und 8 ändern): `stereo-state` (Zustandsversion 4; ein
+  Stand mit anderer Version wird verworfen), `stereo-intro` (Wert: gesehene Modi, z. B. `pg,poly`), `stereo-sections`, `stereo-explain`; Quiz `stereo-quiz-v1`, `-entwurf`, `-lauf`; Stand der Experimente `stereo-experimente` (bleibt beim Zurücksetzen wie das Quiz). Jeder Eintrag heisst `stereo-…` (Leitfaden Abschn. 5.2, „Alle Einstellungen zurücksetzen“).
 - **Cache des Service Workers:** `stereogramm-<Version>`.
-- **Stabile Kennungen in Links:** `-43m:c38` = {112}, `-43m:c39` = {221} (wie in v1.0.0). Alte `phi=`
-  (Zählung ab ↓, Gegenuhrzeigersinn) werden umgerechnet; `rho=` über 90° gilt weiter.
+- **Kennungen in Links:** `-43m:c38` = {112}, `-43m:c39` = {221} (wie in v1.0.0; die Formtypen der beiden
+  waren damals vertauscht, die regelmässige Kennung hätte heute die umgekehrte Bedeutung).
 - **Weitere Link-Schlüssel:** `str=<Richtung>,<Faktor>` (immer im Modus „Streckung“, auch bei s = 1,
   ohne Beispiel; fehlt `str`, liest der Parser `br=1` als „Alle Parameter frei“, `js/scene.js`);
   `zonen=u,v,w;…` (nur mit `w=zone`); `pole=0`, `ns=0`, `bsp=`, `ab=`, `hkil=1`, `achsen=1`, `blick=`.
   Im Skript zusätzlich `data-view` (oblique/top/side), `data-dirs`, `data-labels="aus"`.
-- **Skript-Anker** bleiben gültig (Quiz, Infobox `js/skriptlinks.js` und andere Apps verweisen darauf).
+- **Skript-Anker:** Quiz, Infobox `js/skriptlinks.js` und andere Apps verweisen darauf; ändern nur zusammen mit
+  diesen (Leitfaden Abschn. 8).
 - **Quizfragen** in `js/quiz-bank.js`, Kennung `kapitel-stufe-nr` (z. B. `zon-1-03`); Felder `stufe`,
   `kapitel`, `lernziel` (wörtlich im Skript, Test), `typ`, `frage`, `bild`, `antworten`, `richtig`,
   `erklaerung`, `skript`, `app`, `quelle`, `status`. Generatoren in `js/quiz-gen.js`.

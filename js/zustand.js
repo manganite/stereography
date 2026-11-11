@@ -1,17 +1,17 @@
 // Zustand aus Link und Speicher: eine Prüfung für beide Wege (Leitfaden Abschn. 5.2, crystallography-common#63,
 // #96). Der Speicher des Browsers ist Eingabe von aussen wie die Link-Adresse. ausSpeicher liest einen
-// gespeicherten Stand (v2–v4) samt Übernahme alter Felder, zustandPruefen prüft alle Felder mit ihren
+// gespeicherten Stand der aktuellen Version (ein anderer wird verworfen, Leitfaden Abschn. 8), zustandPruefen prüft alle Felder mit ihren
 // Abhängigkeiten (z. B. die Winkel eines Gitters gemeinsam, #95); main.js ruft sie auch nach dem Lesen eines Links.
 
 import { POINT_GROUPS } from './pointgroups.js';
 import { LATTICE_DEFAULTS, GITTER_BEREICH, constrainLattice, gitterGueltig, orientationPresets } from './polyhedra.js';
 import { exampleById } from './examples.js';
-import { createState, phiFromOld, URL_VIEW, URL_PG, URL_FORM, LAT_KEYS } from './scene.js';
+import { createState, URL_VIEW, URL_PG, URL_FORM, LAT_KEYS } from './scene.js';
 
 /** @import { Zustand } from './scene.js' */
 /** @import { Gitterparameter } from './polyhedra.js' */
 
-/** Version des gespeicherten Stands (v2: Punktgruppen, v3: dazu Kristallformen, v4: Azimut nach Borchardt-Ott). */
+/** Version des gespeicherten Stands; ein Stand mit anderer Version wird verworfen (Leitfaden Abschn. 8). */
 export const SPEICHER_VERSION = 4;
 /** Zonen als 'u,v,w' (wie in der Link-Adresse). */
 const ZONE = /^-?\d+,-?\d+,-?\d+$/;
@@ -99,37 +99,17 @@ export function zustandPruefen(state) {
 }
 
 /**
- * Zustand aus dem Speicher des Browsers (JSON.parse von 'stereo-state'), mit Übernahme der Stände v2–v4;
- * danach zustandPruefen. Ohne gültigen Stand der Startzustand.
+ * Zustand aus dem Speicher des Browsers (JSON.parse von 'stereo-state'), danach zustandPruefen. Ohne Stand der
+ * aktuellen Version (SPEICHER_VERSION) der Startzustand.
  * @param {unknown} saved @returns {Zustand}
  */
 export function ausSpeicher(saved) {
   const state = createState();
-  if (!istObjekt(saved) || typeof saved.v !== 'number' || !(saved.v >= 2 && saved.v <= SPEICHER_VERSION)) return state;
-  const v = saved.v;
-  const savedPg = istObjekt(saved.pg) ? saved.pg : {};
-  const savedPoly = istObjekt(saved.poly) ? saved.poly : {};
-  const savedView = istObjekt(saved.view) ? saved.view : {};
-  felderUebernehmen(state.pg, savedPg);
-  felderUebernehmen(state.view, savedView);
-  if (v >= 3) felderUebernehmen(state.poly, savedPoly);
-  if (v < 4 && Number.isFinite(state.pg.phi)) state.pg.phi = phiFromOld(state.pg.phi); // alte Zählung von φ
-  // Felder älterer Stände (gespeichert unter pg bzw. poly)
-  if (typeof savedPg.dirColors === 'boolean' && !('dirColors' in savedView)) state.view.dirColors = savedPg.dirColors;
-  if (v >= 3 && savedPoly.zoneMode) state.poly.tool = 'zone';
+  if (!istObjekt(saved) || saved.v !== SPEICHER_VERSION) return state;
+  felderUebernehmen(state.pg, saved.pg);
+  felderUebernehmen(state.poly, saved.poly);
+  felderUebernehmen(state.view, saved.view);
   state.mode = saved.mode === 'poly' ? 'poly' : 'pg';
-  if (v >= 3 && !('breakMode' in savedPoly)) {
-    // Stand bis v1.4.0: „Symmetrie brechen“ bedeutete alle Gitterparameter frei, im Gitter selbst gespeichert
-    state.poly.breakMode = state.poly.broken ? 'free' : 'stretch';
-    if (state.poly.broken && istObjekt(state.poly.lats)) {
-      if (!istObjekt(state.poly.freeLats)) state.poly.freeLats = {};
-      for (const [sys, lat] of Object.entries(state.poly.lats)) {
-        if (!Object.hasOwn(LATTICE_DEFAULTS, sys) || !istObjekt(lat)) continue;
-        state.poly.freeLats[sys] = /** @type {Gitterparameter} */ ({ ...lat });
-        state.poly.lats[sys] = constrainLattice(/** @type {Gitterparameter} */ (lat), sys);
-      }
-    }
-  }
   return zustandPruefen(state);
 }
 

@@ -71,7 +71,7 @@ Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Mod
 
 ## Link-Adressen
 
-Der Zustand steht lesbar in der Adresse, z. B. `#m=pg&g=4/mmm&rho=40&az=30`. Ausser `m` und `g` bzw. `sys` steht dort nur, was vom Startzustand abweicht; Schalter mit `1` (ein) und `0` (aus). Die Link-Adressen sind eine Schnittstelle (Skript, Quiz, andere Apps der Familie) und bleiben stabil; alte Links werden umgerechnet (Tests `tests/scene.test.mjs`, `tests/stretch.test.mjs`, `tests/views.test.mjs`).
+Der Zustand steht lesbar in der Adresse, z. B. `#m=pg&g=4/mmm&rho=40&az=30`. Ausser `m` und `g` bzw. `sys` steht dort nur, was vom Startzustand abweicht; Schalter mit `1` (ein) und `0` (aus). Die Link-Adressen sind eine Schnittstelle (Skript, Quiz, andere Apps der Familie), geprüft von `tests/scene.test.mjs`, `tests/stretch.test.mjs`, `tests/views.test.mjs` und `tests/rundlauf.test.mjs`. Solange die App in Entwicklung ist, kann sich das Format ändern; alte Links gelten dann nicht mehr (Leitfaden der Familie, Abschnitt 8).
 
 Beispiel: `#m=form&sys=tetragonal&f=4mm:a1&muster=1&blick=1&kugel=0&ns=0&ebene=0&strahlen=0&normalen=0&achsen=1&pole=0` zeigt das Pedion in 4mm mit Flächenmuster von oben, ohne Hilfslinien.
 
@@ -84,9 +84,8 @@ Modus „Punktgruppen“ (`m=pg`):
 | Schlüssel | Bedeutung | Werte (Startwert fett) |
 |---|---|---|
 | `g` | Punktgruppe | Symbol mit `-` für den Querstrich, Aufstellungen eigens: `1`, `-1`, `2b`, `2c`, `mb`, `mc`, `2/mb`, `2/mc`, `222`, **`mm2`**, `mmm`, `4`, `-4`, `4/m`, `422`, `4mm`, `-42m`, `-4m2`, `4/mmm`, `3`, `-3`, `321`, `312`, `3m1`, `31m`, `-3m1`, `-31m`, `6`, `-6`, `6/m`, `622`, `6mm`, `-6m2`, `-62m`, `6/mmm`, `23`, `m-3`, `432`, `-43m`, `m-3m` |
-| `rho` | Poldistanz ρ des Ausgangspols in Grad, untere Halbkugel negativ | −90 … 90, **59**; Werte über 90 (vom Nordpol gezählt, Links bis v1.0.0) gelten weiter |
+| `rho` | Poldistanz ρ des Ausgangspols in Grad, untere Halbkugel negativ | −90 … 90, **59** |
 | `az` | Azimut φ des Ausgangspols in Grad, ab → im Uhrzeigersinn | **75.5** |
-| `phi` | Azimut in der Zählung bis v1.0.0 (ab ↓ im Gegenuhrzeigersinn); wird nur gelesen und als `az` umgerechnet | |
 | `el` | Symmetriegerüst | `0`, **`1`** |
 | `obj` | Objekt in allgemeiner Lage | `0`, **`1`** |
 | `pole` | Flächenpole | `0`, **`1`** |

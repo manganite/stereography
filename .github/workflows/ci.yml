@@ -73,6 +73,19 @@ jobs:
           npx playwright install chromium
       - name: Skript als PDF
         run: node tools/skript-pdf.mjs skript.pdf
+      - name: Schriften im PDF (vorübergehend, crystallography-common#128)
+        run: |
+          pip install --quiet pypdf
+          python3 -c "
+          import pypdf, collections
+          r = pypdf.PdfReader('skript.pdf'); c = collections.Counter()
+          for pg in r.pages:
+              fs = (pg.get('/Resources') or {}).get('/Font') or {}
+              for f in fs.values(): c[str(f.get_object().get('/BaseFont'))] += 1
+          print('Seiten', len(r.pages))
+          for k, v in c.most_common(): print(v, k)
+          "
+          fc-list : family | sort -u
       - name: PDF als Artefakt
         uses: actions/upload-artifact@v4
         with:

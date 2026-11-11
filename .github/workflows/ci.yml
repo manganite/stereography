@@ -57,7 +57,7 @@ jobs:
 
   # PDF-Fassung des Skripts wie bei Deploy und Release, damit Fehler vor dem Tag auffallen
   pdf:
-    # Playwright 1.52 kennt die Systempakete von Ubuntu 24.04; ubuntu-latest wechselt auf Ubuntu 26
+    # Chromium von Playwright 1.52 nutzt die Bibliotheken des Images Ubuntu 24.04 (ohne apt, crystallography-common#128); ubuntu-latest wechselt auf Ubuntu 26
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -69,7 +69,8 @@ jobs:
       - name: Install Playwright
         run: |
           npm install --no-save playwright@1.52.0
-          npx playwright install --with-deps chromium
+          # ohne --with-deps: kein apt (Ausfall der Ubuntu-Paketquellen 11.11.2026, crystallography-common#128); die Bibliotheken sind auf dem Runner
+          npx playwright install chromium
       - name: Skript als PDF
         run: node tools/skript-pdf.mjs skript.pdf
       - name: PDF als Artefakt

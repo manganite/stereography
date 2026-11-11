@@ -14,6 +14,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Behoben
 
+- **CI, Deploy und Release ohne apt** (crystallography-common#128): Der Browser für das Skript-PDF wird ohne `--with-deps` installiert, also ohne Systempakete über `apt`; am 11.11.2026 scheiterten die Jobs mehrfach, weil der Runner die Paketquellen von Ubuntu nicht erreichte. Alle Zeichen des Skripts ausserhalb der eigenen Schriften deckt die Schrift DejaVu des Runners ab (geprüft in der CI).
 - **Gemeinsame Grundlage** auf crystallography-common v0.15.1: Tooltips erscheinen auch auf Laptops mit Touchscreen, wenn mit Maus oder Tastatur gearbeitet wird (vorher blieben sie aus, wenn der Browser den Touchscreen als primäres Zeigegerät meldete; crystallography-common#114).
 - **Leerer Wert im Link** (#123): Ein Schlüssel ohne Wert (z. B. `ba=` oder `rho=`) galt als 0 und setzte b/a auf die untere Grenze bzw. den Pol auf die Achse. Er gilt jetzt wie ein fehlender Schlüssel, also als Startwert (Leitfaden 5.2); ebenso ein leerer Faktor in `ab=`, ein leeres `az=` neben einem alten `phi=` und ein leerer Schalter (z. B. `pole=` schaltete die Pole aus). Ein Schalter mit unbekanntem Wert (weder `1`/`ja`/`true` noch `0`/`nein`/`false`) behält ebenfalls seinen Startwert, statt auszuschalten.
 

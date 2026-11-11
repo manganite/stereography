@@ -55,7 +55,8 @@ jobs:
         continue-on-error: true
         run: |
           npm install --no-save playwright@1.52.0
-          npx playwright install --with-deps chromium
+          # ohne --with-deps: kein apt (Ausfall der Ubuntu-Paketquellen 11.11.2026, crystallography-common#128); die Bibliotheken sind auf dem Runner
+          npx playwright install chromium
       - name: Skript als PDF
         continue-on-error: true
         run: node tools/skript-pdf.mjs _site/skript.pdf

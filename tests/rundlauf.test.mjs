@@ -1,11 +1,11 @@
 // Rundlauf-Tests nach Leitfaden Abschn. 9 (crystallography-common#63, #96): Zustand → Link → Zustand,
-// Zustand → Speicher → Zustand, alte Speicherstände v2–v4 und verdorbene Stände → gültiger Zustand,
+// Zustand → Speicher → Zustand, fremde und verdorbene Speicherstände → gültiger Zustand,
 // Zurücksetzen vor und nach dem Neuladen gleich. Erwartungen fest im Test (Listen, Bereiche), nicht aus dem Code.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, applyHashTo, hashOf, currentExample, effectiveLat } from '../js/scene.js';
 import { STRETCH_DIRS, LATTICE_DEFAULTS } from '../js/polyhedra.js';
-import { ausSpeicher, speicherStand, zustandPruefen } from '../js/zustand.js';
+import { ausSpeicher, speicherStand, zustandPruefen, SPEICHER_VERSION } from '../js/zustand.js';
 import { POINT_GROUPS } from '../js/pointgroups.js';
 import { EXAMPLES } from '../js/examples.js';
 import { gitterGueltig, orientationPresets } from '../js/polyhedra.js';
@@ -75,28 +75,20 @@ test('Rundlauf: Zustand → Speicher → Zustand (alles Gespeicherte bleibt)', (
   }
 });
 
-test('Rundlauf: alte Speicherstände v2–v4 werden übernommen', () => {
-  // v2: nur Punktgruppen, φ in alter Zählung (ab ↓, Gegenuhrzeigersinn), Blickrichtungsfarben unter pg
-  const v2 = ausSpeicher({ v: 2, mode: 'pg', pg: { id: '4/mmm', theta: 40, phi: 30, dirColors: false }, view: {} });
-  assert.deepEqual([v2.pg.id, v2.pg.theta, v2.pg.phi, v2.view.dirColors], ['4/mmm', 40, 60, false]);
-  assert.ok(!('dirColors' in v2.pg));
-  // v3 bis v1.4.0: Werkzeug zoneMode, „Symmetrie brechen“ = alle Gitterparameter frei im Gitter gespeichert
-  const v3 = ausSpeicher({ v: 3, mode: 'poly', pg: {}, view: {}, poly: { system: 'tetragonal', broken: true, zoneMode: true, lats: { tetragonal: { ba: 1.1, ca: 1.3, al: 85, be: 95, ga: 92 } } } });
-  assert.deepEqual([v3.mode, v3.poly.tool, v3.poly.breakMode], ['poly', 'zone', 'free']);
-  assert.deepEqual(v3.poly.freeLats.tetragonal, { ba: 1.1, ca: 1.3, al: 85, be: 95, ga: 92 });
-  assert.deepEqual(v3.poly.lats.tetragonal, { ba: 1, ca: 1.3, al: 90, be: 90, ga: 90 });
-  assert.ok(!('zoneMode' in v3.poly));
-  // v4 wie heute; unbekannte Version: Startzustand
-  assert.equal(ausSpeicher({ v: 4, mode: 'poly', pg: {}, poly: { system: 'trigonal' }, view: {} }).poly.system, 'trigonal');
-  for (const v of [1, 5, '4', null]) assert.deepEqual(gespeichert(ausSpeicher({ v, mode: 'poly' })), gespeichert(createState()), String(v));
+test('Rundlauf: nur Stände der aktuellen Version werden gelesen (Leitfaden Abschn. 8)', () => {
+  assert.equal(ausSpeicher({ v: SPEICHER_VERSION, mode: 'poly', pg: {}, poly: { system: 'trigonal' }, view: {} }).poly.system, 'trigonal');
+  // ältere und unbekannte Versionen: Startzustand, auch wenn die Felder passen würden
+  for (const v of [2, 3, SPEICHER_VERSION - 1, SPEICHER_VERSION + 1, String(SPEICHER_VERSION), null, undefined]) {
+    assert.deepEqual(gespeichert(ausSpeicher({ v, mode: 'poly', pg: { id: '4/mmm' }, poly: { system: 'trigonal' }, view: {} })), gespeichert(createState()), String(v));
+  }
 });
 
 test('Rundlauf: verdorbene Speicherstände → gültiger, stabiler Zustand (#96, #95)', () => {
   /** @type {unknown[]} */
   const staende = [
-    null, 'x', 42, [], { v: 4 }, { v: 4, pg: 'x', poly: 7, view: null },
+    null, 'x', 42, [], { v: SPEICHER_VERSION }, { v: SPEICHER_VERSION, pg: 'x', poly: 7, view: null },
     {
-      v: 4, mode: 'tafel',
+      v: SPEICHER_VERSION, mode: 'tafel',
       pg: { id: '<b>', monoAxis: 'x', famPref: { '32': 5, '3m': '31m' }, theta: null, phi: 'a', showElements: 'ja', hideDirs: [1, 7, 'a'], tool: 'zone', colorful: 1 },
       poly: {
         system: 'kristall', entryBySys: { kubisch: 3, fremd: 'x' }, presetId: '999', broken: 'ja', auxDist: 'weit', size: 99, tool: 'radierer',
@@ -107,7 +99,7 @@ test('Rundlauf: verdorbene Speicherstände → gültiger, stabiler Zustand (#96,
       },
       view: { dirColors: 'nein', wulffRot: 900, fremd: 1 },
     },
-    JSON.parse('{"v":4,"pg":{"__proto__":{"boese":1},"id":"6/mmm"},"poly":{"__proto__":{"boese":2}}}'),
+    JSON.parse('{"v":5,"pg":{"__proto__":{"boese":1},"id":"6/mmm"},"poly":{"__proto__":{"boese":2}}}'),
   ];
   for (const st of staende) {
     const s = ausSpeicher(JSON.parse(JSON.stringify(st) ?? 'null'));
@@ -157,11 +149,11 @@ test('Rundlauf: Zustände aus der Bedienung bleiben im Speicher (Streckung → �
     assert.deepEqual(effectiveLat(n), effectiveLat(st));
   }
   // manipuliert: System als Liste statt Zeichenkette
-  assert.equal(ausSpeicher({ v: 4, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.system, 'kubisch');
-  assert.equal(ausSpeicher({ v: 4, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.presetId, '001');
+  assert.equal(ausSpeicher({ v: SPEICHER_VERSION, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.system, 'kubisch');
+  assert.equal(ausSpeicher({ v: SPEICHER_VERSION, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.presetId, '001');
   // freies Gitter ausserhalb der Bereiche (b/a, c/a 0,4 bzw. 0,125 … 6, Winkel 50 … 150°): nächster gültiger Wert
   /** @param {object} l */
-  const frei = (l) => ausSpeicher({ v: 4, pg: {}, view: {}, poly: { freeLats: { kubisch: l } } }).poly.freeLats.kubisch;
+  const frei = (l) => ausSpeicher({ v: SPEICHER_VERSION, pg: {}, view: {}, poly: { freeLats: { kubisch: l } } }).poly.freeLats.kubisch;
   assert.deepEqual(frei({ ba: -1, ca: 9, al: 90, be: 90, ga: 90 }), { ba: 0.4, ca: 6, al: 90, be: 90, ga: 90 });
   assert.deepEqual(frei({ ba: 1, ca: 0.1, al: 120, be: 40, ga: 200 }), { ba: 1, ca: 0.125, al: 120, be: 50, ga: 150 });
 });
@@ -171,7 +163,7 @@ test('Leerer Wert im Link gilt als fehlend: Startwert, nicht 0 (Leitfaden 5.2, #
   const faelle = [
     ['#m=form&sys=orthorhombisch', ['ba', 'ca', 'abstand', 'gr', 'netz']],
     ['#m=form&sys=triklin&br=1', ['ba', 'ca', 'al', 'be', 'ga']],
-    ['#m=pg&g=4mm', ['rho', 'az', 'phi', 'netz']],
+    ['#m=pg&g=4mm', ['rho', 'az', 'netz']],
   ];
   for (const [basis, schluessel] of /** @type {[string, string[]][]} */ (faelle)) for (const k of schluessel) {
     const ohne = gespeichert(ausLink(basis + (k === 'netz' ? '&wulff=1' : '')));
@@ -180,7 +172,7 @@ test('Leerer Wert im Link gilt als fehlend: Startwert, nicht 0 (Leitfaden 5.2, #
       assert.deepEqual(gespeichert(ausLink(h)), ohne, h);
     }
     // Gegenprobe: 0 ist ein Wert (gesetzt oder auf die Bereichsgrenze)
-    if (!['az', 'phi', 'netz'].includes(k)) assert.notDeepEqual(gespeichert(ausLink(`${basis}&${k}=0`)), ohne, `${basis}&${k}=0`);
+    if (!['az', 'netz'].includes(k)) assert.notDeepEqual(gespeichert(ausLink(`${basis}&${k}=0`)), ohne, `${basis}&${k}=0`);
   }
   // feste Startwerte (README, Tabelle der Link-Adressen; nicht aus dem Code)
   assert.equal(ausLink('#m=form&sys=orthorhombisch&ba=').poly.lats.orthorhombisch.ba, 1.25);
@@ -192,9 +184,6 @@ test('Leerer Wert im Link gilt als fehlend: Startwert, nicht 0 (Leitfaden 5.2, #
   /** @type {string} */
   const mitBeispiel = `#m=form&sys=${e.sys}&bsp=${e.id}`;
   for (const k of ['ab', 'f']) assert.deepEqual(gespeichert(ausLink(`${mitBeispiel}&${k}=`)), gespeichert(ausLink(mitBeispiel)), `${k}=`);
-  // leeres az: ein altes phi zählt wie ohne az
-  assert.equal(ausLink('#m=pg&g=4mm&az=&phi=10').pg.phi, ausLink('#m=pg&g=4mm&phi=10').pg.phi);
-  assert.notEqual(ausLink('#m=pg&g=4mm&phi=10').pg.phi, 75.5);
 });
 
 test('Schalter im Link: 1/0 (auch ja/nein, true/false); leer oder unbekannt gilt als fehlend (Leitfaden 5.2, Review #128)', () => {

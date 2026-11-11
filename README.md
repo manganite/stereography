@@ -71,7 +71,7 @@ Ein Doppelklick auf `index.html` genügt nicht: Browser laden die JavaScript-Mod
 
 ## Link-Adressen
 
-Der Zustand steht lesbar in der Adresse, z. B. `#m=pg&g=4/mmm&rho=40&az=30`. Ausser `m` und `g` bzw. `sys` steht dort nur, was vom Startzustand abweicht; Schalter mit `1` (ein) und `0` (aus). Die Link-Adressen sind eine Schnittstelle (Skript, Quiz, andere Apps der Familie) und bleiben stabil; alte Links werden umgerechnet (Tests `tests/scene.test.mjs`, `tests/stretch.test.mjs`, `tests/views.test.mjs`).
+Der Zustand steht lesbar in der Adresse, z. B. `#m=pg&g=4/mmm&rho=40&az=30`. Ausser `m` und `g` bzw. `sys` steht dort nur, was vom Startzustand abweicht; Schalter mit `1` (ein) und `0` (aus). Die Link-Adressen sind eine Schnittstelle (Skript, Quiz, andere Apps der Familie), geprüft von `tests/scene.test.mjs`, `tests/stretch.test.mjs`, `tests/views.test.mjs` und `tests/rundlauf.test.mjs`. Solange die App in Entwicklung ist, kann sich das Format ändern; alte Links gelten dann nicht mehr (Leitfaden der Familie, Abschnitt 8).
 
 Beispiel: `#m=form&sys=tetragonal&f=4mm:a1&muster=1&blick=1&kugel=0&ns=0&ebene=0&strahlen=0&normalen=0&achsen=1&pole=0` zeigt das Pedion in 4mm mit Flächenmuster von oben, ohne Hilfslinien.
 
@@ -84,9 +84,8 @@ Modus „Punktgruppen“ (`m=pg`):
 | Schlüssel | Bedeutung | Werte (Startwert fett) |
 |---|---|---|
 | `g` | Punktgruppe | Symbol mit `-` für den Querstrich, Aufstellungen eigens: `1`, `-1`, `2b`, `2c`, `mb`, `mc`, `2/mb`, `2/mc`, `222`, **`mm2`**, `mmm`, `4`, `-4`, `4/m`, `422`, `4mm`, `-42m`, `-4m2`, `4/mmm`, `3`, `-3`, `321`, `312`, `3m1`, `31m`, `-3m1`, `-31m`, `6`, `-6`, `6/m`, `622`, `6mm`, `-6m2`, `-62m`, `6/mmm`, `23`, `m-3`, `432`, `-43m`, `m-3m` |
-| `rho` | Poldistanz ρ des Ausgangspols in Grad, untere Halbkugel negativ | −90 … 90, **59**; Werte über 90 (vom Nordpol gezählt, Links bis v1.0.0) gelten weiter |
+| `rho` | Poldistanz ρ des Ausgangspols in Grad, untere Halbkugel negativ | −90 … 90, **59** |
 | `az` | Azimut φ des Ausgangspols in Grad, ab → im Uhrzeigersinn | **75.5** |
-| `phi` | Azimut in der Zählung bis v1.0.0 (ab ↓ im Gegenuhrzeigersinn); wird nur gelesen und als `az` umgerechnet | |
 | `el` | Symmetriegerüst | `0`, **`1`** |
 | `obj` | Objekt in allgemeiner Lage | `0`, **`1`** |
 | `pole` | Flächenpole | `0`, **`1`** |
@@ -99,7 +98,7 @@ Modus „Kristallformen“ (`m=form`):
 | Schlüssel | Bedeutung | Werte (Startwert fett) |
 |---|---|---|
 | `sys` | Kristallsystem | `triklin`, `monoklin`, `orthorhombisch`, `tetragonal`, `trigonal`, `hexagonal`, **`kubisch`** |
-| `f` | Form | `<Punktgruppe>:<Kennung>` aus `js/forms.js` (Katalog in `js/formen.js`), z. B. `m-3m:b35`; Startwert je System in `DEFAULT_ENTRY` (`js/scene.js`). `-43m:c38` = {112} und `-43m:c39` = {221} wie in v1.0.0. Ohne `muster=1` stehen je Punktgruppe nur die allgemeine Form und die Formen mit dieser Eigensymmetrie zur Wahl, im trigonalen System dazu die Prismen (z. B. `321:b18`); eine andere Form (z. B. das Pedion `4mm:a1`) ersetzt die App dann durch dieselbe Form dort, wo sie ihre Eigensymmetrie hat, sonst durch den Startwert. Links auf solche Formen brauchen `muster=1`. |
+| `f` | Form | `<Punktgruppe>:<Kennung>` aus `js/forms.js` (Katalog in `js/formen.js`), z. B. `m-3m:b35`; Startwert je System in `DEFAULT_ENTRY` (`js/scene.js`). Ohne `muster=1` stehen je Punktgruppe nur die allgemeine Form und die Formen mit dieser Eigensymmetrie zur Wahl, im trigonalen System dazu die Prismen (z. B. `321:b18`); eine andere Form (z. B. das Pedion `4mm:a1`) ersetzt die App dann durch dieselbe Form dort, wo sie ihre Eigensymmetrie hat, sonst durch den Startwert. Links auf solche Formen brauchen `muster=1`. |
 | `bsp` | Beispielkristall (statt `f`) | `galenit`, `pyrit`, `dipyramiden`, `rutil`, `mm2`, `topas`, `gips`, `triklin`, `magnesium`, `quarz`, `rechtsquarz`, `turmalin` |
 | `ab` | Abstände der Formen eines Beispiels als Faktoren, je Form einer | 0.5–2, z. B. `1,1.2` |
 | `lage` | Projektionsrichtung | kubisch **`001`**, `111`, `110`; sonst **`c`**, `a`, `b` |
@@ -137,7 +136,7 @@ Darstellung (beide Modi):
 ## Konventionen
 
 - Blick entlang c (bzw. entlang der gewählten Richtung), a zeigt nach unten, b nach rechts (ITA).
-- Winkelkoordinaten wie bei Borchardt-Ott & Sowa (Abschn. 5.5–5.7, Tab. 5.1): Azimut φ ab dem rechten Rand (→, bei orthogonalen Achsen b) im Uhrzeigersinn, so dass (100) bei 90° liegt; Poldistanz ρ auf der oberen Halbkugel vom Nordpol (Zentrum), auf der unteren vom Südpol mit negativem Vorzeichen (−90° … 0°). Links aus v1.0.0 mit `phi=` (alte Zählung ab ↓ im Gegenuhrzeigersinn) werden umgerechnet; `rho=` über 90° (alte Zählung vom Nordpol) gilt weiter.
+- Winkelkoordinaten wie bei Borchardt-Ott & Sowa (Abschn. 5.5–5.7, Tab. 5.1): Azimut φ ab dem rechten Rand (→, bei orthogonalen Achsen b) im Uhrzeigersinn, so dass (100) bei 90° liegt; Poldistanz ρ auf der oberen Halbkugel vom Nordpol (Zentrum), auf der unteren vom Südpol mit negativem Vorzeichen (−90° … 0°).
 - Pole oberhalb der Projektionsebene: Punkt; unterhalb: Kreis; beide an derselben Stelle: Kreis mit Punkt.
 - Spiegelebenen als kräftige Linien; Spiegelebene senkrecht zur Projektionsrichtung als kräftiger Grundkreis.
 - Symbole und ihre Lage nach ITA A (2006), Kap. 1.4.5 und Tab. 10.1.2.2: Linsen tangential (Achse ⊥ Projektionsebene: ∥ a), Quadrat auf der Spitze, Dreieck mit Spitze nach oben bzw. bei geneigten Achsen radial nach aussen, 4̄ als offenes Quadrat mit Linse zwischen zwei Ecken, 6̄ als offenes Sechseck mit einbeschriebenem Dreieck. Der Punkt für das Inversionszentrum (2/m, 4/m, 6/m) erscheint nur an der Achse senkrecht zur Projektionsebene.

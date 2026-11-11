@@ -97,13 +97,14 @@ test('Flächenform der kubischen Formen passt zum Namen (Drei- bzw. Vierecke)', 
   assert.ok(checked >= 15);
 });
 
-test('Kennungen aus v1.0.0 zeigen dieselbe Form (4̄3m)', () => {
-  /** @param {string} id */
-  const byId = (id) => /** @type {Formeintrag} */ (CATALOG.find((e) => e.id === id));
-  assert.deepEqual(byId('-43m:c38').hkl, [1, 1, 2]);
-  assert.equal(FORM_TYPES[byId('-43m:c38').type].name.split(' ')[0], 'Tristetraeder');
-  assert.deepEqual(byId('-43m:c39').hkl, [2, 2, 1]);
-  assert.equal(FORM_TYPES[byId('-43m:c39').type].name.split(' ')[0], 'Deltoiddodekaeder');
+test('Kennungen: <Punktgruppe>:<Wyckoff-Buchstabe><Formtyp>, eindeutig, ohne Ausnahmen', () => {
+  assert.equal(new Set(CATALOG.map((e) => e.id)).size, CATALOG.length);
+  for (const e of CATALOG) assert.equal(e.id, `${e.pg}:${e.wy}${e.type}`);
+  // 4̄3m: {112} ist das Tristetraeder, {221} das Deltoiddodekaeder (Borchardt-Ott & Sowa, Tab. 9.7, wie oben)
+  /** @param {string} hkl */
+  const name = (hkl) => FORM_TYPES[/** @type {Formeintrag} */ (CATALOG.find((e) => e.pg === '-43m' && e.hkl.join('') === hkl)).type].name.split(' ')[0];
+  assert.equal(name('112'), 'Tristetraeder');
+  assert.equal(name('221'), 'Deltoiddodekaeder');
 });
 
 test('Zonen des Kristalls: mindestens drei Flächen, nach Symmetrie gruppiert', async () => {

@@ -207,7 +207,7 @@ test('Symmetrie brechen: Streckung sperrt die Gitterregler und zeigt das gestrec
   assert.ok(Math.abs(freeLat(back).ba - 1 / 1.2) < 0.006);
 });
 
-test('Links und Zustand bis v1.4.0: br=1 bedeutet alle Gitterparameter frei; str ohne br schaltet die Streckung ein', () => {
+test('Link: br=1 ohne str bedeutet alle Gitterparameter frei; str schaltet die Streckung auch ohne br ein', () => {
   const D = createState();
   const a = createState();
   applyHashTo(a, '#m=form&sys=kubisch&f=m-3m:a34&br=1&ba=1.2&ga=80', D);

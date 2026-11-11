@@ -76,11 +76,10 @@ const deg = Math.PI / 180;
 // ------------------------------------------------------------------ Zustand
 /**
  * Gesehene Erste Schritte aus dem gespeicherten Wert von `stereo-intro`: Modi, durch Komma getrennt.
- * Bis v1.12.1 hiess „zu“: die damals einzigen Ersten Schritte (Galenit, Modus „Kristallformen“) sind gesehen.
  * @param {string | null | undefined} value
  * @returns {Set<string>}
  */
-export const introSeen = (value) => new Set(String(value ?? '').split(',').filter(Boolean).map((m) => (m === 'zu' ? 'poly' : m)));
+export const introSeen = (value) => new Set(String(value ?? '').split(',').filter(Boolean));
 
 /** Startzustand der App (auch Grundlage jeder Link-Adresse). @returns {Zustand} */
 export function createState() {
@@ -108,8 +107,6 @@ export function createState() {
 }
 
 // Azimut und Poldistanz (siehe main.js)
-/** Umrechnung aus der Zählung bis v1.0.0 (ab ↓, Gegenuhrzeigersinn). @param {number} p */
-export const phiFromOld = (p) => ((((90 - p) % 360) + 360) % 360);
 // Poldistanz ρ wie bei Borchardt-Ott (Abschn. 5.6): obere Halbkugel vom Nordpol (0 … 90°), untere vom Südpol
 // mit negativem Vorzeichen (−90 … 0°). Intern bleibt theta der Winkel zum Nordpol (0 … 180°).
 /** @param {number} theta */
@@ -424,7 +421,7 @@ export function applyHashTo(state, hash, DEFAULTS) {
     }
     bools(URL_FORM, state.poly);
     // str=<Richtung>,<Faktor>, z. B. str=111,1.3 (Richtung als Gitterrichtung ohne Klammern): Symmetrie
-    // brechen durch Streckung (auch ohne br=1, Links aus v1.4.0). Nur ohne Beispielkristall; ungültige
+    // brechen durch Streckung. Nur ohne Beispielkristall; ungültige
     // Richtung oder kein Faktor: keine Streckung; Faktor ausserhalb 0,5 … 2: nächster gültiger Wert (Leitfaden 5.2).
     let stretched = false;
     if (q.has('str') && !state.poly.example) {
@@ -436,7 +433,7 @@ export function applyHashTo(state, hash, DEFAULTS) {
         stretched = true;
       }
     }
-    // br=1 ohne gültige Streckung: alle Gitterparameter frei (Links bis v1.4.0 meinen genau das)
+    // br=1 ohne gültige Streckung: alle Gitterparameter frei
     const sysNow = state.poly.system;
     const frei = state.poly.broken && !state.poly.example && !stretched;
     state.poly.breakMode = frei ? 'free' : 'stretch';
@@ -463,13 +460,11 @@ export function applyHashTo(state, hash, DEFAULTS) {
   } else {
     state.mode = 'pg';
     if (POINT_GROUPS.some((g) => g.id === q.get('g'))) state.pg.id = da('g');
-    // rho nach Borchardt-Ott (untere Halbkugel negativ); Werte über 90° aus Links bis v1.0.0 gelten weiter
-    if (q.has('rho')) { const r = num(q.get('rho'), -90, 180); if (r != null) state.pg.theta = thetaOf(r); }
-    // az: Azimut nach Borchardt-Ott (ab →, im Uhrzeigersinn); phi: alte Zählung bis v1.0.0 (ab ↓, Gegenuhrzeigersinn)
-    // ein leeres az gilt als fehlend, dann zählt ein altes phi
-    const az = num(q.get('az'), -1e6, 1e6), phi = num(q.get('phi'), -1e6, 1e6);
+    // rho nach Borchardt-Ott (untere Halbkugel negativ)
+    if (q.has('rho')) { const r = num(q.get('rho'), -90, 90); if (r != null) state.pg.theta = thetaOf(r); }
+    // az: Azimut nach Borchardt-Ott (ab →, im Uhrzeigersinn)
+    const az = num(q.get('az'), -1e6, 1e6);
     if (az != null) state.pg.phi = ((az % 360) + 360) % 360;
-    else if (phi != null) state.pg.phi = phiFromOld(phi);
     bools(URL_PG, state.pg);
     if (q.has('aus')) state.pg.hideDirs = da('aus').split(',').map((s) => Number(s) - 1).filter((k) => k >= 0 && k <= 2);
     state.pg.tool = q.get('w') === 'winkel' ? 'angle' : null;

@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.15.0] - 2026-11-11
+
+Alte Links und Speicherstände werden nicht mehr umgerechnet (die App ist in Entwicklung): `phi=` und `rho=` über 90° entfallen, gespeicherte Einstellungen älterer Versionen werden verworfen, zwei Formen in 4̄3m haben neue Kennungen. Dazu: Kontraste der Abbildungen, Symbole und Indizes für Screenreader, leerer Wert im Link gilt als fehlend; gemeinsame Grundlage v0.16.0.
+
 ### Geändert
 
 - **Alte Links und Speicherstände werden nicht mehr umgerechnet** (crystallography-common#126, Leitfaden der Familie Abschn. 8): Solange die App in Entwicklung ist, hat sauberer Code Vorrang. Entfernt sind `phi=` (Azimut in der Zählung bis v1.0.0), `rho=` über 90° (jetzt auf 90° begrenzt), gespeicherte Stände vor Version 4 und der Wert `zu` der Ersten Schritte sowie die Sonderkennungen aus v1.0.0 für zwei Formen in 4̄3m: Alle Formen haben jetzt Kennungen nach demselben Muster, {112} heisst `-43m:c39`, {221} `-43m:c38` (vorher umgekehrt; Entscheidung Thomas, 11.11.2026). **Alte Links mit `phi=` oder `rho=` über 90° zeigen nicht mehr dieselbe Ansicht; die Zustandsversion steigt auf 5, ein gespeicherter Stand einer älteren Version wird verworfen (Einstellungen, nicht der Lernstand); so wird auch ein Stand aus v1.1.0 bis v1.4.0 nicht umgedeutet, in dem „Symmetrie brechen“ noch „alle Parameter frei“ hiess.**
@@ -370,7 +374,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.14.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.15.0...HEAD
+[1.15.0]: https://github.com/manganite/stereography/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/manganite/stereography/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/manganite/stereography/compare/v1.12.1...v1.13.0
 [1.12.1]: https://github.com/manganite/stereography/compare/v1.12.0...v1.12.1

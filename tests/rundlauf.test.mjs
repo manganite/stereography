@@ -86,9 +86,9 @@ test('Rundlauf: nur Stände der aktuellen Version werden gelesen (Leitfaden Absc
 test('Rundlauf: verdorbene Speicherstände → gültiger, stabiler Zustand (#96, #95)', () => {
   /** @type {unknown[]} */
   const staende = [
-    null, 'x', 42, [], { v: 4 }, { v: 4, pg: 'x', poly: 7, view: null },
+    null, 'x', 42, [], { v: SPEICHER_VERSION }, { v: SPEICHER_VERSION, pg: 'x', poly: 7, view: null },
     {
-      v: 4, mode: 'tafel',
+      v: SPEICHER_VERSION, mode: 'tafel',
       pg: { id: '<b>', monoAxis: 'x', famPref: { '32': 5, '3m': '31m' }, theta: null, phi: 'a', showElements: 'ja', hideDirs: [1, 7, 'a'], tool: 'zone', colorful: 1 },
       poly: {
         system: 'kristall', entryBySys: { kubisch: 3, fremd: 'x' }, presetId: '999', broken: 'ja', auxDist: 'weit', size: 99, tool: 'radierer',
@@ -99,7 +99,7 @@ test('Rundlauf: verdorbene Speicherstände → gültiger, stabiler Zustand (#96,
       },
       view: { dirColors: 'nein', wulffRot: 900, fremd: 1 },
     },
-    JSON.parse('{"v":4,"pg":{"__proto__":{"boese":1},"id":"6/mmm"},"poly":{"__proto__":{"boese":2}}}'),
+    JSON.parse('{"v":5,"pg":{"__proto__":{"boese":1},"id":"6/mmm"},"poly":{"__proto__":{"boese":2}}}'),
   ];
   for (const st of staende) {
     const s = ausSpeicher(JSON.parse(JSON.stringify(st) ?? 'null'));
@@ -149,11 +149,11 @@ test('Rundlauf: Zustände aus der Bedienung bleiben im Speicher (Streckung → �
     assert.deepEqual(effectiveLat(n), effectiveLat(st));
   }
   // manipuliert: System als Liste statt Zeichenkette
-  assert.equal(ausSpeicher({ v: 4, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.system, 'kubisch');
-  assert.equal(ausSpeicher({ v: 4, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.presetId, '001');
+  assert.equal(ausSpeicher({ v: SPEICHER_VERSION, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.system, 'kubisch');
+  assert.equal(ausSpeicher({ v: SPEICHER_VERSION, mode: 'poly', pg: {}, view: {}, poly: { system: ['kubisch'] } }).poly.presetId, '001');
   // freies Gitter ausserhalb der Bereiche (b/a, c/a 0,4 bzw. 0,125 … 6, Winkel 50 … 150°): nächster gültiger Wert
   /** @param {object} l */
-  const frei = (l) => ausSpeicher({ v: 4, pg: {}, view: {}, poly: { freeLats: { kubisch: l } } }).poly.freeLats.kubisch;
+  const frei = (l) => ausSpeicher({ v: SPEICHER_VERSION, pg: {}, view: {}, poly: { freeLats: { kubisch: l } } }).poly.freeLats.kubisch;
   assert.deepEqual(frei({ ba: -1, ca: 9, al: 90, be: 90, ga: 90 }), { ba: 0.4, ca: 6, al: 90, be: 90, ga: 90 });
   assert.deepEqual(frei({ ba: 1, ca: 0.1, al: 120, be: 40, ga: 200 }), { ba: 1, ca: 0.125, al: 120, be: 50, ga: 150 });
 });

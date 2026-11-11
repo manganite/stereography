@@ -598,7 +598,7 @@ function renderPoly() {
   if (state.selected != null && (!C.faces[state.selected] || C.faces[state.selected].hidden)) state.selected = null;
   state.zoneSel = state.zoneSel.filter((k) => C.faces[k] && !C.faces[k].hidden);
   if (!state.poly.tool) state.zoneSel = [];
-  // gespeicherte Schlüssel lageunabhängig machen und Doppelte entfernen (ältere Zustände, Links)
+  // gespeicherte Schlüssel lageunabhängig machen und Doppelte entfernen (Links)
   state.poly.zones = normalizeZones(state.poly.zones);
   const { scene, fwClasses, hex4 } = polyScene(state, C, col, { hitR: touchRadius(13, 22), labelSize: Math.max(14.5, 11 * svgUnit()) });
   const out = buildSVG(scene);

@@ -12,7 +12,7 @@ import { createState, URL_VIEW, URL_PG, URL_FORM, LAT_KEYS } from './scene.js';
 /** @import { Gitterparameter } from './polyhedra.js' */
 
 /** Version des gespeicherten Stands; ein Stand mit anderer Version wird verworfen (Leitfaden Abschn. 8). */
-export const SPEICHER_VERSION = 4;
+export const SPEICHER_VERSION = 5;
 /** Zonen als 'u,v,w' (wie in der Link-Adresse). */
 const ZONE = /^-?\d+,-?\d+,-?\d+$/;
 

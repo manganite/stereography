@@ -57,7 +57,7 @@ jobs:
 
   # PDF-Fassung des Skripts wie bei Deploy und Release, damit Fehler vor dem Tag auffallen
   pdf:
-    # Playwright 1.52 kennt die Systempakete von Ubuntu 24.04; ubuntu-latest wechselt auf Ubuntu 26
+    # Chromium von Playwright 1.52 nutzt die Bibliotheken des Images Ubuntu 24.04 (ohne apt, crystallography-common#128); ubuntu-latest wechselt auf Ubuntu 26
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout

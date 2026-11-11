@@ -180,6 +180,9 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
 - **Speicher im Browser** (Namen nur nach Leitfaden Abschn. 7 und 8 ändern): `stereo-state` (Zustandsversion 5; ein
   Stand mit anderer Version wird verworfen), `stereo-intro` (Wert: gesehene Modi, z. B. `pg,poly`), `stereo-sections`, `stereo-explain`; Quiz `stereo-quiz-v1`, `-entwurf`, `-lauf`; Stand der Experimente `stereo-experimente` (bleibt beim Zurücksetzen wie das Quiz). Jeder Eintrag heisst `stereo-…` (Leitfaden Abschn. 5.2, „Alle Einstellungen zurücksetzen“).
 - **Cache des Service Workers:** `stereogramm-<Version>`.
+- **Kennungen der Formen** (`f=`) ohne Ausnahmen: `<Punktgruppe>:<Wyckoff-Buchstabe><Formtyp>` (Thomas, 11.11.2026,
+  crystallography-common#126): Die Sonderkennungen aus v1.0.0 für {112} und {221} in 4̄3m sind entfallen, obwohl die
+  beiden Kennungen damit die Bedeutung tauschen; ein so seltener Fall soll keinen Sondercode tragen.
 - **Weitere Link-Schlüssel:** `str=<Richtung>,<Faktor>` (immer im Modus „Streckung“, auch bei s = 1,
   ohne Beispiel; fehlt `str`, liest der Parser `br=1` als „Alle Parameter frei“, `js/scene.js`);
   `zonen=u,v,w;…` (nur mit `w=zone`); `pole=0`, `ns=0`, `bsp=`, `ab=`, `hkil=1`, `achsen=1`, `blick=`.

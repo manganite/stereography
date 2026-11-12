@@ -44,7 +44,7 @@
 .field > label, .lbl { font-size: 0.82rem; color: var(--muted); }
 select { width: 100%; padding: 8px 10px; border: 1px solid var(--field); border-radius: 7px; background: var(--paper); }
 .picker { display: grid; gap: 7px; }
-.sysrow { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 6px; align-items: start; }
+.sysrow { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 6px; align-items: start; }
 .sysrow .sys { font-size: 0.74rem; color: var(--muted); padding-top: 7px; overflow-wrap: anywhere; }
 .sysrow .btns { display: flex; flex-wrap: wrap; gap: 4px; }
 .pgb {

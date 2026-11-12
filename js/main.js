@@ -1742,17 +1742,19 @@ function init() {
   // Export je Tafel als ein Knopf mit Menü (lib/common/js/seite.js, Leitfaden Abschn. 4; crystallography-common#130). In der
   // Vorschau (Artifact) lässt sich nichts herunterladen: dort nur Kopieren.
   const vorschau = Boolean(/** @type {Window & { STEREO_PREVIEW?: boolean }} */ (window).STEREO_PREVIEW);
-  /** @param {{ text: string, tun: () => (void | Promise<unknown>), erfolg?: string }[]} e */
-  const ohneSpeichern = (e) => (vorschau ? e.filter((x) => !x.text.includes('speichern')) : e);
-  exportMenue(knopf('export-stereo'), ohneSpeichern([
+  exportMenue(knopf('export-stereo'), [
     { text: 'Kopieren (PNG)', tun: () => inZwischenablage(stereoPng), erfolg: 'Kopiert' },
-    { text: 'SVG-Datei speichern', tun: () => herunterladen(new Blob([stereoSvg()], { type: 'image/svg+xml' }), 'stereogramm-' + baseName() + '.svg') },
-    { text: 'PNG-Datei speichern (2048 px)', tun: async () => { const name = 'stereogramm-' + baseName() + '.png'; herunterladen(await stereoPng(), name); } },
-  ]));
-  exportMenue(knopf('export-3d'), ohneSpeichern([
+    ...(vorschau ? [] : [
+      { text: 'SVG-Datei speichern', tun: () => herunterladen(new Blob([stereoSvg()], { type: 'image/svg+xml' }), 'stereogramm-' + baseName() + '.svg') },
+      { text: 'PNG-Datei speichern', tun: async () => { const name = 'stereogramm-' + baseName() + '.png'; herunterladen(await stereoPng(), name); } },
+    ]),
+  ]);
+  exportMenue(knopf('export-3d'), [
     { text: 'Kopieren (PNG)', tun: () => inZwischenablage(snapshot3d), erfolg: 'Kopiert' },
-    { text: 'PNG-Datei speichern', tun: async () => { const name = '3d-konstruktion-' + baseName() + '.png'; herunterladen(await snapshot3d(), name); } },
-  ]));
+    ...(vorschau ? [] : [
+      { text: 'PNG-Datei speichern', tun: async () => { const name = '3d-konstruktion-' + baseName() + '.png'; herunterladen(await snapshot3d(), name); } },
+    ]),
+  ]);
 
   // Farbwechsel des Systems (hell/dunkel) → neu zeichnen
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);

@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.16.0] - 2026-11-12
+
+Seitenleiste und Tafel neu geordnet: Werkzeuge „Zone“ und „Winkel“ als Symbol im Kopf der Tafeln, Anleitungstexte im ⓘ, in Tooltip und Legende, „Kristallformen“ passt am Laptop auf einen Bildschirm; Export als Knopf mit Menü; gemeinsame Grundlage v0.19.0. Link-Adressen und Speicher bleiben gültig.
+
 ### Geändert
 
 - **Seitenleiste und Tafel** (crystallography-common#130, #140, Entscheidung Thomas, 12.11.2026): Die Werkzeuge „Zone“ und „Winkel“ stehen als Symbol im Kopf der Tafeln statt oben links in der Zeichnung; der Kopf bleibt einzeilig (bei schmalen Tafeln bricht der Untertitel um). Anleitungstexte aus der Seitenleiste stehen im ⓘ bzw. in Tooltip und Legende: Zählweise von ρ und φ, Ziehen des Ausgangspols, Auswahl der Formen, Streckung, Gestalt. Am Laptop (1440 × 900) ist die Seitenleiste in „Punktgruppen“ 899 statt 1127 px hoch (mit der Gruppenwahl aus v0.19.0, unten, 1194 → 899 px), in „Kristallformen“ 866 statt 982 px; „Kristallformen“ passt damit auf einen Bildschirm. Tooltips von „Zone“, „Winkel“ und der Formauswahl kürzer; die Regel der Formauswahl steht im Tooltip.
@@ -381,7 +385,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.15.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.16.0...HEAD
+[1.16.0]: https://github.com/manganite/stereography/compare/v1.15.0...v1.16.0
 [1.15.0]: https://github.com/manganite/stereography/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/manganite/stereography/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/manganite/stereography/compare/v1.12.1...v1.13.0

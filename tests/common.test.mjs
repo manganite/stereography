@@ -1,4 +1,4 @@
-// Gemeinsame Dateien der App-Familie (crystallography-common): Kopie unverändert, eingebunden, Speicher stabil.
+// Gemeinsame Dateien der App-Familie (crystallography-common): Kopie unverändert, eingebunden, Name des Speichers.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -26,11 +26,11 @@ test('jede Seite bindet Schriften, base.css und das Stylesheet ihres Seitentyps 
   }
 });
 
-test('Quiz: Speicher im Browser behält seinen Namen (sonst ginge der Stand der Studierenden verloren)', () => {
+test('Quiz: Speicher im Browser heisst wie festgelegt (Umbenennen verwirft den Lernstand, Leitfaden Abschn. 7)', () => {
   assert.equal(SPEICHER, 'stereo-quiz');
 });
 
-test('Experimente: Speicher im Browser behält seinen Namen und beginnt mit dem Präfix der App', () => {
+test('Experimente: Speicher im Browser heisst wie festgelegt und beginnt mit dem Präfix der App', () => {
   const main = read('js/main.js');
   assert.match(main, /ablaufKarte\(\$\('experimente'\), [^{]*\{[^}]*speicher: 'stereo-experimente'/);
   assert.match(main, /alleEinstellungenZuruecksetzen\('stereo'\)/);

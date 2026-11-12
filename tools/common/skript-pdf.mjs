@@ -8,7 +8,8 @@
 // - relative Links (App, Quiz) zeigen auf die veröffentlichte Seite (base);
 // - Inhaltsverzeichnis vorn, jedes Kapitel auf neuer Seite, Lesezeichen, Kopf- und Fusszeile.
 //
-// Braucht Playwright mit Chromium (npm install --no-save playwright && npx playwright install chromium).
+// Braucht Playwright mit Chromium (npm install --no-save playwright && npx playwright install chromium); mit
+// CHROMIUM_PFAD=<Pfad> ein vorhandener Chromium (wie tools/kontraste.mjs und tools/hilfe-bilder.mjs).
 
 import { createRequire } from 'node:module';
 import { server } from './server.mjs';
@@ -65,17 +66,18 @@ const kopf = (links, rechts) => `<div style="font: 7.5pt sans-serif; color:#7a87
  * @param {string} [optionen.reste]
  * @param {string[]} [optionen.interaktiv]
  * @param {string} [optionen.css]
+ * @param {string} [optionen.chrome] Pfad eines vorhandenen Chromium (Standard: CHROMIUM_PFAD, sonst der von Playwright)
  * @returns {Promise<{ anzahl: number, fehler: string[] }>}
  */
 export async function skriptPDF({
   root, out, base, titel, version, seite = 'skript.html', vorbereiten = async () => {},
-  statisch = 'figure[data-kind="3d"]', reste = '.lbl3d', interaktiv = [], css = '',
+  statisch = 'figure[data-kind="3d"]', reste = '.lbl3d', interaktiv = [], css = '', chrome = process.env.CHROMIUM_PFAD,
 }) {
   /** @type {typeof import('playwright')} */
   const { chromium } = require('playwright');
   const srv = await server(root);
   const url = `http://127.0.0.1:${/** @type {import('node:net').AddressInfo} */ (srv.address()).port}/${seite}`;
-  const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  const browser = await chromium.launch({ ...(chrome ? { executablePath: chrome } : {}), args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   /** @type {string[]} */
   const fehler = [];
   /** @type {number} */

@@ -20,7 +20,7 @@
 // (`elementsFromPoint`, also nicht mit `pointer-events: none`). Die Deckkraft einer Gruppe wird je Element
 // verrechnet, nicht auf das fertige Bild der Gruppe (bei abgeblendeten Gruppen mit Hof leicht abweichend).
 //
-// Braucht Playwright mit Chromium (wie tools/skript-pdf.mjs); mit KONTRASTE_CHROME=<Pfad> ein anderer Chromium.
+// Braucht Playwright mit Chromium (wie tools/skript-pdf.mjs); mit CHROMIUM_PFAD=<Pfad> ein anderer Chromium.
 
 import { existsSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -223,7 +223,7 @@ function messenImBrowser() {
  * Seiten messen.
  * @param {{ root: string, seiten: string[], chrome?: string }} o
  */
-export async function kontraste({ root, seiten, chrome = process.env.KONTRASTE_CHROME }) {
+export async function kontraste({ root, seiten, chrome = process.env.CHROMIUM_PFAD }) {
   const require = createRequire(import.meta.url);
   const { chromium } = require('playwright');
   const srv = await server(root);

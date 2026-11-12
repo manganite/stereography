@@ -1,8 +1,8 @@
 {
   "name": "crystallography-common",
-  "version": "0.16.0",
-  "tag": "v0.16.0",
-  "commit": "d58155255f161a53f07c172db8f4beeaba8fa1db",
+  "version": "0.17.0",
+  "tag": "v0.17.0",
+  "commit": "41597d23bba062101e8a87d83d2d4a31609d8395",
   "files": {
     "lib/common/css/app.css": "214af4ebcd0745a0097e3edf64cdeb44e77728f59bb7d45293b3ca85c671626b",
     "lib/common/css/base.css": "8e6632d2597298b41b532fd0b1e06a0b932146c01b320b1233a784d4c839f62e",
@@ -14,11 +14,11 @@
     "lib/common/js/help.js": "ce16b2eec165402acfd9f55af8a4c25d55ecce0ff0e349f0a10a8cfd8d79b7c0",
     "lib/common/js/hilfe-seite.js": "1628c467842dd5ef3b58ef679cc5c88c83625bdbf5321ddd665e9004835f5d30",
     "lib/common/js/quiz-core.js": "37d3b49df06c2d957e375f0d6f0424ac06ce871d470201c91d3285d32c02a33d",
-    "lib/common/js/quiz-seite.js": "ce6273137e259732ae047f0400fc68ab3b3df6ab3a1d69922385d9191e349624",
+    "lib/common/js/quiz-seite.js": "56db23385b82bed18d058590fac0fbbb94eecb29984e79a1ef42731f14230511",
     "lib/common/js/seite.js": "f98fe19a051fd67c2e11e9f5de1c3e1fb74a2a23442675e3e32853308a923ba5",
     "lib/common/js/skript-kern.js": "1faf7b4a88615f163cde6359a7412db1e67fef05618f29d31f67be9f4c814988",
     "lib/common/js/typen.js": "3ad299729f1c44d92297ec62e3ff9d2ef582b1b3679b5de152d37f3776df34cd",
-    "lib/common/js/version.js": "c1fe084915d4d34867b6098cb30ec3b7a1001f03c0422eed1f84cbdad1ec45d8",
+    "lib/common/js/version.js": "a5b09240839ffc28262fb5e23bf376cde37ee920f01add407d02cb9968282747",
     "lib/common/fonts/LICENSE-ibm-plex-mono.txt": "23b0a9d0c6d3f140a0b77e483c5cfa6bba574325ef5cb189ed9f2fec4884533f",
     "lib/common/fonts/LICENSE-ibm-plex-sans.txt": "d0283623ef57e722fd0eb688a8041589670c608ab780cd3612d06ba6f153d3fd",
     "lib/common/fonts/LICENSE-source-serif-4.txt": "18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3",
@@ -37,11 +37,11 @@
     "lib/common/fonts/source-serif-4-latin-600-normal.woff2": "f2b7e1cf1d277b7608231868135648f8ad8e2b58d8e97ca088bee15dc357bee7",
     "tools/common/check.mjs": "22a1a22108916d59805f3350218fa307e4f0bd73807483f9fbab1c6d6592bcbf",
     "tools/common/eslint-basis.mjs": "ac03ff806d647562d6d9446977626849403386545f26628291610502a8ac54c3",
-    "tools/common/hilfe-bilder.mjs": "b6a115514eaac67439c642ac27baefa4fe663e02c6931969db211a0fca77855b",
-    "tools/common/kontraste.mjs": "a6cfb08ec18092ab6972b85ff7d3106420b50844c4e7397ef2bf4bfe5f96aa92",
+    "tools/common/hilfe-bilder.mjs": "6d810fbbd66d9645ce09b4192d13b312f6a1a594b94b6069242f3a3dfe85baa2",
+    "tools/common/kontraste.mjs": "f4a607d4ce1542506a2840a7b8e0abcf420ebc5d38c3ddded5496f008163ec71",
     "tools/common/moodle.mjs": "bff06520b5caf2501b55b710bafba3e5ca0c0ae4ef7eb2a85d312b4f46f0147d",
     "tools/common/server.mjs": "5ee960fe7e29380454436dc25de8b4845b7a3c11fccaece878cedb6f74f2c495",
-    "tools/common/skript-pdf.mjs": "b16e6fcbf407532e5d25ea4fca3202b09ea019ccf26a5a65ebce44d9c3ab4b9d",
+    "tools/common/skript-pdf.mjs": "b4c3a9ed0b71744183cd4a3a36c2570448a2372ce1d349a3edfc0070d32616b8",
     "tools/common/sync.mjs": "379a1f6648aeadfd171cc0eeb160d59224ecf8f486ec4496b45b850f22a90739"
   }
 }

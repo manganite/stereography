@@ -15,11 +15,11 @@ export const TIPS = {
   'pg-poles': 'Die Pole der Objekte im Stereogramm und auf der Umkugel. Ausgeschaltet bleiben die Objekte in 3D sichtbar: So lässt sich das Stereogramm selbst vorhersagen.',
   'pg-colorful': 'Pole, die durch eine Drehung aus dem Ausgangspol entstehen, in einer Farbe; Spiegelbilder (aus Spiegelung, Inversion oder Drehinversion) in der anderen.',
   'pg-theta': 'Poldistanz ρ: Winkel des Ausgangspols vom Nordpol, also vom Zentrum des Stereogramms. Negative Werte: untere Halbkugel, vom Südpol gezählt.',
-  'pg-phi': 'Azimut φ: Drehwinkel um die Projektionsrichtung, ab dem rechten Rand im Uhrzeigersinn.',
+  'pg-phi': 'Azimut φ: Drehwinkel um die Projektionsrichtung, ab dem rechten Rand im Uhrzeigersinn; (100) liegt bei 90°.',
   // Kristallformen
   'ex-select': 'Kristalle aus Lehrbüchern: mehrere Formen derselben Punktgruppe, jede in eigener Farbe.',
   'sys-select': 'Bestimmt das Achsensystem und die Punktgruppen, deren Formen zur Auswahl stehen.',
-  'form-select': 'Eine Form ist die Menge der Flächen, die die Operationen der Punktgruppe aus einer Fläche erzeugen.',
+  'form-select': 'Angeboten: allgemeine Form und Formen mit der Punktgruppe als Eigensymmetrie; alle mit „Flächensymmetrie zeigen“.',
   'preset-select': 'Welche Kristallrichtung zum Betrachter zeigt. Das Stereogramm dreht sich mit, die Winkel zwischen den Polen bleiben gleich.',
   'poly-poles': 'Die Flächenpole im Stereogramm und auf der Umkugel. Ausgeschaltet zeigt das Stereogramm keine Pole (z. B. als Übung: Stereogramm zum Körper zeichnen); Indizes und Projektionsstrahlen entfallen dann ebenfalls.',
   'poly-labels': 'Schreibt die Indizes (hkl) an jeden Flächenpol und an die Flächen in 3D.',
@@ -56,10 +56,10 @@ export const TIPS = {
   'v-normals': 'Flächennormalen. Ihr Durchstosspunkt durch die Kugel ist der Flächenpol.',
   'reset-alles': 'Alle Einstellungen und den gespeicherten Zustand löschen und die App neu starten (der Fortschritt im Quiz und der Stand der Experimente bleiben).',
   // Stereogramm und 3D
-  'zone-btn': 'Zone: zwei Flächen oder Pole antippen. Zonenkreis, Zonenachse [uvw] und alle Flächen, die die Zonengleichung hu + kv + lw = 0 erfüllen. Die Infobox listet alle Zonen des Kristalls zum Auswählen, auch mehrere zugleich.',
-  'zone-btn-3d': 'Zone: zwei Flächen oder Pole antippen. Zonenkreis, Zonenachse [uvw] und alle Flächen, die die Zonengleichung hu + kv + lw = 0 erfüllen. Die Infobox listet alle Zonen des Kristalls zum Auswählen, auch mehrere zugleich.',
-  'angle-btn': 'Winkel: zwei Pole oder Flächen antippen. Normalenwinkel als Grosskreisbogen; bei Punktgruppen auch die Operation, die den einen Pol in den anderen überführt.',
-  'angle-btn-3d': 'Winkel: zwei Pole oder Flächen antippen. Normalenwinkel als Grosskreisbogen und Flächenwinkel.',
+  'zone-btn': 'Zone bestimmen: zwei Pole oder Flächen antippen. Zeigt Zonenkreis, Zonenachse [uvw] und alle Flächen der Zone.',
+  'zone-btn-3d': 'Zone bestimmen: zwei Pole oder Flächen antippen. Zeigt Zonenkreis, Zonenachse [uvw] und alle Flächen der Zone.',
+  'angle-btn': 'Winkel messen: zwei Pole oder Flächen antippen. Zeigt den Normalenwinkel, bei Punktgruppen auch die Operation.',
+  'angle-btn-3d': 'Winkel messen: zwei Pole oder Flächen antippen. Zeigt Normalen- und Flächenwinkel.',
   'view-oblique': 'Schräger Blick auf Kugel, Kristall und Äquatorebene. Die Knöpfe daneben blicken entlang der drei Blickrichtungen des Kristallsystems (triklin: entlang a, b, c); liegt eine davon parallel zur Projektionsrichtung, zeigt sie das Bild wie im Stereogramm. Eine gewählte Blickrichtung steht auch im kopierten Link.',
 };
 
@@ -75,10 +75,14 @@ export const SECTIONS = [
     intro: 'Punktgruppe antippen: Das Stereogramm zeigt ihr Symmetriegerüst. Gruppen mit zwei Aufstellungen (z. B. 32) bieten darunter die Wahl der Aufstellung an.',
     ids: [],
   },
-  { heading: '#ctl-pg-opts > summary', ids: ['pg-elements', 'pg-object', 'pg-theta', 'pg-phi', 'angle-btn'] },
+  {
+    heading: '#ctl-pg-opts > summary',
+    intro: 'Zählweise wie bei Borchardt-Ott: ρ auf der oberen Halbkugel vom Nordpol (Zentrum), auf der unteren vom Südpol mit negativem Vorzeichen; φ vom rechten Rand (→, bei orthogonalen Achsen die b-Achse) im Uhrzeigersinn, (100) liegt bei 90°. Im Stereogramm lässt sich der Ausgangspol ziehen; nahe einer Achse oder Spiegelebene rastet er ein (spezielle Lage).',
+    ids: ['pg-elements', 'pg-object', 'pg-theta', 'pg-phi', 'angle-btn'],
+  },
   {
     heading: '#ctl-poly > h2',
-    intro: 'Pol oder Fläche antippen hebt beide hervor: Jede Fläche hat genau einen Pol.',
+    intro: 'Pol oder Fläche antippen hebt beide hervor: Jede Fläche hat genau einen Pol. Die Auswahl „Form“ bietet je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie an, im trigonalen System auch das trigonale und das hexagonale Prisma (Eigensymmetrie hexagonal); alle Formen mit „Flächensymmetrie zeigen“.',
     ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-labels', 'poly-frame', 'poly-bravais', 'poly-facesym'],
   },
   {
@@ -88,7 +92,7 @@ export const SECTIONS = [
   },
   {
     heading: '#ctl-poly-shape > summary',
-    intro: 'Die Gestalt ändert nur den Körper, nicht das Stereogramm.',
+    intro: 'Die Gestalt ändert nur den Körper, nicht das Stereogramm: Die Pole hängen nur von den Flächennormalen ab.',
     ids: ['poly-size', 'ctl-ex-dists', 'poly-open', 'poly-aux'],
   },
   {

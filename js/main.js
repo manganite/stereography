@@ -296,7 +296,6 @@ function refreshPolyControls() {
   buildFormSelect();
   buildExDists();
   $('row-broken').hidden = !!currentExample();
-  syncFormHint();
   const presets = orientationPresets(sys);
   auswahl('preset-select').innerHTML = presets.map((p) => `<option value="${p.id}">${p.name}</option>`).join('');
   if (!presets.some((p) => p.id === state.poly.presetId)) state.poly.presetId = presets[0].id;
@@ -690,7 +689,6 @@ async function snapshot3d() {
 }
 
 let syncToolBtns = () => {};
-let syncFormHint = () => {};
 let pending = false;
 function render() {
   if (pending) return;
@@ -1502,9 +1500,7 @@ function init() {
   bindCheck('poly-lower', state.poly, 'showLower');
   bindCheck('poly-frame', state.poly, 'frame');
   bindCheck('poly-facesym', state.poly, 'faceSym');
-  syncFormHint = () => { $('form-hint').hidden = state.poly.faceSym || !!currentExample(); };
-  eingabe('poly-facesym').addEventListener('change', () => { buildFormSelect(); syncFormHint(); });
-  syncFormHint();
+  eingabe('poly-facesym').addEventListener('change', () => { buildFormSelect(); });
   // Werkzeuge „Zone“ und „Winkel“: je ein Button am Stereogramm und in der 3D-Ansicht,
   // gemeinsamer Zustand; höchstens ein Werkzeug aktiv
   syncToolBtns = () => {

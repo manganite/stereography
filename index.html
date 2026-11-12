@@ -28,8 +28,10 @@
    gesperrt, Hover und Grösse aus .tools button.sym in lib/common/css/app.css. Der Untertitel bricht um, bevor ein Knopf
    in eine eigene Zeile rutscht (iPad bei 1024 px). */
 .stereo-tools { flex-wrap: nowrap; }
-.panel-head .t { margin-right: auto; flex: 1 1 100px; min-width: 0; }
-.panel-head .t small { display: inline-block; }
+@media (min-width: 720px) { /* auf dem Telefon blendet app.css Titel und Export aus */
+  .panel-head .t { margin-right: auto; flex: 1 1 100px; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 6px; }
+  .panel-head .t small { margin-left: 0; }
+}
 .lg .sym-icon { flex: none; }
 /* Blickrichtungen: Infobox und Schalter in der 3D-Ansicht */
 .dirlist { display: grid; gap: 8px 18px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
@@ -299,7 +301,7 @@
       <div class="panel-head">
         <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="a">Stereogramm</button><button type="button" data-fig="b">3D</button></div>
         <span class="t">Stereogramm<small id="stereo-sub">Projektion ∥ c</small></span>
-        <div class="tools stereo-tools" id="stereo-tools" role="toolbar" aria-label="Werkzeuge" hidden>
+        <div class="tools stereo-tools" id="stereo-tools" role="group" aria-label="Werkzeuge im Stereogramm" hidden>
           <button class="tool-toggle sym" data-tool="zone" id="zone-btn" aria-label="Zone" type="button" aria-pressed="false"><svg viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
           <button class="tool-toggle sym" data-tool="angle" id="angle-btn" aria-label="Winkel" type="button" aria-pressed="false"><svg viewBox="-8 -8 16 16" aria-hidden="true"><path d="M-6 5 L6 5 M-6 5 L4 -6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M0 5 A 6 6 0 0 0 -2.2 0.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
         </div>
@@ -315,7 +317,7 @@
       <div class="panel-head">
         <div class="figswitch" role="group" aria-label="Ansicht"><button type="button" data-fig="a">Stereogramm</button><button type="button" data-fig="b">3D</button></div>
         <span class="t">3D-Konstruktion</span>
-        <div class="tools stereo-tools" id="v3d-tools" role="toolbar" aria-label="Werkzeuge" hidden>
+        <div class="tools stereo-tools" id="v3d-tools" role="group" aria-label="Werkzeuge in der 3D-Konstruktion" hidden>
           <button class="tool-toggle sym" data-tool="zone" id="zone-btn-3d" aria-label="Zone" type="button" aria-pressed="false"><svg viewBox="-8 -8 16 16" aria-hidden="true"><circle r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M-6.5 0 A 9 9 0 0 0 6.5 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
           <button class="tool-toggle sym" data-tool="angle" id="angle-btn-3d" aria-label="Winkel" type="button" aria-pressed="false"><svg viewBox="-8 -8 16 16" aria-hidden="true"><path d="M-6 5 L6 5 M-6 5 L4 -6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M0 5 A 6 6 0 0 0 -2.2 0.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
         </div>

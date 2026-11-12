@@ -63,6 +63,13 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   Schritte des Reglers zählen ab ln(Minimum) und treffen 1 nicht; der Wert wird deshalb auf 0,01 gerundet wie im
   Link, und der bewegte Regler wird danach nicht neu gesetzt (`reglerWert`, `syncLatSliders` in `js/main.js`).
 - **Einrasten** des Ausgangspols immer (Achse 4°, Spiegelebene 3°), kein Schalter.
+- **Seitenleiste und Tafel** (Thomas, 12.11.2026, #140, crystallography-common#130, Leitfaden Abschn. 5.1): Zone und
+  Winkel sind Werkzeuge auf der Zeichnung und stehen deshalb im Kopf der Tafel, als Symbol mit Name im `aria-label`; mit
+  Text bräche der Kopf schon bei 1280 px Fensterbreite um. Damit er auch bei 1024 px (iPad Pro hochkant, Tafeln 320 px)
+  einzeilig bleibt, bricht der Untertitel unter den Titel um (Wahl Thomas statt eines zweizeiligen Kopfs). Anleitungstexte
+  (Zählweise von ρ und φ, Ziehen des Ausgangspols, Hinweis zur Formauswahl, Streckung, Gestalt) stehen im ⓘ, in Tooltip
+  oder Legende; in der Seitenleiste bleiben Hinweise zum Zustand (kubisches Gitter ohne freie Parameter, ungültige Winkel,
+  gesperrte Regler).
 - **Bildexport** (24.10.; Menü seit crystallography-common#130, Thomas, 12.11.2026): Stereogramm als Kopie (PNG), SVG,
   PNG (2048 px); 3D als Kopie und PNG. Je Tafel ein Knopf „Export ▾“ mit Menü (`exportMenue`, Leitfaden Abschn. 4), statt
   der früheren Regel „kein Formatmenü“: Der Kopf der Tafel soll einzeilig bleiben. In der Vorschau (`STEREO_PREVIEW`) nur

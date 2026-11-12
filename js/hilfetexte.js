@@ -75,10 +75,14 @@ export const SECTIONS = [
     intro: 'Punktgruppe antippen: Das Stereogramm zeigt ihr Symmetriegerüst. Gruppen mit zwei Aufstellungen (z. B. 32) bieten darunter die Wahl der Aufstellung an.',
     ids: [],
   },
-  { heading: '#ctl-pg-opts > summary', ids: ['pg-elements', 'pg-object', 'pg-theta', 'pg-phi', 'angle-btn'] },
+  {
+    heading: '#ctl-pg-opts > summary',
+    intro: 'Zählweise wie bei Borchardt-Ott: ρ auf der oberen Halbkugel vom Nordpol (Zentrum), auf der unteren vom Südpol mit negativem Vorzeichen; φ vom rechten Rand (→, bei orthogonalen Achsen die b-Achse) im Uhrzeigersinn, (100) liegt bei 90°. Im Stereogramm lässt sich der Ausgangspol ziehen; nahe einer Achse oder Spiegelebene rastet er ein (spezielle Lage).',
+    ids: ['pg-elements', 'pg-object', 'pg-theta', 'pg-phi', 'angle-btn'],
+  },
   {
     heading: '#ctl-poly > h2',
-    intro: 'Pol oder Fläche antippen hebt beide hervor: Jede Fläche hat genau einen Pol.',
+    intro: 'Pol oder Fläche antippen hebt beide hervor: Jede Fläche hat genau einen Pol. Die Auswahl „Form“ bietet je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie an, im trigonalen System auch das trigonale und das hexagonale Prisma (Eigensymmetrie hexagonal); alle Formen mit „Flächensymmetrie zeigen“.',
     ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-labels', 'poly-frame', 'poly-bravais', 'poly-facesym'],
   },
   {
@@ -88,7 +92,7 @@ export const SECTIONS = [
   },
   {
     heading: '#ctl-poly-shape > summary',
-    intro: 'Die Gestalt ändert nur den Körper, nicht das Stereogramm.',
+    intro: 'Die Gestalt ändert nur den Körper, nicht das Stereogramm: Die Pole hängen nur von den Flächennormalen ab.',
     ids: ['poly-size', 'ctl-ex-dists', 'poly-open', 'poly-aux'],
   },
   {

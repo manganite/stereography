@@ -109,9 +109,10 @@ test('Flächenpole aus: keine Pole und keine Indizes im Stereogramm; Link hin un
 test('Oberfläche: jede Option hat ein Bedienelement und einen Tooltip', async () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   const help = readFileSync(new URL('../js/hilfetexte.js', import.meta.url), 'utf8');
-  for (const id of ['pg-poles', 'poly-poles', 'v-globe', 'copy-stereo', 'save-svg', 'save-stereo-png', 'copy-3d', 'save-3d', 'view-oblique', 'view-dirs']) {
+  for (const id of ['pg-poles', 'poly-poles', 'v-globe', 'export-stereo', 'export-3d', 'view-oblique', 'view-dirs']) {
     assert.ok(html.includes(`id="${id}"`), id);
-    if (id !== 'view-dirs') assert.ok(help.includes(`'${id}'`), id);
+    // ohne Tooltip: das Export-Menü sagt mit seinem Text, was es tut (Leitfaden Abschn. 5.3)
+    if (!['view-dirs', 'export-stereo', 'export-3d'].includes(id)) assert.ok(help.includes(`'${id}'`), id);
   }
   assert.ok(!/data-view="(top|side)"/.test(html), 'alte Ansichtsknöpfe');
 });

@@ -8,6 +8,8 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
+- **Export als ein Knopf mit Menü** (crystallography-common#130, Entscheidung Thomas, 12.11.2026): Über dem Stereogramm und der 3D-Konstruktion je ein Knopf „Export ▾“ statt der Knöpfe „Kopieren“, „SVG“, „PNG“; das Menü nennt „Kopieren (PNG)“, „SVG-Datei speichern“ (nur Stereogramm) und „PNG-Datei speichern“, mit Tastatur bedienbar.
+- **Gemeinsame Grundlage** auf crystallography-common v0.19.0: Export-Menü als gemeinsamer Baustein, Leitfaden „Seitenleiste und Tafel“ (#130); in der Gruppenwahl ist die Spalte der Kristallsysteme schmaler (78 statt 86 px), „Tetragonal“ und „Hexagonal“ brauchen zwei statt drei Zeilen, die Seitenleiste wird am Laptop und auf dem iPad quer 67 px kürzer.
 - **Gemeinsame Grundlage** auf crystallography-common v0.17.0: Der Pfad eines vorhandenen Chromium für die Werkzeuge heisst `CHROMIUM_PFAD` statt `KONTRASTE_CHROME` und gilt jetzt auch für das Skript-PDF (`tools/skript-pdf.mjs`; crystallography-common#125).
 
 ## [1.15.0] - 2026-11-11

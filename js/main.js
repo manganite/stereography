@@ -21,7 +21,7 @@ import { TIPS, SECTIONS, LABELS, ERSTE_SCHRITTE } from './hilfetexte.js';
 import { EXPERIMENTE } from './hilfe-daten.js';
 import { experimentAusAdresse } from '../lib/common/js/hilfe-seite.js';
 import { ablaufKarte } from '../lib/common/js/ablauf.js';
-import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, abschnitt, grafik, element, elemente, modusTabs } from '../lib/common/js/seite.js';
+import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, knopf, abschnitt, grafik, element, elemente, modusTabs, exportMenue, herunterladen, inZwischenablage } from '../lib/common/js/seite.js';
 import { skriptTerm } from './skriptlinks.js';
 import { FAMILIEN, AUFSTELLUNG_TIPPS, MONO_ACHSE_TIPPS, AUFSTELLUNG_AB } from './aufstellungen.js';
 import { ausSpeicher, speicherStand, zustandPruefen } from './zustand.js';
@@ -1739,35 +1739,22 @@ function init() {
   // Stereogramms). Kopieren legt ein PNG in die Zwischenablage (fügt sich in Folien als Bild ein).
   const baseName = () => (state.mode === 'pg' ? state.pg.id.replace(/\//g, '_')
     : (S.currentExample(state)?.id || currentEntryId()).replace(/[/:]/g, '_'));
-  /** @param {HTMLElement} btn */
-  const flash = (btn) => {
-    const back = btn.dataset.label || (btn.dataset.label = btn.textContent);
-    return (/** @type {string} */ text) => { btn.textContent = text; setTimeout(() => { btn.textContent = back; }, 1600); };
-  };
-  /** @param {Blob} blob @param {string} name */
-  const download = (blob, name) => {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  };
-  /** Kopieren: Blob als Promise übergeben, Safari verlangt den Aufruf noch in der Klick-Behandlung. @param {HTMLElement} btn @param {() => Promise<Blob>} makeBlob */
-  const copyPng = async (btn, makeBlob) => {
-    const say = flash(btn);
-    try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': makeBlob() })]); say('Kopiert'); }
-    catch { say('Nicht möglich'); }
-  };
-  /** @param {HTMLElement} btn @param {() => Promise<Blob>} makeBlob @param {string} name */
-  const savePng = async (btn, makeBlob, name) => {
-    try { download(await makeBlob(), name); } catch { flash(btn)('Nicht möglich'); }
-  };
-  $('copy-stereo').addEventListener('click', () => copyPng($('copy-stereo'), stereoPng));
-  $('save-svg').addEventListener('click', () => download(new Blob([stereoSvg()], { type: 'image/svg+xml' }), 'stereogramm-' + baseName() + '.svg'));
-  $('save-stereo-png').addEventListener('click', () => savePng($('save-stereo-png'), stereoPng, 'stereogramm-' + baseName() + '.png'));
-  $('copy-3d').addEventListener('click', () => copyPng($('copy-3d'), snapshot3d));
-  $('save-3d').addEventListener('click', () => savePng($('save-3d'), snapshot3d, '3d-konstruktion-' + baseName() + '.png'));
-  if (/** @type {Window & { STEREO_PREVIEW?: boolean }} */ (window).STEREO_PREVIEW) for (const id of ['save-svg', 'save-stereo-png', 'save-3d']) $(id).hidden = true;
+  // Export je Tafel als ein Knopf mit Menü (lib/common/js/seite.js, Leitfaden Abschn. 4; crystallography-common#130). In der
+  // Vorschau (Artifact) lässt sich nichts herunterladen: dort nur Kopieren.
+  const vorschau = Boolean(/** @type {Window & { STEREO_PREVIEW?: boolean }} */ (window).STEREO_PREVIEW);
+  exportMenue(knopf('export-stereo'), [
+    { text: 'Kopieren (PNG)', tun: () => inZwischenablage(stereoPng), erfolg: 'Kopiert' },
+    ...(vorschau ? [] : [
+      { text: 'SVG-Datei speichern', tun: () => herunterladen(new Blob([stereoSvg()], { type: 'image/svg+xml' }), 'stereogramm-' + baseName() + '.svg') },
+      { text: 'PNG-Datei speichern', tun: async () => { const name = 'stereogramm-' + baseName() + '.png'; herunterladen(await stereoPng(), name); } },
+    ]),
+  ]);
+  exportMenue(knopf('export-3d'), [
+    { text: 'Kopieren (PNG)', tun: () => inZwischenablage(snapshot3d), erfolg: 'Kopiert' },
+    ...(vorschau ? [] : [
+      { text: 'PNG-Datei speichern', tun: async () => { const name = '3d-konstruktion-' + baseName() + '.png'; herunterladen(await snapshot3d(), name); } },
+    ]),
+  ]);
 
   // Farbwechsel des Systems (hell/dunkel) → neu zeichnen
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);

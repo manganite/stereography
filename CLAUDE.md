@@ -63,8 +63,10 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   Schritte des Reglers zählen ab ln(Minimum) und treffen 1 nicht; der Wert wird deshalb auf 0,01 gerundet wie im
   Link, und der bewegte Regler wird danach nicht neu gesetzt (`reglerWert`, `syncLatSliders` in `js/main.js`).
 - **Einrasten** des Ausgangspols immer (Achse 4°, Spiegelebene 3°), kein Schalter.
-- **Bildexport** (24.10.): Stereogramm als Kopie (PNG), SVG, PNG (2048 px); 3D als Kopie und PNG. Kein
-  Formatmenü; auf dem Telefon kein Export.
+- **Bildexport** (24.10.; Menü seit crystallography-common#130, Thomas, 12.11.2026): Stereogramm als Kopie (PNG), SVG,
+  PNG (2048 px); 3D als Kopie und PNG. Je Tafel ein Knopf „Export ▾“ mit Menü (`exportMenue`, Leitfaden Abschn. 4), statt
+  der früheren Regel „kein Formatmenü“: Der Kopf der Tafel soll einzeilig bleiben. In der Vorschau (`STEREO_PREVIEW`) nur
+  „Kopieren“. Auf dem Telefon kein Export.
 - **Beispielkristalle** sind nur Voreinstellungen; keine frei hinzufügbaren Formen. Eigene Indizes und
   freie Kombinationsformen bewusst zurückgestellt.
 - **Startgruppe** mm2. **Erste Schritte je Modus** (4.11.2026, Issue #77): „Kristallformen“ nach Borchardt-Ott

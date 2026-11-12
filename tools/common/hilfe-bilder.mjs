@@ -9,7 +9,7 @@
 // umgebenden Baustein aus (Karte, Tafel oder Kopfzeile, mit Rand). Ausgabe: <bilder>/<Ablauf>-<Nr>.png (Standard hilfe/); Bilder, die nicht mehr
 // gebraucht werden oder nicht entstehen, löscht das Werkzeug. Breite 1280 px, deviceScaleFactor 2, Service Worker gesperrt.
 //
-// Braucht Playwright mit Chromium (wie tools/skript-pdf.mjs); mit KONTRASTE_CHROME=<Pfad> ein anderer Chromium.
+// Braucht Playwright mit Chromium (wie tools/skript-pdf.mjs); mit CHROMIUM_PFAD=<Pfad> ein anderer Chromium.
 
 import { existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -39,7 +39,7 @@ const MARKE = '#bc3f0c';
  * @param {{ root: string, daten: HilfeDaten, chrome?: string }} o
  * @returns {Promise<{ dateien: string[], fehler: string[] }>}
  */
-export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.KONTRASTE_CHROME }) {
+export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CHROMIUM_PFAD }) {
   const require = createRequire(import.meta.url);
   /** @type {typeof import('playwright')} */
   const { chromium } = require('playwright');

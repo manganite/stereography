@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Gemeinsame Grundlage** auf crystallography-common v0.17.0: Der Pfad eines vorhandenen Chromium für die Werkzeuge heisst `CHROMIUM_PFAD` statt `KONTRASTE_CHROME` und gilt jetzt auch für das Skript-PDF (`tools/skript-pdf.mjs`; crystallography-common#125).
+
 ## [1.15.0] - 2026-11-11
 
 Alte Links und Speicherstände werden nicht mehr umgerechnet (die App ist in Entwicklung): `phi=` entfällt, `rho=` über 90° wird auf 90° begrenzt, gespeicherte Einstellungen älterer Versionen werden verworfen, zwei Formen in 4̄3m haben neue Kennungen. Dazu: Kontraste der Abbildungen, Symbole und Indizes für Screenreader, leerer Wert im Link gilt als fehlend; gemeinsame Grundlage v0.16.0.

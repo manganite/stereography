@@ -5,7 +5,8 @@
 // Ausgabe ohne Angabe: skript.pdf im Projektordner. Hier nur, was diese App betrifft: Titel, Adresse und
 // der Zustand der interaktiven Abbildungen 2.1 (Projektionsskizze) und 8.5 (Wachstum).
 //
-// Braucht Playwright mit Chromium (npm install --no-save playwright && npx playwright install chromium).
+// Braucht Playwright mit Chromium (npm install --no-save playwright && npx playwright install chromium); mit
+// CHROMIUM_PFAD=<Pfad> ein vorhandener Chromium.
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';

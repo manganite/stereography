@@ -86,7 +86,7 @@ export const FREE_PARAMS = {
 
 /**
  * Bereiche der Gitterparameter in Reglern, Link und Speicher (#100, #106, Entscheidung Thomas 8.11.2026).
- * Unverzerrt: wie bisher. Mit Symmetriebruch (Streckung und „Alle Parameter frei“) weiter, sodass jede Streckung
+ * Unverzerrt: b/a 0,4–3, c/a 0,25–3, Winkel 60–150°. Mit Symmetriebruch (Streckung und „Alle Parameter frei“) weiter, sodass jede Streckung
  * eines unverzerrten Gitters mit s = 0,5 … 2 hineinpasst: c/a bis 0,25 / 2 bzw. 3 · 2 (Streckung ⊥ c), γ bis
  * 53,13° (⟨110⟩, s = 2). „Alle Parameter frei“ übernimmt das gestreckte Gitter, ohne dass es springt.
  * @type {{ unverzerrt: Record<keyof Gitterparameter, [number, number]>, frei: Record<keyof Gitterparameter, [number, number]> }}

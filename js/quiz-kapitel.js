@@ -17,5 +17,5 @@ export const KAPITEL = [
 ];
 
 /** Präfix der Einträge im Browser: <Präfix>-v1 (Fortschritt), -entwurf (Schalter), -lauf (laufendes Quiz).
- *  Nicht ändern, sonst verlieren Studierende ihren gespeicherten Stand. */
+ *  Einmal festlegen, nicht ohne Grund ändern (Leitfaden Abschn. 7, 8). */
 export const SPEICHER = 'stereo-quiz';

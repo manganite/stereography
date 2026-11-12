@@ -2,7 +2,7 @@
 // Je Version ein eigener Cache; eine neue Version wird beim nächsten Öffnen geladen, alte Caches
 // werden entfernt. VERSION muss mit js/version.js übereinstimmen (tests/release.test.mjs).
 const VERSION = '1.15.0';
-const CACHE = `stereogramm-${VERSION}`;
+const CACHE = `stereogramm-${VERSION}`; // Präfix je App eindeutig wählen und nicht ändern: activate löscht alte Caches nach dem Präfix
 const FILES = [
   './',
   'index.html',

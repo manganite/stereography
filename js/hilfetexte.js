@@ -56,10 +56,10 @@ export const TIPS = {
   'v-normals': 'Flächennormalen. Ihr Durchstosspunkt durch die Kugel ist der Flächenpol.',
   'reset-alles': 'Alle Einstellungen und den gespeicherten Zustand löschen und die App neu starten (der Fortschritt im Quiz und der Stand der Experimente bleiben).',
   // Stereogramm und 3D
-  'zone-btn': 'Zone bestimmen: zwei Pole oder Flächen antippen. Zeigt Zonenkreis, Zonenachse [uvw] und alle Flächen der Zone.',
-  'zone-btn-3d': 'Zone bestimmen: zwei Pole oder Flächen antippen. Zeigt Zonenkreis, Zonenachse [uvw] und alle Flächen der Zone.',
-  'angle-btn': 'Winkel messen: zwei Pole oder Flächen antippen. Zeigt den Normalenwinkel, bei Punktgruppen auch die Operation.',
-  'angle-btn-3d': 'Winkel messen: zwei Pole oder Flächen antippen. Zeigt Normalen- und Flächenwinkel.',
+  'zone-btn': 'Zone bestimmen: zwei Pole oder Flächen wählen. Zeigt Zonenkreis, Zonenachse [uvw] und alle Flächen der Zone.',
+  'zone-btn-3d': 'Zone bestimmen: zwei Pole oder Flächen wählen. Zeigt Zonenkreis, Zonenachse [uvw] und alle Flächen der Zone.',
+  'angle-btn': 'Winkel messen: zwei Pole oder Flächen wählen. Zeigt den Normalenwinkel, bei Punktgruppen auch die Operation.',
+  'angle-btn-3d': 'Winkel messen: zwei Pole oder Flächen wählen. Zeigt Normalen- und Flächenwinkel.',
   'view-oblique': 'Schräger Blick auf Kugel, Kristall und Äquatorebene. Die Knöpfe daneben blicken entlang der drei Blickrichtungen des Kristallsystems (triklin: entlang a, b, c); liegt eine davon parallel zur Projektionsrichtung, zeigt sie das Bild wie im Stereogramm. Eine gewählte Blickrichtung steht auch im kopierten Link.',
 };
 
@@ -82,7 +82,7 @@ export const SECTIONS = [
   },
   {
     heading: '#ctl-poly > h2',
-    intro: 'Pol oder Fläche anklicken bzw. antippen hebt beide hervor: Jede Fläche hat genau einen Pol. Die Auswahl „Form“ bietet je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie an, im trigonalen System auch das trigonale und das hexagonale Prisma (Eigensymmetrie hexagonal); alle Formen mit „Flächensymmetrie zeigen“.',
+    intro: 'Pol oder Fläche anklicken oder antippen hebt beide hervor: Jede Fläche hat genau einen Pol. Die Auswahl „Form“ bietet je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie an, im trigonalen System auch das trigonale und das hexagonale Prisma (Eigensymmetrie hexagonal); alle Formen mit „Flächensymmetrie zeigen“.',
     ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-labels', 'poly-frame', 'poly-bravais', 'poly-facesym'],
   },
   {
@@ -131,7 +131,7 @@ export const ERSTE_SCHRITTE = [
     id: 'einstieg-poly', modus: 'poly', titel: 'Erste Schritte',
     schritte: [
       { frage: '<b>Kristall wählen.</b> Der Galenit (PbS) steht im Zentrum einer Kugel; jede Fläche hat eine Normale.', handlung: { text: 'Galenit laden', aktion: 'poly1' }, zeige: '#ex-select' },
-      { frage: '<b>Fläche antippen.</b> Eine Fläche in der 3D-Ansicht antippen: Ihr Pol im Stereogramm leuchtet auf, und umgekehrt.', handlung: { text: 'Fläche (001) zeigen', aktion: 'poly2' }, zeige: '#view3d', bild: '#m=form&sys=kubisch&bsp=galenit' },
+      { frage: '<b>Fläche wählen.</b> Eine Fläche in der 3D-Ansicht anklicken oder antippen: Ihr Pol im Stereogramm leuchtet auf, und umgekehrt.', handlung: { text: 'Fläche (001) zeigen', aktion: 'poly2' }, zeige: '#view3d', bild: '#m=form&sys=kubisch&bsp=galenit' },
       { frage: '<b>Projektion verfolgen.</b> Die Normale trifft die Kugel im Flächenpol; der Strahl zum Südpol schneidet die Äquatorebene im Punkt des Stereogramms. Pol oben: Punkt, unten: Kreis.', handlung: { text: 'Seitlich ansehen', aktion: 'poly3' }, zeige: '#inhalt .p-b .viewbar', bild: '#m=form&sys=kubisch&bsp=galenit' },
       { frage: '<b>Symmetrie erkennen.</b> Das Symmetriegerüst von <i>m</i><span class="ov">3</span><i>m</i> erklärt, warum die Pole so liegen. Im Tab „Punktgruppen“ wirkt es auf einen einzelnen Pol. Kleine Versuche dazu stehen unter „Experimente“.', handlung: { text: 'Gerüst einblenden', aktion: 'poly4' }, zeige: '#ctl-poly label:has(#poly-frame)', bild: '#m=form&sys=kubisch&bsp=galenit&blick=3' },
     ],

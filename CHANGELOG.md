@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.17.0] - 2026-11-13
+
+Das ⓘ an den Überschriften erscheint jetzt auch mit der Maus und bricht nie allein um; gemeinsame Grundlage v0.20.0. Link-Adressen und Speicher bleiben gültig.
+
 ### Geändert
 
 - **Texte für Maus und Touch:** Tooltips von „Zone“ und „Winkel“ sagen „wählen“ statt „antippen“, der Schritt „Fläche antippen“ der Ersten Schritte heisst „Fläche wählen“ (das ⓘ zeigt die Tooltips seit crystallography-common v0.20.0 auch mit der Maus).
@@ -391,7 +395,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.16.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.17.0...HEAD
+[1.17.0]: https://github.com/manganite/stereography/compare/v1.16.0...v1.17.0
 [1.16.0]: https://github.com/manganite/stereography/compare/v1.15.0...v1.16.0
 [1.15.0]: https://github.com/manganite/stereography/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/manganite/stereography/compare/v1.13.0...v1.14.0

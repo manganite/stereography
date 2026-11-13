@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Gemeinsame Grundlage** auf crystallography-common v0.20.0: Das ⓘ an den Überschriften erscheint auf allen Geräten, auch mit der Maus (crystallography-common#140), und bricht nie allein in eine neue Zeile (vorher unter „Symmetrie und allgemeine Lage“); mit der Maus ist seine Trefferfläche 28 px. Leitfaden 5.1 (Erklärabläufe, Zoom und Übergänge zwischen Modi gehören in die Tafel) und 5.2 (Grund unter einem gesperrten Element in einem Halbsatz). Texte der ⓘ-Erklärungen und der Karte „Erste Schritte“ passen jetzt für Maus und Touch.
+
 ## [1.16.0] - 2026-11-12
 
 Seitenleiste und Tafel neu geordnet: Werkzeuge „Zone“ und „Winkel“ als Symbol im Kopf der Tafeln, Anleitungstexte im ⓘ, in Tooltip und Legende, „Kristallformen“ passt am Laptop auf einen Bildschirm; Export als Knopf mit Menü; gemeinsame Grundlage v0.19.0. Link-Adressen und Speicher bleiben gültig.

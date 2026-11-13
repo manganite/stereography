@@ -8,7 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
-- **Gemeinsame Grundlage** auf crystallography-common v0.20.0: Das ⓘ an den Überschriften erscheint auf allen Geräten, auch mit der Maus (crystallography-common#140), und bricht nie allein in eine neue Zeile (vorher unter „Symmetrie und allgemeine Lage“); mit der Maus ist seine Trefferfläche 28 px. Leitfaden 5.1 (Erklärabläufe, Zoom und Übergänge zwischen Modi gehören in die Tafel) und 5.2 (Grund unter einem gesperrten Element in einem Halbsatz). Texte der ⓘ-Erklärungen und der Karte „Erste Schritte“ passen jetzt für Maus und Touch.
+- **Gemeinsame Grundlage** auf crystallography-common v0.20.0: Das ⓘ an den Überschriften erscheint auf allen Geräten, auch mit der Maus (crystallography-common#140), und bricht nie allein in eine neue Zeile (vorher unter „Symmetrie und allgemeine Lage“); mit der Maus ist seine Trefferfläche 28 px. Leitfaden 5.1 (Erklärabläufe, Zoom und Übergänge zwischen Modi gehören in die Tafel) und 5.2 (Grund unter einem gesperrten Element in einem Halbsatz). Texte der ⓘ-Erklärungen und der Karte „Erste Schritte“ passen jetzt für Maus und Touch, die Bilder der Hilfeseite zeigen das ⓘ. Die Knöpfe + / − für den Zoom im 3D-Fenster nach Leitfaden 5.1 fehlen noch (#144).
 
 ## [1.16.0] - 2026-11-12
 

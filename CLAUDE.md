@@ -213,7 +213,7 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
 - **WebGL-Kontexte:** Browser erlauben nur wenige. Das Skript hält 3D nur nahe dem sichtbaren Bereich
   offen (`View3D.destroy`, Kamera gemerkt).
 - **Safari:** Zwischenablage nur mit `ClipboardItem` und Promise. Natives `title` erscheint auf dem iPad
-  nicht (deshalb ⓘ).
+  nicht (Tooltips deshalb über `help.js`, Erklärungen im ⓘ).
 - **Link zur Laufzeit anwenden** (Experimente): Die Bedienelemente halten Verweise auf `state.pg`,
   `state.poly` und `state.view`. `anwenden` in `js/main.js` liest den Link deshalb in eine Kopie und
   überträgt die Felder mit `Object.assign`, statt die Objekte zu ersetzen; dazu `state.blick`. Danach

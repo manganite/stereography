@@ -184,28 +184,34 @@ a.helpbtn { display: inline-grid; place-items: center; text-decoration: none; }
 @media (pointer: coarse) {
   .ablauf-vermutung button { min-height: 40px; }
 }
-/* Hilfen: Tooltip (Laptop), ⓘ-Erklärungen (Touch) */
+/* Hilfen: Tooltip (Laptop), ⓘ-Erklärungen (alle Geräte, #140) */
 .tip {
   position: fixed; z-index: 50; max-width: 320px; padding: 7px 10px; border-radius: 7px; pointer-events: none;
   background: var(--ink); color: var(--paper); font-size: 0.8rem; line-height: 1.4; box-shadow: 0 4px 14px rgb(0 0 0 / 0.22);
 }
 .tip[hidden] { display: none; }
 .tip .ov { text-decoration: overline; }
+/* Trefferfläche mit der Maus 28 px (WCAG 2.5.8: 24 px), auf Touch-Geräten 40 px (Leitfaden 5.2); die negativen
+   Ränder halten die Zeile etwa so hoch wie ohne ⓘ (einige px höher) */
 .infobtn {
-  display: none; place-items: center; flex: none; width: 40px; height: 40px; margin: -10px -8px -10px 2px;
-  padding: 0; border: 0; background: transparent; cursor: pointer; color: var(--accent);
+  display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; margin: -4px -3px -4px 1px;
+  padding: 0; border: 0; background: transparent; cursor: pointer; color: var(--accent); vertical-align: middle;
 }
 .infobtn span {
   display: grid; place-items: center; width: 22px; height: 22px; border: 1.5px solid currentColor; border-radius: 50%;
   font: italic 600 0.82rem/1 var(--font-display); text-transform: none; letter-spacing: 0;
 }
 .infobtn[aria-expanded="true"] span { background: var(--accent); color: var(--paper); border-color: var(--accent); }
-/* ⓘ auf Touch-Geräten; auch nach dem ersten Tippen auf den Touchscreen eines Laptops, der hover: hover meldet
-   (data-touch, help.js, #114) */
-@media (hover: none) { .infobtn { display: inline-grid; } }
-:root[data-touch] .infobtn { display: inline-grid; }
+@media (pointer: coarse) { .infobtn { width: 40px; height: 40px; margin: -10px -8px -10px 2px; } }
+/* wie .tools button.sym: nach dem Tippen auch auf einem Laptop, der pointer: fine meldet (data-zeiger, help.js) */
+:root[data-zeiger="touch"] .infobtn { width: 40px; height: 40px; margin: -10px -8px -10px 2px; }
+/* und umgekehrt mit der Maus auf einem Gerät, das pointer: coarse meldet (Laptop mit Touchscreen unter Windows) */
+:root[data-zeiger="maus"] .infobtn { width: 28px; height: 28px; margin: -4px -3px -4px 1px; }
+/* ⓘ fest am letzten Wort des Titels (anheften in help.js): bricht nie allein in eine neue Zeile (#140) */
+.nobr { white-space: nowrap; }
 .card h2 { display: flex; align-items: center; justify-content: space-between; }
 .sumlabel { display: inline-flex; align-items: center; }
+.sumtitel { min-width: 0; }
 .helpbox {
   margin: 4px 0 10px; padding: 10px 12px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
   background: color-mix(in srgb, var(--accent) 6%, var(--paper)); font-size: 0.84rem; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink);

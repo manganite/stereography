@@ -6,6 +6,7 @@
 > - **Skript:** alte Kapitelnummern (heute elf Kapitel, Lagen = Kap. 10, Verzerrungen = Kap. 11); „kein Druck/PDF“ (es gibt ein PDF); die Konzepte liegen in `docs/`, nicht unter `claude/`.
 > - **Infobox:** Statt „Skript →“ ist jede Bezeichnung ein Link ins Skript (`js/skriptlinks.js`).
 > - **Dateien:** Tooltip-Texte in `js/hilfetexte.js`, Mechanik in `lib/common/js/help.js`; Schriften in `lib/common/fonts/`.
+> - **Hilfen:** Das ⓘ an den Abschnittsüberschriften erscheint seit crystallography-common v0.20.0 auf allen Geräten, nicht nur mit Touch (crystallography-common#140).
 > - **Beispielkristalle:** Quarz nach Kleber (2020), nicht mehr nach Wikipedia.
 > - **3D-Ansicht:** Der Blick entlang einer Blickrichtung steht seit v1.12.0 im Link (`blick=1–3`); die Wahl der Richtung ist von Thomas bestätigt (3.11.2026).
 > - **Mögliche Erweiterungen:** Aufstellung B im Formenmodus (v1.12.0), Skript-Abbildung Würfel → Rhomboeder (Kap. 9) und Ansicht im Link sind umgesetzt; der Rest steht als Issues mit Label `idee` (#56–#60).

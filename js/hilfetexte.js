@@ -1,4 +1,4 @@
-// Texte der Hilfen: Tooltips (Laptop) und ⓘ-Erklärungen je Abschnitt (Touch-Geräte).
+// Texte der Hilfen: Tooltips (Laptop) und ⓘ-Erklärungen je Abschnitt (alle Geräte).
 // Die Mechanik steht in lib/common/js/help.js; Begriffe nach Borchardt-Ott & Sowa, Kristallographie (2018).
 
 /** Tooltip-Texte je Element-ID. Bei Eingabefeldern erscheint der Tooltip an der ganzen Zeile. */
@@ -72,7 +72,7 @@ export const SECTIONS = [
   },
   {
     heading: '#ctl-pg > h2',
-    intro: 'Punktgruppe antippen: Das Stereogramm zeigt ihr Symmetriegerüst. Gruppen mit zwei Aufstellungen (z. B. 32) bieten darunter die Wahl der Aufstellung an.',
+    intro: 'Nach der Wahl einer Punktgruppe zeigt das Stereogramm ihr Symmetriegerüst. Gruppen mit zwei Aufstellungen (z. B. 32) bieten darunter die Wahl der Aufstellung an.',
     ids: [],
   },
   {
@@ -82,7 +82,7 @@ export const SECTIONS = [
   },
   {
     heading: '#ctl-poly > h2',
-    intro: 'Pol oder Fläche antippen hebt beide hervor: Jede Fläche hat genau einen Pol. Die Auswahl „Form“ bietet je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie an, im trigonalen System auch das trigonale und das hexagonale Prisma (Eigensymmetrie hexagonal); alle Formen mit „Flächensymmetrie zeigen“.',
+    intro: 'Pol oder Fläche anklicken bzw. antippen hebt beide hervor: Jede Fläche hat genau einen Pol. Die Auswahl „Form“ bietet je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie an, im trigonalen System auch das trigonale und das hexagonale Prisma (Eigensymmetrie hexagonal); alle Formen mit „Flächensymmetrie zeigen“.',
     ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-labels', 'poly-frame', 'poly-bravais', 'poly-facesym'],
   },
   {

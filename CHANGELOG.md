@@ -6,7 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
-### Hinzugefügt
+### Geändert
+
+- **Tooltips** nach Leitfaden 5.3 gestrafft (Funktion und nötige Angaben bleiben, Zusätze und Gründe stehen im ⓘ; höchstens 120 Zeichen, „Symmetrie brechen“ als Ausnahme etwas länger). Der Test `pruefeTooltips` läuft jetzt auch hier; „Skript“ und „?“ haben als Links keinen Tooltip mehr, „Link kopieren“ kein zusätzliches `title` (#138).
+- **„wählen“ statt „antippen“** in Legenden, Kenndaten und Hinweisen, die auch mit der Maus zu sehen sind (#147).
 
 ### Entfernt
 

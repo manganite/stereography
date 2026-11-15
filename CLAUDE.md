@@ -68,7 +68,9 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   Text bräche der Kopf schon bei 1280 px Fensterbreite um. Damit er auch bei 1024 px (iPad Pro hochkant, Tafeln 320 px)
   einzeilig bleibt, bricht der Untertitel unter den Titel um (Wahl Thomas statt eines zweizeiligen Kopfs). Anleitungstexte
   (Zählweise von ρ und φ, Ziehen des Ausgangspols, Hinweis zur Formauswahl, Streckung, Gestalt) stehen im ⓘ, in Tooltip
-  oder Legende; in der Seitenleiste bleiben Hinweise zum Zustand (kubisches Gitter ohne freie Parameter, ungültige Winkel,
+  oder Legende; Texte, die auch mit der Maus zu sehen sind (Legenden, Kenndaten, Hinweise), sagen „wählen“ statt
+  „antippen“ (#147). Tooltips straffen statt Angaben zur Funktion streichen; längere nur als Ausnahme, die
+  `tests/common.test.mjs` nennt (`laenger`; Thomas, 15.11.2026, PR #156); in der Seitenleiste bleiben Hinweise zum Zustand (kubisches Gitter ohne freie Parameter, ungültige Winkel,
   gesperrte Regler).
   **Zoom der 3D-Konstruktion** (#144, Leitfaden Abschn. 5.1): − und + im Kopf der Tafel als Symbol wie in plane-groups, an
   den Grenzen von Rad und zwei Fingern gesperrt, auf dem Telefon nicht (zwei Finger). Werkzeuge, Zoom und Export bilden

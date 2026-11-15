@@ -10,13 +10,16 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 Hilfeseite als Anleitung zur Bedienung: Überblick, Bedienkonzepte, je Modus Seitenleiste, Stereogramm, 3D-Konstruktion und Kenndaten mit nummerierten Bildern, Anleitungen, Experimente, typische Fragen; jedes ⓘ verweist an die passende Stelle. README mit Bildern zu den Funktionen; gemeinsame Grundlage v0.22.0. Link-Adressen und Speicher bleiben gültig.
 
-### Geändert
+### Hinzugefügt
 
-- **README:** neues Bildschirmfoto, die Funktionen nach Modi gegliedert, je mit drei Bildern aus der App, dazu Skript, Quiz und Hilfeseite im Bild. Die Bilder erzeugt `tools/readme-bilder.mjs` aus Ansichten der App (neu).
 - **Hilfeseite als Anleitung** (crystallography-common#114, Entscheidungen Thomas 15.11.2026): Überblick (Zweck, Teile, Modi, Aufbau der App), Bedienkonzepte, je Modus Seitenleiste, Stereogramm, 3D-Konstruktion und Kenndaten zum Nachschlagen mit nummerierten Bildern, die Erste Schritte und vier weitere Anleitungen (Winkel und Operation zwischen zwei Polen, Zone bestimmen, Winkel zwischen zwei Flächen, Symmetrie brechen), die Experimente, sechs typische Fragen und zuletzt Link, Speicher, offline, Export, Geräte und Tastatur. Texte in `js/hilfe-anleitung.js`.
 - **Verweis aus dem ⓘ:** Jede ⓘ-Erklärung endet mit „Mehr in der Hilfe“ an der passenden Stelle des Modus.
 - **Experiment von der Hilfeseite:** startet im richtigen Modus und ohne die Karte „Erste Schritte“ daneben.
 - **Tooltips der Umschalter** Stereogramm / 3D auf dem Telefon.
+
+### Geändert
+
+- **README:** neues Bildschirmfoto, die Funktionen nach Modi gegliedert, je mit drei Bildern aus der App, dazu Skript, Quiz und Hilfeseite im Bild. Die Bilder erzeugt `tools/readme-bilder.mjs` aus Ansichten der App (neu).
 - **Gemeinsame Grundlage** auf crystallography-common v0.22.0: Hilfeseite als Anleitung, gemeinsame Texte, Verweise aus dem ⓘ.
 
 ## [1.18.0] - 2026-11-15

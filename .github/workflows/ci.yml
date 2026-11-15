@@ -73,6 +73,9 @@ jobs:
           npx playwright install chromium
       - name: Skript als PDF
         run: node tools/skript-pdf.mjs skript.pdf
+      # Browserlauf der App: beide Modi, Beispielkristalle, Telefon, Werkzeuge, Konsole (#142)
+      - name: Browserlauf der App
+        run: node tools/app-pruefen.mjs
       - name: PDF als Artefakt
         uses: actions/upload-artifact@v4
         with:

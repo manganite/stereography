@@ -106,7 +106,7 @@ export const SECTIONS = [
   {
     heading: '#sec-view > summary',
     hilfe: '{modus}-darstellung',
-    intro: 'Weitere Optionen, nach Tafel geordnet: was Stereogramm und 3D-Konstruktion gemeinsam betrifft, nur das Stereogramm oder nur die 3D-Konstruktion.',
+    intro: 'Weitere Optionen, nach Tafel geordnet: was Stereogramm und 3D-Konstruktion gemeinsam betrifft, nur das Stereogramm oder nur die 3D-Konstruktion. Die 3D-Konstruktion zoomt mit Mausrad, zwei Fingern oder − und + im Kopf der Tafel.',
     ids: ['pg-poles', 'poly-poles', 'v-dircolors', 'v-axes', 'pg-colorful', 'poly-lower', 'v-wulff', 'v-wulffrot', 'v-sphere', 'v-globe', 'v-plane', 'v-rays', 'v-normals', 'zone-btn', 'angle-btn-3d', 'zoom-3d-ein', 'zoom-3d-aus', 'view-oblique'],
   },
 ];

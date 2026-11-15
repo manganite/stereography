@@ -175,7 +175,8 @@ export class View3D {
   }
 
   /**
-   * Blick entlang einer Weltrichtung (Betrachter auf der Seite von dir, Blick zum Zentrum), Abstand wie bisher.
+   * Blick entlang einer Weltrichtung (Betrachter auf der Seite von dir, Blick zum Zentrum), im Startabstand (setzt den
+   * Zoom zurück).
    * Fast ∥ z: Blick von oben mit x nach unten und y nach rechts wie im Stereogramm.
    * @param {Vec3 | number[]} dir
    */

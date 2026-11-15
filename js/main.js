@@ -1359,8 +1359,13 @@ view3d.controls.addEventListener('change', () => {
 // Zoom der 3D-Konstruktion mit + und − (#144): für die Tastatur, wie Rad und zwei Finger; gesperrt an den Grenzen
 const zoomKnoepfe = () => {
   const frei = view3d.zoomFrei();
-  knopf('zoom-3d-ein').disabled = !frei.ein;
-  knopf('zoom-3d-aus').disabled = !frei.aus;
+  const ein = knopf('zoom-3d-ein'), aus = knopf('zoom-3d-aus');
+  // wird der fokussierte Knopf an der Grenze gesperrt, geht der Fokus auf den anderen (sonst auf <body>)
+  const fokus = document.activeElement;
+  ein.disabled = !frei.ein;
+  aus.disabled = !frei.aus;
+  if (fokus === ein && ein.disabled) aus.focus();
+  if (fokus === aus && aus.disabled) ein.focus();
 };
 knopf('zoom-3d-ein').addEventListener('click', () => { view3d.zoom(1.25); zoomKnoepfe(); });
 knopf('zoom-3d-aus').addEventListener('click', () => { view3d.zoom(1 / 1.25); zoomKnoepfe(); });

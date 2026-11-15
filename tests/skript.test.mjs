@@ -105,3 +105,12 @@ test('Infobox: jeder Begriff ist ein Verweis ins Skript', () => {
     assert.ok(m[1] in SKRIPT_ANCHORS, `unbekannter Anker ${m[1]}`);
   }
 });
+
+// Abschnittsnummern und Verweise (Leitfaden Abschn. 6, crystallography-common#85): jeder Verweis trifft einen Abschnitt
+import { pruefeAbschnittsverweise } from '../lib/common/js/skript-kern.js';
+test('Verweise auf Abschnitte treffen einen Abschnitt, mit Nummer statt Titel', () => {
+  const { befunde } = pruefeAbschnittsverweise(html);
+  assert.deepEqual(befunde, []);
+  // Verweise mit Titel statt Nummer (Thomas, 15.11.2026): nicht mehr „Abschnitt „…““ oder „nächster Abschnitt“
+  assert.doesNotMatch(html, /(nächste[nrs]?|vorige[nrs]?) Abschnitt|Abschnitts? „/);
+});

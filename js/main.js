@@ -52,9 +52,11 @@ const deg = Math.PI / 180;
 const coarse = window.matchMedia('(pointer: coarse)');
 /** viewBox-Einheiten pro CSS-Pixel des Stereogramms. */
 const svgUnit = () => { const w = grafik('stereo').getBoundingClientRect().width; return w > 0 ? 520 / w : 1; };
+/** Touch nach dem zuletzt benutzten Gerät (`data-zeiger` aus help.js, Leitfaden 5.2), vor der ersten Eingabe nach der Media Query. */
+const touch = () => { const z = document.documentElement.dataset.zeiger; return z ? z === 'touch' : coarse.matches; };
 /** Trefferradius in viewBox-Einheiten: mit Finger mindestens 22 px (44 px Durchmesser). */
 /** @param {number} minUnits @param {number} px */
-const touchRadius = (minUnits, px) => (coarse.matches ? Math.max(minUnits, px * svgUnit()) : minUnits);
+const touchRadius = (minUnits, px) => (touch() ? Math.max(minUnits, px * svgUnit()) : minUnits);
 
 // ------------------------------------------------------------------ Zustand
 const state = createState();
@@ -1773,9 +1775,9 @@ function init() {
     ]),
   ]);
 
-  // Farbwechsel des Systems (hell/dunkel) → neu zeichnen
+  // Farbwechsel des Systems (hell/dunkel) und Wechsel des Geräts (Trefferkreise, data-zeiger) → neu zeichnen
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
-  new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-zeiger'] });
 
   setMode(state.mode);
 }

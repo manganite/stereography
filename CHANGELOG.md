@@ -6,8 +6,14 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Zoom der 3D-Konstruktion mit − und +** im Kopf der Tafel, für die Tastatur wie Mausrad und zwei Finger; an den Grenzen gesperrt, auf dem Telefon ausgeblendet. Tooltips, ⓘ und Hilfeseite nachgeführt (#144).
+- **Browserlauf der App** (`tools/app-pruefen.mjs`, CI-Job `pdf`, #142): beide Modi, alle Beispielkristalle, Telefon, Werkzeuge, Zoom und Export im Kopf der Tafeln, Tooltips aller sichtbaren Bedienelemente je Modus (`fehlendeTooltips`), Fehler in der Konsole.
+
 ### Geändert
 
+- **Gemeinsame Grundlage** auf crystallography-common v0.23.0: Abschnittsnummern und Verweise im Skript als Links mit Titel (Verweise mit Titel oder „nächster Abschnitt“ jetzt mit Nummer: 3.3, 3.4, 5.1, 6.4, 9.4), Touch-Ziele und Trefferkreise im Stereogramm nach dem zuletzt benutzten Gerät (auch auf Laptops mit Touchscreen), breiter Einzug der Experimente nur bei zweistelligen Nummern (in „Punktgruppen“ wieder schmal), Tooltips im Browserlauf je Modus geprüft, Bilder der Hilfeseite mit Nummern links neben den Bausteinen; im README der Ablauf, wenn der Deploy beim Laden des Artefakts scheitert.
 - **Tooltips** nach Leitfaden 5.3 gestrafft (Funktion und nötige Angaben bleiben, Zusätze und Gründe stehen im ⓘ; höchstens 120 Zeichen, „Symmetrie brechen“ als Ausnahme etwas länger). Der Test `pruefeTooltips` läuft jetzt auch hier; „Skript“ und „?“ haben als Links keinen Tooltip mehr, „Link kopieren“ kein zusätzliches `title` (#138).
 - **„wählen“ statt „antippen“** in Legenden, Kenndaten und Hinweisen, die auch mit der Maus zu sehen sind (#147).
 

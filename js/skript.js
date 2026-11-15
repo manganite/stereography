@@ -8,7 +8,7 @@ import { palette, pgScene, crystalAxesFor, polyCrystal, polyScene, stateForHash 
 import { koerperSVG } from './bild3d.js';
 import { hklHTML } from '../lib/common/js/format.js';
 import { VERSION } from './version.js';
-import { appLink, nachladen, querstriche, inhaltsverzeichnis } from '../lib/common/js/skript-kern.js';
+import { appLink, nachladen, querstriche, inhaltsverzeichnis, abschnitte } from '../lib/common/js/skript-kern.js';
 import { versionEintragen, offline, elemente } from '../lib/common/js/seite.js';
 
 /** @import { Palette, AppKristall } from './scene.js' */
@@ -258,6 +258,7 @@ function init() {
   elemente('figure.wachs').forEach(wachstumFigur);
   renderFigures();
   watch3d();
+  abschnitte();
   inhaltsverzeichnis();
   document.fonts.ready.then(querstriche);
   // Farbschema gewechselt: Abbildungen mit den neuen Farben neu zeichnen

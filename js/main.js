@@ -1027,7 +1027,7 @@ function updateInfoPoly(C, col) {
     if (!C.zone) {
       zoneBox = state.zoneSel.length === 2
         ? '<div class="zonebox">Die beiden Flächen sind parallel und bestimmen keine Zone. Bitte eine andere Fläche wählen.</div>'
-        : `<div class="zonebox">Zone bestimmen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht wählen, oder unten Zonen.</div>`;
+        : `<div class="zonebox">Zone bestimmen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht wählen, oder unten eine Zone aus der Liste.</div>`;
     } else {
       const z = C.zone;
       const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;

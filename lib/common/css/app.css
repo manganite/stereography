@@ -222,6 +222,8 @@ a.helpbtn { display: inline-grid; place-items: center; text-decoration: none; }
 .helpbox dt { font-weight: 600; margin-top: 6px; }
 .helpbox dt:first-child { margin-top: 0; }
 .helpbox dd { margin: 0; color: var(--muted); }
+/* Verweis auf die Hilfeseite am Ende der Erklärungen (#114) */
+.helpbox p.hilfe-verweis { margin: 8px 0 0; }
 .check:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
 .check .why:not(:empty) { display: block; font-size: 0.78rem; color: var(--muted); }
 /* Hinweis unter der Überschrift eingeklappter Abschnitte: was man dort findet */

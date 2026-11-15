@@ -67,40 +67,50 @@ export const TIPS = {
 export const SECTIONS = [
   {
     heading: '#sec-experimente > summary',
+    hilfe: '{modus}-experimente',
     intro: 'Kleine Versuche: erst eine Vermutung wählen, dann per Knopf ausprobieren. „Vorher zeigen“ vergleicht mit der Ansicht davor.',
     ids: [],
   },
   {
     heading: '#ctl-pg > h2',
+    hilfe: '{modus}-punktgruppe',
     intro: 'Nach der Wahl einer Punktgruppe zeigt das Stereogramm ihr Symmetriegerüst. Gruppen mit zwei Aufstellungen (z. B. 32) bieten darunter die Wahl der Aufstellung an.',
     ids: [],
   },
   {
     heading: '#ctl-pg-opts > summary',
+    hilfe: '{modus}-lage',
     intro: 'Zählweise wie bei Borchardt-Ott: ρ auf der oberen Halbkugel vom Nordpol (Zentrum), auf der unteren vom Südpol mit negativem Vorzeichen; φ vom rechten Rand (→, bei orthogonalen Achsen die b-Achse) im Uhrzeigersinn, (100) liegt bei 90°. Im Stereogramm lässt sich der Ausgangspol ziehen; nahe einer Achse oder Spiegelebene rastet er ein (spezielle Lage).',
     ids: ['pg-elements', 'pg-object', 'pg-theta', 'pg-phi', 'angle-btn'],
   },
   {
     heading: '#ctl-poly > h2',
+    hilfe: '{modus}-kristallform',
     intro: 'Pol oder Fläche anklicken oder antippen hebt beide hervor: Jede Fläche hat genau einen Pol. Die Auswahl „Form“ bietet je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie an, im trigonalen System auch das trigonale und das hexagonale Prisma (Eigensymmetrie hexagonal); alle Formen mit „Flächensymmetrie zeigen“.',
     ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-labels', 'poly-frame', 'poly-bravais', 'poly-facesym'],
   },
   {
     heading: '#ctl-poly-lat > summary',
+    hilfe: '{modus}-gitter',
     intro: 'Alles in diesem Abschnitt ändert das Gitter und damit die Winkel zwischen den Flächen, also auch das Stereogramm.',
     ids: ['lat-ba', 'lat-ca', 'lat-al', 'lat-be', 'lat-ga', 'poly-broken', 'break-mode', 'stretch-dir', 'stretch-s'],
   },
   {
     heading: '#ctl-poly-shape > summary',
+    hilfe: '{modus}-gestalt',
     intro: 'Die Gestalt ändert nur den Körper, nicht das Stereogramm: Die Pole hängen nur von den Flächennormalen ab.',
     ids: ['poly-size', 'ctl-ex-dists', 'poly-open', 'poly-aux'],
   },
   {
     heading: '#sec-view > summary',
+    hilfe: '{modus}-darstellung',
     intro: 'Weitere Optionen, nach Tafel geordnet: was Stereogramm und 3D-Konstruktion gemeinsam betrifft, nur das Stereogramm oder nur die 3D-Konstruktion.',
     ids: ['pg-poles', 'poly-poles', 'v-dircolors', 'v-axes', 'pg-colorful', 'poly-lower', 'v-wulff', 'v-wulffrot', 'v-sphere', 'v-globe', 'v-plane', 'v-rays', 'v-normals', 'zone-btn', 'angle-btn-3d', 'view-oblique'],
   },
 ];
+
+/** Tooltips der Umschalter der Tafeln (Telefon), nach `data-fig`; sie haben keine id (crystallography-common#114). */
+export const FIG_TIPPS = { a: 'Stereogramm zeigen.', b: '3D-Konstruktion zeigen.' };
 
 /** Beschriftung in der ⓘ-Erklärung, wo der Text des Elements nicht passt. */
 export const LABELS = {

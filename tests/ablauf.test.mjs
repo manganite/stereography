@@ -7,6 +7,7 @@ import { pruefeAblaeufe } from '../lib/common/js/ablauf.js';
 import { ABLAEUFE, ERSTE_SCHRITTE } from '../js/hilfetexte.js';
 import { KAPITEL } from '../js/quiz-kapitel.js';
 import { EXPERIMENTE } from '../js/hilfe-daten.js';
+import { ANLEITUNGEN, BEREICHE, FRAGEN, ZWECK, KONZEPTE, ERGAENZUNGEN } from '../js/hilfe-anleitung.js';
 import { ERZEUGTE, POLZAHL, FLAECHENZAHL, POLZAHL_PARAMS, FLAECHENZAHL_PARAMS, polzahlDaten, ordnung, lage, FZ_KANDIDATEN, gezeigteForm, ortText } from '../js/experimente.js';
 import { variante } from '../lib/common/js/ablauf.js';
 import { createState, applyHashTo, hashOf, generalPole, polyCrystal, effectiveLat } from '../js/scene.js';
@@ -51,6 +52,20 @@ test('Lernexperimente und Erste Schritte: Daten vollständig, Adressen gültig, 
     assert.ok(nr.length >= 8 && nr.length <= 12, `${m}: ${nr.length} Experimente`);
   }
   assert.deepEqual(pruefeAblaeufe(ERSTE_SCHRITTE, o), []);
+  // weitere Anleitungen der Hilfeseite (js/hilfe-anleitung.js): Modus bekannt, Adressen gültig (Schritte ohne Handlung
+  // sind dort Text, nicht Teil einer Karte; pruefeAblaeufe gilt deshalb nicht)
+  for (const a of ANLEITUNGEN) {
+    assert.ok(o.modi.includes(a.modus ?? ''), a.id);
+    for (const s of a.schritte) if (s.handlung?.hash) assert.ok(gueltig(s.handlung.hash), `${a.id}: ${s.handlung.hash}`);
+  }
+  // Zustand der Bilder der Bereiche und Adressen der typischen Fragen ebenso
+  for (const b of BEREICHE) if (b.adresse) assert.ok(gueltig(b.adresse), `${b.modus}-${b.id}: ${b.adresse}`);
+  for (const f of FRAGEN) if (f.app) assert.ok(gueltig(f.app), `${f.id}: ${f.app}`);
+  // Verweise ins Skript (Fragen und Links in den Texten) zeigen auf vorhandene Anker
+  const texte = JSON.stringify([BEREICHE, FRAGEN, ANLEITUNGEN, ZWECK, KONZEPTE, ERGAENZUNGEN]);
+  for (const a of [...FRAGEN.flatMap((f) => (f.skript ? [f.skript] : [])), ...[...texte.matchAll(/skript\.html#([\w-]+)/g)].map((m) => m[1])]) {
+    assert.ok(ANKER.includes(a), `Skript-Anker ${a}`);
+  }
   for (const m of ['pg', 'poly']) {
     assert.ok(ABLAEUFE.filter((a) => a.modus === m).length >= 2, m);
     const e = ERSTE_SCHRITTE.filter((a) => a.modus === m);

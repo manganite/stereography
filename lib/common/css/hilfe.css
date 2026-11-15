@@ -1,8 +1,10 @@
-/* Hilfeseite (Leitfaden Abschn. 5.3, #24): nach skript.css geladen, gleicher Aufbau wie das Skript. Inhalt aus
+/* Hilfeseite (Leitfaden Abschn. 5.3, #24, #114): nach skript.css geladen, gleicher Aufbau wie das Skript. Inhalt aus
    js/hilfe-seite.js (hilfeHTML). */
 
-.hilfe-modus + .hilfe-modus { margin-top: 64px; }
-.hilfe-anleitung + .hilfe-anleitung, .hilfe-experimente { margin-top: 36px; }
+.hilfe-teil + .hilfe-teil, .hilfe-teil + .hilfe-modus, .hilfe-modus + .hilfe-modus, .hilfe-modus + .hilfe-teil { margin-top: 64px; }
+.hilfe-text + .hilfe-text, .hilfe-bereich + .hilfe-bereich, .hilfe-text + .hilfe-bereich, .hilfe-bereich + .hilfe-text,
+.hilfe-bereich + .hilfe-anleitung, .hilfe-anleitung + .hilfe-anleitung, .hilfe-experimente, .hilfe-frage + .hilfe-frage { margin-top: 36px; }
+.hilfe-text > p, .hilfe-frage > p, .hilfe-bereich > p { max-width: 70ch; }
 
 .hilfe-schritte { padding-left: 1.6em; margin: 0 0 12px; }
 .hilfe-schritt { margin: 0 0 22px; }
@@ -14,6 +16,20 @@
 article figure.hilfe-bild { margin: 8px 0 10px; padding: 0; border: 0; background: none; box-shadow: none; }
 .hilfe-bild img { display: block; max-width: 100%; height: auto; border-radius: 10px; }
 
+/* Bereiche zum Nachschlagen: Liste mit Nummern wie die Marken im Bild (Kreis in der Farbe der Marke) */
+.hilfe-marken { list-style: none; counter-reset: marke; padding: 0; margin: 4px 0 12px; max-width: 70ch; }
+.hilfe-marken > li { counter-increment: marke; position: relative; padding: 0 0 8px 32px; }
+.hilfe-marken > li::before {
+  content: counter(marke); content: counter(marke) / ''; position: absolute; left: 0; top: 0.1em; width: 20px; height: 20px;
+  border-radius: 50%; background: var(--accent2); color: var(--paper); font: 700 11px/20px var(--font-ui);
+  text-align: center;
+}
+.hilfe-weitere { padding-left: 1.2em; margin: 0 0 12px; max-width: 70ch; }
+.hilfe-weitere > li { padding-bottom: 6px; }
+.hilfe-modi { padding-left: 1.2em; max-width: 70ch; }
+.hilfe-modi > li { padding-bottom: 6px; }
+.hilfe-links { font-size: 0.9rem; }
+
 .hilfe-liste { list-style: none; padding: 0; margin: 0 0 12px; }
 .hilfe-liste > li { padding: 12px 0; border-top: 1px solid var(--line); max-width: 70ch; }
 .hilfe-liste > li:last-child { border-bottom: 1px solid var(--line); }
@@ -22,5 +38,5 @@ article figure.hilfe-bild { margin: 8px 0 10px; padding: 0; border: 0; backgroun
 .hilfe-experimente h4 { margin: 24px 0 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
 
 @media print {
-  .hilfe-schritt, .hilfe-liste > li { break-inside: avoid; }
+  .hilfe-schritt, .hilfe-liste > li, .hilfe-marken > li, .hilfe-bild { break-inside: avoid; }
 }

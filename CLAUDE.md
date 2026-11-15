@@ -170,7 +170,8 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   „Vorschau einer App“.
 - **Daten getrennt vom Code** (6.11.2026, #75, Leitfaden Abschn. 9): Datendateien sind `punktgruppen.js`
   (Kenndaten der Punktgruppen, Systeme), `formen.js` (Formtypen, Flächenzahlen, Prismen, Schreibweise der Eigensymmetrie, Formen je Punktgruppe),
-  `aufstellungen.js`, `examples.js`, `quiz-bank.js`, `hilfetexte.js`. Die Erzeugenden der Punktgruppen
+  `aufstellungen.js`, `examples.js`, `quiz-bank.js`, `hilfetexte.js`, `hilfe-anleitung.js` (Texte der Hilfeseite: Zweck,
+  Bedienkonzepte, Bereiche, weitere Anleitungen, Fragen; crystallography-common#114). Die Erzeugenden der Punktgruppen
   (`ERZEUGENDE` in `pointgroups.js`) und der Aufbau des Katalogs mit Kennung und Stelle (`forms.js`) sind
   Code; Kennungen und Reihenfolge des Katalogs sind Schnittstelle (Links `f=…`). Je Fall entschieden, bleibt
   im Code: `HOLOHEDRY`, `LATTICE_DEFAULTS`, `FREE_PARAMS`, `STRETCH_DIRS`, `GITTER_BEREICH` in `polyhedra.js`

@@ -1077,7 +1077,7 @@ function updateInfoPoly(C, col) {
     </div>
     ${zoneBox}
     <h3>Tracht: ${C.forms.length} Formen</h3>
-    <div class="formscroll"><table class="formtab"><thead><tr><th>Form</th><th>Symbol</th><th>Flächen</th><th>Eigen&shy;symmetrie</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="formscroll" tabindex="0" role="region" aria-label="Formen der Tracht"><table class="formtab"><thead><tr><th>Form</th><th>Symbol</th><th>Flächen</th><th>Eigen&shy;symmetrie</th></tr></thead><tbody>${rows}</tbody></table></div>
     ${gone ? '<p class="note">Grau: Form ist bei diesen Abständen ganz oder teilweise weggeschnitten.</p>' : ''}
     <dl class="facts">
       <div><dt>${skriptTerm('Habitus', 'habitus-def')}</dt><dd>${habitHTML}</dd></div>

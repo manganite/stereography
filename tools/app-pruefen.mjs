@@ -53,6 +53,7 @@ async function oeffnen(p, hash) {
   await p.goto('about:blank');
   await p.goto(`${basis}index.html${hash}`);
   await p.waitForSelector('#stereo *', { state: 'attached' });
+  await p.evaluate(() => document.fonts.ready); // Breiten erst mit den eigenen Schriften messen
   await p.waitForTimeout(300);
 }
 /** Neue Fehler in der Konsole seit dem letzten Aufruf. @param {Page} p @param {string} wo */
@@ -103,6 +104,9 @@ try {
   pruefe(await p.locator('#zone-btn').isHidden() && await p.locator('#angle-btn').isVisible(), 'Punktgruppen: nur „Winkel“ im Kopf');
   await p.click('#angle-btn');
   pruefe(await gedrueckt(p, '#angle-btn') && await gedrueckt(p, '#angle-btn-3d'), 'Punktgruppen: „Winkel“ gewählt, in beiden Tafeln');
+  pruefe(await zweiPole(p) === 2, 'Punktgruppen: zwei Pole gefunden');
+  await p.waitForFunction(() => /Winkel zwischen den Polen/.test(document.getElementById('info')?.innerText ?? ''), null, { timeout: 5000 }).catch(() => {});
+  pruefe(/Winkel zwischen den Polen[\s\S]*ineinander über/.test(await info(p)), 'Punktgruppen: Winkel und verknüpfende Operation in den Kenndaten');
   await p.click('#angle-btn');
   pruefe(!await gedrueckt(p, '#angle-btn'), 'Punktgruppen: „Winkel“ wieder abgewählt');
   konsole(p, 'Punktgruppen, Werkzeug');
@@ -112,13 +116,13 @@ try {
   await p.click('#zone-btn');
   pruefe(await gedrueckt(p, '#zone-btn') && !await gedrueckt(p, '#angle-btn'), 'Kristallformen: „Zone“ gewählt');
   pruefe(await zweiPole(p) === 2, 'Kristallformen: zwei Pole gefunden');
-  await p.waitForTimeout(200);
-  pruefe(/zonen=/.test(await p.evaluate(() => decodeURIComponent(location.hash))), 'Kristallformen: Zone in der Link-Adresse');
+  pruefe(await p.waitForFunction(() => decodeURIComponent(location.hash).includes('zonen='), null, { timeout: 5000 }).then(() => true, () => false), 'Kristallformen: Zone in der Link-Adresse');
   await p.click('#angle-btn');
   pruefe(await gedrueckt(p, '#angle-btn') && !await gedrueckt(p, '#zone-btn'), 'Kristallformen: „Winkel“ wählt „Zone“ ab');
   await zweiPole(p);
-  await p.waitForTimeout(200);
-  pruefe(/Winkel/i.test(await info(p)) && /°/.test(await info(p)), 'Kristallformen: Winkel in den Kenndaten');
+  // gemessen ist erst, wenn der Hinweis „… antippen“ dem Ergebnis gewichen ist (Normalen- und Flächenwinkel)
+  pruefe(await p.waitForFunction(() => /Normalenwinkel/.test(document.getElementById('info')?.innerText ?? ''), null, { timeout: 5000 }).then(() => true, () => false)
+    && !/antippen/.test(await p.locator('#info .zonebox').innerText()), 'Kristallformen: Winkel gemessen (Normalen- und Flächenwinkel)');
   konsole(p, 'Kristallformen, Werkzeuge');
 
   // 4. Export: Menü je Tafel öffnet sich und schliesst mit Escape
@@ -136,7 +140,8 @@ try {
   for (const b of EXAMPLES) {
     const hash = `#m=form&sys=${b.sys}&bsp=${b.id}`;
     await oeffnen(p, hash);
-    pruefe(/Tracht/i.test(await info(p)), `${b.id}: Tracht in den Kenndaten`);
+    const zeilen = await p.locator('#info .formtab tbody tr').count();
+    pruefe((await info(p)).includes(b.name) && zeilen === b.forms.length, `${b.id}: Beispiel geladen (Name, ${b.forms.length} Formen in der Tracht, gefunden ${zeilen})`);
     konsole(p, `${b.id}, Laptop`);
     await oeffnen(t, hash);
     pruefe(await quer(t) === 0, `${b.id}, Telefon: nicht waagrecht scrollbar`);
@@ -145,13 +150,19 @@ try {
   for (const m of ['pg', 'form']) {
     await oeffnen(t, `#m=${m}`);
     pruefe(await quer(t) === 0, `${m}, Telefon: nicht waagrecht scrollbar`);
+    pruefe(await t.locator('#export-stereo').isHidden() && await t.locator('#export-3d').isHidden(), `${m}, Telefon: kein Export (Leitfaden 5.2)`);
     await t.click('.figswitch button[data-fig="b"]');
     pruefe(await t.locator('#view3d').isVisible(), `${m}, Telefon: Umschalter zeigt die 3D-Konstruktion`);
     konsole(t, `${m}, Telefon`);
   }
 } catch (e) {
+  // Abbruch (z. B. die App startet nicht): die gesammelten Fehler der Seiten sind meist die Ursache
   fehler.push(String(e));
   console.error(e);
+  for (const ctx of browser.contexts()) for (const s of ctx.pages()) {
+    const k = KONSOLE.get(s) ?? [];
+    if (k.length) console.error(`Fehler der Seite ${s.url()}:\n  ${k.join('\n  ')}`);
+  }
 } finally {
   await browser.close();
   srv.close();

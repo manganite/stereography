@@ -6,10 +6,6 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
-### Behoben
-
-- **Telefon:** Mit Galenit oder Pyrit scrollte die Seite waagrecht (Tabelle der Formen 9 px zu breit). Die Tabelle hat auf dem Telefon eine kleinere Schrift, trennt „Eigensymmetrie“ und scrollt notfalls in ihrem Rahmen (#142).
-
 ### Hinzugefügt
 
 - **Browserlauf der App** (`tools/app-pruefen.mjs`, CI-Job `pdf`, #142): beide Modi, alle Beispielkristalle, Telefon, Werkzeuge und Export im Kopf der Tafeln, Fehler in der Konsole.
@@ -17,6 +13,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Entfernt
 
 - Ungenutzte Bilder `polzahl.png` und `flaechenzahl-form.png` im Wurzelverzeichnis (#142).
+
+### Behoben
+
+- **Telefon:** Auf schmalen Telefonen scrollte die Seite mit einem Beispielkristall waagrecht (bei 390 px mit Galenit und Pyrit, bei 320 px fast mit allen), weil die Tabelle der Formen zu breit war. Sie hat auf dem Telefon eine kleinere Schrift, trennt Wörter und scrollt notfalls in ihrem Rahmen (#142).
 
 ## [1.19.0] - 2026-11-15
 

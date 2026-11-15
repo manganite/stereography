@@ -69,7 +69,8 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   einzeilig bleibt, bricht der Untertitel unter den Titel um (Wahl Thomas statt eines zweizeiligen Kopfs). Anleitungstexte
   (Zählweise von ρ und φ, Ziehen des Ausgangspols, Hinweis zur Formauswahl, Streckung, Gestalt) stehen im ⓘ, in Tooltip
   oder Legende; Texte, die auch mit der Maus zu sehen sind (Legenden, Kenndaten, Hinweise), sagen „wählen“ statt
-  „antippen“ (#147); in der Seitenleiste bleiben Hinweise zum Zustand (kubisches Gitter ohne freie Parameter, ungültige Winkel,
+  „antippen“ (#147). Tooltips straffen statt Angaben zur Funktion streichen; längere nur als Ausnahme, die
+  `tests/common.test.mjs` nennt (`laenger`; Thomas, 15.11.2026, PR #156); in der Seitenleiste bleiben Hinweise zum Zustand (kubisches Gitter ohne freie Parameter, ungültige Winkel,
   gesperrte Regler).
 - **Bildexport** (24.10.; Menü seit crystallography-common#130, Thomas, 12.11.2026): Stereogramm als Kopie (PNG), SVG,
   PNG (2048 px); 3D als Kopie und PNG. Je Tafel ein Knopf „Export ▾“ mit Menü (`exportMenue`, Leitfaden Abschn. 4), statt

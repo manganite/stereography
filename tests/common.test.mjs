@@ -58,5 +58,10 @@ test('Tooltips: jedes Bedienelement mit id hat einen, kurz (pruefeTooltips, Leit
   const { TIPS } = await import('../js/hilfetexte.js');
   // Ausnahmen: Links, Schliessen „×“, das Export-Menü (Leitfaden Abschn. 5.3)
   const ohne = ['skript-link', 'quiz-link', 'help-open', 'intro-close', 'export-stereo', 'export-3d'];
-  assert.deepEqual(pruefeTooltips(read('index.html'), TIPS, { ohne }), []);
+  // Längere Tooltips nur als ausdrückliche Ausnahme, wo sonst eine Angabe zur Funktion fehlte (Leitfaden Abschn. 5.3)
+  const laenger = /** @type {(keyof typeof TIPS)[]} */ (['break-mode']);
+  const html = read('index.html');
+  assert.deepEqual(pruefeTooltips(html, TIPS, { ohne }).filter((f) => !laenger.some((id) => f.startsWith(`${id}: Tooltip mit`))), []);
+  assert.deepEqual(pruefeTooltips(html, TIPS, { ohne, max: 160 }), []);
+  for (const id of laenger) assert.ok([...TIPS[id]].length > 120, `${id} ist nicht mehr länger als 120 Zeichen; aus „laenger“ streichen`);
 });

@@ -6,7 +6,8 @@
 //
 // Liest die Daten der Hilfeseite aus js/hilfe-daten.js der App (Export HILFE, Typ HilfeDaten aus
 // lib/common/js/hilfe-seite.js), öffnet die App je Bild mit seiner Adresse (`hilfeBilder`), klappt geschlossene
-// Abschnitte um die Elemente auf (die Überschrift eines Abschnitts lässt ihn zu), markiert sie und schneidet den
+// Abschnitte um die Elemente auf (die Überschrift eines Abschnitts lässt ihn zu), führt `vorher` des Schritts aus
+// (Klicks, Ziehen), markiert sie und schneidet den
 // Ausschnitt aus: `ausschnitt` des Bereichs, sonst der Baustein um die Elemente (Karte, Tafel oder Kopfzeile), mit Rand.
 // Ist der Ausschnitt höher als das Fenster oder hat er einen eigenen Scrollbereich (Seitenleiste), wird das Fenster so
 // hoch, dass er ganz hineinpasst. Ausgabe unter <bilder> (Standard hilfe/); Bilder, die nicht mehr gebraucht werden oder
@@ -67,6 +68,19 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
       try {
         await page.goto(basis + app + b.adresse, { waitUntil: 'load' });
         await page.evaluate(() => document.fonts.ready);
+        // Bedienhandlungen für Zustand, der nicht in der Adresse steht (Werkzeug, Striche)
+        for (const h of b.vorher ?? []) {
+          if ('klick' in h) { await page.click(h.klick); continue; }
+          const box = await page.locator(h.ziehen).boundingBox();
+          if (!box || !h.punkte.length) throw new Error(`kein Element ${h.ziehen} zum Ziehen unter ${b.adresse}`);
+          const pt = (/** @type {[number, number]} */ [fx, fy]) => [box.x + fx * box.width, box.y + fy * box.height];
+          const [x0, y0] = pt(h.punkte[0]);
+          await page.mouse.move(x0, y0);
+          await page.mouse.down();
+          for (const p of h.punkte.slice(1)) { const [x, y] = pt(p); await page.mouse.move(x, y, { steps: 8 }); }
+          await page.mouse.up();
+        }
+        if (b.vorher) await page.waitForTimeout(200);
         // 1. Abschnitte aufklappen, Ausschnitt bestimmen und die nötige Höhe des Fensters messen
         const vorbereitet = await page.evaluate(({ zeige, ausschnitt, baustein }) => {
           /** @type {Element[]} */
@@ -129,20 +143,21 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
           if (nummern) els.forEach((_, i) => {
             const r = rects[i];
             // Nummer: Lagen der Reihe nach probieren, die erste, die keine andere Marke und keine Nummer überdeckt.
-            // Grosse Elemente (z. B. Tafel): auf der oberen Rahmenlinie nahe der Ecke; breite (z. B. Überschrift eines
-            // Abschnitts): links davor; sonst darüber, darunter, links, rechts; zuletzt innen in der Ecke oben links.
+            // Grosse Elemente (z. B. Tafel): links davor nahe der oberen Ecke, sonst auf der oberen Rahmenlinie nahe der
+            // linken, dann der rechten Ecke (dort kann die Nummer eine Überschrift darüber streifen); breite (z. B. Überschrift eines Abschnitts): links davor; sonst darüber, darunter, links, rechts;
+            // zuletzt innen in der Ecke oben links.
             const d = 20, h = d / 2;
             const gross = r.width > 140 && r.height > 80, breit = r.width > 140;
             /** @param {number} x @param {number} y @returns {[number, number]} */
             const p2 = (x, y) => [x, y];
-            const lagen = gross ? [p2(r.left + 10 + h, r.top - 4)]
+            const lagen = gross ? [p2(r.left - 6 - h, r.top + 10 + h), p2(r.left + 10 + h, r.top - 4), p2(r.right - 10 - h, r.top - 4)]
               : [...(breit ? [p2(r.left - 6 - h, r.top + r.height / 2)] : []), p2(r.left + r.width / 2, r.top - 2 - h), p2(r.left + r.width / 2, r.bottom + 2 + h),
                 p2(r.left - 6 - h, r.top + r.height / 2), p2(r.right + 6 + h, r.top + r.height / 2)];
             /** @param {[number, number]} p */
             const box = ([x, y]) => ({ left: x - h, top: y - h, right: x + h, bottom: y + h });
             const frei = lagen.find((p) => { const b = box(p); return b.left >= 2 && b.top >= 2 && belegt.every((o, j) => j === i || !schneidet(b, o)); });
             const [x, y] = frei ?? [r.left + h + 2, r.top + h + 2];
-            const cx = Math.max(h + 2, x), cy = Math.max(h + 2, y);
+            const cx = Math.min(innerWidth - h - 2, Math.max(h + 2, x)), cy = Math.max(h + 2, y);
             const n = document.createElement('div');
             n.setAttribute('data-hilfe-marke', '');
             n.textContent = String(i + 1);

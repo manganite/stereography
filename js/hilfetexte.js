@@ -60,6 +60,8 @@ export const TIPS = {
   'zone-btn-3d': 'Zone bestimmen: zwei Pole oder Flächen wählen. Zeigt Zonenkreis, Zonenachse [uvw] und alle Flächen der Zone.',
   'angle-btn': 'Winkel messen: zwei Pole oder Flächen wählen. Zeigt den Normalenwinkel, bei Punktgruppen auch die Operation.',
   'angle-btn-3d': 'Winkel messen: zwei Pole oder Flächen wählen. Zeigt Normalen- und Flächenwinkel.',
+  'zoom-3d-ein': 'Vergrössern (auch Mausrad oder zwei Finger).',
+  'zoom-3d-aus': 'Verkleinern.',
   'view-oblique': 'Schräger Blick auf Kugel, Kristall und Äquatorebene. Die Knöpfe daneben blicken entlang der drei Blickrichtungen des Kristallsystems (triklin: entlang a, b, c); liegt eine davon parallel zur Projektionsrichtung, zeigt sie das Bild wie im Stereogramm. Eine gewählte Blickrichtung steht auch im kopierten Link.',
 };
 
@@ -104,8 +106,8 @@ export const SECTIONS = [
   {
     heading: '#sec-view > summary',
     hilfe: '{modus}-darstellung',
-    intro: 'Weitere Optionen, nach Tafel geordnet: was Stereogramm und 3D-Konstruktion gemeinsam betrifft, nur das Stereogramm oder nur die 3D-Konstruktion.',
-    ids: ['pg-poles', 'poly-poles', 'v-dircolors', 'v-axes', 'pg-colorful', 'poly-lower', 'v-wulff', 'v-wulffrot', 'v-sphere', 'v-globe', 'v-plane', 'v-rays', 'v-normals', 'zone-btn', 'angle-btn-3d', 'view-oblique'],
+    intro: 'Weitere Optionen, nach Tafel geordnet: was Stereogramm und 3D-Konstruktion gemeinsam betrifft, nur das Stereogramm oder nur die 3D-Konstruktion. Die 3D-Konstruktion zoomt mit Mausrad, zwei Fingern oder − und + im Kopf der Tafel.',
+    ids: ['pg-poles', 'poly-poles', 'v-dircolors', 'v-axes', 'pg-colorful', 'poly-lower', 'v-wulff', 'v-wulffrot', 'v-sphere', 'v-globe', 'v-plane', 'v-rays', 'v-normals', 'zone-btn', 'angle-btn-3d', 'zoom-3d-ein', 'zoom-3d-aus', 'view-oblique'],
   },
 ];
 
@@ -114,7 +116,7 @@ export const FIG_TIPPS = { a: 'Stereogramm zeigen.', b: '3D-Konstruktion zeigen.
 
 /** Beschriftung in der ⓘ-Erklärung, wo der Text des Elements nicht passt. */
 export const LABELS = {
-  'zone-btn': 'Zone', 'angle-btn': 'Winkel', 'angle-btn-3d': 'Winkel', 'view-oblique': 'Ansichten in 3D', 'ctl-ex-dists': 'Abstände der Formen', 'break-mode': 'Art des Symmetriebruchs',
+  'zone-btn': 'Zone', 'angle-btn': 'Winkel', 'angle-btn-3d': 'Winkel', 'zoom-3d-ein': 'Vergrössern', 'zoom-3d-aus': 'Verkleinern', 'view-oblique': 'Ansichten in 3D', 'ctl-ex-dists': 'Abstände der Formen', 'break-mode': 'Art des Symmetriebruchs',
 };
 
 /** @import { Ablauf } from '../lib/common/js/ablauf.js' */

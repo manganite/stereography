@@ -8,8 +8,6 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Hinzugefügt
 
-- **Browserlauf der App** (`tools/app-pruefen.mjs`, CI-Job `pdf`, #142): beide Modi, alle Beispielkristalle, Telefon, Werkzeuge und Export im Kopf der Tafeln, Fehler in der Konsole.
-
 ### Entfernt
 
 - Ungenutzte Bilder `polzahl.png` und `flaechenzahl-form.png` im Wurzelverzeichnis (#142).

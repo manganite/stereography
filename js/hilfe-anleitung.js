@@ -42,7 +42,7 @@ export const KONZEPTE = [
   {
     id: 'symmetrie-brechen',
     titel: 'Symmetrie brechen',
-    text: `<p>Ohne „Symmetrie brechen“ sind nur die Gitterparameter frei, die das Kristallsystem zulässt; die Punktgruppe bleibt
+    text: `<p>„Symmetrie brechen“ im Abschnitt „Gitter“ gibt es bei Formen, nicht bei Beispielkristallen. Ohne den Schalter sind nur die Gitterparameter frei, die das Kristallsystem zulässt; die Punktgruppe bleibt
       erhalten. Mit dem Schalter lässt sich das Gitter so verzerren, dass sich die Punktgruppe ändert, auf einem von zwei
       Wegen: <b>Streckung</b> entlang einer Blickrichtung (z. B. der Würfel entlang [111] zum Rhomboeder) oder <b>Alle
       Parameter frei</b>. Die Kenndaten nennen dann die verbleibende Punktgruppe und in welche Formen die Form zerfällt.
@@ -68,7 +68,7 @@ export const BEREICHE = [
     eintraege: [
       { zeige: '#angle-btn', name: 'Winkel', text: 'Werkzeug: zwei Pole antippen; die Kenndaten nennen den Winkel zwischen ihnen und die Operation, die den einen in den anderen überführt.' },
       { zeige: '#export-stereo', name: 'Export', text: 'Stereogramm kopieren oder als SVG- bzw. PNG-Datei speichern.' },
-      { zeige: '#stereo', name: 'Stereogramm', text: 'Ausgangspol ziehen oder eine Stelle antippen; den Ausgangspol antippen wechselt die Halbkugel. Über einem Pol nennt der Tooltip (hkl), ρ und φ.' },
+      { zeige: '#stereo', name: 'Stereogramm', text: 'Ausgangspol ziehen oder eine Stelle antippen; den Ausgangspol antippen wechselt die Halbkugel.' },
       { zeige: '#legend', name: 'Legende', text: 'Pole oben (Punkt) und unten (Kreis), Zeichen der Symmetrieelemente und ihre Farben; was sie fachlich bedeuten, erklärt das <a href="skript.html#symmetrie">Skript, Kap. 4</a>.' },
     ],
   },
@@ -98,7 +98,7 @@ export const BEREICHE = [
       { id: 'experimente', zeige: '#sec-experimente > summary', name: 'Experimente', text: 'Kleine Versuche zu Formen, Zonen und Verzerrungen.' },
       { id: 'kristallform', zeige: '#ctl-poly > h2', name: 'Kristallform', text: 'Beispielkristall oder Kristallsystem und Form wählen, die Projektionsrichtung, Indizes und das Symmetriegerüst unter den Polen.' },
       { zeige: '#sec-more > summary', name: 'Weitere Optionen', text: 'Vier Indizes (hkil) bei hexagonalen Achsen und „Flächensymmetrie zeigen“: ein Muster auf jeder Fläche, dazu alle Formen in der Auswahl.' },
-      { id: 'gitter', zeige: '#ctl-poly-lat > summary', name: 'Gitter', text: 'Achsenverhältnisse und Winkel, soweit das Kristallsystem sie freigibt, und „Symmetrie brechen“.' },
+      { id: 'gitter', zeige: '#ctl-poly-lat > summary', name: 'Gitter', text: 'Achsenverhältnisse und Winkel, soweit das Kristallsystem sie freigibt, und „Symmetrie brechen“ (nur bei Formen, nicht bei Beispielkristallen).' },
       { id: 'gestalt', zeige: '#ctl-poly-shape > summary', name: 'Gestalt', text: 'Grösse des Kristalls, Abstände der Formen und offene Formen; ändert den Körper, nicht das Stereogramm.' },
       { id: 'darstellung', zeige: '#sec-view > summary', name: 'Darstellung', text: 'Pole, Pole der unteren Halbkugel, Farben nach Blickrichtung, Kristallachsen, Wulffsches Netz und die Teile der 3D-Konstruktion.' },
       { zeige: '#reset-alles', name: 'Alle Einstellungen zurücksetzen', text: 'Startzustand der App; Quiz und Experimente bleiben.' },
@@ -110,7 +110,7 @@ export const BEREICHE = [
       { zeige: '#zone-btn', name: 'Zone', text: 'Werkzeug: zwei Pole antippen; zeigt Zonenkreis, Zonenachse [uvw] und alle Flächen der Zone.' },
       { zeige: '#angle-btn', name: 'Winkel', text: 'Werkzeug: zwei Pole antippen; die Kenndaten nennen Normalen- und Flächenwinkel.' },
       { zeige: '#export-stereo', name: 'Export', text: 'Stereogramm kopieren oder als SVG- bzw. PNG-Datei speichern.' },
-      { zeige: '#stereo', name: 'Stereogramm', text: 'Pol antippen hebt ihn und seine Fläche hervor; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter. Über einem Pol nennt der Tooltip (hkl), ρ und φ.' },
+      { zeige: '#stereo', name: 'Stereogramm', text: 'Pol antippen hebt ihn und seine Fläche hervor; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter. Mit der Maus nennt der Tooltip über einem Pol (hkl), ρ und φ.' },
       { zeige: '#legend', name: 'Legende', text: 'Flächenpole oben (Punkt) und unten (Kreis), Farben der Formen.' },
     ],
   },
@@ -129,7 +129,7 @@ export const BEREICHE = [
     eintraege: [
       { zeige: '#info .info-head', name: 'Form bzw. Beispiel', text: 'Name der Form oder des Beispielkristalls und seine Punktgruppe.' },
       { zeige: '#info .zlist', name: 'Zonen dieses Kristalls', text: 'Nur mit dem Werkzeug „Zone“: alle Zonen mit mindestens drei Flächen, gruppiert nach gleichwertigen Zonenachsen; antippen wählt eine Gruppe oder eine Zone.' },
-      { zeige: '#info .facts', name: 'Eckdaten', text: 'Tracht, Habitus, Flächenzahl, Indexmuster, Wyckoff-Lage und Flächensymmetrie, Eigensymmetrie, Gitter und Projektionsrichtung. Jeder Begriff führt ins Skript.' },
+      { zeige: '#info .facts', name: 'Eckdaten', text: 'Bei einer Form: Tracht, Habitus, Flächenzahl, Indexmuster, Wyckoff-Lage und Flächensymmetrie, Eigensymmetrie, Gitter und Projektionsrichtung. Bei einem Beispielkristall (wie im Bild): Habitus, Flächenzahl, Gitter und Projektionsrichtung; die Tracht steht dann als Tabelle der Formen darüber. Jeder Begriff führt ins Skript.' },
       { zeige: '#info .explain > summary', name: 'Erläuterungen', text: 'Ausführlichere Erklärungen zu den Angaben, eingeklappt.' },
       { name: 'Symmetrie gebrochen', text: 'Mit „Symmetrie brechen“ nennen die Kenndaten die verbleibende Punktgruppe und die Formen, in die die Form zerfällt.' },
     ],
@@ -143,7 +143,7 @@ export const ANLEITUNGEN = [
     schritte: [
       { frage: '<b>Werkzeug „Winkel“ wählen.</b> Es steht im Kopf des Stereogramms.', handlung: { text: 'Winkel in 4<i>mm</i> wählen', hash: '#m=pg&g=4mm&w=winkel' }, zeige: '#angle-btn' },
       { frage: '<b>Zwei Pole antippen.</b> Der Bogen zwischen ihnen erscheint im Stereogramm und in 3D.', zeige: '#stereo' },
-      { frage: '<b>Ergebnis lesen.</b> Die Kenndaten nennen den Winkel und die Symmetrieoperation, die den ersten Pol in den zweiten überführt.', zeige: '#info' },
+      { frage: '<b>Ergebnis lesen.</b> Die Kenndaten nennen den Winkel und die Symmetrieoperation, die den ersten Pol in den zweiten überführt.' },
     ],
   },
   {
@@ -159,7 +159,7 @@ export const ANLEITUNGEN = [
     schritte: [
       { frage: '<b>Werkzeug „Winkel“ wählen.</b>', handlung: { text: 'Winkel am Topas wählen', hash: '#m=form&sys=orthorhombisch&bsp=topas&w=winkel' }, zeige: '#angle-btn' },
       { frage: '<b>Zwei Pole oder zwei Flächen antippen.</b> Der Grosskreisbogen zwischen den Polen erscheint im Stereogramm und auf der Umkugel.', zeige: '#stereo' },
-      { frage: '<b>Ergebnis lesen.</b> Die Kenndaten nennen den Normalenwinkel <i>n</i> und den Flächenwinkel <i>f</i> = 180° − <i>n</i>.', zeige: '#info' },
+      { frage: '<b>Ergebnis lesen.</b> Die Kenndaten nennen den Normalenwinkel <i>n</i> und den Flächenwinkel <i>f</i> = 180° − <i>n</i>.' },
     ],
   },
   {
@@ -176,8 +176,8 @@ export const ANLEITUNGEN = [
 export const FRAGEN = [
   {
     id: 'weniger-pole', frage: 'Warum sehe ich weniger Pole als erwartet?',
-    antwort: '<p>Der Ausgangspol liegt auf einem Symmetrieelement (spezielle Lage); dann fallen Pole zusammen, und es erscheinen weniger als die Ordnung der Gruppe. Die Kenndaten nennen die Lage mit Wyckoff-Lage und Lagesymmetrie. Den Pol ein Stück vom Element wegziehen.</p>',
-    app: '#m=pg&g=4mm&rho=0', skript: 'speziell',
+    antwort: '<p>Der Ausgangspol liegt auf einem Symmetrieelement (spezielle Lage); dann fallen Pole zusammen, und es erscheinen weniger als die Ordnung der Gruppe. Die Kenndaten nennen die Lage mit Wyckoff-Lage und Lagesymmetrie. Den Pol mehr als einige Grad vom Element wegziehen (sonst rastet er wieder ein) oder ρ und φ mit den Reglern einstellen.</p>',
+    app: '#m=pg&g=4mm&rho=0', skript: 'lage-pol',
   },
   {
     id: 'kreise', frage: 'Warum sind manche Pole Kreise?',
@@ -185,9 +185,9 @@ export const FRAGEN = [
     skript: 'projizieren',
   },
   {
-    id: 'regler-gesperrt', frage: 'Warum lässt sich ein Gitterregler nicht bewegen?',
-    antwort: '<p>Das Kristallsystem legt diesen Parameter fest (im kubischen System alle); darunter steht kurz, warum. Erst „Symmetrie brechen“ gibt ihn frei, dann ändert sich aber die Punktgruppe.</p>',
-    app: '#m=form&sys=tetragonal', skript: 'kristallsysteme',
+    id: 'regler-gesperrt', frage: 'Warum fehlen Gitterregler, oder warum sind sie gesperrt?',
+    antwort: '<p>Ohne Symmetriebruch zeigt der Abschnitt „Gitter“ nur die Parameter, die das Kristallsystem freigibt (im kubischen System keinen). Mit „Symmetrie brechen“ und „Streckung“ legt die Streckung das Gitter fest: Die Regler zeigen das Ergebnis und sind gesperrt. Einzeln ändern lassen sich alle Parameter mit „Alle Parameter frei“; dann ändert sich die Punktgruppe.</p>',
+    app: '#m=form&str=111,1.5', skript: 'kristallsysteme',
   },
   {
     id: 'stereogramm-gleich', frage: 'Warum ändert sich das Stereogramm nicht, wenn ich die Grösse oder die Abstände ändere?',

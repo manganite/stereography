@@ -5,6 +5,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { pruefeAblaeufe } from '../lib/common/js/ablauf.js';
 import { ABLAEUFE, ERSTE_SCHRITTE } from '../js/hilfetexte.js';
+import { KAPITEL } from '../js/quiz-kapitel.js';
+import { EXPERIMENTE } from '../js/hilfe-daten.js';
 import { ERZEUGTE, POLZAHL, FLAECHENZAHL, POLZAHL_PARAMS, FLAECHENZAHL_PARAMS, polzahlDaten, ordnung, lage, FZ_KANDIDATEN, gezeigteForm, ortText } from '../js/experimente.js';
 import { variante } from '../lib/common/js/ablauf.js';
 import { createState, applyHashTo, hashOf, generalPole, polyCrystal, effectiveLat } from '../js/scene.js';
@@ -39,6 +41,15 @@ const zustand = (h) => { const s = createState(); applyHashTo(s, h, DEFAULTS); r
 test('Lernexperimente und Erste Schritte: Daten vollständig, Adressen gültig, Modi und Anker bekannt', () => {
   const o = { hashGueltig: gueltig, modi: ['pg', 'poly'], anker: ANKER, aktionen: AKTIONEN };
   assert.deepEqual(pruefeAblaeufe([...ABLAEUFE, ...ERZEUGTE], o), []);
+  // in der Reihenfolge der Liste (hilfe-daten.js) mit den Kapiteln: bekannt und je Modus in ihrer Reihenfolge
+  assert.equal(EXPERIMENTE.length, ABLAEUFE.length + ERZEUGTE.length);
+  assert.deepEqual(pruefeAblaeufe(EXPERIMENTE, { ...o, kapitel: KAPITEL }), []);
+  for (const m of ['pg', 'poly']) {
+    const nr = EXPERIMENTE.filter((a) => a.modus === m).map((a) => KAPITEL.findIndex((k) => k.nr === a.kapitel));
+    assert.ok(nr.every((x, i) => x >= 0 && (i === 0 || x >= nr[i - 1])), `${m}: Kapitel ${nr}`);
+    // Ziel (Thomas, 7.11.2026, #115): 8 bis 12 Experimente je Modus, erzeugte mitgezählt
+    assert.ok(nr.length >= 8 && nr.length <= 12, `${m}: ${nr.length} Experimente`);
+  }
   assert.deepEqual(pruefeAblaeufe(ERSTE_SCHRITTE, o), []);
   for (const m of ['pg', 'poly']) {
     assert.ok(ABLAEUFE.filter((a) => a.modus === m).length >= 2, m);
@@ -249,4 +260,42 @@ test('Erzeugte Experimente: Querstriche nur in Symbolen aus format.js (#121)', (
   for (const g of ERZEUGTE) for (const p of g.params()) {
     for (const t of texte(g.make(p))) assert.doesNotMatch(ohneSymbole(t), /class="ov"/, `${g.id}:${p}: ${t}`);
   }
+});
+
+test('Lernexperimente (#115, 15.11.2026): Ordnung von 432, c/a = 1, Pol von (001) und c-Achse', () => {
+  // 432: 13 Drehachsen (3 + 4 + 6), 24 Operationen, 24 Pole aus dem allgemeinen Pol der Adresse
+  { const s = zustand(adresse('ordnung', 0)), info = buildPointGroup(s.pg.id);
+    assert.equal(s.pg.id, '432');
+    const n = [4, 3, 2].map((k) => info.axes.filter((a) => a.symbol === String(k)).length);
+    assert.deepEqual(n, [3, 4, 6]);
+    assert.equal(info.ops.length, 24);
+    // je n-zählige Achse n − 1 Drehungen, dazu die Identität
+    assert.equal(info.axes.reduce((sum, a) => sum + Number(a.symbol) - 1, 1), info.ops.length);
+    assert.equal(distinctPoles(orbit(info.ops, generalPole(s))).length, 24); }
+  // c/a = 1: die Pole der tetragonalen Dipyramide liegen wie beim Oktaeder; 4/mmm (16) und m3̄m (48) mit je 8 Flächen,
+  // Flächensymmetrie also der Ordnung 2 bzw. 6; ..m und .3m wie im Katalog
+  { const [t, k] = [0, 1].map((i) => zustand(adresse('metrik', i)));
+    assert.equal(effectiveLat(t).ca, 1);
+    assert.deepEqual([t.poly.presetId, k.poly.presetId], ['c', '001'], 'beide entlang c projiziert');
+    const [Ct, Ck] = [polyCrystal(t, FARBEN), polyCrystal(k, FARBEN)];
+    assert.deepEqual([Ct.groupId, Ck.groupId], ['4/mmm', 'm-3m']);
+    assert.deepEqual([Ct.faces.length, Ck.faces.length], [8, 8]);
+    assert.ok(Ct.faces.every((f) => Ck.faces.some((g) => Math.hypot(f.normal[0] - g.normal[0], f.normal[1] - g.normal[1], f.normal[2] - g.normal[2]) < 1e-9)), 'Pole gleich');
+    assert.deepEqual([buildPointGroup('4/mmm').ops.length / 8, buildPointGroup('m-3m').ops.length / 8], [2, 6]);
+    const [et, ek] = [t, k].map((s) => /** @type {import('../js/forms.js').Formeintrag} */ (entryById(s.poly.entryBySys[s.poly.system])));
+    assert.deepEqual([et.fs, ek.fs], ['..m', '.3m']);
+    assert.ok(t.poly.faceSym && k.poly.faceSym);
+    assert.equal(buildPointGroup('4/mmm').axes.filter((a) => a.symbol.replace('-', '') === '3').length, 0); }
+  // trikliner Kristall, Projektion ∥ c: c in der Mitte, Pol von (001) rund 15° daneben; b und (010) nicht aufeinander
+  { const s = zustand(adresse('achse-normale', 0)), C = polyCrystal(s, FARBEN);
+    assert.equal(C.sys, 'triklin'); assert.ok(s.view.axes);
+    assert.equal(s.poly.presetId, 'c', 'Projektion entlang c');
+    assert.deepEqual([effectiveLat(s).al, effectiveLat(s).be], [82, 104], 'Winkel wie in der Erklärung');
+    const achse = (/** @type {string} */ n) => /** @type {import('../lib/common/js/typen.js').Vec3} */ (C.axes.find((a) => a.name === n)?.dir);
+    const pol = (/** @type {string} */ h) => /** @type {import('../lib/common/js/typen.js').Vec3} */ (C.faces.find((f) => f.hkl.join(',') === h)?.normal);
+    const winkel = (/** @type {number[]} */ u, /** @type {number[]} */ v) => (Math.acos(Math.min(1, u[0] * v[0] + u[1] * v[1] + u[2] * v[2])) * 180) / Math.PI;
+    assert.deepEqual(achse('c'), [0, 0, 1]);
+    const w = winkel(achse('c'), pol('0,0,1'));
+    assert.ok(Math.abs(w - 15) < 1, `(001) neben c: ${w.toFixed(1)}°`);
+    assert.ok(winkel(achse('b'), pol('0,1,0')) > 5, 'b und (010)'); }
 });

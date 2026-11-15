@@ -4,12 +4,21 @@
 
 import { ERSTE_SCHRITTE, ABLAEUFE } from './hilfetexte.js';
 import { ERZEUGTE } from './experimente.js';
+import { KAPITEL } from './quiz-kapitel.js';
 
 /** @import { HilfeDaten } from '../lib/common/js/hilfe-seite.js' */
 /** @import { Experiment } from '../lib/common/js/ablauf.js' */
 
-/** Alle Experimente in der Reihenfolge der Liste (App und Hilfeseite): die festen, danach die erzeugten. @type {Experiment[]} */
-export const EXPERIMENTE = [...ABLAEUFE, ...ERZEUGTE];
+/**
+ * Alle Experimente in der Reihenfolge der Liste (App und Hilfeseite): die festen, je erzeugtes nach dem letzten festen
+ * desselben Modus aus seinem oder einem früheren Kapitel (Reihenfolge der Kapitel, Leitfaden Abschn. 5.3).
+ * @type {Experiment[]}
+ */
+export const EXPERIMENTE = ERZEUGTE.reduce((liste, e) => {
+  // Stelle nach dem letzten passenden Eintrag (ohne findLastIndex, das die Typprüfung mit ES2022 nicht kennt)
+  const i = liste.reduce((j, a, k) => (a.modus === e.modus && (a.kapitel ?? 0) <= (e.kapitel ?? 0) ? k : j), -1);
+  return [...liste.slice(0, i + 1), e, ...liste.slice(i + 1)];
+}, /** @type {Experiment[]} */ ([...ABLAEUFE]));
 
 /** Modi: Kennung, Name wie auf dem Tab, Link-Adresse, die ihn wählt. @type {HilfeDaten} */
 export const HILFE = {
@@ -19,4 +28,5 @@ export const HILFE = {
   ],
   ersteSchritte: ERSTE_SCHRITTE,
   experimente: EXPERIMENTE,
+  kapitel: KAPITEL,
 };

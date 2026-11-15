@@ -133,7 +133,7 @@ function antworten(richtig, falsch) {
 
 /** @type {Erzeugt} */
 export const POLZAHL = {
-  id: 'polzahl', modus: 'pg', titel: 'Wie viele Pole?',
+  id: 'polzahl', modus: 'pg', kapitel: 10, titel: 'Wie viele Pole?',
   params: POLZAHL_PARAMS,
   make(p) {
     const d = polzahlDaten(p);
@@ -172,7 +172,7 @@ export const FLAECHENZAHL_PARAMS = einmal(/** @returns {string[]} */ () => FZ_KA
 
 /** @type {Erzeugt} */
 export const FLAECHENZAHL = {
-  id: 'flaechenzahl-form', modus: 'poly', titel: 'Flächenzahl einer Form',
+  id: 'flaechenzahl-form', modus: 'poly', kapitel: 10, titel: 'Flächenzahl einer Form',
   params: FLAECHENZAHL_PARAMS,
   make(id) {
     const e = /** @type {Formeintrag} */ (entryById(id));

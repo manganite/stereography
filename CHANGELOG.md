@@ -6,6 +6,14 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Drei neue Experimente** (#115, Thomas, 13. und 15.11.2026): „Wie viele Operationen hat 432?“ (Ordnung zählt Operationen, nicht Achsen), „Liegt der Pol von (001) auf der *c*-Achse?“ (trikliner Kristall: Achse und gleich indizierter Flächenpol fallen nicht zusammen) und „Kubisch, wenn *c* = *a*?“ (die Flächensymmetrie unterscheidet die Dipyramide vom Oktaeder).
+
+### Geändert
+
+- **Experimente nach Kapiteln** (crystallography-common#107): Jedes Experiment nennt sein Kapitel; die Liste gliedert danach, sobald ein Modus 6 Experimente hat (ab der nächsten gemeinsamen Grundlage nur noch mit im Schnitt 2 je Kapitel, crystallography-common#146). Erzeugte Experimente stehen in ihrem Kapitel statt am Ende. Die Hilfeseite gliedert gleich.
+
 ## [1.17.0] - 2026-11-13
 
 Das ⓘ an den Überschriften erscheint jetzt auch mit der Maus und bricht nie allein um; gemeinsame Grundlage v0.20.0. Link-Adressen und Speicher bleiben gültig.

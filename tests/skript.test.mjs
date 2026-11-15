@@ -112,5 +112,5 @@ test('Verweise auf Abschnitte treffen einen Abschnitt, mit Nummer statt Titel', 
   const { befunde } = pruefeAbschnittsverweise(html);
   assert.deepEqual(befunde, []);
   // Verweise mit Titel statt Nummer (Thomas, 15.11.2026): nicht mehr „Abschnitt „…““ oder „nächster Abschnitt“
-  assert.doesNotMatch(html, /Abschnitts? „|nächste[rn]? Abschnitt/);
+  assert.doesNotMatch(html, /(nächste[nrs]?|vorige[nrs]?) Abschnitt|Abschnitts? „/);
 });

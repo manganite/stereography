@@ -1775,9 +1775,9 @@ function init() {
     ]),
   ]);
 
-  // Farbwechsel des Systems (hell/dunkel) → neu zeichnen
+  // Farbwechsel des Systems (hell/dunkel) und Wechsel des Geräts (Trefferkreise, data-zeiger) → neu zeichnen
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
-  new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-zeiger'] });
 
   setMode(state.mode);
 }

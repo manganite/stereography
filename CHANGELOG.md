@@ -6,6 +6,18 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Behoben
+
+- **Telefon:** Mit Galenit oder Pyrit scrollte die Seite waagrecht (Tabelle der Formen 9 px zu breit). Die Tabelle hat auf dem Telefon eine kleinere Schrift, trennt „Eigensymmetrie“ und scrollt notfalls in ihrem Rahmen (#142).
+
+### Hinzugefügt
+
+- **Browserlauf der App** (`tools/app-pruefen.mjs`, CI-Job `pdf`, #142): beide Modi, alle Beispielkristalle, Telefon, Werkzeuge und Export im Kopf der Tafeln, Fehler in der Konsole.
+
+### Entfernt
+
+- Ungenutzte Bilder `polzahl.png` und `flaechenzahl-form.png` im Wurzelverzeichnis (#142).
+
 ## [1.19.0] - 2026-11-15
 
 Hilfeseite als Anleitung zur Bedienung: Überblick, Bedienkonzepte, je Modus Seitenleiste, Stereogramm, 3D-Konstruktion und Kenndaten mit nummerierten Bildern, Anleitungen, Experimente, typische Fragen; jedes ⓘ verweist an die passende Stelle. README mit Bildern zu den Funktionen; gemeinsame Grundlage v0.22.0. Link-Adressen und Speicher bleiben gültig.

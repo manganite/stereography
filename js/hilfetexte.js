@@ -331,10 +331,10 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'metrik', modus: 'poly', kapitel: 3, titel: 'Tetragonal trotz <i>c</i> = <i>a</i>',
+    id: 'metrik', modus: 'poly', kapitel: 3, titel: 'Kubisch, wenn <i>c</i> = <i>a</i>?',
     schritte: [
       {
-        frage: 'Eine tetragonale Dipyramide {111} mit <i>c</i>/<i>a</i> = 1: Die drei Achsen sind gleich lang und stehen senkrecht aufeinander, die Pole liegen wie beim Oktaeder. Ist der Kristall damit kubisch?',
+        frage: 'Eine Dipyramide {111} der Punktgruppe 4/<i>mmm</i> mit <i>c</i>/<i>a</i> = 1: Die drei Achsen sind gleich lang und stehen senkrecht aufeinander, die Pole liegen wie beim Oktaeder. Ist der Kristall damit kubisch?',
         vermutung: ['ja', 'nein, er bleibt tetragonal'], richtig: 1,
         handlung: { text: '<i>c</i>/<i>a</i> = 1, mit Flächensymmetrie', hash: '#m=form&sys=tetragonal&f=4/mmm:e14&ca=1&muster=1&geruest=1' },
         beobachtung: 'Das Symmetriegerüst hat eine 4-zählige Achse und keine 3-zähligen. Das Muster auf jeder Fläche hat nur eine Spiegelebene (Flächensymmetrie ..<i>m</i>); die Punktgruppe bleibt 4/<i>mmm</i>.',
@@ -344,7 +344,7 @@ export const ABLAEUFE = [
       {
         frage: 'Zum Vergleich das Oktaeder in <i>m</i><span class="ov">3</span><i>m</i>.',
         handlung: { text: 'Oktaeder mit Flächensymmetrie', hash: '#m=form&sys=kubisch&f=m-3m:b35&muster=1&geruest=1' },
-        beobachtung: 'Die Pole liegen gleich, aber das Gerüst hat vier 3-zählige Achsen, und das Muster auf jeder Fläche eine 3-zählige Achse (Flächensymmetrie .3<i>m</i>).',
+        beobachtung: 'Die Pole liegen gleich, aber das Gerüst hat vier 3-zählige Achsen, und das Muster auf jeder Fläche hat eine 3-zählige Achse und drei Spiegelebenen (Flächensymmetrie .3<i>m</i>).',
         erklaerung: 'Die Lage der Pole allein legt die Punktgruppe nicht fest; erst die Flächensymmetrie unterscheidet die beiden Kristalle.',
         skript: 'allgemein',
       },
@@ -432,15 +432,15 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'achse-normale', modus: 'poly', kapitel: 7, titel: 'Liegt (001) auf der c-Achse?',
+    id: 'achse-normale', modus: 'poly', kapitel: 7, titel: 'Liegt der Pol von (001) auf der <i>c</i>-Achse?',
     schritte: [
       {
-        frage: 'Ein trikliner Kristall wird entlang der c-Achse projiziert; die c-Achse durchstösst das Stereogramm also in der Mitte. Liegt der Pol der Fläche (001) ebenfalls in der Mitte?',
+        frage: 'Ein trikliner Kristall wird entlang der <i>c</i>-Achse projiziert; die <i>c</i>-Achse durchstösst das Stereogramm also in der Mitte. Liegt der Pol der Fläche (001) ebenfalls in der Mitte?',
         vermutung: ['ja', 'nein, daneben'], richtig: 1,
         handlung: { text: 'Triklinen Kristall mit Kristallachsen zeigen', hash: '#m=form&sys=triklin&bsp=triklin&achsen=1' },
-        beobachtung: 'Die c-Achse (Kreuz mit c) liegt in der Mitte, der Pol von (001) rund 15° daneben. Auch die b-Achse und der Pol von (010) liegen nicht aufeinander.',
-        erklaerung: '(001) liegt parallel zu <i>a</i> und <i>b</i>; ihre Normale steht senkrecht auf beiden. Die c-Achse tut das nur, wenn α = β = 90° sind, im triklinen Kristall also nicht. Eine Richtung [<i>uvw</i>] und die Normale der Fläche (<i>hkl</i>) mit denselben Zahlen fallen im Allgemeinen nicht zusammen; für alle Indizes nur im kubischen System.',
-        skript: 'schnitt',
+        beobachtung: 'Die <i>c</i>-Achse (Kreuz mit <i>c</i>) liegt in der Mitte, der Pol von (001) rund 15° daneben. Auch die <i>b</i>-Achse und der Pol von (010) liegen nicht aufeinander.',
+        erklaerung: '(001) liegt parallel zu <i>a</i> und <i>b</i>; ihre Normale steht senkrecht auf beiden. Die <i>c</i>-Achse tut das nur, wenn α = β = 90° sind; in diesem Kristall sind α = 82° und β = 104°. Eine Richtung [<i>uvw</i>] und die Normale der Fläche (<i>hkl</i>) mit denselben Zahlen fallen im Allgemeinen nicht zusammen; für alle Indizes nur im kubischen System.',
+        skript: 'nichtkubisch',
       },
     ],
   },

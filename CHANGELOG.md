@@ -8,7 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Hinzugefügt
 
-- **Drei neue Experimente** (#115, Thomas, 13. und 15.11.2026): „Wie viele Operationen hat 432?“ (Ordnung zählt Operationen, nicht Achsen), „Liegt (001) auf der c-Achse?“ (trikliner Kristall: Achse und gleich indizierter Flächenpol fallen nicht zusammen) und „Tetragonal trotz *c* = *a*“ (die Flächensymmetrie unterscheidet die Dipyramide vom Oktaeder). Texte als Entwurf zur Freigabe.
+- **Drei neue Experimente** (#115, Thomas, 13. und 15.11.2026): „Wie viele Operationen hat 432?“ (Ordnung zählt Operationen, nicht Achsen), „Liegt der Pol von (001) auf der *c*-Achse?“ (trikliner Kristall: Achse und gleich indizierter Flächenpol fallen nicht zusammen) und „Kubisch, wenn *c* = *a*?“ (die Flächensymmetrie unterscheidet die Dipyramide vom Oktaeder).
 
 ### Geändert
 

@@ -269,12 +269,14 @@ test('Lernexperimente (#115, 15.11.2026): Ordnung von 432, c/a = 1, Pol von (001
     const n = [4, 3, 2].map((k) => info.axes.filter((a) => a.symbol === String(k)).length);
     assert.deepEqual(n, [3, 4, 6]);
     assert.equal(info.ops.length, 24);
-    assert.equal(3 * 3 + 4 * 2 + 6 * 1 + 1, 24);
+    // je n-zählige Achse n − 1 Drehungen, dazu die Identität
+    assert.equal(info.axes.reduce((sum, a) => sum + Number(a.symbol) - 1, 1), info.ops.length);
     assert.equal(distinctPoles(orbit(info.ops, generalPole(s))).length, 24); }
   // c/a = 1: die Pole der tetragonalen Dipyramide liegen wie beim Oktaeder; 4/mmm (16) und m3̄m (48) mit je 8 Flächen,
   // Flächensymmetrie also der Ordnung 2 bzw. 6; ..m und .3m wie im Katalog
   { const [t, k] = [0, 1].map((i) => zustand(adresse('metrik', i)));
     assert.equal(effectiveLat(t).ca, 1);
+    assert.deepEqual([t.poly.presetId, k.poly.presetId], ['c', '001'], 'beide entlang c projiziert');
     const [Ct, Ck] = [polyCrystal(t, FARBEN), polyCrystal(k, FARBEN)];
     assert.deepEqual([Ct.groupId, Ck.groupId], ['4/mmm', 'm-3m']);
     assert.deepEqual([Ct.faces.length, Ck.faces.length], [8, 8]);
@@ -287,6 +289,8 @@ test('Lernexperimente (#115, 15.11.2026): Ordnung von 432, c/a = 1, Pol von (001
   // trikliner Kristall, Projektion ∥ c: c in der Mitte, Pol von (001) rund 15° daneben; b und (010) nicht aufeinander
   { const s = zustand(adresse('achse-normale', 0)), C = polyCrystal(s, FARBEN);
     assert.equal(C.sys, 'triklin'); assert.ok(s.view.axes);
+    assert.equal(s.poly.presetId, 'c', 'Projektion entlang c');
+    assert.deepEqual([effectiveLat(s).al, effectiveLat(s).be], [82, 104], 'Winkel wie in der Erklärung');
     const achse = (/** @type {string} */ n) => /** @type {import('../lib/common/js/typen.js').Vec3} */ (C.axes.find((a) => a.name === n)?.dir);
     const pol = (/** @type {string} */ h) => /** @type {import('../lib/common/js/typen.js').Vec3} */ (C.faces.find((f) => f.hkl.join(',') === h)?.normal);
     const winkel = (/** @type {number[]} */ u, /** @type {number[]} */ v) => (Math.acos(Math.min(1, u[0] * v[0] + u[1] * v[1] + u[2] * v[2])) * 180) / Math.PI;

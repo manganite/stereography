@@ -90,10 +90,11 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   Ausbau (8.11.2026, Thomas, #115): alle Ideen, die ohne neue Bedienelemente gehen (Ideen aus dem Kursmaterial);
   je Modus in der Reihenfolge der Kapitel. Was neue Bedienelemente bräuchte, steht in #115. **Kapitel und Ausbau**
   (Thomas, 13. und 15.11.2026, crystallography-common#74 Punkt 4a): Jedes Experiment hat ein `kapitel` (das, in dem es vor
-  allem übt; „Allgemeine und spezielle Lage“ Kap. 10, „Liegt (001) auf der c-Achse?“ Kap. 7, weil dort Zonenachse und
-  Flächenpol unterschieden werden); erzeugte Experimente ordnet `hilfe-daten.js` nach dem letzten festen ihres Kapitels
-  ein. Gegliedert wird nach common ab 6 und im Schnitt 2 je Kapitel; „Kristallformen“ (10 in 6 Kapiteln) bleibt deshalb
-  flach. Drei neue nach der stärksten Fehlvorstellung aus dem Kursmaterial: Ordnung von 432 (Operationen, nicht
+  allem übt; „Allgemeine und spezielle Lage“ Kap. 10, „Liegt der Pol von (001) auf der c-Achse?“ Kap. 7, weil dort
+  Zonenachse und Flächenpol unterschieden werden); erzeugte Experimente ordnet `hilfe-daten.js` nach dem letzten festen
+  ihres Kapitels ein. Wann die Liste gegliedert wird, sagt Leitfaden Abschn. 5.3; mit der Fassung von common mit
+  crystallography-common#146 bleibt „Kristallformen“ (10 in 6 Kapiteln) flach, mit v0.20.0 ist sie noch gegliedert.
+  Titel verraten die Antwort nicht (Review PR #149: „Tetragonal trotz c = a“ wurde „Kubisch, wenn c = a?“). Drei neue nach der stärksten Fehlvorstellung aus dem Kursmaterial: Ordnung von 432 (Operationen, nicht
   Achsen zählen), (001) und c-Achse im triklinen Kristall ([uvw] ⊥ (hkl) nicht allgemein), *c*/*a* = 1 bleibt tetragonal
   (System aus der Symmetrie, nicht aus der Metrik; sichtbar an der Flächensymmetrie). Der Test verlangt 8 bis 12 je
   Modus, erzeugte mitgezählt.

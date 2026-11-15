@@ -610,8 +610,8 @@ function renderPoly() {
   const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
   const fp = state.poly.showPoles ? ' oder Pol' : '', fp2 = state.poly.showPoles ? ' oder zweiten Pol' : '';
   $('v3d-hint').textContent = state.poly.tool
-    ? [`${tn}: zwei Flächen${state.poly.showPoles ? ' oder Pole' : ''} antippen`, `${tn}: zweite Fläche${fp2} antippen`, `${state.poly.tool === 'zone' ? 'Zone bestimmt' : 'Winkel gemessen'}; nächstes Antippen beginnt neu`][Math.min(state.zoneSel.length, 2)]
-    : `Fläche${fp} antippen zum Hervorheben`;
+    ? [`${tn}: zwei Flächen${state.poly.showPoles ? ' oder Pole' : ''} wählen`, `${tn}: zweite Fläche${fp2} wählen`, `${state.poly.tool === 'zone' ? 'Zone bestimmt' : 'Winkel gemessen'}; die nächste Wahl beginnt neu`][Math.min(state.zoneSel.length, 2)]
+    : `Fläche${fp} wählen zum Hervorheben`;
   $('stereo-sub').textContent = 'Projektion ∥ ' + C.preset.name.replace(/ \(.*\)/, '');
   updateViews(polyViewDirections(C), col);
   syncDependentChecks();
@@ -747,7 +747,7 @@ function updateLegendPG(info, col, classes) {
     if (current && current.scene && current.scene.poles.some((P) => P.color)) items.push(`<span class="lg"><i class="sw" style="background:${col.muted}"></i>beides (spezielle Lage)</span>`);
   }
   if (polesOn && state.pg.tool) {
-    items.push(`<span class="lg hint">Winkel: zwei Pole antippen; liegen zwei übereinander, schaltet erneutes Antippen weiter („Winkel“ erneut drücken: beenden)</span>`);
+    items.push(`<span class="lg hint">Winkel: zwei Pole wählen; liegen zwei übereinander, schaltet erneutes Wählen weiter („Winkel“ erneut drücken: beenden)</span>`);
   } else if (polesOn) {
     items.push(`<span class="lg hint"><span class="only-fine">Ausgangspol ziehen oder Stelle anklicken; Ausgangspol anklicken: Halbkugel wechseln</span><span class="only-coarse">Ausgangspol ziehen oder Stelle antippen; Ausgangspol antippen: Halbkugel wechseln</span></span>`);
   }
@@ -780,10 +780,10 @@ function updateLegendPoly(C, col, fwClasses) {
   }
   const tn = state.poly.tool === 'zone' ? 'Zone' : 'Winkel';
   if (!state.poly.showPoles) {
-    items.push(`<span class="lg hint">Flächenpole ausgeblendet (einblenden unter „Darstellung“)${state.poly.tool ? ` · ${tn}: zwei Flächen in der 3D-Ansicht antippen` : ' · Fläche in der 3D-Ansicht antippen zum Hervorheben'}</span>`);
+    items.push(`<span class="lg hint">Flächenpole ausgeblendet (einblenden unter „Darstellung“)${state.poly.tool ? ` · ${tn}: zwei Flächen in der 3D-Ansicht wählen` : ' · Fläche in der 3D-Ansicht wählen zum Hervorheben'}</span>`);
   } else items.push(state.poly.tool
-    ? `<span class="lg hint">${tn}: zwei Pole hier oder zwei Flächen in der 3D-Ansicht antippen („${tn}“ erneut drücken: beenden)</span>`
-    : '<span class="lg hint">Pol oder Fläche antippen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Antippen weiter (mit Werkzeug auch auf beide) · Werkzeuge „Zone“ und „Winkel“</span>');
+    ? `<span class="lg hint">${tn}: zwei Pole hier oder zwei Flächen in der 3D-Ansicht wählen („${tn}“ erneut drücken: beenden)</span>`
+    : '<span class="lg hint">Pol oder Fläche wählen zum Hervorheben; liegen zwei Pole übereinander, schaltet erneutes Wählen weiter (mit Werkzeug auch auf beide) · Werkzeuge „Zone“ und „Winkel“</span>');
   $('legend').innerHTML = items.join('');
 }
 
@@ -841,7 +841,7 @@ function pgAngleBox(info, orb, col, classes, pgAngle, site) {
   if (!state.pg.tool) return '';
   if (!state.pg.showObject) return '<div class="zonebox">Winkel messen: „Objekt in allgemeiner Lage“ einschalten.</div>';
   if (!pgPolesOn(state)) return '<div class="zonebox">Winkel messen: „Flächenpole“ unter „Darstellung“ einschalten.</div>';
-  if (!pgAngle) return `<div class="zonebox">Winkel messen: ${state.pgSel.length ? 'einen zweiten Pol' : 'zwei Pole'} im Stereogramm antippen.</div>`;
+  if (!pgAngle) return `<div class="zonebox">Winkel messen: ${state.pgSel.length ? 'einen zweiten Pol' : 'zwei Pole'} im Stereogramm wählen.</div>`;
   const [i, j] = state.pgSel;
   const A = info.ops[orb[i].op], B = info.ops[orb[j].op];
   // Operation, die Pol i auf Pol j abbildet: M = B · A⁻¹ (A orthogonal: A⁻¹ = Aᵀ)
@@ -930,7 +930,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle, site, distinct) {
     <h3>Symmetrieelemente nach Blickrichtung</h3>
     <div class="dirlist">${rows.join('')}</div>
     ${classes.length ? explain('<p class="note">Jede Position im vollen Hermann-Mauguin-Symbol steht für eine Blickrichtung, d. h. eine Klasse symmetrisch äquivalenter Richtungen. Angegeben ist, was entlang dieser Richtungen liegt: Drehachsen parallel, Spiegelebenen senkrecht dazu. Elemente verschiedener Blickrichtungen sind nicht äquivalent. In der 3D-Ansicht lassen sich die Blickrichtungen oben links einzeln aus- und einblenden.</p>') : ''}
-    ${pgPolesOn(state) ? `<p class="note">${lageNote(true)} Der gestrichelte Ring markiert den Ausgangspol; Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).${snapHint}</p>`
+    ${pgPolesOn(state) ? `<p class="note">${lageNote(true)} Der gestrichelte Ring markiert den Ausgangspol; Anklicken oder Antippen des Ausgangspols spiegelt ihn auf die andere Halbkugel (ρ → −ρ).${snapHint}</p>`
     : state.pg.showObject ? `<p class="note">${lageNote(false)} Die Flächenpole sind ausgeblendet (einblenden unter „Darstellung“); ρ und φ des Ausgangspols lassen sich weiter mit den Reglern einstellen.</p>` : ''}`);
 }
 
@@ -1014,7 +1014,7 @@ function updateInfoPoly(C, col) {
   let zoneBox = '';
   if (state.poly.tool === 'angle') {
     if (!C.angle) {
-      zoneBox = `<div class="zonebox">Winkel messen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht antippen.</div>`;
+      zoneBox = `<div class="zonebox">Winkel messen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht wählen.</div>`;
     } else {
       const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
       const w = C.angle.deg;
@@ -1027,7 +1027,7 @@ function updateInfoPoly(C, col) {
     if (!C.zone) {
       zoneBox = state.zoneSel.length === 2
         ? '<div class="zonebox">Die beiden Flächen sind parallel und bestimmen keine Zone. Bitte eine andere Fläche wählen.</div>'
-        : `<div class="zonebox">Zone bestimmen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht antippen, oder unten Zonen wählen.</div>`;
+        : `<div class="zonebox">Zone bestimmen: ${state.zoneSel.length === 0 ? 'zwei Pole' : 'einen zweiten Pol'} im Stereogramm oder zwei Flächen in der 3D-Ansicht wählen, oder unten Zonen.</div>`;
     } else {
       const z = C.zone;
       const f1 = C.faces[state.zoneSel[0]].hkl, f2 = C.faces[state.zoneSel[1]].hkl;
@@ -1155,7 +1155,7 @@ function zoneListHTML(C, hex4) {
   }).join('');
   const chosen = C.selZones.map((z) => `<li><i class="sw" style="background:${z.color}"></i><b style="color:${z.color}">${dirHTML(z.uvw, hex4)}</b>, ${z.inZone.length} Flächen: ${z.inZone.map((k) => hklHTML(C.faces[k].hkl, hex4)).join(' ')}</li>`).join('');
   return `<div class="zlist"><h3>Zonen dieses Kristalls</h3>
-    ${groups ? `<p class="hintline">Zonen mit mindestens drei Flächen, gruppiert nach symmetrisch gleichwertigen Zonenachsen. Gruppe antippen: alle ihre Zonen; Richtung antippen: nur diese Zone.</p>${groups}`
+    ${groups ? `<p class="hintline">Zonen mit mindestens drei Flächen, gruppiert nach symmetrisch gleichwertigen Zonenachsen. Gruppe wählen: alle ihre Zonen; Richtung wählen: nur diese Zone.</p>${groups}`
     : '<p class="hintline">Keine Zone mit mindestens drei Flächen: An jeder Kante dieses Kristalls liegen nur zwei Flächen.</p>'}
     ${chosen ? `<h3>Gewählte Zonen</h3><ul class="zsel">${chosen}</ul><button type="button" class="linkbtn" data-zclear>Alle Zonen abwählen</button>` : ''}</div>`;
 }

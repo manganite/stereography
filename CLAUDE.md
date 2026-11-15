@@ -68,7 +68,7 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   Text bräche der Kopf schon bei 1280 px Fensterbreite um. Damit er auch bei 1024 px (iPad Pro hochkant, Tafeln 320 px)
   einzeilig bleibt, bricht der Untertitel unter den Titel um (Wahl Thomas statt eines zweizeiligen Kopfs). Anleitungstexte
   (Zählweise von ρ und φ, Ziehen des Ausgangspols, Hinweis zur Formauswahl, Streckung, Gestalt) stehen im ⓘ, in Tooltip
-  oder Legende; in der Seitenleiste bleiben Hinweise zum Zustand (kubisches Gitter ohne freie Parameter, ungültige Winkel,
+  oder Legende; Texte, die auch mit der Maus zu sehen sind (Legenden, Kenndaten, Hinweise), sagen „wählen“ statt „antippen“ (#147); in der Seitenleiste bleiben Hinweise zum Zustand (kubisches Gitter ohne freie Parameter, ungültige Winkel,
   gesperrte Regler).
 - **Bildexport** (24.10.; Menü seit crystallography-common#130, Thomas, 12.11.2026): Stereogramm als Kopie (PNG), SVG,
   PNG (2048 px); 3D als Kopie und PNG. Je Tafel ein Knopf „Export ▾“ mit Menü (`exportMenue`, Leitfaden Abschn. 4), statt

@@ -6,6 +6,11 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Tooltips** nach Leitfaden 5.3 gekürzt (nur Funktion oder nötige Angabe, höchstens 120 Zeichen); Ausführliches steht im ⓘ. Der Test `pruefeTooltips` läuft jetzt auch hier; „Skript“ und „?“ haben als Links keinen Tooltip mehr, „Link kopieren“ kein zusätzliches `title` (#138).
+- **„wählen“ statt „antippen“** in Legenden, Kenndaten und Hinweisen, die auch mit der Maus zu sehen sind (#147).
+
 ## [1.19.0] - 2026-11-15
 
 Hilfeseite als Anleitung zur Bedienung: Überblick, Bedienkonzepte, je Modus Seitenleiste, Stereogramm, 3D-Konstruktion und Kenndaten mit nummerierten Bildern, Anleitungen, Experimente, typische Fragen; jedes ⓘ verweist an die passende Stelle. README mit Bildern zu den Funktionen; gemeinsame Grundlage v0.22.0. Link-Adressen und Speicher bleiben gültig.

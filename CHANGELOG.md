@@ -12,7 +12,8 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
-- **Experimente nach Kapiteln** (crystallography-common#107): Jedes Experiment nennt sein Kapitel; die Liste gliedert danach, sobald ein Modus 6 Experimente hat (ab der nächsten gemeinsamen Grundlage nur noch mit im Schnitt 2 je Kapitel, crystallography-common#146). Erzeugte Experimente stehen in ihrem Kapitel statt am Ende. Die Hilfeseite gliedert gleich.
+- **Gemeinsame Grundlage** auf crystallography-common v0.21.0: Experimente gliedern nach Kapiteln nur noch, wenn im Schnitt mindestens 2 auf ein Kapitel kommen; „Kristallformen“ bleibt damit flach (10 Experimente in 6 Kapiteln), „Punktgruppen“ ist gegliedert, in der App und auf der Hilfeseite gleich.
+- **Experimente nach Kapiteln** (crystallography-common#107): Jedes Experiment nennt sein Kapitel; die Liste gliedert danach, sobald ein Modus 6 Experimente hat und im Schnitt mindestens 2 auf ein Kapitel kommen (gemeinsame Grundlage v0.21.0, unten). Erzeugte Experimente stehen in ihrem Kapitel statt am Ende. Die Hilfeseite gliedert gleich.
 
 ## [1.17.0] - 2026-11-13
 

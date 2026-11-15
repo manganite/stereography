@@ -70,6 +70,10 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   (Zählweise von ρ und φ, Ziehen des Ausgangspols, Hinweis zur Formauswahl, Streckung, Gestalt) stehen im ⓘ, in Tooltip
   oder Legende; in der Seitenleiste bleiben Hinweise zum Zustand (kubisches Gitter ohne freie Parameter, ungültige Winkel,
   gesperrte Regler).
+  **Zoom der 3D-Konstruktion** (#144, Leitfaden Abschn. 5.1): − und + im Kopf der Tafel als Symbol wie in plane-groups, an
+  den Grenzen von Rad und zwei Fingern gesperrt, auf dem Telefon nicht (zwei Finger). Werkzeuge, Zoom und Export bilden
+  eine Gruppe (`.kopfknoepfe`), die als Ganzes rechtsbündig umbricht: In „Kristallformen“ ist der Kopf der 3D-Tafel bei
+  1024 px damit zweizeilig (75 statt 50 px; ohne Gruppe brach „Export“ allein links um), sonst überall einzeilig.
 - **Bildexport** (24.10.; Menü seit crystallography-common#130, Thomas, 12.11.2026): Stereogramm als Kopie (PNG), SVG,
   PNG (2048 px); 3D als Kopie und PNG. Je Tafel ein Knopf „Export ▾“ mit Menü (`exportMenue`, Leitfaden Abschn. 4), statt
   der früheren Regel „kein Formatmenü“: Der Kopf der Tafel soll einzeilig bleiben. In der Vorschau (`STEREO_PREVIEW`) nur

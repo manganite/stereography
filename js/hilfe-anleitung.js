@@ -75,6 +75,7 @@ export const BEREICHE = [
   {
     id: 'konstruktion', modus: 'pg', titel: 'Tafel 3D-Konstruktion', ausschnitt: '.p-b',
     eintraege: [
+      { zeige: '.p-b .zoomtools', name: 'Zoom', text: '+ und − zoomen wie Mausrad oder zwei Finger, für die Tastatur; an den Grenzen gesperrt.' },
       { zeige: '#export-3d', name: 'Export', text: 'Ansicht kopieren oder als PNG-Datei speichern (kein SVG).' },
       { zeige: '#v3d-dirs', name: 'Blickrichtungen ausblenden', text: 'Je Blickrichtung des Symbols ein Knopf: blendet ihre Symmetrieelemente in 3D aus und wieder ein.' },
       { zeige: '.p-b .viewbar', name: 'Blick', text: '„Schräg“ zeigt Kugel, Kristall und Äquatorebene schräg von oben (Startansicht); die übrigen Knöpfe blicken entlang einer der drei Blickrichtungen. Liegt sie parallel zur Projektionsrichtung, sieht man das Bild wie im Stereogramm.' },
@@ -119,6 +120,7 @@ export const BEREICHE = [
     eintraege: [
       { zeige: '#zone-btn-3d', name: 'Zone', text: 'Dasselbe Werkzeug wie über dem Stereogramm; Flächen statt Pole antippen.' },
       { zeige: '#angle-btn-3d', name: 'Winkel', text: 'Dasselbe Werkzeug wie über dem Stereogramm.' },
+      { zeige: '.p-b .zoomtools', name: 'Zoom', text: '+ und − zoomen wie Mausrad oder zwei Finger, für die Tastatur; an den Grenzen gesperrt.' },
       { zeige: '#export-3d', name: 'Export', text: 'Ansicht kopieren oder als PNG-Datei speichern (kein SVG).' },
       { zeige: '.p-b .viewbar', name: 'Blick', text: '„Schräg“ zeigt Kugel, Kristall und Äquatorebene schräg von oben (Startansicht); die übrigen Knöpfe blicken entlang der Blickrichtungen des Kristallsystems.' },
       { zeige: '.p-b .panel-foot', name: 'Drehen und zoomen', text: 'Ziehen dreht den Kristall, Mausrad oder zwei Finger zoomen.' },

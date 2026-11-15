@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Hinzugefügt
+
+- **Zoom der 3D-Konstruktion mit − und +** im Kopf der Tafel, für die Tastatur wie Mausrad und zwei Finger; an den Grenzen gesperrt, auf dem Telefon ausgeblendet. Tooltips, ⓘ und Hilfeseite nachgeführt (#144).
+
 ## [1.19.0] - 2026-11-15
 
 Hilfeseite als Anleitung zur Bedienung: Überblick, Bedienkonzepte, je Modus Seitenleiste, Stereogramm, 3D-Konstruktion und Kenndaten mit nummerierten Bildern, Anleitungen, Experimente, typische Fragen; jedes ⓘ verweist an die passende Stelle. README mit Bildern zu den Funktionen; gemeinsame Grundlage v0.22.0. Link-Adressen und Speicher bleiben gültig.

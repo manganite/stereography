@@ -188,6 +188,25 @@ export class View3D {
     this._placeCamera(v);
   }
 
+  /**
+   * Zoom um einen Faktor (> 1 näher, < 1 weiter weg), in den Grenzen der Drehung mit Rad und zwei Fingern
+   * (minDistance, maxDistance). Für die Knöpfe + und − (#144).
+   * @param {number} faktor
+   */
+  zoom(faktor) {
+    const weg = this.camera.position.clone().sub(this.controls.target);
+    const d = Math.min(this.controls.maxDistance, Math.max(this.controls.minDistance, weg.length() / faktor));
+    this.camera.position.copy(this.controls.target).add(weg.setLength(d));
+    this.controls.update();
+    this.requestRender();
+  }
+
+  /** Ob noch näher (ein) bzw. weiter weg (aus) gezoomt werden kann. */
+  zoomFrei() {
+    const d = this.camera.position.distanceTo(this.controls.target);
+    return { ein: d > this.controls.minDistance + 1e-6, aus: d < this.controls.maxDistance - 1e-6 };
+  }
+
   /** Aktuelle Blickrichtung (Einheitsvektor vom Zentrum zur Kamera). */
   viewDir() {
     return this.camera.position.clone().sub(this.controls.target).normalize().toArray();

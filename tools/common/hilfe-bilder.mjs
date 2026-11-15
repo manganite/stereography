@@ -68,19 +68,6 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
       try {
         await page.goto(basis + app + b.adresse, { waitUntil: 'load' });
         await page.evaluate(() => document.fonts.ready);
-        // Bedienhandlungen für Zustand, der nicht in der Adresse steht (Werkzeug, Striche)
-        for (const h of b.vorher ?? []) {
-          if ('klick' in h) { await page.click(h.klick); continue; }
-          const box = await page.locator(h.ziehen).boundingBox();
-          if (!box || !h.punkte.length) throw new Error(`kein Element ${h.ziehen} zum Ziehen unter ${b.adresse}`);
-          const pt = (/** @type {[number, number]} */ [fx, fy]) => [box.x + fx * box.width, box.y + fy * box.height];
-          const [x0, y0] = pt(h.punkte[0]);
-          await page.mouse.move(x0, y0);
-          await page.mouse.down();
-          for (const p of h.punkte.slice(1)) { const [x, y] = pt(p); await page.mouse.move(x, y, { steps: 8 }); }
-          await page.mouse.up();
-        }
-        if (b.vorher) await page.waitForTimeout(200);
         // 1. Abschnitte aufklappen, Ausschnitt bestimmen und die nötige Höhe des Fensters messen
         const vorbereitet = await page.evaluate(({ zeige, ausschnitt, baustein }) => {
           /** @type {Element[]} */
@@ -115,6 +102,29 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
           await page.setViewportSize({ width: BREITE, height: Math.min(HOEHE_MAX, vorbereitet.hoehe) });
           await page.waitForTimeout(100);
         }
+        // Bedienhandlungen für Zustand, der nicht in der Adresse steht (Werkzeug, Striche): nach dem Aufklappen und der
+        // Grösse des Fensters, damit kein Neuzeichnen danach den Zustand ändert
+        for (const h of b.vorher ?? []) {
+          if ('klick' in h) { await page.click(h.klick, { timeout: 5000 }); continue; }
+          if (h.punkte.length < 2) throw new Error(`Ziehen über ${h.ziehen} ohne mindestens zwei Punkte`);
+          const ort = page.locator(h.ziehen);
+          await ort.scrollIntoViewIfNeeded({ timeout: 5000 });
+          const box = await ort.boundingBox();
+          if (!box) throw new Error(`kein sichtbares Element ${h.ziehen} zum Ziehen unter ${b.adresse}`);
+          const fenster = page.viewportSize() ?? { width: BREITE, height: HOEHE };
+          const pt = (/** @type {[number, number]} */ [fx, fy]) => [box.x + fx * box.width, box.y + fy * box.height];
+          const punkte = h.punkte.map(pt);
+          if (punkte.some(([x, y]) => x < 0 || y < 0 || x > fenster.width || y > fenster.height)) throw new Error(`Ziehen über ${h.ziehen}: Punkte ausserhalb des Fensters`);
+          await page.mouse.move(punkte[0][0], punkte[0][1]);
+          await page.mouse.down();
+          for (const [x, y] of punkte.slice(1)) await page.mouse.move(x, y, { steps: 8 });
+          await page.mouse.up();
+        }
+        if (b.vorher) {
+          // Zeiger weg, damit kein Tooltip ins Bild gerät
+          await page.mouse.move(0, 0);
+          await page.waitForTimeout(200);
+        }
         // 2. an den Ausschnitt scrollen, Marken zeichnen, Ausschnitt in Koordinaten des Fensters zurückgeben
         const rahmen = await page.evaluate(({ zeige, nummern, ausschnitt, baustein, rand, marke }) => {
           const els = zeige.map((sel) => /** @type {Element} */ (document.querySelector(sel)));
@@ -126,7 +136,11 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
           const teile = boxen.map((e) => e.getBoundingClientRect());
           const rects = els.map((el) => el.getBoundingClientRect());
           /** @type {{ left: number, top: number, right: number, bottom: number }[]} */
+          /** @type {number[]} */
+          const notfall = [];
           const belegt = rects.map((r) => ({ left: r.left - 4, top: r.top - 4, right: r.right + 4, bottom: r.bottom + 4 }));
+          /** Marke, die das Element umschliesst (verschachtelte Einträge): ihre Fläche ist kein Hindernis. @param {{ left: number, top: number, right: number, bottom: number }} o @param {DOMRect} r */
+          const umfasst = (o, r) => o.left <= r.left && o.top <= r.top && o.right >= r.right && o.bottom >= r.bottom;
           /** @param {{ left: number, top: number, right: number, bottom: number }} a @param {{ left: number, top: number, right: number, bottom: number }} b */
           const schneidet = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
           els.forEach((el, i) => {
@@ -144,20 +158,22 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
             const r = rects[i];
             // Nummer: Lagen der Reihe nach probieren, die erste, die keine andere Marke und keine Nummer überdeckt.
             // Grosse Elemente (z. B. Tafel): links davor nahe der oberen Ecke, sonst auf der oberen Rahmenlinie nahe der
-            // linken, dann der rechten Ecke (dort kann die Nummer eine Überschrift darüber streifen); breite (z. B. Überschrift eines Abschnitts): links davor; sonst darüber, darunter, links, rechts;
+            // linken, dann der rechten Ecke (dort kann die Nummer eine Überschrift darüber streifen); breite (z. B. Überschrift eines Abschnitts, nicht in einer anderen Marke): links davor; sonst darüber, darunter, links, rechts;
             // zuletzt innen in der Ecke oben links.
             const d = 20, h = d / 2;
             const gross = r.width > 140 && r.height > 80, breit = r.width > 140;
             /** @param {number} x @param {number} y @returns {[number, number]} */
             const p2 = (x, y) => [x, y];
             const lagen = gross ? [p2(r.left - 6 - h, r.top + 10 + h), p2(r.left + 10 + h, r.top - 4), p2(r.right - 10 - h, r.top - 4)]
-              : [...(breit ? [p2(r.left - 6 - h, r.top + r.height / 2)] : []), p2(r.left + r.width / 2, r.top - 2 - h), p2(r.left + r.width / 2, r.bottom + 2 + h),
+              : [...(breit && !belegt.some((o, j) => j !== i && umfasst(o, r)) ? [p2(r.left - 6 - h, r.top + r.height / 2)] : []), p2(r.left + r.width / 2, r.top - 2 - h), p2(r.left + r.width / 2, r.bottom + 2 + h),
                 p2(r.left - 6 - h, r.top + r.height / 2), p2(r.right + 6 + h, r.top + r.height / 2)];
             /** @param {[number, number]} p */
             const box = ([x, y]) => ({ left: x - h, top: y - h, right: x + h, bottom: y + h });
-            const frei = lagen.find((p) => { const b = box(p); return b.left >= 2 && b.top >= 2 && belegt.every((o, j) => j === i || !schneidet(b, o)); });
-            const [x, y] = frei ?? [r.left + h + 2, r.top + h + 2];
-            const cx = Math.min(innerWidth - h - 2, Math.max(h + 2, x)), cy = Math.max(h + 2, y);
+            const frei = lagen.find((p) => { const b = box(p); return b.left >= 2 && b.top >= 2 && b.right <= innerWidth - 2 && b.bottom <= innerHeight - 2 && belegt.every((o, j) => j === i || umfasst(o, r) || !schneidet(b, o)); });
+            if (!frei) notfall.push(i + 1);
+            // Notlösung: bei grossen Elementen auf der oberen Rahmenlinie (streift höchstens einen Nachbarrahmen), sonst innen
+            const [x, y] = frei ?? (gross ? [r.left + 10 + h, Math.max(h + 2, r.top - 4)] : [r.left + h + 2, r.top + h + 2]);
+            const cx = x, cy = y;
             const n = document.createElement('div');
             n.setAttribute('data-hilfe-marke', '');
             n.textContent = String(i + 1);
@@ -173,10 +189,11 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
           });
           const links = Math.max(0, Math.min(...teile.map((t) => t.left)) - rand), oben = Math.max(0, Math.min(...teile.map((t) => t.top)) - rand);
           const rechts = Math.min(innerWidth, Math.max(...teile.map((t) => t.right)) + rand), unten = Math.min(innerHeight, Math.max(...teile.map((t) => t.bottom)) + rand);
-          return { x: links, y: oben, width: rechts - links, height: unten - oben };
+          return { x: links, y: oben, width: rechts - links, height: unten - oben, notfall };
         }, { zeige: b.zeige, nummern: b.nummern, ausschnitt: b.ausschnitt ?? null, baustein: BAUSTEIN, rand: RAND, marke: MARKE });
         if (rahmen.width < 1 || rahmen.height < 1) throw new Error(`${b.zeige.join(', ')} ist nicht sichtbar`);
-        await page.screenshot({ path: join(ordner, b.datei), clip: rahmen, animations: 'disabled' });
+        if (rahmen.notfall.length) fehler.push(`${b.quelle}: Nummer ${rahmen.notfall.join(', ')} ohne freien Platz (Notlösung)`);
+        await page.screenshot({ path: join(ordner, b.datei), clip: { x: rahmen.x, y: rahmen.y, width: rahmen.width, height: rahmen.height }, animations: 'disabled' });
         dateien.push(b.datei);
         if (konsole.length) fehler.push(`${b.quelle}: Fehler der Seite: ${konsole.join('; ')}`);
       } catch (e) {

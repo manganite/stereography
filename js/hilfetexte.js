@@ -8,8 +8,8 @@ export const TIPS = {
   'tab-poly': 'Kristallformen und Beispielkristalle: Flächen, ihre Pole im Stereogramm und der Kristall in 3D.',
   'copy-link': 'Link auf genau diese Ansicht in die Zwischenablage kopieren.',
   // Punktgruppen
-  'pg-elements': 'Drehachsen als Symbole an ihren Durchstosspunkten, Spiegelebenen als kräftige Grosskreise, im Stereogramm und in 3D.',
-  'pg-object': 'Einen Pol auf keinem Symmetrieelement und seine Bilder unter allen Operationen; ihre Zahl ist die Ordnung der Gruppe.',
+  'pg-elements': 'Drehachsen, Spiegelebenen und Inversionszentrum der Punktgruppe im Stereogramm und in 3D.',
+  'pg-object': 'Ausgangspol und seine Bilder unter allen Operationen; in allgemeiner Lage ist ihre Zahl die Ordnung der Gruppe.',
   'pg-poles': 'Pole im Stereogramm und auf der Umkugel zeigen; ausgeschaltet bleiben die Objekte in 3D.',
   'pg-colorful': 'Pole aus Drehungen des Ausgangspols in einer Farbe, Spiegelbilder (Spiegelung, Inversion, Drehinversion) in der anderen.',
   'pg-theta': 'Poldistanz ρ des Ausgangspols vom Nordpol (Zentrum); negativ: untere Halbkugel, vom Südpol gezählt.',
@@ -23,11 +23,11 @@ export const TIPS = {
   'poly-labels': 'Schreibt die Indizes (hkl) an jeden Flächenpol und an die Flächen in 3D.',
   'poly-bravais': 'Vier Indizes (hkil) mit i = −(h + k) statt drei.',
   'poly-lower': 'Pole von Flächen, die vom Betrachter wegzeigen, als Kreise; ausgeschaltet nur die obere Halbkugel.',
-  'poly-facesym': 'Asymmetrisches Muster je Fläche; seine Wiederholung zeigt die Flächensymmetrie. Die Formauswahl bietet dann alle Formen.',
+  'poly-facesym': 'Asymmetrisches Muster je Fläche; seine Wiederholung zeigt die Flächensymmetrie, ähnlich wie Ätzfiguren.',
   'poly-frame': 'Symmetrieelemente der Punktgruppe im Stereogramm unter die Pole legen.',
   // Gitter
-  'lat-ba': 'Achsenverhältnis b/a; es ändert die Winkel zwischen den Flächen und damit die Lage der Pole.',
-  'lat-ca': 'Achsenverhältnis c/a; es ändert die Winkel zwischen den Flächen und damit die Lage der Pole.',
+  'lat-ba': 'Achsenverhältnis b/a.',
+  'lat-ca': 'Achsenverhältnis c/a.',
   'lat-al': 'Winkel α zwischen den Achsen b und c.',
   'lat-be': 'Winkel β zwischen den Achsen a und c.',
   'lat-ga': 'Winkel γ zwischen den Achsen a und b.',
@@ -35,11 +35,11 @@ export const TIPS = {
   'break-mode': 'Streckung: entlang einer Blickrichtung, vom unverzerrten Gitter aus. Alle Parameter frei: jeder einzeln, vom gezeigten Gitter aus.',
   'lat-reset': 'Gitterparameter und Streckung auf die Ausgangswerte zurücksetzen.',
   'stretch-dir': 'Blickrichtung, entlang der Gitter und Kristall gestreckt werden; nur solche, entlang derer sich die Symmetrie ändert.',
-  'stretch-s': 'Über 1 strecken, unter 1 stauchen; die Kenndaten zeigen die übrige Punktgruppe und den Zerfall der Form.',
-  'poly-size': 'Grösse des Kristalls in 3D; das Stereogramm bleibt gleich.',
-  'ctl-ex-dists': 'Zentralabstand jeder Form; er ändert Gestalt und Habitus, nicht das Stereogramm.',
-  'poly-open': 'Pyramiden, Prismen, Pedien und Pinakoide ohne graue Ergänzungsformen zeigen; allein schliessen sie keinen Raum ein.',
-  'poly-aux': 'Abstand der grauen Ergänzungsformen vom Zentrum; er ändert nur die Gestalt.',
+  'stretch-s': 'Über 1 strecken, unter 1 stauchen, entlang der gewählten Richtung.',
+  'poly-size': 'Grösse des Kristalls in 3D.',
+  'ctl-ex-dists': 'Zentralabstand jeder Form; er ändert Gestalt und Habitus.',
+  'poly-open': 'Formen, die allein keinen Raum einschliessen, ohne graue Ergänzungsformen zeigen.',
+  'poly-aux': 'Abstand der grauen Ergänzungsformen vom Zentrum.',
   // Gestalt
   'shape-reset': 'Grösse und Abstände auf die Ausgangswerte zurücksetzen.',
   // Darstellung
@@ -84,7 +84,7 @@ export const SECTIONS = [
   {
     heading: '#ctl-poly > h2',
     hilfe: '{modus}-kristallform',
-    intro: 'Pol oder Fläche anklicken oder antippen hebt beide hervor: Jede Fläche hat genau einen Pol. Die Auswahl „Form“ bietet je Punktgruppe die allgemeine Form und die Formen mit der Punktgruppe als Eigensymmetrie an, im trigonalen System auch das trigonale und das hexagonale Prisma (Eigensymmetrie hexagonal); alle Formen mit „Flächensymmetrie zeigen“; dessen Muster zeigt die Flächensymmetrie ähnlich wie Ätzfiguren. Liegt ein Pol auf einem Symmetrieelement, gehört er zu einer speziellen Form.',
+    intro: 'Pol oder Fläche anklicken oder antippen hebt beide hervor: Jede Fläche hat genau einen Pol. Im trigonalen System bietet die Auswahl „Form“ auch das trigonale und das hexagonale Prisma an (Eigensymmetrie hexagonal). Liegt ein Pol auf einem Symmetrieelement, gehört er zu einer speziellen Form.',
     ids: ['ex-select', 'sys-select', 'form-select', 'preset-select', 'poly-labels', 'poly-frame', 'poly-bravais', 'poly-facesym'],
   },
   {

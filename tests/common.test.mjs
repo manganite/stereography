@@ -58,7 +58,8 @@ test('Tooltips: jedes Bedienelement mit id hat einen, kurz (pruefeTooltips, Leit
   const { TIPS } = await import('../js/hilfetexte.js');
   // Ausnahmen: Links, Schliessen „×“, das Export-Menü (Leitfaden Abschn. 5.3)
   const ohne = ['skript-link', 'quiz-link', 'help-open', 'intro-close', 'export-stereo', 'export-3d'];
-  // Längere Tooltips nur als ausdrückliche Ausnahme, wo sonst eine Angabe zur Funktion fehlte (Leitfaden Abschn. 5.3)
+  // Längere Tooltips nur als ausdrückliche Ausnahme, wo sonst eine Angabe zur Funktion fehlte (Leitfaden Abschn. 5.3);
+  // mit der nächsten Übernahme von common über die Option `laenger` von pruefeTooltips (Grenze dort 160)
   const laenger = /** @type {(keyof typeof TIPS)[]} */ (['break-mode']);
   const html = read('index.html');
   assert.deepEqual(pruefeTooltips(html, TIPS, { ohne }).filter((f) => !laenger.some((id) => f.startsWith(`${id}: Tooltip mit`))), []);

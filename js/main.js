@@ -16,8 +16,8 @@ import { normalize } from './linalg.js';
 import { View3D, OBLIQUE } from './view3d.js';
 import { EXAMPLES, exampleById } from './examples.js';
 import { VERSION } from './version.js';
-import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
-import { TIPS, SECTIONS, LABELS, ERSTE_SCHRITTE } from './hilfetexte.js';
+import { initHelp, showTipAt, hideTip, setTip } from '../lib/common/js/help.js';
+import { TIPS, SECTIONS, LABELS, ERSTE_SCHRITTE, FIG_TIPPS } from './hilfetexte.js';
 import { EXPERIMENTE } from './hilfe-daten.js';
 import { KAPITEL } from './quiz-kapitel.js';
 import { experimentAusAdresse } from '../lib/common/js/hilfe-seite.js';
@@ -1405,7 +1405,8 @@ function setMode(mode) {
 
 function init() {
   buildGroupPicker();
-  initHelp({ tips: TIPS, sections: SECTIONS, labels: LABELS });
+  initHelp({ tips: TIPS, sections: SECTIONS, labels: LABELS, hilfeModus: () => state.mode });
+  for (const b of elemente('.figswitch button')) { const t = FIG_TIPPS[/** @type {'a' | 'b'} */ (b.dataset.fig)]; if (t) setTip(b, t); }
   refreshPolyControls();
 
   bindCheck('pg-elements', state.pg, 'showElements');
@@ -1704,8 +1705,11 @@ function init() {
   experimente = ablaufKarte($('experimente'), EXPERIMENTE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, speicher: 'stereo-experimente', kapitel: KAPITEL });
   einstieg.modus(state.mode); experimente.modus(state.mode);
   // Von der Hilfeseite: „In der App ausprobieren“ startet ein Experiment (index.html?experiment=<id>#…)
-  experimentAusAdresse(experimente, EXPERIMENTE.map((x) => x.id), () => {
-    const d = abschnitt('sec-experimente'); d.open = true; d.scrollIntoView({ block: 'nearest' });
+  // (in den Modus des Experiments wechseln und die Erste Schritte schliessen, die ohne Hash sonst zugleich erschienen)
+  experimentAusAdresse(experimente, EXPERIMENTE, {
+    modusWaehlen: (m) => { setMode(m === 'poly' ? 'poly' : 'pg'); render(); },
+    einstiegSchliessen: () => showIntro(false),
+    oeffnen: () => { const d = abschnitt('sec-experimente'); d.open = true; d.scrollIntoView({ block: 'nearest' }); },
   });
 
   $('copy-link').addEventListener('click', async () => {

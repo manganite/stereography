@@ -40,11 +40,15 @@ test('keine Kopien gemeinsamer Module mehr in js/', () => {
   for (const f of ['format.js', 'help.js', 'quiz-core.js']) assert.throws(() => read(`js/${f}`), `js/${f}`);
 });
 
-test('Hilfeseite: Modi, abgebildete Bedienelemente und Bilder passen zur App (pruefeHilfe)', async () => {
+test('Hilfeseite: Modi, abgebildete Bedienelemente, Bilder und Verweise aus dem ⓘ passen zur App (pruefeHilfe)', async () => {
   const { pruefeHilfe } = await import('../lib/common/js/hilfe-seite.js');
   const { HILFE } = await import('../js/hilfe-daten.js');
+  const { SECTIONS } = await import('../js/hilfetexte.js');
   const dateien = readdirSync(new URL('../hilfe/', import.meta.url));
-  assert.deepEqual(pruefeHilfe(HILFE, { html: read('index.html'), dateien }), []);
+  // jede ⓘ-Erklärung verweist auf die Hilfeseite (Leitfaden 5.3), und die Ziele (`hilfe` in SECTIONS) stehen dort
+  assert.deepEqual(SECTIONS.filter((s) => !s.hilfe).map((s) => s.heading), []);
+  const verweise = SECTIONS.flatMap((s) => (s.hilfe ? [s.hilfe] : []));
+  assert.deepEqual(pruefeHilfe(HILFE, { html: read('index.html'), dateien, verweise }), []);
   // „?“ führt zur Hilfeseite (Leitfaden Abschn. 5.3)
   assert.match(read('index.html'), /<a class="helpbtn" id="help-open" href="hilfe\.html"/);
 });

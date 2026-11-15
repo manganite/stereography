@@ -95,6 +95,12 @@
 .formtab td.num { font-variant-numeric: tabular-nums; }
 .formtab .sw, .exd .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: baseline; }
 .formtab tr.gone td { color: var(--muted); }
+/* Telefon: die Tabelle der Formen passt mit kleinerer Schrift; sonst scrollt sie in ihrem Rahmen statt der Seite (#142) */
+.formscroll { overflow-x: auto; }
+@media (max-width: 719px) {
+  .formtab { font-size: 0.86rem; }
+  .formtab th, .formtab td { padding-right: 6px; -webkit-hyphens: auto; hyphens: auto; }
+}
 .hm-big.form-sym { font-family: var(--font-ui); font-weight: 500; font-size: 1.9rem; }
 .selbox { margin-top: 14px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: 8px; }
 .sel-hkl { font-size: 1.4rem; font-weight: 600; color: var(--accent); margin-bottom: 6px; }

@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.19.0] - 2026-11-15
+
+Hilfeseite als Anleitung zur Bedienung: Überblick, Bedienkonzepte, je Modus Seitenleiste, Stereogramm, 3D-Konstruktion und Kenndaten mit nummerierten Bildern, Anleitungen, Experimente, typische Fragen; jedes ⓘ verweist an die passende Stelle. README mit Bildern zu den Funktionen; gemeinsame Grundlage v0.22.0. Link-Adressen und Speicher bleiben gültig.
+
 ### Geändert
 
 - **README:** neues Bildschirmfoto, die Funktionen nach Modi gegliedert, je mit drei Bildern aus der App, dazu Skript, Quiz und Hilfeseite im Bild. Die Bilder erzeugt `tools/readme-bilder.mjs` aus Ansichten der App (neu).
@@ -417,7 +421,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.18.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.19.0...HEAD
+[1.19.0]: https://github.com/manganite/stereography/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/manganite/stereography/compare/v1.17.0...v1.18.0
 [1.17.0]: https://github.com/manganite/stereography/compare/v1.16.0...v1.17.0
 [1.16.0]: https://github.com/manganite/stereography/compare/v1.15.0...v1.16.0

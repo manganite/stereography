@@ -2,7 +2,7 @@
   "name": "crystallography-common",
   "version": "0.21.0",
   "tag": null,
-  "commit": "3ea59473f1e7c88a5f488894b17bba06647aac6b",
+  "commit": "60cd7f5e59ed598c58dfffae305ad6afdacc9cdc",
   "files": {
     "lib/common/css/app.css": "de1a609801d2cde48be1d7cb6666496ec754b2fb119e92bb58db185711a51aa1",
     "lib/common/css/base.css": "8e6632d2597298b41b532fd0b1e06a0b932146c01b320b1233a784d4c839f62e",
@@ -38,7 +38,7 @@
     "lib/common/fonts/source-serif-4-latin-600-normal.woff2": "f2b7e1cf1d277b7608231868135648f8ad8e2b58d8e97ca088bee15dc357bee7",
     "tools/common/check.mjs": "22a1a22108916d59805f3350218fa307e4f0bd73807483f9fbab1c6d6592bcbf",
     "tools/common/eslint-basis.mjs": "ac03ff806d647562d6d9446977626849403386545f26628291610502a8ac54c3",
-    "tools/common/hilfe-bilder.mjs": "1046b08382b54147ae368175629d214edd6219baacdddcba9ece544ea81f4023",
+    "tools/common/hilfe-bilder.mjs": "b21c4946f63fe38c7235cd5d0c5a40ee3a427d030d59cdb7c387afe7de64e79c",
     "tools/common/kontraste.mjs": "f4a607d4ce1542506a2840a7b8e0abcf420ebc5d38c3ddded5496f008163ec71",
     "tools/common/moodle.mjs": "bff06520b5caf2501b55b710bafba3e5ca0c0ae4ef7eb2a85d312b4f46f0147d",
     "tools/common/server.mjs": "5ee960fe7e29380454436dc25de8b4845b7a3c11fccaece878cedb6f74f2c495",

@@ -110,8 +110,13 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
           scrollTo(0, Math.max(0, obenDoc - rand - 20));
           /** @type {{ left: number, top: number, right: number, bottom: number }[]} */
           const teile = boxen.map((e) => e.getBoundingClientRect());
+          const rects = els.map((el) => el.getBoundingClientRect());
+          /** @type {{ left: number, top: number, right: number, bottom: number }[]} */
+          const belegt = rects.map((r) => ({ left: r.left - 4, top: r.top - 4, right: r.right + 4, bottom: r.bottom + 4 }));
+          /** @param {{ left: number, top: number, right: number, bottom: number }} a @param {{ left: number, top: number, right: number, bottom: number }} b */
+          const schneidet = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
           els.forEach((el, i) => {
-            const r = el.getBoundingClientRect();
+            const r = rects[i];
             const m = document.createElement('div');
             m.setAttribute('data-hilfe-marke', '');
             Object.assign(m.style, {
@@ -120,22 +125,36 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
             });
             document.body.append(m);
             teile.push({ left: r.left - 8, top: r.top - 8, right: r.right + 8, bottom: r.bottom + 8 });
-            if (!nummern) return;
-            // Nummer: bei grossen Elementen (z. B. Tafel, Seitenleiste) auf der oberen Rahmenlinie nahe der Ecke, bei
-            // breiten (z. B. Überschrift eines Abschnitts) links davor, sonst darüber; nie über den Rand des Fensters
-            const d = 20, gross = r.width > 140 && r.height > 80, breit = r.width > 140;
-            const cx = Math.max(d / 2 + 2, gross ? r.left + 10 + d / 2 : breit ? r.left - 4 - d / 2 - 2 : r.left + r.width / 2);
-            const cy = Math.max(d / 2 + 2, gross ? r.top - 4 : breit ? r.top + r.height / 2 : r.top - 4 - d / 2 + 2);
+          });
+          if (nummern) els.forEach((_, i) => {
+            const r = rects[i];
+            // Nummer: Lagen der Reihe nach probieren, die erste, die keine andere Marke und keine Nummer überdeckt.
+            // Grosse Elemente (z. B. Tafel): auf der oberen Rahmenlinie nahe der Ecke; breite (z. B. Überschrift eines
+            // Abschnitts): links davor; sonst darüber, darunter, links, rechts; zuletzt innen in der Ecke oben links.
+            const d = 20, h = d / 2;
+            const gross = r.width > 140 && r.height > 80, breit = r.width > 140;
+            /** @param {number} x @param {number} y @returns {[number, number]} */
+            const p2 = (x, y) => [x, y];
+            const lagen = gross ? [p2(r.left + 10 + h, r.top - 4)]
+              : [...(breit ? [p2(r.left - 6 - h, r.top + r.height / 2)] : []), p2(r.left + r.width / 2, r.top - 2 - h), p2(r.left + r.width / 2, r.bottom + 2 + h),
+                p2(r.left - 6 - h, r.top + r.height / 2), p2(r.right + 6 + h, r.top + r.height / 2)];
+            /** @param {[number, number]} p */
+            const box = ([x, y]) => ({ left: x - h, top: y - h, right: x + h, bottom: y + h });
+            const frei = lagen.find((p) => { const b = box(p); return b.left >= 2 && b.top >= 2 && belegt.every((o, j) => j === i || !schneidet(b, o)); });
+            const [x, y] = frei ?? [r.left + h + 2, r.top + h + 2];
+            const cx = Math.max(h + 2, x), cy = Math.max(h + 2, y);
             const n = document.createElement('div');
             n.setAttribute('data-hilfe-marke', '');
             n.textContent = String(i + 1);
             Object.assign(n.style, {
-              position: 'fixed', left: `${cx - d / 2}px`, top: `${cy - d / 2}px`, width: `${d}px`, height: `${d}px`, borderRadius: '50%',
+              position: 'fixed', left: `${cx - h}px`, top: `${cy - h}px`, width: `${d}px`, height: `${d}px`, borderRadius: '50%',
               background: marke, color: '#fff', border: '2px solid #fff', boxSizing: 'border-box', zIndex: '2147483647', pointerEvents: 'none',
               font: '700 11px/16px system-ui, sans-serif', textAlign: 'center', boxShadow: '0 0 0 1px rgb(0 0 0 / 0.25)',
             });
             document.body.append(n);
-            teile.push({ left: cx - d / 2, top: cy - d / 2, right: cx + d / 2, bottom: cy + d / 2 });
+            const b = box([cx, cy]);
+            belegt.push(b);
+            teile.push(b);
           });
           const links = Math.max(0, Math.min(...teile.map((t) => t.left)) - rand), oben = Math.max(0, Math.min(...teile.map((t) => t.top)) - rand);
           const rechts = Math.min(innerWidth, Math.max(...teile.map((t) => t.right)) + rand), unten = Math.min(innerHeight, Math.max(...teile.map((t) => t.bottom)) + rand);

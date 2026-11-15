@@ -140,14 +140,14 @@ export const ERSTE_SCHRITTE = [
 
 /**
  * Lernexperimente im Abschnitt „Experimente“ (lib/common/js/ablauf.js, Leitfaden Abschn. 5.3): erst vermuten,
- * dann die Handlung (Link-Adresse), dann Beobachtung und Erklärung. Je Modus in der Reihenfolge des Skripts (Anker des
- * ersten Schritts; #115; Gliederung der Liste nach Kapitel: crystallography-common#107). Jedes Experiment spricht eine
- * Fehlvorstellung an. tests/ablauf.test.mjs prüft Adressen, Anker und Aussagen gegen die App.
+ * dann die Handlung (Link-Adresse), dann Beobachtung und Erklärung. kapitel: Kapitel des Skripts, in dem das Experiment
+ * vor allem übt; je Modus stehen die Einträge in der Reihenfolge der Kapitel (Leitfaden Abschn. 5.3; #115). Jedes
+ * Experiment spricht eine Fehlvorstellung an. tests/ablauf.test.mjs prüft Adressen, Anker und Aussagen gegen die App.
  * @type {Ablauf[]}
  */
 export const ABLAEUFE = [
   {
-    id: 'drehinversion', modus: 'pg', titel: 'Drehinversion <span class="ov">4</span> und 4/<i>m</i>',
+    id: 'drehinversion', modus: 'pg', kapitel: 3, titel: 'Drehinversion <span class="ov">4</span> und 4/<i>m</i>',
     schritte: [
       {
         frage: 'Wie viele Pole erzeugt die Drehinversionsachse <span class="ov">4</span> aus einem allgemeinen Pol?',
@@ -168,7 +168,20 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'untergruppe', modus: 'pg', titel: 'Untergruppe oder nicht?',
+    id: 'ordnung', modus: 'pg', kapitel: 3, titel: 'Wie viele Operationen hat 432?',
+    schritte: [
+      {
+        frage: '432 hat 13 Drehachsen: drei 4-zählige, vier 3-zählige und sechs 2-zählige. Wie viele Symmetrieoperationen hat die Gruppe?',
+        vermutung: ['13', '24', '48'], richtig: 1,
+        handlung: { text: '432 wählen', hash: '#m=pg&g=432' },
+        beobachtung: '24 Pole aus einem Pol in allgemeiner Lage; die Kenndaten nennen die Ordnung 24.',
+        erklaerung: 'Die Ordnung zählt Operationen, nicht Symmetrieelemente. Eine <i>n</i>-zählige Achse trägt <i>n</i> − 1 Drehungen bei: 3 · 3 + 4 · 2 + 6 · 1 = 23, dazu die Identität, zusammen 24. So viele Pole erzeugt die Gruppe aus einem Pol in allgemeiner Lage.',
+        skript: 'punktgruppe',
+      },
+    ],
+  },
+  {
+    id: 'untergruppe', modus: 'pg', kapitel: 3, titel: 'Untergruppe oder nicht?',
     schritte: [
       {
         frage: 'Die 6-zählige Achse von 6<i>mm</i> enthält eine 3-zählige. Ist 32 deshalb eine Untergruppe von 6<i>mm</i>?',
@@ -187,7 +200,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'oben-unten-222', modus: 'pg', titel: 'Oben oder unten? (222)',
+    id: 'oben-unten-222', modus: 'pg', kapitel: 4, titel: 'Oben oder unten? (222)',
     schritte: [
       {
         frage: '222 hat drei 2-zählige Achsen: eine senkrecht zur Projektionsebene, zwei in ihr. Der Ausgangspol liegt oben. Wo liegen die übrigen Pole?',
@@ -200,7 +213,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'inversion-2m', modus: 'pg', titel: '2/<i>m</i> und die Inversion',
+    id: 'inversion-2m', modus: 'pg', kapitel: 4, titel: '2/<i>m</i> und die Inversion',
     schritte: [
       {
         frage: '2/<i>m</i> hat eine 2-zählige Drehachse und eine Spiegelebene senkrecht dazu. Wie viele Operationen hat die Gruppe?',
@@ -213,7 +226,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'dreiquer', modus: 'pg', titel: '<span class="ov">3</span> und die Spiegelebenen',
+    id: 'dreiquer', modus: 'pg', kapitel: 4, titel: '<span class="ov">3</span> und die Spiegelebenen',
     schritte: [
       {
         frage: 'Die 6 Pole von <span class="ov">3</span> bilden ein Sechseck, abwechselnd oben und unten; das Muster sieht spiegelsymmetrisch aus. Hat <span class="ov">3</span> Spiegelebenen?',
@@ -234,7 +247,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'symbol-432', modus: 'pg', titel: 'Was bedeutet die 3 in 432?',
+    id: 'symbol-432', modus: 'pg', kapitel: 5, titel: 'Was bedeutet die 3 in 432?',
     schritte: [
       {
         frage: 'Wofür steht die 3 im Symbol 432?',
@@ -247,7 +260,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'chiral', modus: 'pg', titel: 'Chiral trotz viel Symmetrie',
+    id: 'chiral', modus: 'pg', kapitel: 5, titel: 'Chiral trotz viel Symmetrie',
     schritte: [
       {
         frage: '422 hat 8 Operationen. Färbt man die Pole nach Händigkeit, wie viele haben die Händigkeit des Ausgangspols?',
@@ -276,7 +289,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'laue', modus: 'pg', titel: 'Laue-Klasse',
+    id: 'laue', modus: 'pg', kapitel: 5, titel: 'Laue-Klasse',
     schritte: [
       {
         frage: 'Die Laue-Klasse ist die Punktgruppe zusammen mit dem Inversionszentrum. Zu welcher Laue-Klasse gehört <span class="ov">4</span>?',
@@ -289,7 +302,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'lage', modus: 'pg', titel: 'Allgemeine und spezielle Lage',
+    id: 'lage', modus: 'pg', kapitel: 10, titel: 'Allgemeine und spezielle Lage',
     schritte: [
       {
         frage: '4<i>mm</i> hat 8 Operationen. Wie viele Pole ergibt ein Ausgangspol in allgemeiner Lage, also auf keinem Symmetrieelement?',
@@ -318,7 +331,27 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'prisma', modus: 'poly', titel: 'Prisma, Pyramide, Dipyramide',
+    id: 'metrik', modus: 'poly', kapitel: 3, titel: 'Tetragonal trotz <i>c</i> = <i>a</i>',
+    schritte: [
+      {
+        frage: 'Eine tetragonale Dipyramide {111} mit <i>c</i>/<i>a</i> = 1: Die drei Achsen sind gleich lang und stehen senkrecht aufeinander, die Pole liegen wie beim Oktaeder. Ist der Kristall damit kubisch?',
+        vermutung: ['ja', 'nein, er bleibt tetragonal'], richtig: 1,
+        handlung: { text: '<i>c</i>/<i>a</i> = 1, mit Flächensymmetrie', hash: '#m=form&sys=tetragonal&f=4/mmm:e14&ca=1&muster=1&geruest=1' },
+        beobachtung: 'Das Symmetriegerüst hat eine 4-zählige Achse und keine 3-zähligen. Das Muster auf jeder Fläche hat nur eine Spiegelebene (Flächensymmetrie ..<i>m</i>); die Punktgruppe bleibt 4/<i>mmm</i>.',
+        erklaerung: 'Das Kristallsystem folgt aus der Symmetrie, nicht aus den Achsenlängen. Kubisch ist ein Kristall wegen der vier 3-zähligen Achsen entlang der Raumdiagonalen; gleich lange Achsen allein machen ihn nicht kubisch. <i>c</i>/<i>a</i> = 1 ist im tetragonalen System ein zufälliger Wert.',
+        skript: 'kristallsysteme',
+      },
+      {
+        frage: 'Zum Vergleich das Oktaeder in <i>m</i><span class="ov">3</span><i>m</i>.',
+        handlung: { text: 'Oktaeder mit Flächensymmetrie', hash: '#m=form&sys=kubisch&f=m-3m:b35&muster=1&geruest=1' },
+        beobachtung: 'Die Pole liegen gleich, aber das Gerüst hat vier 3-zählige Achsen, und das Muster auf jeder Fläche eine 3-zählige Achse (Flächensymmetrie .3<i>m</i>).',
+        erklaerung: 'Die Lage der Pole allein legt die Punktgruppe nicht fest; erst die Flächensymmetrie unterscheidet die beiden Kristalle.',
+        skript: 'allgemein',
+      },
+    ],
+  },
+  {
+    id: 'prisma', modus: 'poly', kapitel: 6, titel: 'Prisma, Pyramide, Dipyramide',
     schritte: [
       {
         frage: 'Wo liegen im Stereogramm die Pole der Flächen eines tetragonalen Prismas?',
@@ -346,7 +379,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'flaechensymmetrie', modus: 'poly', titel: 'Gleiche Form, andere Flächensymmetrie',
+    id: 'flaechensymmetrie', modus: 'poly', kapitel: 6, titel: 'Gleiche Form, andere Flächensymmetrie',
     schritte: [
       {
         frage: 'Der Würfel kommt in allen fünf kubischen Punktgruppen vor, die Pole liegen immer gleich. Zuerst der Würfel in <i>m</i><span class="ov">3</span><i>m</i>; „Flächensymmetrie zeigen“ trägt auf jede Fläche ein Muster.',
@@ -365,7 +398,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'lage-111', modus: 'poly', titel: 'Würfel mit [111] senkrecht',
+    id: 'lage-111', modus: 'poly', kapitel: 6, titel: 'Würfel mit [111] senkrecht',
     schritte: [
       {
         frage: 'Der Würfel wird so gedreht, dass die Raumdiagonale [111] senkrecht zur Projektionsebene steht. Welche Zähligkeit hat die Drehachse in der Mitte des Stereogramms?',
@@ -378,7 +411,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'zone', modus: 'poly', titel: 'Zone und Zonenachse',
+    id: 'zone', modus: 'poly', kapitel: 7, titel: 'Zone und Zonenachse',
     schritte: [
       {
         frage: 'Welche Flächen des Galenits gehören zur Zone [001]?',
@@ -399,7 +432,20 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'quarz', modus: 'poly', titel: 'Quarz sieht hexagonal aus',
+    id: 'achse-normale', modus: 'poly', kapitel: 7, titel: 'Liegt (001) auf der c-Achse?',
+    schritte: [
+      {
+        frage: 'Ein trikliner Kristall wird entlang der c-Achse projiziert; die c-Achse durchstösst das Stereogramm also in der Mitte. Liegt der Pol der Fläche (001) ebenfalls in der Mitte?',
+        vermutung: ['ja', 'nein, daneben'], richtig: 1,
+        handlung: { text: 'Triklinen Kristall mit Kristallachsen zeigen', hash: '#m=form&sys=triklin&bsp=triklin&achsen=1' },
+        beobachtung: 'Die c-Achse (Kreuz mit c) liegt in der Mitte, der Pol von (001) rund 15° daneben. Auch die b-Achse und der Pol von (010) liegen nicht aufeinander.',
+        erklaerung: '(001) liegt parallel zu <i>a</i> und <i>b</i>; ihre Normale steht senkrecht auf beiden. Die c-Achse tut das nur, wenn α = β = 90° sind, im triklinen Kristall also nicht. Eine Richtung [<i>uvw</i>] und die Normale der Fläche (<i>hkl</i>) mit denselben Zahlen fallen im Allgemeinen nicht zusammen; für alle Indizes nur im kubischen System.',
+        skript: 'schnitt',
+      },
+    ],
+  },
+  {
+    id: 'quarz', modus: 'poly', kapitel: 9, titel: 'Quarz sieht hexagonal aus',
     schritte: [
       {
         frage: 'Im Stereogramm des Quarzes liegen oben sechs Pole im Abstand von 60°, alle gleich weit von der Mitte. Ist Quarz deshalb hexagonal?',
@@ -412,7 +458,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'flaechenzahl', modus: 'poly', titel: 'Wie viele Flächen?',
+    id: 'flaechenzahl', modus: 'poly', kapitel: 10, titel: 'Wie viele Flächen?',
     schritte: [
       {
         frage: 'Wie viele Flächen hat die Form {110} in <i>m</i><span class="ov">3</span><i>m</i>?',
@@ -433,7 +479,7 @@ export const ABLAEUFE = [
     ],
   },
   {
-    id: 'streckung', modus: 'poly', titel: 'Strecken ändert die Symmetrie',
+    id: 'streckung', modus: 'poly', kapitel: 11, titel: 'Strecken ändert die Symmetrie',
     schritte: [
       {
         frage: 'Die tetragonale Dipyramide {111} hat die Punktgruppe 4/<i>mmm</i>. Ändert sie sich, wenn man <i>c</i>/<i>a</i> von 1,3 auf 2 erhöht?',

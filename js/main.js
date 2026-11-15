@@ -19,6 +19,7 @@ import { VERSION } from './version.js';
 import { initHelp, showTipAt, hideTip } from '../lib/common/js/help.js';
 import { TIPS, SECTIONS, LABELS, ERSTE_SCHRITTE } from './hilfetexte.js';
 import { EXPERIMENTE } from './hilfe-daten.js';
+import { KAPITEL } from './quiz-kapitel.js';
 import { experimentAusAdresse } from '../lib/common/js/hilfe-seite.js';
 import { ablaufKarte } from '../lib/common/js/ablauf.js';
 import { offline, alleEinstellungenZuruecksetzen, $, eingabe, auswahl, knopf, abschnitt, grafik, element, elemente, modusTabs, exportMenue, herunterladen, inZwischenablage } from '../lib/common/js/seite.js';
@@ -1700,7 +1701,7 @@ function init() {
   };
   const skriptUrl = (/** @type {string} */ anker) => `skript.html#${anker}`;
   einstieg = ablaufKarte($('ablauf'), ERSTE_SCHRITTE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, liste: false, beiAbschluss: closeIntro });
-  experimente = ablaufKarte($('experimente'), EXPERIMENTE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, speicher: 'stereo-experimente' });
+  experimente = ablaufKarte($('experimente'), EXPERIMENTE, { anwenden, adresse: stateToHash, aktionen, skriptUrl, speicher: 'stereo-experimente', kapitel: KAPITEL });
   einstieg.modus(state.mode); experimente.modus(state.mode);
   // Von der Hilfeseite: „In der App ausprobieren“ startet ein Experiment (index.html?experiment=<id>#…)
   experimentAusAdresse(experimente, EXPERIMENTE.map((x) => x.id), () => {

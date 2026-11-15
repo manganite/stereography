@@ -72,6 +72,13 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   „antippen“ (#147). Tooltips straffen statt Angaben zur Funktion streichen; längere nur als Ausnahme, die
   `tests/common.test.mjs` nennt (`laenger`; Thomas, 15.11.2026, PR #156); in der Seitenleiste bleiben Hinweise zum Zustand (kubisches Gitter ohne freie Parameter, ungültige Winkel,
   gesperrte Regler).
+  **Zoom der 3D-Konstruktion** (#144, Leitfaden Abschn. 5.1): − und + im Kopf der Tafel als Symbol wie in plane-groups, an
+  den Grenzen von Rad und zwei Fingern gesperrt, auf dem Telefon nicht (zwei Finger). Werkzeuge, Zoom und Export bilden
+  eine Gruppe (`.kopfknoepfe`), die als Ganzes rechtsbündig umbricht; der Titel bricht nicht (`white-space: nowrap`). In
+  „Kristallformen“ ist der Kopf der 3D-Tafel damit von 1000 bis 1084 px zweizeilig (bei 1024 px 75 statt 50 px; ohne Gruppe
+  brach „Export“ allein links um), sonst überall einzeilig. Thomas nahm das an (15.11.2026, PR #155) statt
+  − und + in die Leiste „Blick“ zu legen; „bei 1024 px einzeilig“ oben gilt deshalb nicht für die
+  3D-Tafel in „Kristallformen“ zwischen 1000 und 1084 px. Wird der fokussierte Knopf an der Grenze gesperrt, geht der Fokus auf den anderen.
 - **Bildexport** (24.10.; Menü seit crystallography-common#130, Thomas, 12.11.2026): Stereogramm als Kopie (PNG), SVG,
   PNG (2048 px); 3D als Kopie und PNG. Je Tafel ein Knopf „Export ▾“ mit Menü (`exportMenue`, Leitfaden Abschn. 4), statt
   der früheren Regel „kein Formatmenü“: Der Kopf der Tafel soll einzeilig bleiben. In der Vorschau (`STEREO_PREVIEW`) nur

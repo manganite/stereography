@@ -109,12 +109,15 @@ test('Flächenpole aus: keine Pole und keine Indizes im Stereogramm; Link hin un
 test('Oberfläche: jede Option hat ein Bedienelement und einen Tooltip', async () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   const help = readFileSync(new URL('../js/hilfetexte.js', import.meta.url), 'utf8');
-  for (const id of ['pg-poles', 'poly-poles', 'v-globe', 'export-stereo', 'export-3d', 'view-oblique', 'view-dirs']) {
+  for (const id of ['pg-poles', 'poly-poles', 'v-globe', 'export-stereo', 'export-3d', 'view-oblique', 'view-dirs', 'zoom-3d-ein', 'zoom-3d-aus']) {
     assert.ok(html.includes(`id="${id}"`), id);
     // ohne Tooltip: das Export-Menü sagt mit seinem Text, was es tut (Leitfaden Abschn. 5.3)
     if (!['view-dirs', 'export-stereo', 'export-3d'].includes(id)) assert.ok(help.includes(`'${id}'`), id);
   }
   assert.ok(!/data-view="(top|side)"/.test(html), 'alte Ansichtsknöpfe');
+  // Zoom der 3D-Konstruktion (#144): im ⓘ von „Darstellung“
+  const { SECTIONS } = await import('../js/hilfetexte.js');
+  for (const id of ['zoom-3d-ein', 'zoom-3d-aus']) assert.ok(SECTIONS.some((s) => s.ids.includes(id)), id);
 });
 
 test('Seitenleiste: Zusatzoptionen der Anzeige unter „Darstellung“, nach Tafel gegliedert', () => {

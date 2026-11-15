@@ -1077,7 +1077,7 @@ function updateInfoPoly(C, col) {
     </div>
     ${zoneBox}
     <h3>Tracht: ${C.forms.length} Formen</h3>
-    <table class="formtab"><thead><tr><th>Form</th><th>Symbol</th><th>Flächen</th><th>Eigensymmetrie</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="formscroll" tabindex="0" role="region" aria-label="Formen der Tracht"><table class="formtab"><thead><tr><th>Form</th><th>Symbol</th><th>Flächen</th><th>Eigen&shy;symmetrie</th></tr></thead><tbody>${rows}</tbody></table></div>
     ${gone ? '<p class="note">Grau: Form ist bei diesen Abständen ganz oder teilweise weggeschnitten.</p>' : ''}
     <dl class="facts">
       <div><dt>${skriptTerm('Habitus', 'habitus-def')}</dt><dd>${habitHTML}</dd></div>
@@ -1355,6 +1355,22 @@ view3d.controls.addEventListener('change', () => {
     if (state.blick) { state.blick = 0; save(); }
   }
 });
+
+// Zoom der 3D-Konstruktion mit + und − (#144): für die Tastatur, wie Rad und zwei Finger; gesperrt an den Grenzen
+const zoomKnoepfe = () => {
+  const frei = view3d.zoomFrei();
+  const ein = knopf('zoom-3d-ein'), aus = knopf('zoom-3d-aus');
+  // wird der fokussierte Knopf an der Grenze gesperrt, geht der Fokus auf den anderen (sonst auf <body>)
+  const fokus = document.activeElement;
+  ein.disabled = !frei.ein;
+  aus.disabled = !frei.aus;
+  if (fokus === ein && ein.disabled) aus.focus();
+  if (fokus === aus && aus.disabled) ein.focus();
+};
+knopf('zoom-3d-ein').addEventListener('click', () => { view3d.zoom(1.25); zoomKnoepfe(); });
+knopf('zoom-3d-aus').addEventListener('click', () => { view3d.zoom(1 / 1.25); zoomKnoepfe(); });
+view3d.controls.addEventListener('change', zoomKnoepfe);
+zoomKnoepfe();
 
 // ------------------------------------------------------------------ Bedienelemente verbinden
 /** Schalter mit einem Feld des Zustands verbinden. @param {string} id @param {Schalter} obj @param {string} key */

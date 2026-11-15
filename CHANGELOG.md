@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.20.0] - 2026-11-15
+
+Zoom der 3D-Konstruktion mit − und + im Kopf der Tafel; Tooltips gestrafft, „wählen“ statt „antippen“; Skript mit Abschnittsnummern und Verweisen als Links (gemeinsame Grundlage crystallography-common v0.23.0); Touch-Ziele nach dem zuletzt benutzten Gerät; Browserlauf der App in der CI; auf dem Telefon kein waagrechtes Scrollen mehr mit Beispielkristallen.
+
 ### Hinzugefügt
 
 - **Zoom der 3D-Konstruktion mit − und +** im Kopf der Tafel, für die Tastatur wie Mausrad und zwei Finger; an den Grenzen gesperrt, auf dem Telefon ausgeblendet. Tooltips, ⓘ und Hilfeseite nachgeführt (#144).
@@ -443,7 +447,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.19.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.20.0...HEAD
+[1.20.0]: https://github.com/manganite/stereography/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/manganite/stereography/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/manganite/stereography/compare/v1.17.0...v1.18.0
 [1.17.0]: https://github.com/manganite/stereography/compare/v1.16.0...v1.17.0

@@ -27,7 +27,6 @@ Zwei Modi teilen sich die Werkbank: links die Einstellungen, rechts das Stereogr
 - **32 kristallographische Punktgruppen:** Stereogramme der Symmetriegerüste nach International Tables for Crystallography, Vol. A, inklusive der in ITA separat geführten Aufstellungen (monoklin Achse b/c, 321/312, 3m1/31m, 3̄m1/3̄1m, 4̄2m/4̄m2, 6̄m2/6̄2m).
 - **Objekt in allgemeiner Lage:** Alle Symmetrieoperationen der Gruppe werden darauf angewendet (Pol im Stereogramm ziehbar; Antippen des Ausgangspols wechselt die Halbkugel). Punktgruppen mit zwei Aufstellungen erscheinen im Auswahlfeld als ein Button, die Aufstellung wird darunter gewählt.
 - **Spezielle Lagen:** Nahe an einer Achse oder Spiegelebene rastet der Ausgangspol beim Ziehen ein. Die Infobox nennt die Lage des Ausgangspols mit Wyckoff-Lage und Lagesymmetrie nach ITA Tab. 10.1.2.2 (z. B. in m3̄m: allgemein 48*f*, auf einer Spiegelebene 24*d* m.. bzw. 24*e* ..m, auf [111] 8*b* .3m) und erklärt die Polzahl als Ordnung der Gruppe durch Ordnung der Lagesymmetrie. Zusammenfallende Pole werden einmal gezeichnet; fallen Bild und Spiegelbild zusammen, ist der Pol bei „Pole nach Händigkeit färben“ grau.
-- **Blickrichtungen:** Die Symmetrieelemente werden den Positionen des vollen Hermann-Mauguin-Symbols zugeordnet (Klassen äquivalenter Richtungen, z. B. in m3̄m ⟨100⟩, ⟨111⟩, ⟨110⟩) und auf Wunsch in deren Farbe gezeichnet, im Stereogramm, in der 3D-Ansicht, im vollen Symbol und in der nach Blickrichtungen gegliederten Liste der Infobox. In der 3D-Ansicht lassen sich einzelne Blickrichtungen ausblenden. Ohne Farben entspricht das Stereogramm der schwarzen ITA-Darstellung.
 - **Winkel im Punktgruppenmodus:** Mit dem Werkzeug „Winkel“ zwei Pole der allgemeinen Lage antippen; die Infobox nennt den Winkel und die Symmetrieoperation, die die beiden Pole ineinander überführt.
 
 ### Kristallformen
@@ -47,6 +46,7 @@ Zwei Modi teilen sich die Werkbank: links die Einstellungen, rechts das Stereogr
 
 ### In beiden Modi
 
+- **Blickrichtungen:** Die Symmetrieelemente werden den Positionen des vollen Hermann-Mauguin-Symbols zugeordnet (Klassen äquivalenter Richtungen, z. B. in m3̄m ⟨100⟩, ⟨111⟩, ⟨110⟩) und auf Wunsch in deren Farbe gezeichnet, im Stereogramm, in der 3D-Ansicht, im vollen Symbol und in der nach Blickrichtungen gegliederten Liste der Infobox. In der 3D-Ansicht lassen sich einzelne Blickrichtungen ausblenden. Ohne Farben entspricht das Stereogramm der schwarzen ITA-Darstellung.
 - **3D-Konstruktion,** gekoppelt an das Stereogramm: Umkugel, Flächennormalen, Projektionsstrahlen zum Süd- bzw. Nordpol und das Stereogramm in der Äquatorebene.
 - **Bildexport:** Über dem Stereogramm und der 3D-Konstruktion „Export ▾“: Kopieren (PNG) für Folien, SVG-Datei (nur Stereogramm) und PNG-Datei (Stereogramm 2048 × 2048 Pixel, 3D in der gezeigten Ansicht etwa 2000 Pixel breit); immer in den hellen Farben, Hintergrund ausserhalb des Grundkreises bzw. um die Konstruktion durchsichtig. Auf dem Telefon kein Export.
 - **Links auf Ansichten:** Der Zustand steht lesbar in der Adresse; „Link kopieren“ kopiert sie, etwa für Folien. Ein Link hat Vorrang vor dem gespeicherten Zustand. Ein Link mit `blick=` öffnet auf dem Telefon die 3D-Tafel. Alle Schlüssel unter [Link-Adressen](#link-adressen).
@@ -56,7 +56,7 @@ Zwei Modi teilen sich die Werkbank: links die Einstellungen, rechts das Stereogr
 
 <table>
 <tr><td width="33%"><img src="docs/readme/skript.png" alt="Skript, Kapitel Zonen, mit Inhaltsverzeichnis"></td><td width="33%"><img src="docs/readme/quiz.png" alt="Startseite des Quiz mit Stufen und Kapiteln"></td><td width="33%"><img src="docs/readme/hilfe.png" alt="Hilfeseite mit nummeriertem Bild der Tafel Stereogramm"></td></tr>
-<tr><td>Skript mit Abbildungen aus der App</td><td>Quiz in drei Stufen</td><td>Hilfeseite: Anleitung zur Bedienung</td></tr>
+<tr><td>Skript zum Nachlesen, mit Lernzielen je Kapitel</td><td>Quiz in drei Stufen</td><td>Hilfeseite: Anleitung zur Bedienung</td></tr>
 </table>
 
 - **Skript** (`skript.html`): erklärt die stereographische Projektion mit Abbildungen aus dem Code der App; jede Abbildung öffnet mit einem Klick genau diese Ansicht in der App. Elf Kapitel: Kristallflächen und Indizes, Prinzip der Projektion, Symmetrieoperationen und Punktgruppen, Symmetriegerüste, Blickrichtungen, Kristallformen, Zonen, Tracht und Habitus, trigonale und hexagonale Kristalle, als Vertiefungen Lagen, Flächensymmetrie und Multiplizität sowie symmetrieändernde Verzerrungen; Begriffe nach Borchardt-Ott & Sowa, Quellen je Kapitel. Vertiefungen über den Grundstoff hinaus und Hinweise zur App sind eigens gekennzeichnet. Als PDF (A4) unter [skript.pdf](https://manganite.github.io/stereography/skript.pdf) und als Anhang jedes Releases; erzeugt mit `node tools/skript-pdf.mjs [Ausgabedatei]` (braucht Playwright mit Chromium).

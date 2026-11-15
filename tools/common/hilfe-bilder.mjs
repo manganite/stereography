@@ -12,6 +12,9 @@
 // Ist der Ausschnitt höher als das Fenster oder hat er einen eigenen Scrollbereich (Seitenleiste), wird das Fenster so
 // hoch, dass er ganz hineinpasst. Ausgabe unter <bilder> (Standard hilfe/); Bilder, die nicht mehr gebraucht werden oder
 // nicht entstehen, löscht das Werkzeug. Breite 1280 px, deviceScaleFactor 2, Service Worker gesperrt.
+// Fehlt links neben einem grossen nummerierten Baustein der Platz für seine Nummer (Übersichtsbild: Bausteine am Rand
+// und dicht nebeneinander), bekommt die Seite nur für dieses Bild links Rand und grössere Abstände zwischen den Tafeln
+// (RAUM), damit die Nummern links daneben stehen statt auf der Rahmenlinie (Thomas, 15.11.2026, #114).
 //
 // Braucht Playwright mit Chromium (wie tools/skript-pdf.mjs); mit CHROMIUM_PFAD=<Pfad> ein anderer Chromium.
 
@@ -36,6 +39,8 @@ export const BAUSTEIN = '.card, .panel, header.top';
 const RAND = 12;
 /** Farbe der Markierung (Akzent hell, wie --accent2 in base.css). */
 const MARKE = '#bc3f0c';
+/** Platz für eine Nummer links neben einem grossen Baustein (Durchmesser 20 px, Abstand 6 px, Rand 2 px). */
+const RAUM = 30;
 /** Fenster: Breite und Höhe, die das Fenster höchstens bekommt (für hohe Ausschnitte). */
 const BREITE = 1280, HOEHE = 900, HOEHE_MAX = 4000;
 
@@ -69,7 +74,7 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
         await page.goto(basis + app + b.adresse, { waitUntil: 'load' });
         await page.evaluate(() => document.fonts.ready);
         // 1. Abschnitte aufklappen, Ausschnitt bestimmen und die nötige Höhe des Fensters messen
-        const vorbereitet = await page.evaluate(({ zeige, ausschnitt, baustein }) => {
+        const vorbereitet = await page.evaluate(({ zeige, ausschnitt, baustein, nummern, raum }) => {
           /** @type {Element[]} */
           const els = [];
           for (const sel of zeige) {
@@ -83,6 +88,17 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
             }
             els.push(el);
           }
+          // Platz links neben grossen Bausteinen für die Nummer: am Rand oder dicht an einem anderen Element fehlt er
+          if (nummern) {
+            const rs = els.map((el) => el.getBoundingClientRect());
+            const eng = rs.some((r, i) => r.width > 140 && r.height > 80 && (r.left < raum
+              || rs.some((o, j) => j !== i && o.right > r.left - raum && o.left < r.left && o.top < r.bottom && o.bottom > r.top)));
+            if (eng) {
+              const st = document.createElement('style');
+              st.textContent = `html { padding-left: ${raum}px; } .layout { gap: ${raum + 6}px; }`;
+              document.head.append(st);
+            }
+          }
           const rahmen = ausschnitt ? document.querySelector(ausschnitt) : null;
           if (ausschnitt && !rahmen) return { fehlt: ausschnitt };
           const boxen = rahmen ? [rahmen] : [...new Set(els.map((el) => el.closest(baustein) ?? el))];
@@ -95,7 +111,7 @@ export async function hilfeBilderErzeugen({ root, daten, chrome = process.env.CH
             hoehe = Math.max(hoehe, oben + voll);
           }
           return { hoehe: Math.ceil(hoehe + 40) };
-        }, { zeige: b.zeige, ausschnitt: b.ausschnitt ?? null, baustein: BAUSTEIN });
+        }, { zeige: b.zeige, ausschnitt: b.ausschnitt ?? null, baustein: BAUSTEIN, nummern: b.nummern, raum: RAUM });
         if ('fehlt' in vorbereitet) throw new Error(`kein Element ${vorbereitet.fehlt} unter ${b.adresse}`);
         if (vorbereitet.hoehe > HOEHE_MAX) fehler.push(`${b.quelle}: Ausschnitt ${vorbereitet.hoehe} px hoch, abgeschnitten bei ${HOEHE_MAX} px`);
         if (vorbereitet.hoehe > HOEHE) {

@@ -54,9 +54,7 @@
 .dir-tools button .sw { width: 10px; height: 10px; border-radius: 50%; background: var(--dc, var(--muted)); }
 .dir-tools button[aria-pressed="false"] { opacity: 0.55; text-decoration: line-through; border-style: dashed; }
 .dir-tools button[aria-pressed="false"] .sw { background: transparent; border: 1.5px solid var(--dc, var(--muted)); }
-@media (pointer: coarse) {
-  .dir-tools button, .viewbar button { min-height: 40px; }
-}
+.dir-tools button, .viewbar button { min-height: var(--ziel); }
 #v3d-hint:not(:empty)::after { content: " · "; }
 /* Zoom der 3D-Konstruktion (#144, Leitfaden 5.1): − und + im Kopf der Tafel wie in plane-groups; Symbole mit Strich wie dort */
 .zoomtools { flex-wrap: nowrap; gap: 2px; }
@@ -123,9 +121,7 @@
 @media (max-width: 719px) {
   .zclass { grid-template-columns: minmax(0, 1fr); }
 }
-@media (pointer: coarse) {
-  .zbtn, .zgroup { min-height: 40px; }
-}
+.zbtn, .zgroup { min-height: var(--ziel); }
 .zonebox { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: 8px; font-size: 0.9rem; }
 .zonebox strong { color: var(--accent); }
 .zonebox p { margin: 6px 0 0; }

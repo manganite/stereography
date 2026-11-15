@@ -1,5 +1,5 @@
 // Browserlauf der App (#142): öffnet beide Modi, alle Beispielkristalle und das Telefon, bedient die Werkzeuge im Kopf
-// der Tafeln und prüft die Konsole. Die Rechnung prüfen die Tests ohne Browser; hier geht es darum, dass die Seite
+// der Tafeln, den Zoom der 3D-Konstruktion und die Tooltips je Modus und prüft die Konsole. Die Rechnung prüfen die Tests ohne Browser; hier geht es darum, dass die Seite
 // läuft und sich bedienen lässt (beim Entfernen eines Elements brach die App sonst unbemerkt ab, #141).
 //
 //   node tools/app-pruefen.mjs
@@ -11,6 +11,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { EXAMPLES } from '../js/examples.js';
 import { server } from './common/server.mjs';
+import { fehlendeTooltips } from './common/tooltips-pruefen.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const require = createRequire(import.meta.url);
@@ -134,6 +135,20 @@ try {
     pruefe(await menue.isHidden(), `Export ${id}: Escape schliesst`);
   }
   konsole(p, 'Export');
+
+  // 4b. Zoom der 3D-Konstruktion (#144): + bis zur Grenze, dann gesperrt; − gibt + wieder frei
+  for (let i = 0; i < 40 && await p.locator('#zoom-3d-ein').isEnabled(); i++) await p.click('#zoom-3d-ein');
+  pruefe(await p.locator('#zoom-3d-ein').isDisabled() && await p.locator('#zoom-3d-aus').isEnabled(), 'Zoom 3D: + an der Grenze gesperrt');
+  await p.click('#zoom-3d-aus');
+  pruefe(await p.locator('#zoom-3d-ein').isEnabled(), 'Zoom 3D: − gibt + wieder frei');
+  konsole(p, 'Zoom 3D');
+
+  // 4c. Tooltips aller sichtbaren Bedienelemente je Modus, auch ohne id (Leitfaden 5.3, fehlendeTooltips)
+  for (const m of ['pg', 'form']) {
+    await oeffnen(p, `#m=${m}`);
+    const fehlend = await fehlendeTooltips(p);
+    pruefe(fehlend.length === 0, `${m}: jedes Bedienelement hat einen Tooltip${fehlend.length ? ` (fehlt: ${fehlend.join(', ')})` : ''}`);
+  }
 
   // 5. Alle Beispielkristalle, am Laptop und auf dem Telefon (390 px: nicht waagrecht scrollbar)
   const t = await seite({ width: 390, height: 844 }, true);

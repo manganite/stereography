@@ -92,8 +92,8 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   (Thomas, 13. und 15.11.2026, crystallography-common#74 Punkt 4a): Jedes Experiment hat ein `kapitel` (das, in dem es vor
   allem übt; „Allgemeine und spezielle Lage“ Kap. 10, „Liegt der Pol von (001) auf der c-Achse?“ Kap. 7, weil dort
   Zonenachse und Flächenpol unterschieden werden); erzeugte Experimente ordnet `hilfe-daten.js` nach dem letzten festen
-  ihres Kapitels ein. Wann die Liste gegliedert wird, sagt Leitfaden Abschn. 5.3; mit der Fassung von common mit
-  crystallography-common#146 bleibt „Kristallformen“ (10 in 6 Kapiteln) flach, mit v0.20.0 ist sie noch gegliedert.
+  ihres Kapitels ein. Wann die Liste gegliedert wird, sagt Leitfaden Abschn. 5.3; seit common v0.21.0
+  bleibt „Kristallformen“ (10 in 6 Kapiteln) flach.
   Titel verraten die Antwort nicht (Review PR #149: „Tetragonal trotz c = a“ wurde „Kubisch, wenn c = a?“). Drei neue nach der stärksten Fehlvorstellung aus dem Kursmaterial: Ordnung von 432 (Operationen, nicht
   Achsen zählen), (001) und c-Achse im triklinen Kristall ([uvw] ⊥ (hkl) nicht allgemein), *c*/*a* = 1 bleibt tetragonal
   (System aus der Symmetrie, nicht aus der Metrik; sichtbar an der Flächensymmetrie). Der Test verlangt 8 bis 12 je

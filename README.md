@@ -186,6 +186,7 @@ Darstellung (beide Modi):
 | `tools/moodle-export.mjs` | Export der geprüften Fragen als Moodle-XML |
 | `tools/quiz-quelle.mjs` | Fragen und Bilder für die gemeinsame Fragenliste der App-Familie (crystallography-common, `fragenliste/`) |
 | `js/pointgroups.js` | Generatoren der Punktgruppen, Gruppenerzeugung, automatische Bestimmung der Symmetrieelemente |
+| `js/kern.js` | Punktgruppen aus dem Rechenkern symcrys (`lib/kern/`), umgerechnet in den Rahmen der App |
 | `js/forms.js` | Einträge des Formenkatalogs mit Kennung und Stelle (aus `formen.js`) |
 | `js/formen.js` | Datendatei: Formenkatalog nach ITA Tab. 10.1.2.2/10.1.2.3 |
 | `js/punktgruppen.js` | Datendatei: Kenndaten der Punktgruppen und Kristallsysteme |
@@ -221,7 +222,13 @@ Die App gehört zu einer Familie von Lern-Apps mit gleichem Aussehen, gleicher B
 node tools/common/sync.mjs ../crystallography-common
 ```
 
-`tests/common.test.mjs` prüft, dass die Kopie dem Manifest entspricht. Änderungen an gemeinsamen Dateien gehören nach crystallography-common, nicht in die Kopie.
+Ebenso der Rechenkern [symcrys](https://github.com/manganite/symcrys) nach `lib/kern/`, aus dem Paket eines Release (Ablauf im README von crystallography-common, „Rechenkern symcrys“):
+
+```bash
+node tools/common/sync.mjs --kern ../symcrys-X.Y.Z.tgz
+```
+
+`tests/common.test.mjs` prüft, dass beide Kopien ihrem Manifest entsprechen. Änderungen an gemeinsamen Dateien gehören nach crystallography-common, an Berechnungen nach symcrys, nicht in die Kopie.
 
 ### Tests
 
@@ -229,7 +236,7 @@ node tools/common/sync.mjs ../crystallography-common
 node --test tests/*.test.mjs
 ```
 
-Geprüft werden die Gruppenordnungen aller 40 Punktgruppen-Einträge, die Zuordnung der Symmetrieelemente zu den Blickrichtungen, die Flächenzahl aller 134 Formen gegen ITA, geschlossene Polyeder (Euler-Charakteristik 2), die Beispielkristalle, Lagen und Streckungen, die Abbildungen des Skripts und die Kennzeichnung der Vertiefungen, die Quizfragen (Pflichtfelder, Lernziel wörtlich im Skript, nachgerechnete Antworten, verschiedene Antwortbilder, Höchstanteile beim Ziehen, Moodle-Export) die Link-Adressen (hin und zurück, ungültige Werte) sowie die Release-Konsistenz (Version, Changelog, Offline-Liste) und die Kopie der gemeinsamen Dateien. Dieselben Tests laufen bei jedem Pull Request in GitHub Actions, zusammen mit Typprüfung, ESLint, der PDF-Fassung des Skripts und einem Browserlauf der App:
+Geprüft werden die Gruppenordnungen aller 40 Punktgruppen-Einträge, die Zuordnung der Symmetrieelemente zu den Blickrichtungen, die Flächenzahl aller 134 Formen gegen ITA, geschlossene Polyeder (Euler-Charakteristik 2), die Beispielkristalle, Lagen und Streckungen, die Abbildungen des Skripts und die Kennzeichnung der Vertiefungen, die Quizfragen (Pflichtfelder, Lernziel wörtlich im Skript, nachgerechnete Antworten, verschiedene Antwortbilder, Höchstanteile beim Ziehen, Moodle-Export) die Link-Adressen (hin und zurück, ungültige Werte) sowie die Release-Konsistenz (Version, Changelog, Offline-Liste), die Kopien der gemeinsamen Dateien und des Rechenkerns und die Gleichheit der Punktgruppen aus symcrys mit denen des bisherigen Codes. Dieselben Tests laufen bei jedem Pull Request in GitHub Actions, zusammen mit Typprüfung, ESLint, der PDF-Fassung des Skripts und einem Browserlauf der App:
 
 ```bash
 node tools/app-pruefen.mjs

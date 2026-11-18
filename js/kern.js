@@ -7,11 +7,11 @@
 // zwischen beiden folgt aus den beiden Gitterbasen (Thomas, 18.11.2026). Sonst sind die Rahmen gleich.
 
 import {
-  findPointGroup, isCentrosymmetric, isChiral, isPolar, laueClass, latticeBasis, operations, settings, symbol,
-  symmetryDirections,
+  crystalFamily, findPointGroup, isCentrosymmetric, isChiral, isPolar, laueClass, latticeBasis, operations, pointGroup,
+  settings, symbol, symmetryDirections,
 } from '../lib/kern/index.js';
 
-/** @import { Vec3, Mat3 } from '../lib/common/js/typen.js' */
+/** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
 /** @import { PointGroupKey } from '../lib/kern/index.js' */
 
 const S3 = Math.sqrt(3);
@@ -22,7 +22,8 @@ export const HEX_B = [0, 1, 0];
 
 /**
  * Gruppe und Aufstellung in symcrys zu einer Kennung der App. Monoklin: `2b`, `mc` usw. (eindeutige Achse b bzw. c),
- * sonst das Symbol der Aufstellung (`321`, `-4m2`, …).
+ * sonst das Symbol der Aufstellung (`321`, `-4m2`, …). Angenommen wird alles, was `findPointGroup` von symcrys kennt
+ * (auch volle Symbole); eine Kennung, die symcrys nicht kennt, ergibt einen Fehler.
  * @param {string} id
  * @returns {{ key: PointGroupKey, setting: number }}
  */
@@ -48,7 +49,8 @@ const kopie = (m) => /** @type {Mat3} */ (m.map((r) => [...r]));
 
 /**
  * Drehung vom kartesischen Rahmen von symcrys in den der App bei hexagonalen Achsen: R = B_App · B_symcrys⁻¹ mit den
- * Gitterbasen als Spalten. Beide Basen haben c ∥ z und gleich lange a, b; R ist deshalb eine Drehung um z.
+ * Gitterbasen als Spalten. Beide Basen haben c ∥ z, gleich lange a, b mit 120° dazwischen und dieselbe Händigkeit;
+ * R ist deshalb eine Drehung um z, und ihre Inverse ist die Transponierte (Test: tests/kern.test.mjs).
  */
 const R_HEX = (() => {
   const bk = kopie(latticeBasis('hexagonal'));
@@ -62,12 +64,10 @@ const R_HEX = (() => {
 })();
 
 /** Rahmen der App für eine Gruppe: Drehung aus dem Rahmen von symcrys oder keine. @param {PointGroupKey} key */
-const rahmen = (key) => (['trigonal', 'hexagonal'].includes(laueSystem(key)) ? R_HEX : null);
-/** @param {PointGroupKey} key */
-function laueSystem(key) {
-  const laue = laueClass(key);
-  return laue === '-3' || laue === '-3m' ? 'trigonal' : laue === '6/m' || laue === '6/mmm' ? 'hexagonal' : 'andere';
-}
+const rahmen = (key) => (crystalFamily(pointGroup(key).crystalSystem) === 'hexagonal' ? R_HEX : null);
+
+/** Drehung aus dem Rahmen von symcrys in den der App bei hexagonalen Achsen (für Tests). @returns {Mat3} */
+export const drehungHexagonal = () => kopie(R_HEX);
 
 /** @param {Mat3 | null} r @param {Mat3} m @returns {Mat3} */
 const matrixInApp = (r, m) => (r ? mal(mal(r, m), transponiert(r)) : m);
@@ -98,7 +98,8 @@ export function achsensymbol(e) {
 
 /**
  * Eigenschaften und Symmetrieelemente einer Punktgruppe der App, Richtungen im Rahmen der App. `klassen`: je Position
- * des vollen Symbols die Richtungen und ihre Elemente; `axes`, `mirrors`: alle Achsen und Spiegelnormalen.
+ * des vollen Symbols die Richtungen (kartesisch `dirs`, als [uvw] `gitter`, Vorzeichen nach ITA Tab. 2.1.3.1) und ihre
+ * Elemente; `axes`, `mirrors`: alle Achsen und Spiegelnormalen, `mirrorCls`: Position je Spiegelnormale.
  * @param {string} id
  */
 export function kernElemente(id) {
@@ -125,7 +126,11 @@ export function kernElemente(id) {
     axes.push(...kAxes);
     mirrors.push(...kMirrors);
     mirrorCls.push(...kMirrors.map(() => k));
-    return { pos: k, dirs: p.directions.map((d) => vektorInApp(r, d.cartesian)), hm: p.symbol ?? null, axes: kAxes, mirrors: kMirrors };
+    return {
+      pos: k, dirs: p.directions.map((d) => vektorInApp(r, d.cartesian)),
+      gitter: p.directions.map((d) => /** @type {Richtung} */ (/** @type {unknown} */ ([...d.lattice]))),
+      hm: p.symbol ?? null, axes: kAxes, mirrors: kMirrors,
+    };
   });
   return {
     centro, chiral: isChiral(key), polar: isPolar(key), laue: laueClass(key),

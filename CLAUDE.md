@@ -198,12 +198,14 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   die Liste `EXPERIMENTE` von dort.
 
 ### Familie
-- **Rechenkern symcrys, Rahmen der App** (Thomas, 18.11.2026, crystallography-common#99): Punktgruppen kommen aus
-  symcrys (`lib/kern/`), aufgerufen nur über `js/kern.js`. Die App behält ihren kartesischen Rahmen (hexagonal b ∥ y,
-  symcrys a ∥ x), damit Link-Adressen (`az` von b gezählt) und Bilder gleich bleiben; die Drehung steht an einer Stelle
-  (`js/kern.js`) und folgt aus den beiden Gitterbasen (`latticeBasis` von symcrys und `HEX_A`, `HEX_B`). Die Reihenfolge
-  der Operationen ist die von ITA (Konvention ITC von symcrys). Was der App an symcrys fehlt (Lagesymmetrie,
-  Wyckoff-Lagen, Formen), bleibt vorerst in der App (symcrys#24).
+- **Rechenkern symcrys, Rahmen der App** (Thomas, 18.11.2026, crystallography-common#99): symcrys (`lib/kern/`) wird
+  nur über `js/kern.js` aufgerufen; bis zur Umstellung rechnet die App mit `js/pointgroups.js`, ein Test belegt
+  gleiche Ergebnisse (`tests/kern.test.mjs`). Die App behält ihren kartesischen Rahmen (hexagonal b ∥ y, symcrys
+  a ∥ x), damit Link-Adressen (`az` von b gezählt) und Bilder gleich bleiben; die Drehung steht an einer Stelle
+  (`js/kern.js`) und folgt aus den beiden Gitterbasen (`latticeBasis` von symcrys und `HEX_A`, `HEX_B`). Die
+  Reihenfolge der Operationen ist die von ITA (Konvention ITC von symcrys). Was der App an symcrys fehlt
+  (Lagesymmetrie, Wyckoff-Lagen, Formen: symcrys#24; piezoelektrisch: mit dem Tensormodul von symcrys), bleibt
+  vorerst in der App.
 - **`blick=1–3` als allgemeiner Link-Parameter** (31.10.): plane-groups verlinkt damit die 10 polaren
   Punktgruppen, die den 10 ebenen entsprechen (z. B. Pedion mit Flächenmuster von oben ohne Umkugel).
   Diese Link-Form nutzt eine andere App; ändern nur nach Leitfaden Abschn. 8 (PR in plane-groups, Releases abstimmen).

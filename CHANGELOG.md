@@ -9,7 +9,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 ### Geändert
 
 - **Gemeinsame Grundlage** auf crystallography-common v0.24.0: `sync.mjs --kern` zum Übernehmen des Rechenkerns.
-- **Rechenkern** auf symcrys v0.2.0: neu eingebunden (`lib/kern/`, offline vorgehalten) mit `js/kern.js`, das die Punktgruppen aus symcrys in den Rahmen der App umrechnet; ein Test belegt für alle 40 Einträge dieselben Operationen, Eigenschaften, Achsen, Spiegelebenen und Blickrichtungen wie der bisherige Code. Die App rechnet noch mit dem bisherigen Code; die Umstellung folgt (crystallography-common#99).
+- **Rechenkern** auf symcrys v0.2.0: neu eingebunden (`lib/kern/`, offline vorgehalten) mit `js/kern.js`, das die Punktgruppen aus symcrys in den Rahmen der App umrechnet; ein Test belegt für alle 40 Einträge dieselben Operationen, Eigenschaften (zentrosymmetrisch, chiral, polar, Laue-Klasse, Symbole), Achsen, Spiegelebenen und Blickrichtungen wie der bisherige Code, dazu die Lage des Rahmens mit Vorzeichen. Die App rechnet noch mit dem bisherigen Code; die Umstellung folgt (crystallography-common#99).
 
 ## [1.20.0] - 2026-11-15
 

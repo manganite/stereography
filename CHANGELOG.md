@@ -6,10 +6,14 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.21.0] - 2026-11-18
+
+Punktgruppen aus dem gemeinsamen Rechenkern symcrys v0.2.0 (gemeinsame Grundlage crystallography-common v0.24.0); sichtbar ist nur die Reihenfolge der Operationen, jetzt die von ITA. Link-Adressen und Speicher bleiben gültig.
+
 ### Geändert
 
 - **Gemeinsame Grundlage** auf crystallography-common v0.24.0: `sync.mjs --kern` zum Übernehmen des Rechenkerns.
-- **Rechenkern** auf symcrys v0.2.0: neu eingebunden (`lib/kern/`, offline vorgehalten) mit `js/kern.js`, das die Punktgruppen aus symcrys in den Rahmen der App umrechnet. Operationen, Eigenschaften und Symmetrieelemente der Punktgruppen kommen jetzt aus symcrys; die eigenen Erzeugenden der App sind entfallen und dienen nur noch im Test als unabhängige Referenz (für alle 40 Einträge gleiche Operationen, Eigenschaften, Achsen, Spiegelebenen und Blickrichtungen, dazu die Lage des Rahmens mit Vorzeichen). Sichtbar ist nur die Reihenfolge der Operationen, jetzt die von ITA: Pole sind anders nummeriert, Listen wie die Flächen einer Zone stehen in anderer Reihenfolge, und in spezieller Lage nennt „Winkel“ unter den gleichwertigen Operationen, die zwei Pole ineinander überführen, unter Umständen eine andere; Zeichnungen, Skript und Quiz sind sonst unverändert (crystallography-common#99).
+- **Rechenkern** auf symcrys v0.2.0: neu eingebunden (`lib/kern/`, offline vorgehalten) mit `js/kern.js`, das die Punktgruppen aus symcrys in den Rahmen der App umrechnet. Operationen, Eigenschaften und Symmetrieelemente der Punktgruppen kommen jetzt aus symcrys; die eigenen Erzeugenden der App sind entfallen und dienen nur noch im Test als unabhängige Referenz (für alle 40 Einträge gleiche Operationen, Eigenschaften, Achsen, Spiegelebenen und Blickrichtungen, dazu die Lage des Rahmens mit Vorzeichen). Sichtbar ist nur die Reihenfolge der Operationen, jetzt die von ITA: Pole und ihre Beschriftungen stehen in anderer Reihenfolge (bei übereinanderliegenden Polen wird u. U. ein anderer zuerst gewählt), Listen wie die Flächen einer Zone stehen in anderer Reihenfolge, und in spezieller Lage nennt „Winkel“ unter den gleichwertigen Operationen, die zwei Pole ineinander überführen, unter Umständen eine andere; Zeichnungen, Skript und Quiz sind sonst unverändert (crystallography-common#99).
 
 ## [1.20.0] - 2026-11-15
 
@@ -452,7 +456,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.20.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.21.0...HEAD
+[1.21.0]: https://github.com/manganite/stereography/compare/v1.20.0...v1.21.0
 [1.20.0]: https://github.com/manganite/stereography/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/manganite/stereography/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/manganite/stereography/compare/v1.17.0...v1.18.0

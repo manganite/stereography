@@ -207,7 +207,7 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   danach nummeriert, Listen wie die Flächen einer Zone folgen ihr, und in spezieller Lage nennt der Winkelkasten
   unter den gleichwertigen Operationen die zur ersten passende. Achsen und Spiegelnormalen behalten das
   kanonische Vorzeichen der App (`canonicalDir`). Die Blickrichtungen bestimmt die App noch selbst
-  (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [1̄11] statt [1̄1̄1] in symcrys,
+  (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [11̄1] statt [11̄1̄] in symcrys,
   und den Bezeichnungen der App); Umstellung auf `symmetryDirections` von symcrys offen (#111). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
   unabhängige Referenz. In der App bleibt, was symcrys noch nicht kann: die Analyse beliebiger Operationen
   verzerrter Kristalle (`analyzeGroup`, Bestimmung der Gruppe in `polyhedra.js`), Lagesymmetrie, Wyckoff-Lagen und

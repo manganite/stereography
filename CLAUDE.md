@@ -186,7 +186,7 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   im Code: `HOLOHEDRY`, `LATTICE_DEFAULTS`, `FREE_PARAMS`, `STRETCH_DIRS`, `GITTER_BEREICH` in `polyhedra.js`
   (Rechengrundlagen und Voreinstellungen der App, an die Gitterparameter gebunden; `GITTER_BEREICH` folgt aus
   den Streckungen), `SKRIPT_ANCHORS` in `skriptlinks.js`
-  (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js`,
+  (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js` und `kern.js`,
   `ALT_SETTINGS` in `sitesym.js` (bewusst zweite, unabhängige Angabe nach ITA, gegen die die Tests den
   Katalog prüfen), `DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen
   in `quiz-gen.js` (Wortlisten und Auswahl des Generators, kein Fachinhalt), `VIEW_FAMILIES` in `scene.js`
@@ -204,9 +204,11 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   (hexagonal b ∥ y, symcrys a ∥ x), damit Link-Adressen (`az` von b gezählt) und Bilder gleich bleiben; die Drehung
   steht an einer Stelle (`js/kern.js`) und folgt aus den beiden Gitterbasen (`latticeBasis` von symcrys und `HEX_A`,
   `HEX_B`). Die Reihenfolge der Operationen ist die von ITA (Konvention ITC von symcrys; Wahl Thomas): Pole sind
-  danach nummeriert, und Listen wie die Flächen einer Zone folgen ihr. Achsen und Spiegelnormalen behalten das
-  kanonische Vorzeichen der App (`canonicalDir`), die Blickrichtungen ihre [uvw] (`directionPositions`, dritte
-  hexagonale Richtung ⟨210⟩). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
+  danach nummeriert, Listen wie die Flächen einer Zone folgen ihr, und in spezieller Lage nennt der Winkelkasten
+  unter den gleichwertigen Operationen die zur ersten passende. Achsen und Spiegelnormalen behalten das
+  kanonische Vorzeichen der App (`canonicalDir`). Die Blickrichtungen bestimmt die App noch selbst
+  (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [1̄11] statt [1̄1̄1] in symcrys,
+  und den Bezeichnungen der App); Umstellung auf `symmetryDirections` von symcrys offen (#111). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
   unabhängige Referenz. In der App bleibt, was symcrys noch nicht kann: die Analyse beliebiger Operationen
   verzerrter Kristalle (`analyzeGroup`, Bestimmung der Gruppe in `polyhedra.js`), Lagesymmetrie, Wyckoff-Lagen und
   Formen (symcrys#24), piezoelektrisch (mit dem Tensormodul von symcrys).

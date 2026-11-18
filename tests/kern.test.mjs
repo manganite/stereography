@@ -6,10 +6,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  HEX_A, HEX_A_MINUS_B, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, latticeToCart, symmetryDirections,
+  HEX_A, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, latticeToCart, symmetryDirections,
 } from '../js/pointgroups.js';
 import { drehungHexagonal, kernAufstellung, kernElemente, kernOperationen } from '../js/kern.js';
-import { I3, inversion, matEq, mirror, mul, rot, rotInv } from '../js/linalg.js';
+import { I3, add, inversion, matEq, mirror, mul, normalize, rot, rotInv, scale } from '../js/linalg.js';
 
 /** @import { Vec3, Mat3 } from '../lib/common/js/typen.js' */
 
@@ -17,6 +17,7 @@ import { I3, inversion, matEq, mirror, mul, rot, rotInv } from '../js/linalg.js'
 /** @type {Vec3} */ const Y = [0, 1, 0];
 /** @type {Vec3} */ const Z = [0, 0, 1];
 /** @type {Vec3} */ const D111 = [1, 1, 1];
+const HEX_A_MINUS_B = normalize(add(HEX_A, scale(HEX_B, -1))); // [1-10]
 const inv = inversion;
 /** Erzeugende je Eintrag (kartesisch, Rahmen der App), wie bis v1.20 in js/pointgroups.js. @type {Record<string, Mat3[]>} */
 const ERZEUGENDE = {
@@ -82,6 +83,8 @@ for (const g of POINT_GROUPS) {
     assert.ok(gleicheMenge(alt.mirrors, neu.mirrors, parallel), 'Spiegelebenen');
     // buildPointGroup (was die App nutzt) gibt dasselbe, mit kanonischem Vorzeichen wie analyzeGroup
     assert.ok(gleicheMenge(alt.ops, app.ops, gleicheMatrix), 'buildPointGroup: Operationen');
+    // Die Identität steht zuerst (Ausgangspol: scene.js `gen`, view3d.js, hklOrbit in polyhedra.js)
+    assert.ok(gleicheMatrix(app.ops[0], I3()), 'Identität zuerst');
     assert.deepEqual([app.centro, app.chiral, app.polar, app.piezo], [alt.centro, alt.chiral, alt.polar, alt.piezo]);
     /** @param {Vec3} a @param {Vec3} b */
     const gleich = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);

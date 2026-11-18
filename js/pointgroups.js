@@ -49,7 +49,6 @@ export const Y = [0, 1, 0];
 export const Z = [0, 0, 1];
 // hexagonale Gitterrichtungen (kartesisch, normiert); a und b aus js/kern.js
 export { HEX_A, HEX_B };
-export const HEX_A_MINUS_B = normalize(add(HEX_A, scale(HEX_B, -1))); // [1-10]
 
 /** Gruppenliste: die Zeilen aus js/punktgruppen.js. @type {Punktgruppe[]} */
 export const POINT_GROUPS = PUNKTGRUPPEN;

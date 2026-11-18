@@ -180,13 +180,13 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
 - **Daten getrennt vom Code** (6.11.2026, #75, Leitfaden Abschn. 9): Datendateien sind `punktgruppen.js`
   (Kenndaten der Punktgruppen, Systeme), `formen.js` (Formtypen, Flächenzahlen, Prismen, Schreibweise der Eigensymmetrie, Formen je Punktgruppe),
   `aufstellungen.js`, `examples.js`, `quiz-bank.js`, `hilfetexte.js`, `hilfe-anleitung.js` (Texte der Hilfeseite: Zweck,
-  Bedienkonzepte, Bereiche, weitere Anleitungen, Fragen; crystallography-common#114). Die Erzeugenden der Punktgruppen
-  (`ERZEUGENDE` in `pointgroups.js`) und der Aufbau des Katalogs mit Kennung und Stelle (`forms.js`) sind
+  Bedienkonzepte, Bereiche, weitere Anleitungen, Fragen; crystallography-common#114). Die Punktgruppen selbst kommen aus symcrys
+  (`lib/kern/`, „Familie“); der Aufbau des Katalogs mit Kennung und Stelle (`forms.js`) ist
   Code; Kennungen und Reihenfolge des Katalogs sind Schnittstelle (Links `f=…`). Je Fall entschieden, bleibt
   im Code: `HOLOHEDRY`, `LATTICE_DEFAULTS`, `FREE_PARAMS`, `STRETCH_DIRS`, `GITTER_BEREICH` in `polyhedra.js`
   (Rechengrundlagen und Voreinstellungen der App, an die Gitterparameter gebunden; `GITTER_BEREICH` folgt aus
   den Streckungen), `SKRIPT_ANCHORS` in `skriptlinks.js`
-  (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js`,
+  (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js` und `kern.js`,
   `ALT_SETTINGS` in `sitesym.js` (bewusst zweite, unabhängige Angabe nach ITA, gegen die die Tests den
   Katalog prüfen), `DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen
   in `quiz-gen.js` (Wortlisten und Auswahl des Generators, kein Fachinhalt), `VIEW_FAMILIES` in `scene.js`
@@ -198,14 +198,20 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   die Liste `EXPERIMENTE` von dort.
 
 ### Familie
-- **Rechenkern symcrys, Rahmen der App** (Thomas, 18.11.2026, crystallography-common#99): symcrys (`lib/kern/`) wird
-  nur über `js/kern.js` aufgerufen; bis zur Umstellung rechnet die App mit `js/pointgroups.js`, ein Test belegt
-  gleiche Ergebnisse (`tests/kern.test.mjs`). Die App behält ihren kartesischen Rahmen (hexagonal b ∥ y, symcrys
-  a ∥ x), damit Link-Adressen (`az` von b gezählt) und Bilder gleich bleiben; die Drehung steht an einer Stelle
-  (`js/kern.js`) und folgt aus den beiden Gitterbasen (`latticeBasis` von symcrys und `HEX_A`, `HEX_B`). Die
-  Reihenfolge der Operationen ist die von ITA (Konvention ITC von symcrys). Was der App an symcrys fehlt
-  (Lagesymmetrie, Wyckoff-Lagen, Formen: symcrys#24; piezoelektrisch: mit dem Tensormodul von symcrys), bleibt
-  vorerst in der App.
+- **Rechenkern symcrys, Rahmen der App** (Thomas, 18.11.2026, crystallography-common#99): Operationen, Eigenschaften
+  und Symmetrieelemente der Punktgruppen kommen aus symcrys (`lib/kern/`), aufgerufen nur über `js/kern.js`;
+  `buildPointGroup` in `js/pointgroups.js` stellt sie für die App zusammen. Die App behält ihren kartesischen Rahmen
+  (hexagonal b ∥ y, symcrys a ∥ x), damit Link-Adressen (`az` von b gezählt) und Bilder gleich bleiben; die Drehung
+  steht an einer Stelle (`js/kern.js`) und folgt aus den beiden Gitterbasen (`latticeBasis` von symcrys und `HEX_A`,
+  `HEX_B`). Die Reihenfolge der Operationen ist die von ITA (Konvention ITC von symcrys; Wahl Thomas): Pole sind
+  danach nummeriert, Listen wie die Flächen einer Zone folgen ihr, und in spezieller Lage nennt der Winkelkasten
+  unter den gleichwertigen Operationen die zur ersten passende. Achsen und Spiegelnormalen behalten das
+  kanonische Vorzeichen der App (`canonicalDir`). Die Blickrichtungen bestimmt die App noch selbst
+  (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [11̄1] statt [11̄1̄] in symcrys,
+  und den Bezeichnungen der App); Umstellung auf `symmetryDirections` von symcrys offen (#111). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
+  unabhängige Referenz. In der App bleibt, was symcrys noch nicht kann: die Analyse beliebiger Operationen
+  verzerrter Kristalle (`analyzeGroup`, Bestimmung der Gruppe in `polyhedra.js`), Lagesymmetrie, Wyckoff-Lagen und
+  Formen (symcrys#24), piezoelektrisch (mit dem Tensormodul von symcrys).
 - **`blick=1–3` als allgemeiner Link-Parameter** (31.10.): plane-groups verlinkt damit die 10 polaren
   Punktgruppen, die den 10 ebenen entsprechen (z. B. Pedion mit Flächenmuster von oben ohne Umkugel).
   Diese Link-Form nutzt eine andere App; ändern nur nach Leitfaden Abschn. 8 (PR in plane-groups, Releases abstimmen).

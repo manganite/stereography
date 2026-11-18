@@ -71,17 +71,23 @@ const info = (p) => p.locator('#info').innerText();
 const gedrueckt = async (p, sel) => (await p.locator(sel).getAttribute('aria-pressed')) === 'true';
 
 /**
- * Zwei verschiedene Flächenpole im Stereogramm antippen (Trefferkreise .hit, verschiedene Stellen).
+ * Zwei verschiedene Flächenpole im Stereogramm antippen (Trefferkreise .hit, verschiedene Stellen, nicht gegenüber auf
+ * dem Grundkreis: zwei Gegenpole wie (100) und (1̄00) legen keine Zone fest). Welche Pole zuerst kommen, hängt von der
+ * Reihenfolge der Operationen ab.
  * @param {Page} p
  */
 async function zweiPole(p) {
   const pole = await p.evaluate(() => {
+    const hits = /** @type {SVGGraphicsElement[]} */ ([...document.querySelectorAll('#stereo .hit')]);
+    const k = (hits[0]?.ownerSVGElement ?? document.body).getBoundingClientRect();
+    const m = { x: k.left + k.width / 2, y: k.top + k.height / 2 };
     /** @type {{ x: number, y: number }[]} */
     const out = [];
-    for (const el of document.querySelectorAll('#stereo .hit')) {
+    for (const el of hits) {
       const r = el.getBoundingClientRect();
       const q = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-      if (out.every((o) => Math.hypot(o.x - q.x, o.y - q.y) > 30)) out.push(q);
+      const frei = out.every((o) => Math.hypot(o.x - q.x, o.y - q.y) > 30 && Math.hypot(o.x + q.x - 2 * m.x, o.y + q.y - 2 * m.y) > 30);
+      if (frei) out.push(q);
       if (out.length === 2) break;
     }
     return out;

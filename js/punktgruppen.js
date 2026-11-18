@@ -1,7 +1,8 @@
 // Die 32 kristallographischen Punktgruppen (inkl. der in ITA A separat aufgeführten Aufstellungen):
 // Symbole und Kenndaten, ohne Operationen.
-// Datendatei nach Leitfaden Abschn. 9 (Daten getrennt vom Code, #75): nur Literale. Die Erzeugenden und alle
-// Rechnungen stehen in js/pointgroups.js; tests/punktgruppen.test.mjs prüft, dass beide zusammenpassen.
+// Datendatei nach Leitfaden Abschn. 9 (Daten getrennt vom Code, #75): nur Literale. Operationen und
+// Symmetrieelemente kommen aus symcrys (js/kern.js), die Rechnungen der App stehen in js/pointgroups.js;
+// tests/punktgruppen.test.mjs prüft, dass symcrys jede Zeile kennt.
 
 /**
  * Zeile der Gruppenliste. hm: Kurzsymbol ('-' setzt einen Querstrich über das folgende Zeichen), setting:

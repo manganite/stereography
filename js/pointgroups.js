@@ -1,32 +1,21 @@
 // Die 32 kristallographischen Punktgruppen (inkl. der in ITA A separat
 // aufgeführten Aufstellungen). Alle Operationen sind als 3×3-Matrizen im
-// kartesischen Kristallsystem gegeben.
+// kartesischen Kristallsystem gegeben. Operationen, Eigenschaften und
+// Symmetrieelemente kommen aus dem Rechenkern symcrys (js/kern.js); hier steht,
+// was die App daraus macht, und die Analyse beliebiger Operationen (verzerrte
+// Kristalle, analyzeGroup), die symcrys noch nicht kann (symcrys#24).
 //
 // Konvention (ITA A): Projektionsrichtung c (z, zum Betrachter),
 // a zeigt im Stereogramm nach unten, b nach rechts.
 // Kartesisch: x ∥ a (orthogonale Systeme), y ∥ b, z ∥ c.
 // Hexagonale Achsen: b ∥ y, a schliesst mit b 120° ein.
 
-import {
-  I3, rot, rotInv, mirror, inversion, mul, mulVec, det, trace, matEq, neg, normalize,
-  add, scale, cross, EPS,
-} from './linalg.js';
+import { I3, mul, mulVec, det, trace, matEq, neg, normalize, add, scale, cross, EPS } from './linalg.js';
 import { PUNKTGRUPPEN } from './punktgruppen.js';
+import { HEX_A, HEX_B, kernElemente, kernOperationen } from './kern.js';
 
 /** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
-/**
- * Eintrag der Gruppenliste: Zeile aus js/punktgruppen.js (Bedeutung der Felder dort) mit den Erzeugenden.
- * @typedef {object} Punktgruppe
- * @property {string} id
- * @property {string} hm
- * @property {string} [setting]
- * @property {string} system
- * @property {boolean} [hex]
- * @property {string} sf
- * @property {string} full
- * @property {string} laue
- * @property {() => Mat3[]} gens
- */
+/** Eintrag der Gruppenliste: Zeile aus js/punktgruppen.js (Bedeutung der Felder dort). @typedef {import('./punktgruppen.js').Punktgruppenzeile} Punktgruppe */
 /**
  * Drehachse oder Drehinversionsachse (kartesische Richtung, kanonisches Vorzeichen). cls: Position im
  * HM-Symbol, gesetzt von symmetryDirections() (−1: keine).
@@ -52,108 +41,20 @@ import { PUNKTGRUPPEN } from './punktgruppen.js';
  * @typedef {{ pos: number, label: string, dirs: Vec3[], hm: string | null, axes: Achse[], mirrors: Vec3[] }} Blickrichtungsklasse
  */
 
-const S3 = Math.sqrt(3);
 /** @type {Vec3} */
 export const X = [1, 0, 0];
 /** @type {Vec3} */
 export const Y = [0, 1, 0];
 /** @type {Vec3} */
 export const Z = [0, 0, 1];
-// hexagonale Gitterrichtungen (kartesisch, normiert)
-/** @type {Vec3} */
-export const HEX_A = [S3 / 2, -0.5, 0];          // [100]
-/** @type {Vec3} */
-export const HEX_B = [0, 1, 0];                  // [010]
-export const HEX_A_MINUS_B = normalize(add(HEX_A, scale(HEX_B, -1))); // [1-10]
-/** @type {Vec3} */
-const D111 = [1, 1, 1];
+// hexagonale Gitterrichtungen (kartesisch, normiert); a und b aus js/kern.js
+export { HEX_A, HEX_B };
 
-const inv = inversion;
-
-/**
- * Erzeugende je Punktgruppe (kartesisch). Die Kenndaten der Gruppen stehen in js/punktgruppen.js.
- * @type {Record<string, () => Mat3[]>}
- */
-const ERZEUGENDE = {
-  // --- triklin
-  '1': () => [],
-  '-1': () => [inv()],
-  // --- monoklin
-  '2b': () => [rot(Y, 2)],
-  '2c': () => [rot(Z, 2)],
-  'mb': () => [mirror(Y)],
-  'mc': () => [mirror(Z)],
-  '2/mb': () => [rot(Y, 2), inv()],
-  '2/mc': () => [rot(Z, 2), inv()],
-  // --- orthorhombisch
-  '222': () => [rot(X, 2), rot(Y, 2)],
-  'mm2': () => [mirror(X), mirror(Y)],
-  'mmm': () => [rot(X, 2), rot(Y, 2), inv()],
-  // --- tetragonal
-  '4': () => [rot(Z, 4)],
-  '-4': () => [rotInv(Z, 4)],
-  '4/m': () => [rot(Z, 4), inv()],
-  '422': () => [rot(Z, 4), rot(X, 2)],
-  '4mm': () => [rot(Z, 4), mirror(X)],
-  '-42m': () => [rotInv(Z, 4), rot(X, 2)],
-  '-4m2': () => [rotInv(Z, 4), mirror(X)],
-  '4/mmm': () => [rot(Z, 4), rot(X, 2), inv()],
-  // --- trigonal (hexagonale Achsen)
-  '3': () => [rot(Z, 3)],
-  '-3': () => [rot(Z, 3), inv()],
-  '321': () => [rot(Z, 3), rot(HEX_A, 2)],
-  '312': () => [rot(Z, 3), rot(HEX_A_MINUS_B, 2)],
-  '3m1': () => [rot(Z, 3), mirror(HEX_A)],
-  '31m': () => [rot(Z, 3), mirror(HEX_A_MINUS_B)],
-  '-3m1': () => [rot(Z, 3), mirror(HEX_A), inv()],
-  '-31m': () => [rot(Z, 3), mirror(HEX_A_MINUS_B), inv()],
-  // --- hexagonal
-  '6': () => [rot(Z, 6)],
-  '-6': () => [rotInv(Z, 6)],
-  '6/m': () => [rot(Z, 6), inv()],
-  '622': () => [rot(Z, 6), rot(HEX_A, 2)],
-  '6mm': () => [rot(Z, 6), mirror(HEX_A)],
-  '-6m2': () => [rotInv(Z, 6), mirror(HEX_A)],
-  '-62m': () => [rotInv(Z, 6), rot(HEX_A, 2)],
-  '6/mmm': () => [rot(Z, 6), rot(HEX_A, 2), inv()],
-  // --- kubisch
-  '23': () => [rot(Z, 2), rot(X, 2), rot(D111, 3)],
-  'm-3': () => [rot(Z, 2), rot(X, 2), rot(D111, 3), inv()],
-  '432': () => [rot(Z, 4), rot(D111, 3)],
-  '-43m': () => [rotInv(Z, 4), rot(D111, 3)],
-  'm-3m': () => [rot(Z, 4), rot(D111, 3), inv()],
-};
-
-/** Gruppenliste: Zeilen aus js/punktgruppen.js mit ihren Erzeugenden. @type {Punktgruppe[]} */
-export const POINT_GROUPS = PUNKTGRUPPEN.map((z) => {
-  if (!ERZEUGENDE[z.id]) throw new Error(`Erzeugende fehlen: ${z.id}`);
-  return { ...z, gens: ERZEUGENDE[z.id] };
-});
-if (Object.keys(ERZEUGENDE).length !== PUNKTGRUPPEN.length) throw new Error('Erzeugende ohne Zeile in js/punktgruppen.js');
+/** Gruppenliste: die Zeilen aus js/punktgruppen.js. @type {Punktgruppe[]} */
+export const POINT_GROUPS = PUNKTGRUPPEN;
 
 /** Gruppe zur id. Alle Aufrufer übergeben ids aus der Liste (eine unbekannte ergäbe undefined). @param {string} id */
 export const groupById = (id) => /** @type {Punktgruppe} */ (POINT_GROUPS.find((g) => g.id === id));
-
-/** Erzeugt alle Elemente der Gruppe aus den Generatoren (Identität zuerst). @param {Mat3[]} gens */
-export function generateGroup(gens) {
-  const els = [I3()];
-  /** @param {Mat3} m */
-  const has = (m) => els.some((e) => matEq(e, m));
-  let frontier = [I3()];
-  while (frontier.length) {
-    /** @type {Mat3[]} */
-    const next = [];
-    for (const a of frontier) {
-      for (const g of gens) {
-        const p = mul(g, a);
-        if (!has(p)) { els.push(p); next.push(p); }
-      }
-    }
-    frontier = next;
-    if (els.length > 48) throw new Error('Gruppe zu gross – Generatoren prüfen');
-  }
-  return els;
-}
 
 /** Ordnung einer eigentlichen Drehung aus der Spur. @param {Mat3} R */
 function rotationOrder(R) {
@@ -196,6 +97,18 @@ export function canonicalDir(d) {
 }
 
 /**
+ * Piezoelektrisch, falls der Piezotensor d_ijk (symmetrisch in j, k) eine invariante Komponente hat. Anzahl der
+ * Invarianten = Mittel des Charakters χ(R)·(χ(R)² + χ(R²))/2 über die Gruppe. Ergibt die 20 Gruppen ohne
+ * Inversionszentrum ausser 432 (Borchardt-Ott & Sowa, Abschn. 9.6.2). Bleibt in der App, bis symcrys es mit dem
+ * Tensormodul kann. @param {Mat3[]} ops
+ */
+function piezoelektrisch(ops) {
+  let n = 0;
+  for (const m of ops) { const t = trace(m), t2 = trace(mul(m, m)); n += (t * (t * t + t2)) / 2; }
+  return Math.round(n / ops.length) > 0;
+}
+
+/**
  * Analysiert eine Liste von Operationen und bestimmt die Symmetrieelemente.
  * Rückgabe: { ops, order, centro, chiral, polar, piezo, axes:[{dir, symbol, centre}], mirrors:[normal] }
  * symbol ∈ '2','3','4','6','-3','-4','-6'
@@ -210,12 +123,7 @@ export function analyzeGroup(ops) {
   const P = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
   for (const m of ops) for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) P[i][j] += m[i][j] / ops.length;
   const polar = P.some((r) => r.some((x) => Math.abs(x) > 1e-6));
-  // piezoelektrisch, falls der Piezotensor d_ijk (symmetrisch in j, k) eine invariante Komponente hat.
-  // Anzahl der Invarianten = Mittel des Charakters χ(R)·(χ(R)² + χ(R²))/2 über die Gruppe.
-  // Ergibt die 20 Gruppen ohne Inversionszentrum ausser 432 (Borchardt-Ott & Sowa, Abschn. 9.6.2).
-  let nPiezo = 0;
-  for (const m of ops) { const t = trace(m), t2 = trace(mul(m, m)); nPiezo += (t * (t * t + t2)) / 2; }
-  const piezo = Math.round(nPiezo / ops.length) > 0;
+  const piezo = piezoelektrisch(ops);
 
   /** @type {{ dir: Vec3, rot: Set<number>, rotinv: Set<number>, mirror: boolean }[]} */
   const axisMap = [];
@@ -260,11 +168,21 @@ export function analyzeGroup(ops) {
   return { ops, order: ops.length, centro, chiral, polar, piezo, axes, mirrors };
 }
 
-/** Vollständige Daten zu einer Punktgruppe. @param {string} id @returns {Punktgruppeninfo} */
+/**
+ * Vollständige Daten zu einer Punktgruppe aus symcrys: Operationen in der Reihenfolge von ITA, Eigenschaften,
+ * Achsen und Spiegelnormalen (kanonisches Vorzeichen wie in analyzeGroup). @param {string} id
+ * @returns {Punktgruppeninfo}
+ */
 export function buildPointGroup(id) {
-  const g = /** @type {Punktgruppe} */ (groupById(id)); // unbekannte id: Fehler wie bisher beim Zugriff
-  const ops = generateGroup(g.gens());
-  return { ...g, ...analyzeGroup(ops) };
+  const g = groupById(id);
+  if (!g) throw new Error(`Unbekannte Punktgruppe: ${id}`);
+  const ops = kernOperationen(id);
+  const e = kernElemente(id);
+  const axes = e.axes.map((a) => ({ dir: canonicalDir(a.dir), symbol: a.symbol, centre: a.centre, mirrorPerp: a.mirrorPerp }));
+  return {
+    ...g, ops, order: ops.length, centro: e.centro, chiral: e.chiral, polar: e.polar, piezo: piezoelektrisch(ops),
+    axes, mirrors: e.mirrors.map(canonicalDir),
+  };
 }
 
 /** Bahn (Orbit) eines Punktes unter der Gruppe: [{p, det, op}] @param {Mat3[]} ops @param {Vec3} p0 */

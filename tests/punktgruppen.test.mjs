@@ -1,15 +1,14 @@
-// Datendatei js/punktgruppen.js (#75): passt zu den Erzeugenden in js/pointgroups.js.
+// Datendatei js/punktgruppen.js (#75): jede Zeile eine Punktgruppe, die symcrys kennt.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { PUNKTGRUPPEN, SYSTEMS } from '../js/punktgruppen.js';
-import { POINT_GROUPS } from '../js/pointgroups.js';
+import { POINT_GROUPS, buildPointGroup } from '../js/pointgroups.js';
 
-test('jede Zeile hat Erzeugende, Kennungen eindeutig, System bekannt', () => {
+test('jede Zeile ist in symcrys bekannt, Kennungen eindeutig, System bekannt', () => {
   assert.equal(POINT_GROUPS.length, PUNKTGRUPPEN.length);
   assert.equal(new Set(PUNKTGRUPPEN.map((z) => z.id)).size, PUNKTGRUPPEN.length);
   for (const g of POINT_GROUPS) {
-    assert.equal(typeof g.gens, 'function', g.id);
-    assert.ok(Array.isArray(g.gens()), g.id);
+    assert.ok(buildPointGroup(g.id).ops.length >= 1, g.id);
     assert.ok(SYSTEMS.includes(g.system), g.id);
   }
 });

@@ -1,12 +1,54 @@
-// Rechenkern symcrys (lib/kern/, js/kern.js) gegen den bisherigen Code (js/pointgroups.js): gleiche Ergebnisse für alle
-// 40 Einträge, bevor der alte Code fällt (crystallography-common#99). Verglichen werden Mengen; die Reihenfolge der
-// Operationen folgt in symcrys ITA (Thomas, 18.11.2026) und ist deshalb nicht Teil des Vergleichs.
+// Rechenkern symcrys (lib/kern/, js/kern.js) gegen eine unabhängige Herleitung: die Erzeugenden, mit denen die App bis
+// v1.20 ihre Punktgruppen erzeugte, hier als Referenz, abgeschlossen und mit analyzeGroup (js/pointgroups.js)
+// ausgewertet. Für alle 40 Einträge müssen symcrys bzw. buildPointGroup dieselben Operationen (als Menge),
+// Eigenschaften, Achsen, Spiegelebenen und Blickrichtungen ergeben (crystallography-common#99). Die Reihenfolge der
+// Operationen folgt in symcrys ITA (Thomas, 18.11.2026) und ist nicht Teil des Vergleichs.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { HEX_A, HEX_B, POINT_GROUPS, buildPointGroup, latticeToCart, symmetryDirections } from '../js/pointgroups.js';
+import {
+  HEX_A, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, latticeToCart, symmetryDirections,
+} from '../js/pointgroups.js';
 import { drehungHexagonal, kernAufstellung, kernElemente, kernOperationen } from '../js/kern.js';
+import { I3, add, inversion, matEq, mirror, mul, normalize, rot, rotInv, scale } from '../js/linalg.js';
 
 /** @import { Vec3, Mat3 } from '../lib/common/js/typen.js' */
+
+/** @type {Vec3} */ const X = [1, 0, 0];
+/** @type {Vec3} */ const Y = [0, 1, 0];
+/** @type {Vec3} */ const Z = [0, 0, 1];
+/** @type {Vec3} */ const D111 = [1, 1, 1];
+const HEX_A_MINUS_B = normalize(add(HEX_A, scale(HEX_B, -1))); // [1-10]
+const inv = inversion;
+/** Erzeugende je Eintrag (kartesisch, Rahmen der App), wie bis v1.20 in js/pointgroups.js. @type {Record<string, Mat3[]>} */
+const ERZEUGENDE = {
+  '1': [], '-1': [inv()],
+  '2b': [rot(Y, 2)], '2c': [rot(Z, 2)], 'mb': [mirror(Y)], 'mc': [mirror(Z)], '2/mb': [rot(Y, 2), inv()], '2/mc': [rot(Z, 2), inv()],
+  '222': [rot(X, 2), rot(Y, 2)], 'mm2': [mirror(X), mirror(Y)], 'mmm': [rot(X, 2), rot(Y, 2), inv()],
+  '4': [rot(Z, 4)], '-4': [rotInv(Z, 4)], '4/m': [rot(Z, 4), inv()], '422': [rot(Z, 4), rot(X, 2)], '4mm': [rot(Z, 4), mirror(X)],
+  '-42m': [rotInv(Z, 4), rot(X, 2)], '-4m2': [rotInv(Z, 4), mirror(X)], '4/mmm': [rot(Z, 4), rot(X, 2), inv()],
+  '3': [rot(Z, 3)], '-3': [rot(Z, 3), inv()], '321': [rot(Z, 3), rot(HEX_A, 2)], '312': [rot(Z, 3), rot(HEX_A_MINUS_B, 2)],
+  '3m1': [rot(Z, 3), mirror(HEX_A)], '31m': [rot(Z, 3), mirror(HEX_A_MINUS_B)], '-3m1': [rot(Z, 3), mirror(HEX_A), inv()],
+  '-31m': [rot(Z, 3), mirror(HEX_A_MINUS_B), inv()],
+  '6': [rot(Z, 6)], '-6': [rotInv(Z, 6)], '6/m': [rot(Z, 6), inv()], '622': [rot(Z, 6), rot(HEX_A, 2)], '6mm': [rot(Z, 6), mirror(HEX_A)],
+  '-6m2': [rotInv(Z, 6), mirror(HEX_A)], '-62m': [rotInv(Z, 6), rot(HEX_A, 2)], '6/mmm': [rot(Z, 6), rot(HEX_A, 2), inv()],
+  '23': [rot(Z, 2), rot(X, 2), rot(D111, 3)], 'm-3': [rot(Z, 2), rot(X, 2), rot(D111, 3), inv()], '432': [rot(Z, 4), rot(D111, 3)],
+  '-43m': [rotInv(Z, 4), rot(D111, 3)], 'm-3m': [rot(Z, 4), rot(D111, 3), inv()],
+};
+/** Abschluss der Erzeugenden. @param {Mat3[]} gens */
+function erzeuge(gens) {
+  const els = [I3()];
+  for (let neu = [I3()]; neu.length; ) {
+    /** @type {Mat3[]} */
+    const next = [];
+    for (const a of neu) for (const g of gens) { const p = mul(g, a); if (!els.some((e) => matEq(e, p))) { els.push(p); next.push(p); } }
+    neu = next;
+  }
+  return els;
+}
+
+test('die Referenz deckt alle 40 Einträge ab', () => {
+  assert.deepEqual(Object.keys(ERZEUGENDE).sort(), POINT_GROUPS.map((g) => g.id).sort());
+});
 
 /** @param {Mat3} a @param {Mat3} b */
 const gleicheMatrix = (a, b) => a.every((r, i) => r.every((x, j) => Math.abs(x - b[i][j]) < 1e-9));
@@ -28,9 +70,10 @@ function gleicheMenge(a, b, gleich) {
 }
 
 for (const g of POINT_GROUPS) {
-  test(`${g.id}: symcrys gibt dieselben Operationen, Eigenschaften und Elemente wie bisher`, () => {
-    const alt = buildPointGroup(g.id);
+  test(`${g.id}: symcrys gibt dieselben Operationen, Eigenschaften und Elemente wie die Referenz`, () => {
+    const alt = { ...g, ...analyzeGroup(erzeuge(ERZEUGENDE[g.id])) };
     const neu = kernElemente(g.id);
+    const app = buildPointGroup(g.id);
     assert.ok(gleicheMenge(alt.ops, kernOperationen(g.id), gleicheMatrix), 'Operationen');
     assert.deepEqual([neu.centro, neu.chiral, neu.polar], [alt.centro, alt.chiral, alt.polar]);
     assert.deepEqual([neu.full, neu.sf, neu.laue], [g.full, g.sf, g.laue]);
@@ -38,6 +81,15 @@ for (const g of POINT_GROUPS) {
     const gleicheAchse = (x, y) => parallel(x.dir, y.dir) && x.symbol === y.symbol && x.centre === y.centre && x.mirrorPerp === y.mirrorPerp;
     assert.ok(gleicheMenge(alt.axes, neu.axes, gleicheAchse), 'Achsen');
     assert.ok(gleicheMenge(alt.mirrors, neu.mirrors, parallel), 'Spiegelebenen');
+    // buildPointGroup (was die App nutzt) gibt dasselbe, mit kanonischem Vorzeichen wie analyzeGroup
+    assert.ok(gleicheMenge(alt.ops, app.ops, gleicheMatrix), 'buildPointGroup: Operationen');
+    // Die Identität steht zuerst (Ausgangspol: scene.js `gen`, view3d.js, hklOrbit in polyhedra.js)
+    assert.ok(gleicheMatrix(app.ops[0], I3()), 'Identität zuerst');
+    assert.deepEqual([app.centro, app.chiral, app.polar, app.piezo], [alt.centro, alt.chiral, alt.polar, alt.piezo]);
+    /** @param {Vec3} a @param {Vec3} b */
+    const gleich = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
+    assert.ok(gleicheMenge(alt.axes, app.axes, (x, y) => gleich(x.dir, y.dir) && x.symbol === y.symbol && x.centre === y.centre && x.mirrorPerp === y.mirrorPerp), 'buildPointGroup: Achsen');
+    assert.ok(gleicheMenge(alt.mirrors, app.mirrors, gleich), 'buildPointGroup: Spiegelebenen');
     // Rahmen mit Vorzeichen: jede Richtung aus symcrys, in den Rahmen der App gedreht, ist [uvw] mit der Gitterbasis der App
     const zuKart = latticeToCart(g.hex ? 'hexagonal' : 'andere');
     neu.klassen.forEach((k) => k.gitter.forEach((uvw, j) => {

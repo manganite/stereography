@@ -15,8 +15,8 @@ import globals from 'globals';
  */
 export default function basis({ ignores = [] } = {}) {
   return [
-    // Kopien der gemeinsamen Dateien werden in crystallography-common geprüft, nicht in der App
-    { ignores: ['**/node_modules/**', 'lib/common/**', 'tools/common/**', ...ignores] },
+    // Kopien der gemeinsamen Dateien und von symcrys werden in ihren Repositories geprüft, nicht in der App
+    { ignores: ['**/node_modules/**', 'lib/common/**', 'lib/kern/**', 'tools/common/**', ...ignores] },
     js.configs.recommended,
     {
       languageOptions: { ecmaVersion: 2024, sourceType: 'module', globals: { ...globals.browser } },

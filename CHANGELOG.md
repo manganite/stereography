@@ -6,6 +6,11 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Gemeinsame Grundlage** auf crystallography-common v0.24.0: `sync.mjs --kern` zum Übernehmen des Rechenkerns.
+- **Rechenkern** auf symcrys v0.2.0: neu eingebunden (`lib/kern/`, offline vorgehalten) mit `js/kern.js`, das die Punktgruppen aus symcrys in den Rahmen der App umrechnet; ein Test belegt für alle 40 Einträge dieselben Operationen, Eigenschaften, Achsen, Spiegelebenen und Blickrichtungen wie der bisherige Code. Die App rechnet noch mit dem bisherigen Code; die Umstellung folgt (crystallography-common#99).
+
 ## [1.20.0] - 2026-11-15
 
 Zoom der 3D-Konstruktion mit − und + im Kopf der Tafel; Tooltips gestrafft, „wählen“ statt „antippen“; Skript mit Abschnittsnummern und Verweisen als Links (gemeinsame Grundlage crystallography-common v0.23.0); Touch-Ziele nach dem zuletzt benutzten Gerät; Browserlauf der App in der CI; auf dem Telefon kein waagrechtes Scrollen mehr mit Beispielkristallen.

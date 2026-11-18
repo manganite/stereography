@@ -1,7 +1,8 @@
 # Was CodeQL nicht prüft (Begründung im Leitfaden von crystallography-common, Abschn. 9):
-# Tests, die Kopie der gemeinsamen Dateien (wird in crystallography-common geprüft) und Fremdcode.
+# Tests, die Kopien der gemeinsamen Dateien und von symcrys (werden in ihren Repositories geprüft) und Fremdcode.
 paths-ignore:
   - tests
   - lib/common
+  - lib/kern
   - tools/common
   - lib/three.bundle.js

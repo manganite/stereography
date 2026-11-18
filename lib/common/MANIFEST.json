@@ -1,8 +1,8 @@
 {
   "name": "crystallography-common",
-  "version": "0.23.0",
-  "tag": "v0.23.0",
-  "commit": "503093f7cca0107734cf6372d8db4dd52ff5ed10",
+  "version": "0.24.0",
+  "tag": "v0.24.0",
+  "commit": "a1d90ced144486f130794112bbffb2eea4bda38d",
   "files": {
     "lib/common/css/app.css": "02f7ca689137cc9c5b101784695346304975b3c8675fe1ddf21d4a26905a4ddf",
     "lib/common/css/base.css": "8e6632d2597298b41b532fd0b1e06a0b932146c01b320b1233a784d4c839f62e",
@@ -19,7 +19,7 @@
     "lib/common/js/seite.js": "a516909911639bef9949571dd41f8c2d5ae970fee6437213436ae2022b15aaac",
     "lib/common/js/skript-kern.js": "42c1764a8ac60823263fdcea3ec0a570951b9ebd5ded0e59da96ae9a04d62192",
     "lib/common/js/typen.js": "3ad299729f1c44d92297ec62e3ff9d2ef582b1b3679b5de152d37f3776df34cd",
-    "lib/common/js/version.js": "4ea0eb99d19735873f395ea72cbbe1f1814f2ac8fce2065c5fac797e09803d3b",
+    "lib/common/js/version.js": "a02c020685bcd769ff45f70c1270f35a135b085f7ad2c14d94452221686f35b0",
     "lib/common/fonts/LICENSE-ibm-plex-mono.txt": "23b0a9d0c6d3f140a0b77e483c5cfa6bba574325ef5cb189ed9f2fec4884533f",
     "lib/common/fonts/LICENSE-ibm-plex-sans.txt": "d0283623ef57e722fd0eb688a8041589670c608ab780cd3612d06ba6f153d3fd",
     "lib/common/fonts/LICENSE-source-serif-4.txt": "18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3",
@@ -36,14 +36,14 @@
     "lib/common/fonts/ibm-plex-sans-latin-600-normal.woff2": "8960851d691c054ed38e259bdcf1a6190d157b4203ed5bb32c632a863fb8ec2f",
     "lib/common/fonts/source-serif-4-latin-500-normal.woff2": "d3e119de0b756d9fa6d368de570f7168bb74eedf3289aaeae22dd97b900918d1",
     "lib/common/fonts/source-serif-4-latin-600-normal.woff2": "f2b7e1cf1d277b7608231868135648f8ad8e2b58d8e97ca088bee15dc357bee7",
-    "tools/common/check.mjs": "22a1a22108916d59805f3350218fa307e4f0bd73807483f9fbab1c6d6592bcbf",
-    "tools/common/eslint-basis.mjs": "ac03ff806d647562d6d9446977626849403386545f26628291610502a8ac54c3",
+    "tools/common/check.mjs": "41152a48d83299b26671ced3da7b02be463025c58d229cee2c668911554cfa92",
+    "tools/common/eslint-basis.mjs": "b237590f6c40cb8469ce9d7ebf63ba1491aac99668a07d82dad82748d7c3e533",
     "tools/common/hilfe-bilder.mjs": "012713e0bbc32099ab5954a5cf0b96815a5da3a95384dbb423ca3c2150922e62",
     "tools/common/kontraste.mjs": "f4a607d4ce1542506a2840a7b8e0abcf420ebc5d38c3ddded5496f008163ec71",
     "tools/common/moodle.mjs": "bff06520b5caf2501b55b710bafba3e5ca0c0ae4ef7eb2a85d312b4f46f0147d",
     "tools/common/server.mjs": "5ee960fe7e29380454436dc25de8b4845b7a3c11fccaece878cedb6f74f2c495",
     "tools/common/skript-pdf.mjs": "b4c3a9ed0b71744183cd4a3a36c2570448a2372ce1d349a3edfc0070d32616b8",
-    "tools/common/sync.mjs": "379a1f6648aeadfd171cc0eeb160d59224ecf8f486ec4496b45b850f22a90739",
+    "tools/common/sync.mjs": "365b68ad7d5b550ab0da01b64955a526ee8f0d2ad14c0af4c18e76f5eea788a4",
     "tools/common/tooltips-pruefen.mjs": "40f356329232040f120046102515d964b222e10a81b7e9ccd73d72663de8eabf"
   }
 }

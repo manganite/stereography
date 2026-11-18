@@ -58,6 +58,7 @@ const FILES = [
   'js/hilfe-daten.js',
   'js/hilfe.js',
   'js/hilfetexte.js',
+  'js/kern.js',
   'js/linalg.js',
   'js/main.js',
   'js/pointgroups.js',
@@ -100,6 +101,18 @@ const FILES = [
   'lib/common/fonts/ibm-plex-sans-latin-600-normal.woff2',
   'lib/common/fonts/source-serif-4-latin-500-normal.woff2',
   'lib/common/fonts/source-serif-4-latin-600-normal.woff2',
+  'lib/kern/index.js',
+  'lib/kern/lattice.js',
+  'lib/kern/linalg.js',
+  'lib/kern/operations.js',
+  'lib/kern/pointGroups/data.js',
+  'lib/kern/pointGroups/elements.js',
+  'lib/kern/pointGroups/itaOrder.js',
+  'lib/kern/pointGroups/pointGroups.js',
+  'lib/kern/pointGroups/properties.js',
+  'lib/kern/symmetryDirections.js',
+  'lib/kern/tolerances.js',
+  'lib/kern/version.js',
 ];
 
 /** Eigenständige Seiten; jeder andere Seitenaufruf (z. B. ./ oder ?sw) führt zur App. */

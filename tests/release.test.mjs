@@ -26,7 +26,7 @@ test('Service Worker: Offline-Liste deckt alle Dateien der App ab', () => {
   });
   const app = ['index.html', 'skript.html', 'quiz.html', 'hilfe.html', 'manifest.webmanifest', ...['js', 'lib', 'icons', 'hilfe'].flatMap(walk)]
     .map((p) => relative('.', p).split('\\').join('/'))
-    .filter((p) => !p.endsWith('.txt') && !p.endsWith('.d.ts') && p !== 'lib/common/MANIFEST.json'); // .d.ts: nur Typen, lädt der Browser nie
+    .filter((p) => !p.endsWith('.txt') && !p.endsWith('.d.ts') && !['lib/common/MANIFEST.json', 'lib/kern/MANIFEST.json'].includes(p)); // .d.ts: nur Typen (lib/kern/), lädt der Browser nie
   for (const p of app) assert.ok(listed.includes(p), `fehlt in sw.js: ${p}`);
   for (const p of listed) if (p !== './') assert.ok(existsSync(join(ROOT, p)), `existiert nicht: ${p}`);
 });

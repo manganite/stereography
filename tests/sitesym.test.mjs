@@ -1,4 +1,5 @@
-// Lage eines Pols: Lagesymmetrie, Multiplizität und Wyckoff-Lage (ITA Vol. A, Abschn. 10.1.2.2), Einrasten.
+// Lage eines Pols: Lagesymmetrie, Multiplizität und Wyckoff-Lage (aus symcrys, nach ITA Vol. A, 2016, Tab. 3.2.3.2),
+// geprüft gegen den Formkatalog der App (ITA 2006, Tab. 10.1.2.2) und Angaben nach ITA; Einrasten.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { POINT_GROUPS, buildPointGroup, orbit, groupById } from '../js/pointgroups.js';
@@ -68,7 +69,7 @@ test('Katalog: Pol jeder Form ergibt deren Wyckoff-Lage und Flächensymmetrie (I
   assert.equal(n, 134);
 });
 
-test('Aufstellungen mit eigener Lagentabelle (ALT_SETTINGS): Lagen nach ITA Tab. 10.1.2.2', () => {
+test('Aufstellungen B und monoklin Achse c: Lagen nach ITA Tab. 10.1.2.2', () => {
   const list = (/** @type {string} */ id) => wyckoffPositions(id).map((r) => `${r.mult}${r.wy} ${r.fs}`).join(' | ');
   assert.equal(list('312'), '6c 1 | 3b ..2 | 2a 3..');
   assert.equal(list('31m'), '6c 1 | 3b ..m | 1a 3.m');

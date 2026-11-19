@@ -1,14 +1,14 @@
 {
   "name": "symcrys",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "tag": null,
   "commit": null,
-  "quelle": "symcrys-0.2.0.tgz",
-  "paketSha256": "e5fb4c59c48f270cc4bc63b4b7ad51c04e5f0303c30ac48884cb161d02902ee5",
+  "quelle": "symcrys-0.3.1.tgz",
+  "paketSha256": "41b30a71c148984731dfc78d3da33c0f32e4ebdbf50f49635660a861d2cdcefc",
   "files": {
     "lib/kern/LICENSE.txt": "b8e7e16bd8a97938cc7cf1d5350567329fa082c2352f85951b2938e1e47894f7",
-    "lib/kern/index.d.ts": "edc7405e4cc3a5b7caef870f5d9c80542420ad191cde6a8a39a559fedf262d06",
-    "lib/kern/index.js": "e7770517f8ca035bc0e1732a8a3aa6339f15fb327c321b2c0ad2fdc00832f7b4",
+    "lib/kern/index.d.ts": "a6f3410ceafa2090cc4543f955edcdaa08320e5610936f31472b923e3ef4d8da",
+    "lib/kern/index.js": "5bb4c54256b7202f90cfd7858113dc5e1b4932e58c89df8785c5fe7b52c5ba36",
     "lib/kern/lattice.d.ts": "8f77b44c4d710731170a3c6e028a350165b7a74e7b0381d571186f8ed84896e0",
     "lib/kern/lattice.js": "e9b97c8f65146d161cc7270460438ec1aa3ff177238fc49f27fbba71b4ff2612",
     "lib/kern/linalg.d.ts": "b8aacf7a4fc0ef3c932e2b15fc933b440a004d0d639dca185a68660cd4ef0058",
@@ -25,11 +25,17 @@
     "lib/kern/pointGroups/pointGroups.js": "bc5253e07a4d4e649a63dab5f75f022a68334c0fb3856ebd3d422c36c1e5045a",
     "lib/kern/pointGroups/properties.d.ts": "06bc920940b7ef1578027119c803ceff63679ea5311b3b54a89c801e19d2ebde",
     "lib/kern/pointGroups/properties.js": "b3cc4b28c21286b75d87067b500f154ddf2d44013c9a9553cd8649131f0b8f79",
+    "lib/kern/pointGroups/wyckoff.d.ts": "a2eb2c92f6cbd1c218ec92d8126bad72faec704a24aceae4ac1b26d965fc4c41",
+    "lib/kern/pointGroups/wyckoff.js": "c2e4e76abdc433503dcb7fe1f8b7a290773b629c25e14ee31d6cd51f00aa4e37",
+    "lib/kern/pointGroups/wyckoffData.d.ts": "c07e1000f84648a6bf48964f7187b613c7ed4485c08981b3c7caade0398fdb76",
+    "lib/kern/pointGroups/wyckoffData.js": "8e494173ac28ac27695fc12db309acffc6659b8380d6896962d3938bce6231a1",
+    "lib/kern/siteSymmetry.d.ts": "1566006db7b01c66af87bbdd7af0d7c2bfe1712f4067237fb1d2654056e73294",
+    "lib/kern/siteSymmetry.js": "563459585a95bf317f0c41d4882cf37c4b0a9946d0600ae6816760272777bd7e",
     "lib/kern/symmetryDirections.d.ts": "469b9664e053610298568a89f7dfaf4d86d6f9e2028343c5f4f78f61c115131a",
     "lib/kern/symmetryDirections.js": "9f4c0ef97ee74489d1200fda4e8d368b0cb672cee6774f4498bb4c94003715a2",
     "lib/kern/tolerances.d.ts": "24e4378f69d1d69fdaade24c90a882c312662502d9bd692a1f6071482cff2c8b",
     "lib/kern/tolerances.js": "f83aae041c90b6b89b32e31b1d42cd163ae5ed9de8db5455405d0cf4b5364313",
-    "lib/kern/version.d.ts": "c431bfe42d60bc615b7fcaa6e072df07920c84e1e24d80ddd81e98af884c41dc",
-    "lib/kern/version.js": "c193b8ab7fd15f9a8518ab0ee6ab1a6c2406b84cab0d732bd3cfd0aef0566b29"
+    "lib/kern/version.d.ts": "c60120c738210ba0a65556e7b6a815a6c8e5a77910f00fc748973870ec5c19fd",
+    "lib/kern/version.js": "71cb2fc02203b705eae6e709e672da4c7f479850cd3682d79df31d002b35eaec"
   }
 }

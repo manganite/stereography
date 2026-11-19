@@ -10,3 +10,5 @@ export { POINT_GROUP_KEYS, findPointGroup, generators, isPointGroupKey, operatio
 export { isCentrosymmetric, isChiral, isPolar, laueClass } from './pointGroups/properties.js';
 export { LATTICE_SYMMETRY_DIRECTIONS, type Uvw } from './symmetryDirections.js';
 export { describeOperations, symmetryDirections, type Axis, type DirectionElements, type OperationDescription, type OperationKind, type SymmetryDirection, } from './pointGroups/elements.js';
+export { siteSymmetry, type SiteSymmetry, type SiteSymmetryOptions } from './siteSymmetry.js';
+export { wyckoffPositionOf, wyckoffPositions, type Hkl, type WyckoffOptions, type WyckoffPosition, } from './pointGroups/wyckoff.js';

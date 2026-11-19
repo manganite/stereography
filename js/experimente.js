@@ -2,7 +2,7 @@
 // Generatoren im Quiz. Die Aussagen rechnet die App mit denselben Modulen wie die Darstellung; ein Test prüft sie für
 // jeden Parameter (tests/ablauf.test.mjs). Die festen Experimente stehen in js/hilfetexte.js.
 import { POINT_GROUPS, groupById, buildPointGroup } from './pointgroups.js';
-import { wyckoffPositions, siteOf } from './sitesym.js';
+import { wyckoffPositions, siteOf, poleOfHKL } from './sitesym.js';
 import { CATALOG, entryById, formName } from './forms.js';
 import { SYSTEM_OF } from './polyhedra.js';
 import { createState, applyHashTo, hashOf, generalPole, rhoOf } from './scene.js';
@@ -72,6 +72,16 @@ export function ortText(fs, achse) {
 
 
 /**
+ * Ausgangspol einer Aufgabe zur Wyckoff-Lage: der Pol der ersten Form dieser Lage im Formkatalog der App (Darstellung,
+ * damit die Aufgabe dieselben Pole zeigt wie die Formen), sonst der Vertreter aus symcrys.
+ * @param {string} id @param {import('./sitesym.js').Wyckofflage} w
+ */
+function startpol(id, w) {
+  const e = CATALOG.find((x) => x.pg === id && x.wy === w.wy);
+  return e ? poleOfHKL(groupById(id).system, e.hkl) : w.rep;
+}
+
+/**
  * Adresse und Kenndaten zu einem Parameter der Polzahl.
  * @param {string} p Gruppe:Wyckoff-Lage
  */
@@ -79,14 +89,15 @@ export function polzahlDaten(p) {
   const i = p.lastIndexOf(':');
   const id = p.slice(0, i), wy = p.slice(i + 1);
   const w = /** @type {import('./sitesym.js').Wyckofflage} */ (wyckoffPositions(id).find((x) => x.wy === wy));
-  const [x, y, z] = w.rep;
+  const pol = startpol(id, w);
+  const [x, y, z] = pol;
   const theta = Math.acos(Math.max(-1, Math.min(1, z))) * 180 / Math.PI;
   // Azimut wie in der App (generalPole in scene.js): von b zur a-Achse gemessen
   const phi = ((Math.atan2(x, y) * 180 / Math.PI) % 360 + 360) % 360;
   const rho = rhoOf(theta);
   // Pol auf der Achse (theta = 0): ohne Azimut
   const hash = `#m=pg&g=${encodeURIComponent(id)}&rho=${genau(rho)}${Math.abs(rho) < 1e-9 ? '' : `&az=${genau(phi)}`}`;
-  return { id, wy, fs: w.fs, mult: w.mult, n: ordnung(id), hash, achse: achseAmPol(id, w.rep) };
+  return { id, wy, fs: w.fs, mult: w.mult, n: ordnung(id), hash, achse: achseAmPol(id, pol) };
 }
 
 /** Lage, die die App zur Adresse zeigt (wie im Modus „Punktgruppen“). @param {string} hash */

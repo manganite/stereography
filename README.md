@@ -186,12 +186,12 @@ Darstellung (beide Modi):
 | `tools/moodle-export.mjs` | Export der geprüften Fragen als Moodle-XML |
 | `tools/quiz-quelle.mjs` | Fragen und Bilder für die gemeinsame Fragenliste der App-Familie (crystallography-common, `fragenliste/`) |
 | `js/pointgroups.js` | Punktgruppen der App aus symcrys (`buildPointGroup`), Blickrichtungen, Analyse beliebiger Operationen (verzerrte Kristalle) |
-| `js/kern.js` | Punktgruppen aus dem Rechenkern symcrys (`lib/kern/`), umgerechnet in den Rahmen der App |
+| `js/kern.js` | Punktgruppen, Lagesymmetrie und Wyckoff-Lagen aus dem Rechenkern symcrys (`lib/kern/`), umgerechnet in den Rahmen der App |
 | `js/forms.js` | Einträge des Formenkatalogs mit Kennung und Stelle (aus `formen.js`) |
 | `js/formen.js` | Datendatei: Formenkatalog nach ITA Tab. 10.1.2.2/10.1.2.3 |
 | `js/punktgruppen.js` | Datendatei: Kenndaten der Punktgruppen und Kristallsysteme |
 | `js/aufstellungen.js` | Datendatei: Punktgruppen mit zwei Aufstellungen |
-| `js/sitesym.js` | Lage eines Pols: Einrasten, Lagesymmetrie, Multiplizität, Wyckoff-Lage |
+| `js/sitesym.js` | Lage eines Pols: Einrasten, Toleranz und Anbindung an Lagesymmetrie und Wyckoff-Lagen aus symcrys |
 | `js/examples.js` | Beispielkristalle (Formen, Gitter, Abstände, Quellen) |
 | `js/polyhedra.js` | Gitter aller Systeme, Flächenbahnen, Ergänzungsformen, Restsymmetrie, Halbraumschnitt, Lagen |
 | `js/stereogram.js` | SVG-Stereogramm mit ITA-Symbolen und Wulffschem Netz |
@@ -208,7 +208,7 @@ Darstellung (beide Modi):
 | `js/linalg.js` | Vektoren und Matrizen |
 | `manifest.webmanifest`, `icons/` | Favicon und Homescreen-Icons (iPad/iPhone: Teilen → Zum Home-Bildschirm; Android: Menü → Zum Startbildschirm hinzufügen) |
 | `lib/common/`, `tools/common/` | Gemeinsame Grundlage der App-Familie aus [crystallography-common](https://github.com/manganite/crystallography-common), als Kopie mit fester Version (`lib/common/MANIFEST.json`): Stile (`base.css`, `app.css`, `skript.css`, `quiz.css`), Schriften, Hilfen, Quiz, Skript-Bausteine, Formatierung, Werkzeuge. Nicht von Hand ändern; siehe unten. |
-| `lib/kern/` | Rechenkern [symcrys](https://github.com/manganite/symcrys) als Kopie mit fester Version (`lib/kern/MANIFEST.json`): Punktgruppen, Aufstellungen, Symbole, Symmetrieelemente. Nicht von Hand ändern; `js/kern.js` rechnet in den Rahmen der App um. |
+| `lib/kern/` | Rechenkern [symcrys](https://github.com/manganite/symcrys) als Kopie mit fester Version (`lib/kern/MANIFEST.json`): Punktgruppen, Aufstellungen, Symbole, Symmetrieelemente, Lagesymmetrie und Wyckoff-Lagen. Nicht von Hand ändern; `js/kern.js` rechnet in den Rahmen der App um. |
 | `lib/common/fonts/` | Schriften IBM Plex Sans, IBM Plex Mono und Source Serif 4 (WOFF2, nur benötigte Schnitte, aus den npm-Paketen `@fontsource/*`), SIL Open Font License 1.1, siehe `lib/common/fonts/LICENSE-*.txt`. Selbst gehostet, damit die App ohne Verbindung zu Google auskommt. |
 | `lib/three.bundle.js` | three.js r186 mit OrbitControls und CSS2DRenderer (MIT-Lizenz, siehe `lib/three-LICENSE.txt`); `lib/three.bundle.d.ts`: Typen für die Typprüfung aus `@types/three` derselben Version (der Browser lädt sie nie) |
 

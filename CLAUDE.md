@@ -187,8 +187,7 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   (Rechengrundlagen und Voreinstellungen der App, an die Gitterparameter gebunden; `GITTER_BEREICH` folgt aus
   den Streckungen), `SKRIPT_ANCHORS` in `skriptlinks.js`
   (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js` und `kern.js`,
-  `ALT_SETTINGS` in `sitesym.js` (bewusst zweite, unabhängige Angabe nach ITA, gegen die die Tests den
-  Katalog prüfen), `DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen
+`DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen
   in `quiz-gen.js` (Wortlisten und Auswahl des Generators, kein Fachinhalt), `VIEW_FAMILIES` in `scene.js`
   (Ansichten der 3D-Konstruktion; doppelt mit `symmetryDirections()`, Vereinheitlichung #111). `PRISMEN` und
   die Schreibweise der Eigensymmetrie (`EIG_SCHREIBWEISE`, vorher zweimal als `EIG_ALIAS` und `EIG_SAME`)
@@ -210,8 +209,21 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [11̄1] statt [11̄1̄] in symcrys,
   und den Bezeichnungen der App); Umstellung auf `symmetryDirections` von symcrys offen (#111). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
   unabhängige Referenz. In der App bleibt, was symcrys noch nicht kann: die Analyse beliebiger Operationen
-  verzerrter Kristalle (`analyzeGroup`, Bestimmung der Gruppe in `polyhedra.js`), Lagesymmetrie, Wyckoff-Lagen und
-  Formen (symcrys#24), piezoelektrisch (mit dem Tensormodul von symcrys).
+  verzerrter Kristalle (`analyzeGroup`, Bestimmung der Gruppe in `polyhedra.js`), Formen (symcrys#24, Punkt 2),
+  piezoelektrisch (mit dem Tensormodul von symcrys).
+- **Lagesymmetrie und Wyckoff-Lagen aus symcrys** (Thomas, 18. und 19.11.2026, symcrys#24 Punkt 1): Lagesymmetrie,
+  Multiplizität, Wyckoff-Buchstabe und orientiertes Symbol kommen aus symcrys (`siteSymmetry`, `wyckoffPositions`,
+  `wyckoffPositionOf`, über `js/kern.js`), auch für die Aufstellungen B und monoklin Achse c; die frühere zweite
+  Angabe `ALT_SETTINGS` ist entfallen. In `js/sitesym.js` bleibt, was die App daraus macht: die Toleranz 10⁻⁴ für
+  „liegt auf dem Element“ (die Link-Adresse rundet auf 4 Stellen; symcrys rechnet sonst mit 10⁻⁶), das Einrasten
+  beim Ziehen (`snapPole`, Bedienung), Pole aus Miller-Indizes im Rahmen der App (`poleOfHKL`, weil `latticeBasis`
+  von symcrys im Rahmen von symcrys steht) und das Zusammenfassen zusammenfallender Pole (`distinctPoles`, bis
+  symcrys#24 Punkt 3). Die Vertreter der Lagen in symcrys sind ITA-Flächen mit h = 3, k = 2, l = 1; den Startpol der
+  erzeugten Experimente „Polzahl“ nimmt die App deshalb aus ihrem Formkatalog (erste Form der Lage, Darstellung).
+  Für die Aufstellungen B ist das der Pol ihres eigenen Katalogeintrags statt des gedrehten Pols von Aufstellung A;
+  der Startpol liegt damit an einem anderen, gleichwertigen Ort derselben Lage (Thomas, 19.11.2026, unter
+  „neue Startpole annehmen“ und „alte behalten“). `siteOf` bekommt heute nur die Operationen einer Gruppe des
+  Katalogs (`buildPointGroup`); `kernLagesymmetrie` nähme auch die beliebigen Operationen eines verzerrten Kristalls.
 - **`blick=1–3` als allgemeiner Link-Parameter** (31.10.): plane-groups verlinkt damit die 10 polaren
   Punktgruppen, die den 10 ebenen entsprechen (z. B. Pedion mit Flächenmuster von oben ohne Umkugel).
   Diese Link-Form nutzt eine andere App; ändern nur nach Leitfaden Abschn. 8 (PR in plane-groups, Releases abstimmen).

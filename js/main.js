@@ -898,9 +898,9 @@ function updateInfoPG(info, orb, col, classes, pgAngle, site, distinct) {
   if (free.length) rows.push(`<div class="dirrow"><div class="dirhead"><span class="dirlab">ohne Richtung</span></div><ul>${free.join('')}</ul></div>`);
   const lower = distinct.filter((o) => o.p[2] < -1e-9).length;
   const n = site.mult;
-  const wy = site.wy ? `${n}<i>${site.wy}</i>, ` : '';
+  const wy = `${n}<i>${site.wy}</i>, `;
   const lage = site.special
-    ? `speziell (${wy}Lagesymmetrie ${hmHTML(site.fs || '?')})`
+    ? `speziell (${wy}Lagesymmetrie ${hmHTML(site.fs)})`
     : `allgemein (${wy}Lagesymmetrie 1)`;
   const snapHint = info.axes.length || info.mirrors.length ? ' In der Nähe einer Achse oder Spiegelebene rastet er beim Ziehen ein.' : '';
   const k = site.stab.length;

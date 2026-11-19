@@ -1,4 +1,5 @@
-// Punktgruppen aus dem Rechenkern symcrys (lib/kern/, crystallography-common#99). Hier steht nur, was die App
+// Punktgruppen, Lagesymmetrie und Wyckoff-Lagen aus dem Rechenkern symcrys (lib/kern/, crystallography-common#99,
+// symcrys#24). Hier steht nur, was die App
 // daraus macht: die Zuordnung ihrer Kennungen (Link `g=`) zu Gruppe und Aufstellung in symcrys, die Umrechnung in
 // den kartesischen Rahmen der App und die Namen der Symmetrieelemente für die Zeichnung.
 //
@@ -143,6 +144,12 @@ export function kernElemente(id) {
 const vektorInKern = (r, v) => /** @type {Vec3} */ (r ? [0, 1, 2].map((j) => r[0][j] * v[0] + r[1][j] * v[1] + r[2][j] * v[2]) : [...v]);
 
 /**
+ * Operationen der App als Operationen von symcrys, je Feld einmal, damit symcrys seine Produkte je Feld zwischenspeichert.
+ * @type {WeakMap<readonly Mat3[], { matrix: Mat3, timeReversal: boolean }[]>}
+ */
+const umhuellte = new WeakMap();
+
+/**
  * Lagesymmetrie einer Richtung unter beliebigen Operationen (auch denen eines verzerrten Kristalls) aus symcrys: Indizes
  * der Operationen, die sie festhalten, und die Richtung auf deren Fixraum gesetzt. Rahmenunabhängig, weil Operationen
  * und Richtung im selben Rahmen stehen.
@@ -150,7 +157,12 @@ const vektorInKern = (r, v) => /** @type {Vec3} */ (r ? [0, 1, 2].map((j) => r[0
  * @returns {{ stab: number[], p: Vec3 }}
  */
 export function kernLagesymmetrie(ops, p, toleranz) {
-  const s = siteSymmetry(ops.map((m) => ({ matrix: m, timeReversal: false })), p, { tolerance: toleranz });
+  let umhuellt = umhuellte.get(ops);
+  if (!umhuellt) {
+    umhuellt = ops.map((m) => ({ matrix: m, timeReversal: false }));
+    umhuellte.set(ops, umhuellt);
+  }
+  const s = siteSymmetry(umhuellt, p, { tolerance: toleranz });
   return { stab: [...s.operations], p: /** @type {Vec3} */ ([...s.direction]) };
 }
 

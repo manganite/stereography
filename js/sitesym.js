@@ -47,8 +47,9 @@ export function stabilizer(ops, p, tol = ON_TOL) {
 /** @type {Map<string, Wyckofflage[]>} */
 const cache = new Map();
 /**
- * Wyckoff-Lagen einer Punktgruppe aus symcrys: [{ wy, fs, mult, rep, stab }] (rep: Pol der Lage im Rahmen der App,
- * stab: Indizes der Operationen seiner Lagesymmetrie in info.ops).
+ * Wyckoff-Lagen einer Punktgruppe aus symcrys: [{ wy, fs, mult, rep, stab }] (rep: ein Pol der Lage im Rahmen der App,
+ * in monoklin und triklin die Normale für rechtwinklige Achsen, nicht der Pol im Gitter der App, mit richtiger
+ * Lagesymmetrie; stab: Indizes der Operationen seiner Lagesymmetrie in info.ops).
  * @param {string} groupId
  * @returns {Wyckofflage[]}
  */

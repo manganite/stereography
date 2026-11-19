@@ -187,7 +187,7 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   (Rechengrundlagen und Voreinstellungen der App, an die Gitterparameter gebunden; `GITTER_BEREICH` folgt aus
   den Streckungen), `SKRIPT_ANCHORS` in `skriptlinks.js`
   (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js` und `kern.js`,
-`DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen
+  `DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen
   in `quiz-gen.js` (Wortlisten und Auswahl des Generators, kein Fachinhalt), `VIEW_FAMILIES` in `scene.js`
   (Ansichten der 3D-Konstruktion; doppelt mit `symmetryDirections()`, Vereinheitlichung #111). `PRISMEN` und
   die Schreibweise der Eigensymmetrie (`EIG_SCHREIBWEISE`, vorher zweimal als `EIG_ALIAS` und `EIG_SAME`)
@@ -269,6 +269,9 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
 
 Alle in Thomas' Zotero; Quellen je Kapitel auch in `skript.html`.
 
+- **ITA Vol. A (2016, 6. Aufl.; Zotero 7NZ258UB, Kap. 2.1 und 3.2 als PDF):** 3.2.1.2.2, S. 722 (Wyckoff-Lage über
+  konjugierte Lagesymmetrien); Tab. 3.2.3.2, S. 745–769 (Wyckoff-Lagen der Punktgruppen; Grundlage von symcrys, dort
+  übertragen).
 - **ITA Vol. A (2006):** 1.4.5 (Symbole); 2.1 (Blickrichtungen); Tab. 2.2.4.1 und 2.2.12 (Reihenfolge im
   orientierten Symbol); 10.1, Tab. 10.1.2.2 (Formen, Wyckoff-Lagen, Lagesymmetrie, Multiplizität,
   Eigensymmetrie, Grenzformen; Lage 6a „2mm..“ in m3̄), Tab. 10.1.2.3 (Eigen-, Flächensymmetrie);

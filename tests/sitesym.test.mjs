@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { POINT_GROUPS, buildPointGroup, orbit, groupById } from '../js/pointgroups.js';
 import { CATALOG } from '../js/forms.js';
-import { wyckoffPositions, siteOf, snapPole, distinctPoles, poleOfHKL } from '../js/sitesym.js';
+import { wyckoffPositions, siteOf, snapPole, distinctPoles, poleOfHKL, stabilizer } from '../js/sitesym.js';
 import { normalize, cross, scale, add } from '../js/linalg.js';
 import { createState, applyHashTo, hashOf, pgScene } from '../js/scene.js';
 
@@ -34,7 +34,12 @@ test('Wyckoff-Lagen aller 40 Einträge: Multiplizität × Ordnung der Lagesymmet
     const rows = wyckoffPositions(g.id);
     assert.ok(rows.length >= 1, g.id);
     assert.equal(new Set(rows.map((r) => r.wy)).size, rows.length, `${g.id}: Buchstaben eindeutig`);
-    for (const r of rows) assert.equal(r.mult * r.stab.length, info.order, `${g.id} ${r.wy}`);
+    for (const r of rows) {
+      assert.equal(r.mult * r.stab.length, info.order, `${g.id} ${r.wy}`);
+      // Vertreter (in den Rahmen der App gedreht) und Indizes der Lagesymmetrie (Reihenfolge von info.ops) passen zusammen.
+      assert.deepEqual(stabilizer(info.ops, r.rep), r.stab, `${g.id} ${r.wy}: Lagesymmetrie des Vertreters`);
+      assert.equal(siteOf(g.id, info, r.rep).wy, r.wy, `${g.id} ${r.wy}: Lage des Vertreters`);
+    }
     assert.equal(rows.filter((r) => r.stab.length === 1).length, 1, `${g.id}: genau eine allgemeine Lage`);
   }
 });

@@ -10,9 +10,9 @@
 // Kartesisch: x ∥ a (orthogonale Systeme), y ∥ b, z ∥ c.
 // Hexagonale Achsen: b ∥ y, a schliesst mit b 120° ein.
 
-import { I3, mul, mulVec, det, trace, matEq, neg, normalize, add, scale, cross, EPS } from './linalg.js';
+import { I3, mulVec, det, trace, matEq, neg, normalize, add, scale, cross, EPS } from './linalg.js';
 import { PUNKTGRUPPEN } from './punktgruppen.js';
-import { HEX_A, HEX_B, kernElemente, kernOperationen } from './kern.js';
+import { HEX_A, HEX_B, kernElemente, kernOperationen, kernPiezoelektrisch } from './kern.js';
 
 /** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
 /** Eintrag der Gruppenliste: Zeile aus js/punktgruppen.js (Bedeutung der Felder dort). @typedef {import('./punktgruppen.js').Punktgruppenzeile} Punktgruppe */
@@ -97,18 +97,6 @@ export function canonicalDir(d) {
 }
 
 /**
- * Piezoelektrisch, falls der Piezotensor d_ijk (symmetrisch in j, k) eine invariante Komponente hat. Anzahl der
- * Invarianten = Mittel des Charakters χ(R)·(χ(R)² + χ(R²))/2 über die Gruppe. Ergibt die 20 Gruppen ohne
- * Inversionszentrum ausser 432 (Borchardt-Ott & Sowa, Abschn. 9.6.2). Bleibt in der App, bis symcrys es mit dem
- * Tensormodul kann. @param {Mat3[]} ops
- */
-function piezoelektrisch(ops) {
-  let n = 0;
-  for (const m of ops) { const t = trace(m), t2 = trace(mul(m, m)); n += (t * (t * t + t2)) / 2; }
-  return Math.round(n / ops.length) > 0;
-}
-
-/**
  * Analysiert eine Liste von Operationen und bestimmt die Symmetrieelemente.
  * Rückgabe: { ops, order, centro, chiral, polar, piezo, axes:[{dir, symbol, centre}], mirrors:[normal] }
  * symbol ∈ '2','3','4','6','-3','-4','-6'
@@ -123,7 +111,6 @@ export function analyzeGroup(ops) {
   const P = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
   for (const m of ops) for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) P[i][j] += m[i][j] / ops.length;
   const polar = P.some((r) => r.some((x) => Math.abs(x) > 1e-6));
-  const piezo = piezoelektrisch(ops);
 
   /** @type {{ dir: Vec3, rot: Set<number>, rotinv: Set<number>, mirror: boolean }[]} */
   const axisMap = [];
@@ -165,7 +152,15 @@ export function analyzeGroup(ops) {
       axes.push({ dir: e.dir, symbol, centre, mirrorPerp: e.mirror });
     }
   }
-  return { ops, order: ops.length, centro, chiral, polar, piezo, axes, mirrors };
+  // piezo erst beim Lesen (einmal) berechnen: tensorFormOf schliesst die Gruppe zuerst ab und kostet bei m3̄m rund
+  // 10 ms, analyzeGroup läuft aber bei jedem buildCrystal; die Kenndaten nehmen piezo aus buildPointGroup.
+  /** @type {boolean | undefined} */
+  let piezo;
+  return {
+    ops, order: ops.length, centro, chiral, polar,
+    get piezo() { return (piezo ??= kernPiezoelektrisch(ops)); },
+    axes, mirrors,
+  };
 }
 
 /**
@@ -180,7 +175,7 @@ export function buildPointGroup(id) {
   const e = kernElemente(id);
   const axes = e.axes.map((a) => ({ dir: canonicalDir(a.dir), symbol: a.symbol, centre: a.centre, mirrorPerp: a.mirrorPerp }));
   return {
-    ...g, ops, order: ops.length, centro: e.centro, chiral: e.chiral, polar: e.polar, piezo: piezoelektrisch(ops),
+    ...g, ops, order: ops.length, centro: e.centro, chiral: e.chiral, polar: e.polar, piezo: e.piezo,
     axes, mirrors: e.mirrors.map(canonicalDir),
   };
 }

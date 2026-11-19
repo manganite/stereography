@@ -8,8 +8,8 @@
 // zwischen beiden folgt aus den beiden Gitterbasen (Thomas, 18.11.2026). Sonst sind die Rahmen gleich.
 
 import {
-  crystalFamily, findPointGroup, isCentrosymmetric, isChiral, isPolar, laueClass, latticeBasis, operations, pointGroup,
-  settings, siteSymmetry, symbol, symmetryDirections, wyckoffPositionOf, wyckoffPositions,
+  crystalFamily, findPointGroup, isCentrosymmetric, isChiral, isPiezoelectric, isPolar, laueClass, latticeBasis, operations,
+  pointGroup, settings, siteSymmetry, symbol, symmetryDirections, tensorFormOf, wyckoffPositionOf, wyckoffPositions,
 } from '../lib/kern/index.js';
 
 /** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
@@ -134,7 +134,7 @@ export function kernElemente(id) {
     };
   });
   return {
-    centro, chiral: isChiral(key), polar: isPolar(key), laue: laueClass(key),
+    centro, chiral: isChiral(key), polar: isPolar(key), piezo: isPiezoelectric(key), laue: laueClass(key),
     full: symbol(key, { setting, form: 'full' }), sf: symbol(key, { form: 'schoenflies' }),
     axes, mirrors, mirrorCls, klassen,
   };
@@ -148,6 +148,18 @@ const vektorInKern = (r, v) => /** @type {Vec3} */ (r ? [0, 1, 2].map((j) => r[0
  * @type {WeakMap<readonly Mat3[], { matrix: Mat3, timeReversal: boolean }[]>}
  */
 const umhuellte = new WeakMap();
+
+/** Piezoelektrischer Tensor (polar, Rang 3, symmetrisch in j, k) für `tensorFormOf`. */
+const PIEZO = /** @type {const} */ ({ rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'jk' });
+
+/**
+ * Piezoelektrisch unter beliebigen Operationen (auch denen eines verzerrten Kristalls) aus symcrys: ob der
+ * piezoelektrische Tensor eine erlaubte Komponente hat (Tensormodul, `tensorFormOf`). Rahmenunabhängig.
+ * @param {readonly Mat3[]} ops
+ */
+export function kernPiezoelektrisch(ops) {
+  return tensorFormOf(ops.map((m) => ({ matrix: m, timeReversal: false })), PIEZO).basis.length > 0;
+}
 
 /**
  * Lagesymmetrie einer Richtung unter beliebigen Operationen (auch denen eines verzerrten Kristalls) aus symcrys: Indizes

@@ -9,7 +9,7 @@ import {
   HEX_A, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, latticeToCart, symmetryDirections,
 } from '../js/pointgroups.js';
 import { drehungHexagonal, kernAufstellung, kernElemente, kernOperationen } from '../js/kern.js';
-import { I3, add, inversion, matEq, mirror, mul, normalize, rot, rotInv, scale } from '../js/linalg.js';
+import { I3, add, inversion, matEq, mirror, mul, normalize, rot, rotInv, rotation, scale, transpose } from '../js/linalg.js';
 
 /** @import { Vec3, Mat3 } from '../lib/common/js/typen.js' */
 
@@ -69,6 +69,23 @@ function gleicheMenge(a, b, gleich) {
   });
 }
 
+/**
+ * Unabhängige Referenz für „piezoelektrisch“ (früher der Code der App, jetzt aus symcrys): Anzahl der invarianten
+ * Komponenten des Piezotensors d_ijk (symmetrisch in j, k) als Mittel des Charakters χ(R)·(χ(R)² + χ(R²))/2 über die
+ * Gruppe, mit χ(R) = Spur von R. Ergibt die 20 Gruppen ohne Inversionszentrum ausser 432 (Borchardt-Ott & Sowa,
+ * Abschn. 9.6.2).
+ * @param {Mat3[]} ops
+ */
+function piezoReferenz(ops) {
+  /** @param {Mat3} m */
+  const spur = (m) => m[0][0] + m[1][1] + m[2][2];
+  /** @param {Mat3} m */
+  const quadrat = (m) => /** @type {Mat3} */ (m.map((r) => [0, 1, 2].map((j) => r[0] * m[0][j] + r[1] * m[1][j] + r[2] * m[2][j])));
+  let n = 0;
+  for (const m of ops) { const t = spur(m); n += (t * (t * t + spur(quadrat(m)))) / 2; }
+  return Math.round(n / ops.length) > 0;
+}
+
 for (const g of POINT_GROUPS) {
   test(`${g.id}: symcrys gibt dieselben Operationen, Eigenschaften und Elemente wie die Referenz`, () => {
     const alt = { ...g, ...analyzeGroup(erzeuge(ERZEUGENDE[g.id])) };
@@ -86,6 +103,13 @@ for (const g of POINT_GROUPS) {
     // Die Identität steht zuerst (Ausgangspol: scene.js `gen`, view3d.js, hklOrbit in polyhedra.js)
     assert.ok(gleicheMatrix(app.ops[0], I3()), 'Identität zuerst');
     assert.deepEqual([app.centro, app.chiral, app.polar, app.piezo], [alt.centro, alt.chiral, alt.polar, alt.piezo]);
+    // piezoelektrisch aus symcrys (isPiezoelectric bzw. tensorFormOf) gegen die Charakterformel
+    assert.equal(neu.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (isPiezoelectric)');
+    assert.equal(alt.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (analyzeGroup, tensorFormOf)');
+    // auch in einem beliebig gedrehten Rahmen (wie die Operationen in Bildschirmkoordinaten, polyhedra.js)
+    const R = rotation([1, 2, 3], (37 * Math.PI) / 180);
+    const gedreht = alt.ops.map((m) => mul(mul(R, m), transpose(R)));
+    assert.equal(analyzeGroup(gedreht).piezo, piezoReferenz(alt.ops), 'piezoelektrisch (gedrehter Rahmen)');
     /** @param {Vec3} a @param {Vec3} b */
     const gleich = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
     assert.ok(gleicheMenge(alt.axes, app.axes, (x, y) => gleich(x.dir, y.dir) && x.symbol === y.symbol && x.centre === y.centre && x.mirrorPerp === y.mirrorPerp), 'buildPointGroup: Achsen');

@@ -209,8 +209,14 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [11̄1] statt [11̄1̄] in symcrys,
   und den Bezeichnungen der App); Umstellung auf `symmetryDirections` von symcrys offen (#111). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
   unabhängige Referenz. In der App bleibt, was symcrys noch nicht kann: die Analyse beliebiger Operationen
-  verzerrter Kristalle (`analyzeGroup`, Bestimmung der Gruppe in `polyhedra.js`), Formen (symcrys#24, Punkt 2),
-  piezoelektrisch (mit dem Tensormodul von symcrys).
+  verzerrter Kristalle (`analyzeGroup`, Bestimmung der Gruppe in `polyhedra.js`) und Formen (symcrys#24, Punkt 2).
+- **Piezoelektrisch aus dem Tensormodul von symcrys** (ab symcrys 0.4.0, crystallography-common#74 Punkt 7): für die
+  Punktgruppen des Katalogs `isPiezoelectric` (`kernElemente`), für beliebige Operationen eines verzerrten Kristalls
+  `kernPiezoelektrisch` in `js/kern.js` (`tensorFormOf` mit dem polaren Tensor dritter Stufe, symmetrisch in j, k);
+  rahmenunabhängig, deshalb ohne Drehung. `analyzeGroup` berechnet `piezo` erst beim Lesen (Getter): `tensorFormOf`
+  schliesst die Gruppe zuerst ab und kostet bei m3̄m rund 10 ms, `analyzeGroup` läuft bei jedem `buildCrystal`, und die
+  Kenndaten nehmen `piezo` aus `buildPointGroup`. Die frühere Charakterformel der App prüft `tests/kern.test.mjs` als
+  unabhängige Referenz, auch im gedrehten Rahmen.
 - **Lagesymmetrie und Wyckoff-Lagen aus symcrys** (Thomas, 18. und 19.11.2026, symcrys#24 Punkt 1): Lagesymmetrie,
   Multiplizität, Wyckoff-Buchstabe und orientiertes Symbol kommen aus symcrys (`siteSymmetry`, `wyckoffPositions`,
   `wyckoffPositionOf`, über `js/kern.js`), auch für die Aufstellungen B und monoklin Achse c; die frühere zweite

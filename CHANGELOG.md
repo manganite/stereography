@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Rechenkern** auf symcrys v0.3.1: Lagesymmetrie, Multiplizität und Wyckoff-Lage eines Pols kommen jetzt aus symcrys (symcrys#24, Punkt 1), auch für die Aufstellungen B und monoklin Achse c; die eigene zweite Lagentabelle der App (`ALT_SETTINGS`) ist entfallen. Lage, Buchstabe, Symbol und Multiplizität sind für alle Gruppen und Aufstellungen unverändert, Quizfragen ebenso. Sichtbar ist nur: In den erzeugten Experimenten „Polzahl“ der Aufstellungen B (312, 31m, 3̄1m, 4̄m2, 6̄2m) liegt der Startpol an einem anderen, gleichwertigen Ort derselben Wyckoff-Lage, dem Pol der Form, die der Formenmodus für diese Aufstellung zeigt; Frage, Antwort und gespeicherter Stand bleiben gleich.
+
 ## [1.21.0] - 2026-11-18
 
 Punktgruppen aus dem gemeinsamen Rechenkern symcrys v0.2.0 (gemeinsame Grundlage crystallography-common v0.24.0); sichtbar ist nur die Reihenfolge der Operationen, jetzt die von ITA. Link-Adressen und Speicher bleiben gültig.

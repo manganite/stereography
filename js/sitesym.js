@@ -1,20 +1,19 @@
-// Lage eines Pols in einer Punktgruppe: allgemein oder speziell, Lagesymmetrie, Multiplizität und
-// Wyckoff-Lage (ITA Vol. A, 2006, Abschn. 10.1.2.2 und Tab. 10.1.2.2).
+// Lage eines Pols in einer Punktgruppe: allgemein oder speziell, Lagesymmetrie, Multiplizität und Wyckoff-Lage
+// (ITA Vol. A, 2016, Abschn. 3.2.1.2.2 und Tab. 3.2.3.2). Gerechnet wird in symcrys (js/kern.js, symcrys#24 Punkt 1);
+// hier bleibt, was die App daraus macht: die Toleranz für ihre gerundeten Link-Adressen, das Einrasten beim Ziehen,
+// die Pole aus Miller-Indizes in ihrem Rahmen und das Zusammenfassen zusammenfallender Pole.
 //
-// Ein Pol liegt speziell, wenn ausser der Identität mindestens eine Operation der Punktgruppe ihn
-// festhält. Diese Operationen bilden seine Lagesymmetrie (bei Flächen: Flächensymmetrie); die Zahl
-// der äquivalenten Pole ist Ordnung der Gruppe / Ordnung der Lagesymmetrie. Die Wyckoff-Lage fasst
-// alle Pole zusammen, deren Lagesymmetrien zueinander konjugiert sind. Buchstabe und orientiertes
-// Symbol stammen aus dem Formkatalog (formen.js, nach ITA); für die Aufstellungen monoklin Achse c, 312,
-// 31m, 3̄1m, 4̄m2 und 6̄2m stehen sie in ALT_SETTINGS. Die Aufstellungen B (312 … 6̄2m) haben inzwischen auch
-// Katalogeinträge; die Lagentabelle hier bleibt als unabhängige Angabe nach ITA, gegen die die Tests sie prüfen.
+// Ein Pol liegt speziell, wenn ausser der Identität mindestens eine Operation der Punktgruppe ihn festhält. Diese
+// Operationen bilden seine Lagesymmetrie (bei Flächen: Flächensymmetrie); die Zahl der äquivalenten Pole ist Ordnung
+// der Gruppe / Ordnung der Lagesymmetrie. Die Wyckoff-Lage fasst alle Pole zusammen, deren Lagesymmetrien zueinander
+// konjugiert sind.
 
-import { mulVec, dot, normalize, scale, sub, inverse, transpose, fromColumns, rotation, mul, matEq } from './linalg.js';
-import { buildPointGroup, latticeToCart, groupById } from './pointgroups.js';
-import { CATALOG } from './forms.js';
+import { mulVec, dot, normalize, scale, sub, inverse, transpose, fromColumns } from './linalg.js';
+import { latticeToCart } from './pointgroups.js';
+import { kernLagesymmetrie, kernWyckoffLagen, kernWyckoffLageVon } from './kern.js';
 
 /** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
-/** @import { Punktgruppe, Analyse } from './pointgroups.js' */
+/** @import { Analyse } from './pointgroups.js' */
 /**
  * Wyckoff-Lage: Buchstabe, orientiertes Symbol der Lagesymmetrie, Multiplizität, Vertreter (Pol) und
  * Indizes der Operationen seiner Lagesymmetrie.
@@ -29,23 +28,6 @@ export const SNAP_MIRROR = 3 * deg;
 const ON_TOL = 1e-4;
 
 /**
- * Aufstellungen, deren Lagen aus der Standardaufstellung abgeleitet werden: Standardaufstellung und Wyckoff-Lagen nach ITA Tab. 10.1.2.2
- * (Buchstabe → orientiertes Symbol). Die Buchstaben stimmen mit der Standardaufstellung überein,
- * in den Symbolen sind die Positionen der 2. und 3. Blickrichtung vertauscht.
- */
-/** @type {Record<string, { std: string, fs: Record<string, string> }>} */
-const ALT_SETTINGS = {
-  '2c': { std: '2b', fs: { b: '1', a: '2' } },
-  mc: { std: 'mb', fs: { b: '1', a: 'm' } },
-  '2/mc': { std: '2/mb', fs: { c: '1', b: 'm', a: '2' } },
-  '312': { std: '321', fs: { c: '1', b: '..2', a: '3..' } },
-  '31m': { std: '3m1', fs: { c: '1', b: '..m', a: '3.m' } },
-  '-31m': { std: '-3m1', fs: { d: '1', c: '..m', b: '..2', a: '3.m' } },
-  '-4m2': { std: '-42m', fs: { d: '1', c: '.m.', b: '..2', a: '2mm.' } },
-  '-62m': { std: '-6m2', fs: { e: '1', d: 'm..', c: '..m', b: 'm2m', a: '3.m' } },
-};
-
-/**
  * Pol (Flächennormale) zu Miller-Indizes im kartesischen System der Punktgruppen.
  * @param {string} system
  * @param {Normale} hkl
@@ -57,58 +39,26 @@ export function poleOfHKL(system, hkl) {
   return normalize(mulVec(transpose(inverse(A)), hkl));
 }
 
-/** Indizes der Operationen, die p festhalten. @param {Mat3[]} ops @param {Vec3} p @param {number} [tol] */
+/** Indizes der Operationen, die p festhalten (symcrys). @param {Mat3[]} ops @param {Vec3} p @param {number} [tol] */
 export function stabilizer(ops, p, tol = ON_TOL) {
-  /** @type {number[]} */
-  const out = [];
-  ops.forEach((m, i) => {
-    const q = mulVec(m, p);
-    if (Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]) < tol) out.push(i);
-  });
-  return out;
-}
-
-/** Drehung R mit R·G_std·R⁻¹ = G_alt (Achsen des Kristallsystems bleiben dabei Achsen). */
-/** @param {Mat3[]} stdOps @param {Mat3[]} altOps */
-function settingRotation(stdOps, altOps) {
-  /** @type {Mat3[]} */
-  const cands = [];
-  for (let k = 1; k < 24; k++) cands.push(rotation([0, 0, 1], k * 15 * deg));
-  for (const a of /** @type {Vec3[]} */ ([[1, 0, 0], [0, 1, 0]])) for (const s of [1, -1]) cands.push(rotation(a, s * 90 * deg));
-  for (const R of cands) {
-    const Rt = transpose(R);
-    if (stdOps.every((m) => { const c = mul(mul(R, m), Rt); return altOps.some((n) => matEq(n, c)); })) return R;
-  }
-  throw new Error('keine Drehung zwischen den Aufstellungen gefunden');
+  return kernLagesymmetrie(ops, p, tol).stab;
 }
 
 /** @type {Map<string, Wyckofflage[]>} */
 const cache = new Map();
 /**
- * Wyckoff-Lagen einer Punktgruppe: [{ wy, fs, mult, rep, stab }] (rep: Pol der Lage,
- * stab: Indizes der Operationen seiner Lagesymmetrie in info.ops).
+ * Wyckoff-Lagen einer Punktgruppe aus symcrys: [{ wy, fs, mult, rep, stab }] (rep: ein Pol der Lage im Rahmen der App,
+ * in monoklin und triklin die Normale für rechtwinklige Achsen, nicht der Pol im Gitter der App, mit richtiger
+ * Lagesymmetrie; stab: Indizes der Operationen seiner Lagesymmetrie in info.ops).
  * @param {string} groupId
  * @returns {Wyckofflage[]}
  */
 export function wyckoffPositions(groupId) {
-  const vorhanden = cache.get(groupId);
-  if (vorhanden) return vorhanden;
-  const info = buildPointGroup(groupId);
-  const alt = ALT_SETTINGS[groupId];
-  const srcId = alt ? alt.std : groupId;
-  const src = /** @type {Punktgruppe} */ (groupById(srcId));
-  const R = alt ? settingRotation(buildPointGroup(srcId).ops, info.ops) : null;
-  /** @type {Wyckofflage[]} */
-  const rows = [];
-  for (const e of CATALOG) {
-    if (e.pg !== srcId || rows.some((r) => r.wy === e.wy)) continue;
-    let rep = poleOfHKL(src.system, e.hkl);
-    if (R) rep = mulVec(R, rep);
-    const fs = alt ? alt.fs[e.wy] : e.fs;
-    if (fs == null) throw new Error(`Wyckoff-Lage ${e.wy} fehlt für ${groupId}`);
-    rows.push({ wy: e.wy, fs, mult: e.mult, rep, stab: stabilizer(info.ops, rep) });
+  let rows = cache.get(groupId);
+  if (!rows) {
+    rows = kernWyckoffLagen(groupId);
+    cache.set(groupId, rows);
   }
-  cache.set(groupId, rows);
   return rows;
 }
 
@@ -146,37 +96,15 @@ export function snapPole(info, p) {
 /**
  * Lage des Pols p in der Punktgruppe: { special, mult, stab (Indizes), wy, fs, p }.
  * p wird auf die Elemente seiner Lagesymmetrie gesetzt (entfernt Rundungsfehler, z. B. aus der Link-Adresse).
+ * info.ops sind die Operationen der Gruppe groupId (Reihenfolge wie buildPointGroup).
  * @param {string} groupId
  * @param {Pick<Analyse, 'ops'>} info
  * @param {Vec3} p
  */
 export function siteOf(groupId, info, p) {
-  const stab = stabilizer(info.ops, p);
-  let pc = p;
-  if (stab.length > 1) {
-    // auf den gemeinsamen Fixraum projizieren: Mittel der Bilder unter der Lagesymmetrie
-    /** @type {(acc: Vec3, i: number) => Vec3} */
-    const summe = (acc, i) => { const q = mulVec(info.ops[i], p); return [acc[0] + q[0], acc[1] + q[1], acc[2] + q[2]]; };
-    const s = stab.reduce(summe, [0, 0, 0]);
-    pc = normalize(s);
-  }
-  const mult = info.ops.length / stab.length;
-  /** @param {number[]} list */
-  const key = (list) => list.slice().sort((a, b) => a - b).join(',');
-  /** @type {Wyckofflage | null | undefined} */
-  let row = null;
-  const rows = wyckoffPositions(groupId);
-  if (stab.length === 1) row = rows.find((r) => r.stab.length === 1) || null;
-  else {
-    // konjugiert: Für ein g der Gruppe hat g·p dieselbe Lagesymmetrie wie der Vertreter der Lage
-    const targets = rows.filter((r) => r.stab.length === stab.length);
-    for (const m of info.ops) {
-      const k = key(stabilizer(info.ops, mulVec(m, pc)));
-      row = targets.find((r) => key(r.stab) === k);
-      if (row) break;
-    }
-  }
-  return { special: stab.length > 1, mult, stab, wy: row ? row.wy : null, fs: row ? row.fs : null, p: pc };
+  const { stab, p: pc } = kernLagesymmetrie(info.ops, p, ON_TOL);
+  const { wy, fs } = kernWyckoffLageVon(groupId, pc, ON_TOL);
+  return { special: stab.length > 1, mult: info.ops.length / stab.length, stab, wy, fs, p: pc };
 }
 
 /**

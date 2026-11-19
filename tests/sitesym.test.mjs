@@ -1,9 +1,10 @@
-// Lage eines Pols: Lagesymmetrie, Multiplizität und Wyckoff-Lage (ITA Vol. A, Abschn. 10.1.2.2), Einrasten.
+// Lage eines Pols: Lagesymmetrie, Multiplizität und Wyckoff-Lage (aus symcrys, nach ITA Vol. A, 2016, Tab. 3.2.3.2),
+// geprüft gegen den Formkatalog der App (ITA 2006, Tab. 10.1.2.2) und Angaben nach ITA; Einrasten.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { POINT_GROUPS, buildPointGroup, orbit, groupById } from '../js/pointgroups.js';
 import { CATALOG } from '../js/forms.js';
-import { wyckoffPositions, siteOf, snapPole, distinctPoles, poleOfHKL } from '../js/sitesym.js';
+import { wyckoffPositions, siteOf, snapPole, distinctPoles, poleOfHKL, stabilizer } from '../js/sitesym.js';
 import { normalize, cross, scale, add } from '../js/linalg.js';
 import { createState, applyHashTo, hashOf, pgScene } from '../js/scene.js';
 
@@ -33,7 +34,12 @@ test('Wyckoff-Lagen aller 40 Einträge: Multiplizität × Ordnung der Lagesymmet
     const rows = wyckoffPositions(g.id);
     assert.ok(rows.length >= 1, g.id);
     assert.equal(new Set(rows.map((r) => r.wy)).size, rows.length, `${g.id}: Buchstaben eindeutig`);
-    for (const r of rows) assert.equal(r.mult * r.stab.length, info.order, `${g.id} ${r.wy}`);
+    for (const r of rows) {
+      assert.equal(r.mult * r.stab.length, info.order, `${g.id} ${r.wy}`);
+      // Vertreter (in den Rahmen der App gedreht) und Indizes der Lagesymmetrie (Reihenfolge von info.ops) passen zusammen.
+      assert.deepEqual(stabilizer(info.ops, r.rep), r.stab, `${g.id} ${r.wy}: Lagesymmetrie des Vertreters`);
+      assert.equal(siteOf(g.id, info, r.rep).wy, r.wy, `${g.id} ${r.wy}: Lage des Vertreters`);
+    }
     assert.equal(rows.filter((r) => r.stab.length === 1).length, 1, `${g.id}: genau eine allgemeine Lage`);
   }
 });
@@ -68,7 +74,7 @@ test('Katalog: Pol jeder Form ergibt deren Wyckoff-Lage und Flächensymmetrie (I
   assert.equal(n, 134);
 });
 
-test('Aufstellungen mit eigener Lagentabelle (ALT_SETTINGS): Lagen nach ITA Tab. 10.1.2.2', () => {
+test('Aufstellungen B und monoklin Achse c: Lagen nach ITA Tab. 10.1.2.2', () => {
   const list = (/** @type {string} */ id) => wyckoffPositions(id).map((r) => `${r.mult}${r.wy} ${r.fs}`).join(' | ');
   assert.equal(list('312'), '6c 1 | 3b ..2 | 2a 3..');
   assert.equal(list('31m'), '6c 1 | 3b ..m | 1a 3.m');

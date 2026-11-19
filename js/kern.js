@@ -1,4 +1,5 @@
-// Punktgruppen aus dem Rechenkern symcrys (lib/kern/, crystallography-common#99). Hier steht nur, was die App
+// Punktgruppen, Lagesymmetrie und Wyckoff-Lagen aus dem Rechenkern symcrys (lib/kern/, crystallography-common#99,
+// symcrys#24). Hier steht nur, was die App
 // daraus macht: die Zuordnung ihrer Kennungen (Link `g=`) zu Gruppe und Aufstellung in symcrys, die Umrechnung in
 // den kartesischen Rahmen der App und die Namen der Symmetrieelemente für die Zeichnung.
 //
@@ -8,7 +9,7 @@
 
 import {
   crystalFamily, findPointGroup, isCentrosymmetric, isChiral, isPolar, laueClass, latticeBasis, operations, pointGroup,
-  settings, symbol, symmetryDirections,
+  settings, siteSymmetry, symbol, symmetryDirections, wyckoffPositionOf, wyckoffPositions,
 } from '../lib/kern/index.js';
 
 /** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
@@ -137,4 +138,56 @@ export function kernElemente(id) {
     full: symbol(key, { setting, form: 'full' }), sf: symbol(key, { form: 'schoenflies' }),
     axes, mirrors, mirrorCls, klassen,
   };
+}
+
+/** @param {Mat3 | null} r @param {readonly number[]} v @returns {Vec3} */
+const vektorInKern = (r, v) => /** @type {Vec3} */ (r ? [0, 1, 2].map((j) => r[0][j] * v[0] + r[1][j] * v[1] + r[2][j] * v[2]) : [...v]);
+
+/**
+ * Operationen der App als Operationen von symcrys, je Feld einmal, damit symcrys seine Produkte je Feld zwischenspeichert.
+ * @type {WeakMap<readonly Mat3[], { matrix: Mat3, timeReversal: boolean }[]>}
+ */
+const umhuellte = new WeakMap();
+
+/**
+ * Lagesymmetrie einer Richtung unter beliebigen Operationen (auch denen eines verzerrten Kristalls) aus symcrys: Indizes
+ * der Operationen, die sie festhalten, und die Richtung auf deren Fixraum gesetzt. Rahmenunabhängig, weil Operationen
+ * und Richtung im selben Rahmen stehen.
+ * @param {readonly Mat3[]} ops @param {Vec3} p @param {number} toleranz
+ * @returns {{ stab: number[], p: Vec3 }}
+ */
+export function kernLagesymmetrie(ops, p, toleranz) {
+  let umhuellt = umhuellte.get(ops);
+  if (!umhuellt) {
+    umhuellt = ops.map((m) => ({ matrix: m, timeReversal: false }));
+    umhuellte.set(ops, umhuellt);
+  }
+  const s = siteSymmetry(umhuellt, p, { tolerance: toleranz });
+  return { stab: [...s.operations], p: /** @type {Vec3} */ ([...s.direction]) };
+}
+
+/**
+ * Wyckoff-Lagen einer Punktgruppe der App aus symcrys (ITA, Konvention ITC), Vertreter im Rahmen der App. stab: Indizes
+ * der Lagesymmetrie des Vertreters in `kernOperationen(id)` (dieselbe Reihenfolge wie in symcrys).
+ * @param {string} id
+ * @returns {{ wy: string, fs: string, mult: number, rep: Vec3, stab: number[] }[]}
+ */
+export function kernWyckoffLagen(id) {
+  const { key, setting } = kernAufstellung(id);
+  const r = rahmen(key);
+  return wyckoffPositions(key, { setting }).map((w) => ({
+    wy: w.letter, fs: w.siteSymmetry, mult: w.multiplicity, rep: vektorInApp(r, w.representative.cartesian),
+    stab: [...w.siteSymmetryOperations],
+  }));
+}
+
+/**
+ * Wyckoff-Lage einer Richtung (Rahmen der App) in einer Punktgruppe der App, aus symcrys.
+ * @param {string} id @param {Vec3} p @param {number} toleranz
+ * @returns {{ wy: string, fs: string }}
+ */
+export function kernWyckoffLageVon(id, p, toleranz) {
+  const { key, setting } = kernAufstellung(id);
+  const w = wyckoffPositionOf(key, vektorInKern(rahmen(key), p), { setting, tolerance: toleranz });
+  return { wy: w.letter, fs: w.siteSymmetry };
 }

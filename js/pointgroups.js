@@ -111,7 +111,6 @@ export function analyzeGroup(ops) {
   const P = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
   for (const m of ops) for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) P[i][j] += m[i][j] / ops.length;
   const polar = P.some((r) => r.some((x) => Math.abs(x) > 1e-6));
-  const piezo = kernPiezoelektrisch(ops);
 
   /** @type {{ dir: Vec3, rot: Set<number>, rotinv: Set<number>, mirror: boolean }[]} */
   const axisMap = [];
@@ -153,7 +152,15 @@ export function analyzeGroup(ops) {
       axes.push({ dir: e.dir, symbol, centre, mirrorPerp: e.mirror });
     }
   }
-  return { ops, order: ops.length, centro, chiral, polar, piezo, axes, mirrors };
+  // piezo erst beim Lesen (einmal) berechnen: tensorFormOf schliesst die Gruppe zuerst ab und kostet bei m3̄m rund
+  // 10 ms, analyzeGroup läuft aber bei jedem buildCrystal; die Kenndaten nehmen piezo aus buildPointGroup.
+  /** @type {boolean | undefined} */
+  let piezo;
+  return {
+    ops, order: ops.length, centro, chiral, polar,
+    get piezo() { return (piezo ??= kernPiezoelektrisch(ops)); },
+    axes, mirrors,
+  };
 }
 
 /**

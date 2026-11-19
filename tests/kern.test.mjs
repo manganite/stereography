@@ -9,7 +9,7 @@ import {
   HEX_A, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, latticeToCart, symmetryDirections,
 } from '../js/pointgroups.js';
 import { drehungHexagonal, kernAufstellung, kernElemente, kernOperationen } from '../js/kern.js';
-import { I3, add, inversion, matEq, mirror, mul, normalize, rot, rotInv, scale } from '../js/linalg.js';
+import { I3, add, inversion, matEq, mirror, mul, normalize, rot, rotInv, rotation, scale, transpose } from '../js/linalg.js';
 
 /** @import { Vec3, Mat3 } from '../lib/common/js/typen.js' */
 
@@ -72,7 +72,8 @@ function gleicheMenge(a, b, gleich) {
 /**
  * Unabhängige Referenz für „piezoelektrisch“ (früher der Code der App, jetzt aus symcrys): Anzahl der invarianten
  * Komponenten des Piezotensors d_ijk (symmetrisch in j, k) als Mittel des Charakters χ(R)·(χ(R)² + χ(R²))/2 über die
- * Gruppe, mit χ(R) = Spur von R.
+ * Gruppe, mit χ(R) = Spur von R. Ergibt die 20 Gruppen ohne Inversionszentrum ausser 432 (Borchardt-Ott & Sowa,
+ * Abschn. 9.6.2).
  * @param {Mat3[]} ops
  */
 function piezoReferenz(ops) {
@@ -105,6 +106,10 @@ for (const g of POINT_GROUPS) {
     // piezoelektrisch aus symcrys (isPiezoelectric bzw. tensorFormOf) gegen die Charakterformel
     assert.equal(neu.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (isPiezoelectric)');
     assert.equal(alt.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (analyzeGroup, tensorFormOf)');
+    // auch in einem beliebig gedrehten Rahmen (wie die Operationen in Bildschirmkoordinaten, polyhedra.js)
+    const R = rotation([1, 2, 3], (37 * Math.PI) / 180);
+    const gedreht = alt.ops.map((m) => mul(mul(R, m), transpose(R)));
+    assert.equal(analyzeGroup(gedreht).piezo, piezoReferenz(alt.ops), 'piezoelektrisch (gedrehter Rahmen)');
     /** @param {Vec3} a @param {Vec3} b */
     const gleich = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
     assert.ok(gleicheMenge(alt.axes, app.axes, (x, y) => gleich(x.dir, y.dir) && x.symbol === y.symbol && x.centre === y.centre && x.mirrorPerp === y.mirrorPerp), 'buildPointGroup: Achsen');

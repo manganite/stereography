@@ -926,7 +926,7 @@ function updateInfoPG(info, orb, col, classes, pgAngle, site, distinct) {
       <div><dt>${skriptTerm('Zentrosymmetrisch', 'eigenschaften')}</dt><dd>${yesno(info.centro)}</dd></div>
       <div title="Auch chiral genannt: nur Drehungen (Operationen erster Art), Links- und Rechtsform möglich. 11 Punktgruppen."><dt>${skriptTerm('Enantiomorph', 'eigenschaften')}</dt><dd>${yesno(info.chiral)}</dd></div>
       <div title="Eine Richtung bleibt unter allen Operationen erhalten; spontane Polarisation (Pyroelektrizität) möglich. 10 Punktgruppen."><dt>${skriptTerm('Polar', 'eigenschaften')}</dt><dd>${yesno(info.polar)}</dd></div>
-      <div title="Piezoelektrischer Effekt symmetrieerlaubt in allen Punktgruppen ohne Inversionszentrum ausser 432 (20 der 32)."><dt>${skriptTerm('Piezoelektrisch', 'eigenschaften')}</dt><dd>${yesno(info.piezo)}</dd></div>
+      <div title="Piezoelektrischer Effekt symmetrieerlaubt in allen Punktgruppen ohne Inversionszentrum ausser 432. 20 Punktgruppen."><dt>${skriptTerm('Piezoelektrisch', 'eigenschaften')}</dt><dd>${yesno(info.piezo)}</dd></div>
       ${state.pg.showObject ? `<div class="wide"><dt>${skriptTerm('Lage des Ausgangspols', 'lage-pol')}</dt><dd>${lage}</dd></div>` : ''}
     </dl>
     <h3>Symmetrieelemente nach Blickrichtung</h3>

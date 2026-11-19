@@ -13,7 +13,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Behoben
 
-- **Tooltip „Piezoelektrisch“** eindeutig: „in allen Punktgruppen ohne Inversionszentrum ausser 432 (20 der 32)“ statt „alle 21 … ausser 432“, das sich als 21 lesen liess (#165).
+- **„Piezoelektrisch“ eindeutig** in Tooltip und Skript (Abschn. Eigenschaften): „in allen Punktgruppen ohne Inversionszentrum ausser 432“ mit „20 Punktgruppen“ bzw. „also in 20 der 32“ statt „alle 21 … ausser 432“, das sich als 21 lesen liess (#165).
 
 ## [1.21.0] - 2026-11-18
 

@@ -114,6 +114,8 @@ const FILES = [
   'lib/kern/pointGroups/wyckoffData.js',
   'lib/kern/siteSymmetry.js',
   'lib/kern/symmetryDirections.js',
+  'lib/kern/tensors/rowEchelon.js',
+  'lib/kern/tensors/tensorForm.js',
   'lib/kern/tolerances.js',
   'lib/kern/version.js',
 ];

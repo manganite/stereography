@@ -8,6 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ### Geändert
 
+- **Rechenkern** auf symcrys v0.4.0: „piezoelektrisch“ in den Kenndaten kommt jetzt aus dem Tensormodul von symcrys, für die Punktgruppen des Katalogs (`isPiezoelectric`) wie für verzerrte Kristalle (`tensorFormOf`); die eigene Rechnung der App ist entfallen und dient nur noch im Test als unabhängige Referenz. Für alle 40 Einträge, ihre Aufstellungen und gedrehte Operationen unverändert (crystallography-common#74, Punkt 7).
 - **Rechenkern** auf symcrys v0.3.1: Lagesymmetrie, Multiplizität und Wyckoff-Lage eines Pols kommen jetzt aus symcrys (symcrys#24, Punkt 1), auch für die Aufstellungen B und monoklin Achse c; die eigene zweite Lagentabelle der App (`ALT_SETTINGS`) ist entfallen. Lage, Buchstabe, Symbol und Multiplizität sind für alle Gruppen und Aufstellungen unverändert, Quizfragen ebenso. Sichtbar ist nur: In den erzeugten Experimenten „Polzahl“ der Aufstellungen B (312, 31m, 3̄1m, 4̄m2, 6̄2m) liegt der Startpol an einem anderen, gleichwertigen Ort derselben Wyckoff-Lage, dem Pol der Form, die der Formenmodus für diese Aufstellung zeigt; Frage, Antwort und gespeicherter Stand bleiben gleich.
 
 ## [1.21.0] - 2026-11-18

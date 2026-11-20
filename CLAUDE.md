@@ -205,17 +205,18 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   `HEX_B`). Die Reihenfolge der Operationen ist die von ITA (Konvention ITC von symcrys; Wahl Thomas): Pole sind
   danach nummeriert, Listen wie die Flächen einer Zone folgen ihr, und in spezieller Lage nennt der Winkelkasten
   unter den gleichwertigen Operationen die zur ersten passende. Achsen und Spiegelnormalen behalten das
-  kanonische Vorzeichen der App (`canonicalDir`). Die Gittersymmetrie eines Systems (Kandidaten der Restsymmetrie einer Form, `auxFormName`) kommt seit symcrys 0.6.0 aus `holohedry(crystalFamily(system))` über `kernGittersymmetrie` in `js/kern.js`, trigonal also `6/mmm`; nur die Kennung `2/mb` für das monokline Gitter setzt die App selbst. Die Blickrichtungen bestimmt die App noch selbst
+  kanonische Vorzeichen der App (`canonicalDir`). Die Blickrichtungen bestimmt die App noch selbst
   (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [11̄1] statt [11̄1̄] in symcrys,
   und den Bezeichnungen der App); Umstellung auf `symmetryDirections` von symcrys offen (#111). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
   unabhängige Referenz. In der App bleibt, was symcrys noch nicht kann: die Analyse beliebiger Operationen
   verzerrter Kristalle (`analyzeGroup`, Bestimmung der Gruppe in `polyhedra.js`) und Formen (symcrys#24, Punkt 2).
+- **Gittersymmetrie aus symcrys** (symcrys 0.6.0): die Gittersymmetrie eines Systems (Kandidaten der Restsymmetrie einer Form, `auxFormName`) kommt seit symcrys 0.6.0 aus `holohedry(crystalFamily(system))` über `kernGittersymmetrie` in `js/kern.js`, trigonal also `6/mmm`; nur die Kennung `2/mb` für das monokline Gitter setzt die App selbst.
 - **Piezoelektrisch aus dem Tensormodul von symcrys** (ab symcrys 0.4.0, crystallography-common#74 Punkt 7; seit 0.6.0
   als benannte Eigenschaft): für die Punktgruppen des Katalogs `allowsProperty(key, 'piezoelectric')` (`kernElemente`),
   für beliebige Operationen eines verzerrten Kristalls `allowsPropertyOf` über `kernPiezoelektrisch` in `js/kern.js`;
   rahmenunabhängig, deshalb ohne Drehung. Zentrosymmetrisch, polar, chiral und Laue-Klasse der Katalogeinträge sind seit
   0.6.0 Felder von `pointGroup()`. `analyzeGroup` berechnet `piezo` erst beim Lesen (Getter): die Prüfung
-  schliesst die Gruppe zuerst ab und kostet bei m3̄m rund 10 ms, `analyzeGroup` läuft bei jedem `buildCrystal`, und die
+  schliesst die Gruppe zuerst ab und kostet bei m3̄m rund 4 ms (symcrys 0.6.0, gemessen 20.11.2026), `analyzeGroup` läuft bei jedem `buildCrystal`, und die
   Kenndaten nehmen `piezo` aus `buildPointGroup`. Die frühere Charakterformel der App prüft `tests/kern.test.mjs` als
   unabhängige Referenz, auch im gedrehten Rahmen.
 - **Lagesymmetrie und Wyckoff-Lagen aus symcrys** (Thomas, 18. und 19.11.2026, symcrys#24 Punkt 1): Lagesymmetrie,

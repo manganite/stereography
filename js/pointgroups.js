@@ -152,8 +152,8 @@ export function analyzeGroup(ops) {
       axes.push({ dir: e.dir, symbol, centre, mirrorPerp: e.mirror });
     }
   }
-  // piezo erst beim Lesen (einmal) berechnen: tensorFormOf schliesst die Gruppe zuerst ab und kostet bei m3̄m rund
-  // 10 ms, analyzeGroup läuft aber bei jedem buildCrystal; die Kenndaten nehmen piezo aus buildPointGroup.
+  // piezo erst beim Lesen (einmal) berechnen: allowsPropertyOf schliesst die Gruppe zuerst ab und kostet bei m3̄m rund
+  // 4 ms (symcrys 0.6.0), analyzeGroup läuft aber bei jedem buildCrystal; die Kenndaten nehmen piezo aus buildPointGroup.
   /** @type {boolean | undefined} */
   let piezo;
   return {

@@ -106,7 +106,7 @@ for (const g of POINT_GROUPS) {
     assert.deepEqual([app.centro, app.chiral, app.polar, app.piezo], [alt.centro, alt.chiral, alt.polar, alt.piezo]);
     // piezoelektrisch aus symcrys (allowsProperty bzw. allowsPropertyOf) gegen die Charakterformel
     assert.equal(neu.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (allowsProperty)');
-    assert.equal(alt.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (analyzeGroup, tensorFormOf)');
+    assert.equal(alt.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (analyzeGroup, allowsPropertyOf)');
     // auch in einem beliebig gedrehten Rahmen (wie die Operationen in Bildschirmkoordinaten, polyhedra.js)
     const R = rotation([1, 2, 3], (37 * Math.PI) / 180);
     const gedreht = alt.ops.map((m) => mul(mul(R, m), transpose(R)));

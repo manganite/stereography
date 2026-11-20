@@ -8,8 +8,8 @@
 // zwischen beiden folgt aus den beiden Gitterbasen (Thomas, 18.11.2026). Sonst sind die Rahmen gleich.
 
 import {
-  crystalFamily, findPointGroup, isCentrosymmetric, isChiral, isPiezoelectric, isPolar, laueClass, latticeBasis, operations,
-  pointGroup, settings, siteSymmetry, symbol, symmetryDirections, tensorFormOf, wyckoffPositionOf, wyckoffPositions,
+  allowsProperty, allowsPropertyOf, crystalFamily, findPointGroup, holohedry, latticeBasis, operations, pointGroup, settings,
+  siteSymmetry, symbol, symmetryDirections, wyckoffPositionOf, wyckoffPositions,
 } from '../lib/kern/index.js';
 
 /** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
@@ -67,6 +67,17 @@ const R_HEX = (() => {
 /** Rahmen der App für eine Gruppe: Drehung aus dem Rahmen von symcrys oder keine. @param {PointGroupKey} key */
 const rahmen = (key) => (crystalFamily(pointGroup(key).crystalSystem) === 'hexagonal' ? R_HEX : null);
 
+/**
+ * Kennung der Gittersymmetrie zu einer Punktgruppe der App: die Holoedrie ihrer Kristallfamilie aus symcrys, im
+ * trigonalen System also 6/mmm (hexagonale Achsen, wie die App sie für das Gitter nimmt), nicht 3̄m. Monoklin steht
+ * die Kennung der App mit eindeutiger Achse b (`2/mb`), wie das Gitter der App.
+ * @param {string} id
+ */
+export function kernGittersymmetrie(id) {
+  const h = holohedry(crystalFamily(pointGroup(kernAufstellung(id).key).crystalSystem));
+  return h === '2/m' ? '2/mb' : h;
+}
+
 /** Drehung aus dem Rahmen von symcrys in den der App bei hexagonalen Achsen (für Tests). @returns {Mat3} */
 export const drehungHexagonal = () => kopie(R_HEX);
 
@@ -106,7 +117,8 @@ export function achsensymbol(e) {
 export function kernElemente(id) {
   const { key, setting } = kernAufstellung(id);
   const r = rahmen(key);
-  const centro = isCentrosymmetric(key);
+  const gruppe = pointGroup(key);
+  const centro = gruppe.centrosymmetric;
   /** @type {{ dir: Vec3, symbol: string, centre: boolean, mirrorPerp: boolean, cls: number }[]} */
   const axes = [];
   /** @type {Vec3[]} */
@@ -134,7 +146,7 @@ export function kernElemente(id) {
     };
   });
   return {
-    centro, chiral: isChiral(key), polar: isPolar(key), piezo: isPiezoelectric(key), laue: laueClass(key),
+    centro, chiral: gruppe.chiral, polar: gruppe.polar, piezo: allowsProperty(key, 'piezoelectric'), laue: gruppe.laueClass,
     full: symbol(key, { setting, form: 'full' }), sf: symbol(key, { form: 'schoenflies' }),
     axes, mirrors, mirrorCls, klassen,
   };
@@ -144,21 +156,19 @@ export function kernElemente(id) {
 const vektorInKern = (r, v) => /** @type {Vec3} */ (r ? [0, 1, 2].map((j) => r[0][j] * v[0] + r[1][j] * v[1] + r[2][j] * v[2]) : [...v]);
 
 /**
- * Operationen der App als Operationen von symcrys, je Feld einmal, damit symcrys seine Produkte je Feld zwischenspeichert.
- * @type {WeakMap<readonly Mat3[], { matrix: Mat3, timeReversal: boolean }[]>}
+ * Operationen der App als Operationen von symcrys (`{ matrix }`: die kristallographische Schnittstelle kennt keine
+ * Zeitumkehr), je Feld einmal, damit symcrys seine Produkte je Feld zwischenspeichert.
+ * @type {WeakMap<readonly Mat3[], { matrix: Mat3 }[]>}
  */
 const umhuellte = new WeakMap();
 
-/** Piezoelektrischer Tensor (polar, Rang 3, symmetrisch in j, k) für `tensorFormOf`. */
-const PIEZO = /** @type {const} */ ({ rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'jk' });
-
 /**
- * Piezoelektrisch unter beliebigen Operationen (auch denen eines verzerrten Kristalls) aus symcrys: ob der
- * piezoelektrische Tensor eine erlaubte Komponente hat (Tensormodul, `tensorFormOf`). Rahmenunabhängig.
+ * Piezoelektrisch unter beliebigen Operationen (auch denen eines verzerrten Kristalls) aus symcrys: ob die benannte
+ * Eigenschaft `'piezoelectric'` erlaubt ist (polarer Tensor dritter Stufe, symmetrisch in j, k). Rahmenunabhängig.
  * @param {readonly Mat3[]} ops
  */
 export function kernPiezoelektrisch(ops) {
-  return tensorFormOf(ops.map((m) => ({ matrix: m, timeReversal: false })), PIEZO).basis.length > 0;
+  return allowsPropertyOf(ops.map((m) => ({ matrix: m })), 'piezoelectric');
 }
 
 /**
@@ -171,7 +181,7 @@ export function kernPiezoelektrisch(ops) {
 export function kernLagesymmetrie(ops, p, toleranz) {
   let umhuellt = umhuellte.get(ops);
   if (!umhuellt) {
-    umhuellt = ops.map((m) => ({ matrix: m, timeReversal: false }));
+    umhuellt = ops.map((m) => ({ matrix: m }));
     umhuellte.set(ops, umhuellt);
   }
   const s = siteSymmetry(umhuellt, p, { tolerance: toleranz });

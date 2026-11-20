@@ -8,7 +8,8 @@ import assert from 'node:assert/strict';
 import {
   HEX_A, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, latticeToCart, symmetryDirections,
 } from '../js/pointgroups.js';
-import { drehungHexagonal, kernAufstellung, kernElemente, kernOperationen } from '../js/kern.js';
+import { drehungHexagonal, kernAufstellung, kernElemente, kernGittersymmetrie, kernOperationen } from '../js/kern.js';
+import { SYSTEM_OF } from '../js/polyhedra.js';
 import { I3, add, inversion, matEq, mirror, mul, normalize, rot, rotInv, rotation, scale, transpose } from '../js/linalg.js';
 
 /** @import { Vec3, Mat3 } from '../lib/common/js/typen.js' */
@@ -103,9 +104,9 @@ for (const g of POINT_GROUPS) {
     // Die Identität steht zuerst (Ausgangspol: scene.js `gen`, view3d.js, hklOrbit in polyhedra.js)
     assert.ok(gleicheMatrix(app.ops[0], I3()), 'Identität zuerst');
     assert.deepEqual([app.centro, app.chiral, app.polar, app.piezo], [alt.centro, alt.chiral, alt.polar, alt.piezo]);
-    // piezoelektrisch aus symcrys (isPiezoelectric bzw. tensorFormOf) gegen die Charakterformel
-    assert.equal(neu.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (isPiezoelectric)');
-    assert.equal(alt.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (analyzeGroup, tensorFormOf)');
+    // piezoelektrisch aus symcrys (allowsProperty bzw. allowsPropertyOf) gegen die Charakterformel
+    assert.equal(neu.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (allowsProperty)');
+    assert.equal(alt.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (analyzeGroup, allowsPropertyOf)');
     // auch in einem beliebig gedrehten Rahmen (wie die Operationen in Bildschirmkoordinaten, polyhedra.js)
     const R = rotation([1, 2, 3], (37 * Math.PI) / 180);
     const gedreht = alt.ops.map((m) => mul(mul(R, m), transpose(R)));
@@ -165,4 +166,12 @@ test('Rahmen gegen ITA: in P321 führt (2) 3⁺ a in b über, (5) 2 x,0,0 hält 
 
 test('kernAufstellung: unbekannte Kennungen ergeben einen Fehler', () => {
   for (const id of ['2a', 'xyz', 'R3', '5']) assert.throws(() => kernAufstellung(id), /fehlt in symcrys/);
+});
+
+test('Gittersymmetrie je Eintrag (holohedry von symcrys) gleich der früheren Tabelle der App', () => {
+  // Unabhängige Referenz: die Tabelle HOLOHEDRY, die bis v1.21 in js/polyhedra.js stand (Gittersymmetrie je System,
+  // trigonal mit hexagonalen Achsen, monoklin mit der Kennung 2/mb der App).
+  /** @type {Record<string, string>} */
+  const referenz = { triklin: '-1', monoklin: '2/mb', orthorhombisch: 'mmm', tetragonal: '4/mmm', trigonal: '6/mmm', hexagonal: '6/mmm', kubisch: 'm-3m' };
+  for (const id of Object.keys(SYSTEM_OF)) assert.equal(kernGittersymmetrie(id), referenz[SYSTEM_OF[id]], id);
 });

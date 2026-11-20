@@ -38,7 +38,8 @@ export interface WyckoffPosition {
 export type WyckoffOptions = SettingOptions & SiteSymmetryOptions;
 /**
  * The Wyckoff positions of a point group for directions, in ITA's printed order (general position
- * first), in the ITC convention only (throws a RangeError for `'birss'`). The point at the origin
+ * first), for the 32 crystal classes and in the ITC convention only (throws a RangeError for a
+ * magnetic point group with time reversal and for `'birss'`). The point at the origin
  * (letter o) is not a direction and is left out. For `mm2` settings 2 and 3 (`2mm`, `m2m`), which
  * ITA does not print, the positions of setting 1 carried into their frame.
  */

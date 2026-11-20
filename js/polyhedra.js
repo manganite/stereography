@@ -11,6 +11,7 @@ import {
   solve3, vecEq, fromRows, matEq,
 } from './linalg.js';
 import { buildPointGroup, analyzeGroup, POINT_GROUPS } from './pointgroups.js';
+import { kernGittersymmetrie } from './kern.js';
 import { entryById } from './forms.js';
 import { FORM_TYPES, FACE_COUNT, PRISMEN, EIG_SCHREIBWEISE } from './formen.js';
 
@@ -58,9 +59,6 @@ export const SYSTEM_OF = Object.fromEntries(POINT_GROUPS.map((g) => [g.id, g.sys
 const HEX_SYSTEMS = new Set(['trigonal', 'hexagonal']);
 /** @param {string} sys */
 export const isHexSystem = (sys) => HEX_SYSTEMS.has(sys);
-
-/** Gittersymmetrie je System, trigonal mit hexagonalen Achsen (für Kandidaten der Restsymmetrie). @type {Record<string, string>} */
-const HOLOHEDRY = { triklin: '-1', monoklin: '2/mb', orthorhombisch: 'mmm', tetragonal: '4/mmm', trigonal: '6/mmm', hexagonal: '6/mmm', kubisch: 'm-3m' };
 
 /** Voreinstellungen der Gitterparameter je System (a = 1). @type {Record<string, Gitterparameter>} */
 export const LATTICE_DEFAULTS = {
@@ -631,7 +629,7 @@ export function auxFormName(groupId, hkls) {
   }
   if (sys === 'triklin' || sys === 'monoklin') return n === 4 && open ? { type: 6, name: FORM_TYPES[6].name } : null;
   const keys = new Set(hkls.map(hklKey));
-  const Hs = latticeOps(HOLOHEDRY[sys]).filter((W) => hkls.every((h) => keys.has(hklKey(transformHKL(W, h)))));
+  const Hs = latticeOps(kernGittersymmetrie(groupId)).filter((W) => hkls.every((h) => keys.has(hklKey(transformHKL(W, h)))));
   const eigId = identifyGroup(Hs.map((W) => mul(mul(A0, W), inverse(A0)))).hm;
   const eig = EIG_SCHREIBWEISE[eigId] || eigId;
   const cands = Object.entries(FORM_TYPES).filter(([t, f]) => f.eig === eig && FACE_COUNT[Number(t)] === n && PRISM_TYPES.has(Number(t)) === open);

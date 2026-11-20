@@ -6,7 +6,7 @@
  */
 import { type Vec3 } from '../linalg.js';
 import { type Uvw } from '../symmetryDirections.js';
-import { type PointGroupKey, type SettingOptions } from './pointGroups.js';
+import { type MagneticPointGroupKey, type SettingOptions } from './pointGroups.js';
 /** What a point operation is; a rotoinversion n̄ is the inversion times the rotation n (n = 3, 4, 6). */
 export type OperationKind = 'identity' | 'inversion' | 'rotation' | 'rotoinversion' | 'mirror';
 /** A symmetry direction: as a lattice direction [uvw] and as a Cartesian unit vector. */
@@ -41,7 +41,11 @@ export interface OperationDescription {
 }
 /** The symmetry elements along one symmetry direction. */
 export interface DirectionElements extends Axis {
-    /** Highest n of a rotation n about this direction; 1 if there is none. */
+    /**
+     * Highest n of a rotation n about this direction; 1 if there is none. In a magnetic group
+     * rotations, rotoinversions and mirrors count with and without time reversal;
+     * `describeOperations` tells them apart.
+     */
     readonly rotation: number;
     /** Highest n of a rotoinversion n̄ (n = 3, 4, 6) about this direction; 0 if there is none. */
     readonly rotoinversion: number;
@@ -52,7 +56,10 @@ export interface DirectionElements extends Axis {
 export interface SymmetryDirection {
     /** 1-based position in the full symbol. */
     readonly position: number;
-    /** The symbol at this position of the full symbol, if the full symbol has this position. */
+    /**
+     * The symbol at this position of the full symbol, if the full symbol has this position; for a
+     * magnetic group with its primes (`4'/m`).
+     */
     readonly symbol?: string;
     readonly directions: readonly DirectionElements[];
 }
@@ -62,7 +69,7 @@ export interface SymmetryDirection {
  * convention with the sign of ITA Table 2.1.3.1, in the Birss convention signed as birss-app signs
  * them (first non-zero Cartesian component positive); the sign fixes what the sense refers to.
  */
-export declare function describeOperations(key: PointGroupKey, options?: SettingOptions): readonly OperationDescription[];
+export declare function describeOperations(key: MagneticPointGroupKey, options?: SettingOptions): readonly OperationDescription[];
 /**
  * The positions of the full Hermann–Mauguin symbol in the requested convention and setting, each
  * with its symmetry directions (ITA Table 2.1.3.1) and the symmetry elements along them. All
@@ -71,4 +78,4 @@ export declare function describeOperations(key: PointGroupKey, options?: Setting
  * in both conventions; in the Birss convention an axis of `describeOperations` may be reversed, so
  * match it to a direction by |dot| = 1, not by identity.
  */
-export declare function symmetryDirections(key: PointGroupKey, options?: SettingOptions): readonly SymmetryDirection[];
+export declare function symmetryDirections(key: MagneticPointGroupKey, options?: SettingOptions): readonly SymmetryDirection[];

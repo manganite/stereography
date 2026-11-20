@@ -16,6 +16,14 @@ export declare const MAX_GROUP_ORDER = 200;
 export declare const IDENTITY_OPERATION: Operation;
 /** A unitary operation (no time reversal). */
 export declare function operation(matrix: Mat3): Operation;
+/** Throws unless `m` is orthogonal (mᵀm = 1 within `EPSILON`): the code assumes Cartesian matrices. */
+export declare function checkOrthogonal(m: Mat3, what: string): void;
+/**
+ * Checks operations that a caller passes in: each must say whether it is combined with time
+ * reversal. Without this, an operation that lacks `timeReversal` (as the crystallographic API
+ * returns them) would be composed as if it had it in every second product.
+ */
+export declare function checkTimeReversal(operations: readonly Operation[]): void;
 /** The product a·b: first b, then a. */
 export declare function compose(a: Operation, b: Operation): Operation;
 export declare function operationsEqual(a: Operation, b: Operation): boolean;

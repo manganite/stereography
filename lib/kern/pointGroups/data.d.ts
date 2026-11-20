@@ -1,5 +1,6 @@
 /**
  * The 32 crystallographic point groups (crystal classes) as data: generators, settings and symbols.
+ * The 90 magnetic point groups built on them are in magneticData.ts.
  *
  * Generators are stored in the Birss frame (docs/conventions.md); every setting is a rotation of
  * that frame, and the ITC settings are among them. The print anchors and their tests are listed in
@@ -35,5 +36,38 @@ export interface PointGroupData {
     /** The ITC default setting (1-based). The Birss default is always setting 1. */
     readonly itcDefault: number;
 }
+export declare const ROT2_Z: Mat3;
+export declare const ROT2_X: Mat3;
+export declare const ROT2_Y: Mat3;
+export declare const ROT4_Z: Mat3;
+export declare const ROT3_Z: Mat3;
+export declare const ROT6_Z: Mat3;
+export declare const ROT4_X: Mat3;
+export declare const ROTINV4_Z: Mat3;
+export declare const ROTINV3_Z: Mat3;
+export declare const ROTINV6_Z: Mat3;
+export declare const MIRROR_X: Mat3;
+export declare const MIRROR_Y: Mat3;
+export declare const MIRROR_Z: Mat3;
+/** Mirror with normal [1-10] (swaps x and y). */
+export declare const MIRROR_XY: Mat3;
+/** Threefold rotation about [111], mapping the vector x to y, y to z, z to x. */
+export declare const ROT3_111: Mat3;
+export declare const SAME: Mat3;
+/** Monoclinic, c-unique (stored) → b-unique: z → y. Proper rotation. */
+export declare const MONOCLINIC_B: Mat3;
+/** Orthorhombic: the axis along z (stored) moves to x (cyclic x → y → z → x). */
+export declare const ORTHO_TO_A: Mat3;
+/** Orthorhombic: the axis along z (stored) moves to y (cyclic x → z → y → x). */
+export declare const ORTHO_TO_B: Mat3;
+/**
+ * Orthorhombic, for a group whose three elements all differ: the frames above after exchanging the
+ * other two axes (a rotation by 90° about the stored z axis), so the same axis stays unique.
+ */
+export declare const ORTHO_SWAP: Mat3;
+export declare const ORTHO_TO_A_SWAP: Mat3;
+export declare const ORTHO_TO_B_SWAP: Mat3;
+export declare const ROT45_Z: Mat3;
+export declare const ROT30_Z: Mat3;
 export declare const POINT_GROUP_DATA: readonly PointGroupData[];
 export {};

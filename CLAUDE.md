@@ -210,7 +210,8 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   kanonische Vorzeichen der App (`canonicalDir`). Die Blickrichtungen bestimmt die App noch selbst
   (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [11̄1] statt [11̄1̄] in symcrys,
   und den Bezeichnungen der App); Umstellung auf `symmetryDirections` von symcrys offen (#111). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
-  unabhängige Referenz.
+  unabhängige Referenz, ausgewertet mit der früheren Analyse der App (`analyseReferenz`); `tests/formen-2006.mjs` hält die
+  frühere Übertragung der Formen (ITA 2006) als Referenz für den Katalog.
 - **Formen, Bahnen und verzerrte Kristalle aus symcrys** (symcrys 0.7.0, symcrys#24 Punkte 2 und 3; Entscheidungen
   Thomas, 21.11.2026, in der `CLAUDE.md` von symcrys): Die Kristallographie des Formenkatalogs (Wyckoff-Lage,
   Flächensymmetrie, Formtyp, Indexmuster, Flächenzahl, Eigensymmetrie; ITA 2016 Tab. 3.2.3.2 und 3.2.1.3) kommt aus
@@ -220,10 +221,13 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   Restsymmetrie eines verzerrten Kristalls die Flächen, zu denen eine ihrer Operationen führt, `hklOrbit`), zusammenfallende
   Pole (`orbitOf`, `distinctPoles` in `js/sitesym.js`), die Bestimmung der Gruppe beliebiger Operationen (`pointGroupOf`;
   `identifyGroup` nennt die erste Punktgruppe der App mit dem Schlüssel, also Aufstellung A) und die Elemente beliebiger
-  Operationen (`describeOperationsOf`) ebenso. In der App bleibt, was Darstellung ist: in `analyzeGroup` das Achsensymbol
+  Operationen (`describeOperationsOf`) ebenso. In der App bleibt die Darstellung: in `analyzeGroup` das Achsensymbol
   der Zeichnung je Richtung und das kanonische Vorzeichen (`canonicalDir`), `det` und „Bild und Spiegelbild fallen
-  zusammen“ (`mixed`) in `distinctPoles`, die Benennung einer Form über Flächenzahl, Eigensymmetrie und offen/geschlossen
-  (`auxFormName`), und die Geometrie der Kristalle (Gitter, Polyeder, Zonen, Tracht; symcrys#24 Punkt 4, offen).
+  zusammen“ (`mixed`) in `distinctPoles`, die kleinste ganzzahlige Richtung der Hauptachse (`ganzeRichtung`). Noch in der
+  App gerechnet: die Restsymmetrie unter der verzerrten Metrik (`preservesMetric`) mit der Geometrie der Kristalle
+  (Gitter, Polyeder, Zonen, Tracht; symcrys#24 Punkt 4, offen) und die Benennung einer beliebigen Flächenmenge, auch
+  einer Grenzform, über ihren Stabilisator in der Holoedrie, Flächenzahl, Eigensymmetrie und offen/geschlossen
+  (`auxFormName`; symcrys gibt die Formen je Punktgruppe, nicht den Typ einer gegebenen Flächenmenge).
   `analyzeGroup` liest `polar` wie `piezo` erst beim Lesen (die Bestimmung der Gruppe kostet bei m3̄m rund 1,5 ms).
 - **Gittersymmetrie aus symcrys** (symcrys 0.6.0): die Gittersymmetrie eines Systems (Kandidaten der Restsymmetrie einer Form, `auxFormName`) kommt seit symcrys 0.6.0 aus `holohedry(crystalFamily(system))` über `kernGittersymmetrie` in `js/kern.js`, trigonal also `6/mmm`; nur die Kennung `2/mb` für das monokline Gitter setzt die App selbst.
 - **Piezoelektrisch aus dem Tensormodul von symcrys** (ab symcrys 0.4.0, crystallography-common#74 Punkt 7; seit 0.6.0

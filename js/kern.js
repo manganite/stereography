@@ -267,12 +267,12 @@ export function kernPolbahn(ops, p) {
 
 /**
  * Punktgruppe beliebiger kartesischer Operationen (z. B. eines verzerrten Kristalls) aus symcrys: ihr Schlüssel oder null.
- * Die Toleranz deckt die Rundung der Gitterparameter ab.
+ * Toleranz die Vorgabe von symcrys (10⁻⁶); die Operationen aus dem Gitter sind auf Rundungsfehler genau orthogonal.
  * @param {readonly Mat3[]} ops
  * @returns {PointGroupKey | null}
  */
 export function kernGruppeVon(ops) {
-  return pointGroupOf(ops.map((m) => ({ matrix: m })), { tolerance: 1e-6 })?.key ?? null;
+  return pointGroupOf(ops.map((m) => ({ matrix: m })))?.key ?? null;
 }
 
 /**

@@ -1,16 +1,17 @@
 // Rechenkern symcrys (lib/kern/, js/kern.js) gegen eine unabhängige Herleitung: die Erzeugenden, mit denen die App bis
-// v1.20 ihre Punktgruppen erzeugte, hier als Referenz, abgeschlossen und mit analyzeGroup (js/pointgroups.js)
-// ausgewertet. Für alle 40 Einträge müssen symcrys bzw. buildPointGroup dieselben Operationen (als Menge),
+// v1.20 ihre Punktgruppen erzeugte, hier als Referenz, abgeschlossen und mit der Analyse ausgewertet, die die App bis
+// symcrys 0.6.0 selbst rechnete (analyseReferenz: Drehachsen und Ordnungen aus den Matrizen; seither kommt analyzeGroup
+// aus symcrys und wird hier ebenfalls gegen die Referenz geprüft). Für alle 40 Einträge müssen symcrys bzw. buildPointGroup dieselben Operationen (als Menge),
 // Eigenschaften, Achsen, Spiegelebenen und Blickrichtungen ergeben (crystallography-common#99). Die Reihenfolge der
 // Operationen folgt in symcrys ITA (Thomas, 18.11.2026) und ist nicht Teil des Vergleichs.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  HEX_A, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, latticeToCart, symmetryDirections,
+  HEX_A, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, canonicalDir, latticeToCart, symmetryDirections,
 } from '../js/pointgroups.js';
 import { drehungHexagonal, kernAufstellung, kernElemente, kernGittersymmetrie, kernOperationen } from '../js/kern.js';
 import { SYSTEM_OF } from '../js/polyhedra.js';
-import { I3, add, inversion, matEq, mirror, mul, normalize, rot, rotInv, rotation, scale, transpose } from '../js/linalg.js';
+import { I3, add, det, inversion, matEq, mirror, mul, neg, normalize, rot, rotInv, rotation, scale, trace, transpose } from '../js/linalg.js';
 
 /** @import { Vec3, Mat3 } from '../lib/common/js/typen.js' */
 
@@ -45,6 +46,91 @@ function erzeuge(gens) {
     neu = next;
   }
   return els;
+}
+
+/** Ordnung einer eigentlichen Drehung aus der Spur (bis symcrys 0.6.0 in js/pointgroups.js). @param {Mat3} R */
+function drehordnung(R) {
+  const ang = Math.acos(Math.max(-1, Math.min(1, (trace(R) - 1) / 2)));
+  return ang < 1e-6 ? 1 : Math.round((2 * Math.PI) / ang);
+}
+/** Drehachse einer eigentlichen Drehung (Vorzeichen beliebig; bis symcrys 0.6.0 in js/pointgroups.js). @param {Mat3} R @returns {Vec3} */
+function drehachse(R) {
+  if (drehordnung(R) === 2) {
+    // R + I hat Rang 1, Spalten ∥ Achse
+    const M = [0, 1, 2].map((i) => [0, 1, 2].map((j) => R[i][j] + (i === j ? 1 : 0)));
+    /** @type {Vec3} */
+    let best = [0, 0, 0];
+    for (let j = 0; j < 3; j++) {
+      /** @type {Vec3} */
+      const col = [M[0][j], M[1][j], M[2][j]];
+      if (Math.hypot(...col) > Math.hypot(...best)) best = col;
+    }
+    return normalize(best);
+  }
+  return normalize([R[2][1] - R[1][2], R[0][2] - R[2][0], R[1][0] - R[0][1]]);
+}
+/**
+ * Unabhängige Referenz für die Analyse einer Gruppe (bis symcrys 0.6.0 analyzeGroup in js/pointgroups.js): zentrosymmetrisch,
+ * chiral, polar (Mittel der Matrizen ≠ 0), Achsen mit Symbol und Spiegelnormalen aus den Matrizen.
+ * @param {Mat3[]} ops
+ */
+function analyseReferenz(ops) {
+  const centro = ops.some((m) => matEq(m, neg(I3())));
+  const chiral = ops.every((m) => det(m) > 0);
+  const P = [0, 1, 2].map((i) => [0, 1, 2].map((j) => ops.reduce((x, m) => x + m[i][j], 0) / ops.length));
+  const polar = P.some((r) => r.some((x) => Math.abs(x) > 1e-6));
+  /** @type {{ dir: Vec3, rot: Set<number>, rotinv: Set<number>, mirror: boolean }[]} */
+  const richtungen = [];
+  /** @param {Vec3} d */
+  const finde = (d) => {
+    const c = canonicalDir(d);
+    let e = richtungen.find((a) => Math.abs(Math.abs(a.dir[0] * c[0] + a.dir[1] * c[1] + a.dir[2] * c[2]) - 1) < 1e-6);
+    if (!e) { e = { dir: c, rot: new Set([1]), rotinv: new Set(), mirror: false }; richtungen.push(e); }
+    return e;
+  };
+  for (const m of ops) {
+    if (det(m) > 0) {
+      const n = drehordnung(m);
+      if (n > 1) finde(drehachse(m)).rot.add(n);
+    } else {
+      const n = drehordnung(neg(m));
+      if (n === 1) continue; // Inversion
+      const e = finde(drehachse(neg(m)));
+      if (n === 2) e.mirror = true; else e.rotinv.add(n);
+    }
+  }
+  /** @type {{ dir: Vec3, symbol: string, centre: boolean, mirrorPerp: boolean }[]} */
+  const axes = [];
+  /** @type {Vec3[]} */
+  const mirrors = [];
+  for (const e of richtungen) {
+    if (e.mirror) mirrors.push(e.dir);
+    const maxRot = Math.max(...e.rot);
+    const symbol = maxRot === 6 || maxRot === 4 ? String(maxRot) : e.rotinv.has(4) ? '-4' : e.rotinv.has(6) ? '-6' : e.rotinv.has(3) ? '-3' : maxRot > 1 ? String(maxRot) : null;
+    if (symbol) axes.push({ dir: e.dir, symbol, centre: centro && !symbol.startsWith('-'), mirrorPerp: e.mirror });
+  }
+  // mirrorCls setzt symmetryDirections() beim Auswerten der Blickrichtungen
+  return { ops, order: ops.length, centro, chiral, polar, axes, mirrors, mirrorCls: /** @type {number[] | undefined} */ (undefined) };
+}
+
+/**
+ * analyzeGroup (aus symcrys) gibt dasselbe wie die Referenz: Achsen mit kanonischem Vorzeichen und in derselben
+ * Reihenfolge, Spiegelnormalen, zentrosymmetrisch, chiral, polar.
+ * @param {Mat3[]} ops @param {string} text
+ */
+function wieReferenz(ops, text) {
+  const ref = analyseReferenz(ops);
+  const neu = analyzeGroup(ops);
+  /** @param {Vec3} a @param {Vec3} b */
+  const gleich = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
+  assert.deepEqual([neu.order, neu.centro, neu.chiral, neu.polar], [ref.order, ref.centro, ref.chiral, ref.polar], `${text}: Eigenschaften`);
+  assert.equal(neu.axes.length, ref.axes.length, `${text}: Zahl der Achsen`);
+  neu.axes.forEach((a, i) => {
+    const r = ref.axes[i];
+    assert.ok(gleich(a.dir, r.dir) && a.symbol === r.symbol && a.centre === r.centre && a.mirrorPerp === r.mirrorPerp, `${text}: Achse ${i}`);
+  });
+  assert.equal(neu.mirrors.length, ref.mirrors.length, `${text}: Zahl der Spiegelebenen`);
+  neu.mirrors.forEach((m, i) => assert.ok(gleich(m, ref.mirrors[i]), `${text}: Spiegelebene ${i}`));
 }
 
 test('die Referenz deckt alle 40 Einträge ab', () => {
@@ -89,7 +175,7 @@ function piezoReferenz(ops) {
 
 for (const g of POINT_GROUPS) {
   test(`${g.id}: symcrys gibt dieselben Operationen, Eigenschaften und Elemente wie die Referenz`, () => {
-    const alt = { ...g, ...analyzeGroup(erzeuge(ERZEUGENDE[g.id])) };
+    const alt = { ...g, ...analyseReferenz(erzeuge(ERZEUGENDE[g.id])) };
     const neu = kernElemente(g.id);
     const app = buildPointGroup(g.id);
     assert.ok(gleicheMenge(alt.ops, kernOperationen(g.id), gleicheMatrix), 'Operationen');
@@ -103,14 +189,18 @@ for (const g of POINT_GROUPS) {
     assert.ok(gleicheMenge(alt.ops, app.ops, gleicheMatrix), 'buildPointGroup: Operationen');
     // Die Identität steht zuerst (Ausgangspol: scene.js `gen`, view3d.js, hklOrbit in polyhedra.js)
     assert.ok(gleicheMatrix(app.ops[0], I3()), 'Identität zuerst');
-    assert.deepEqual([app.centro, app.chiral, app.polar, app.piezo], [alt.centro, alt.chiral, alt.polar, alt.piezo]);
+    assert.deepEqual([app.centro, app.chiral, app.polar, app.piezo], [alt.centro, alt.chiral, alt.polar, piezoReferenz(alt.ops)]);
     // piezoelektrisch aus symcrys (allowsProperty bzw. allowsPropertyOf) gegen die Charakterformel
     assert.equal(neu.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (allowsProperty)');
-    assert.equal(alt.piezo, piezoReferenz(alt.ops), 'piezoelektrisch (analyzeGroup, allowsPropertyOf)');
+    assert.equal(analyzeGroup(alt.ops).piezo, piezoReferenz(alt.ops), 'piezoelektrisch (analyzeGroup, allowsPropertyOf)');
+    // analyzeGroup (Elemente aus symcrys describeOperationsOf, polar aus pointGroupOf) wie die Referenz, auch gedreht
+    wieReferenz(alt.ops, 'analyzeGroup');
+    wieReferenz(app.ops, 'analyzeGroup (Operationen aus symcrys)');
     // auch in einem beliebig gedrehten Rahmen (wie die Operationen in Bildschirmkoordinaten, polyhedra.js)
     const R = rotation([1, 2, 3], (37 * Math.PI) / 180);
     const gedreht = alt.ops.map((m) => mul(mul(R, m), transpose(R)));
     assert.equal(analyzeGroup(gedreht).piezo, piezoReferenz(alt.ops), 'piezoelektrisch (gedrehter Rahmen)');
+    wieReferenz(gedreht, 'analyzeGroup (gedrehter Rahmen)');
     /** @param {Vec3} a @param {Vec3} b */
     const gleich = (a, b) => a.every((x, i) => Math.abs(x - b[i]) < 1e-9);
     assert.ok(gleicheMenge(alt.axes, app.axes, (x, y) => gleich(x.dir, y.dir) && x.symbol === y.symbol && x.centre === y.centre && x.mirrorPerp === y.mirrorPerp), 'buildPointGroup: Achsen');

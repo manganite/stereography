@@ -1,5 +1,6 @@
 // Lage eines Pols: Lagesymmetrie, Multiplizität und Wyckoff-Lage (aus symcrys, nach ITA Vol. A, 2016, Tab. 3.2.3.2),
-// geprüft gegen den Formkatalog der App (ITA 2006, Tab. 10.1.2.2) und Angaben nach ITA; Einrasten.
+// geprüft gegen den Formenkatalog (Lagen aus symcrys, ITA 2016 Tab. 3.2.3.2; dieser gegen die frühere Übertragung ITA 2006
+// Tab. 10.1.2.2 in tests/forms.test.mjs) mit den Vertretern der App und Angaben nach ITA; Einrasten.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { POINT_GROUPS, buildPointGroup, groupById } from '../js/pointgroups.js';
@@ -61,7 +62,7 @@ test('Jeder Pol gehört zu genau einer Wyckoff-Lage, jede Lage wird erreicht', (
   }
 });
 
-test('Katalog: Pol jeder Form ergibt deren Wyckoff-Lage und Flächensymmetrie (ITA Tab. 10.1.2.2)', () => {
+test('Katalog: der Pol des Vertreters jeder Form ergibt deren Wyckoff-Lage und Flächensymmetrie', () => {
   let n = 0;
   for (const e of CATALOG) {
     const info = buildPointGroup(e.pg);

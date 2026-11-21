@@ -134,6 +134,36 @@ test('alle Formen in allen Streckrichtungen ergeben geschlossene Körper', () =>
   }
 });
 
+test('Hauptachse der Restgruppe: kleinste ganzzahlige Gitterrichtung entlang der Achse', () => {
+  /** @param {number} a @param {number} b @returns {number} */
+  const ggt = (a, b) => (b ? ggt(b, a % b) : Math.abs(a));
+  let n = 0;
+  for (const sys of ['tetragonal', 'trigonal', 'hexagonal', 'kubisch']) {
+    for (const e of CATALOG.filter((x) => SYSTEM_OF[x.pg] === sys && x.type === CATALOG.find((y) => y.pg === x.pg)?.type)) {
+      for (const d of STRETCH_DIRS[sys]) {
+        // Faktoren, bei denen die frühere Rundung (durch die grösste Komponente teilen) [110] oder [010] statt [120] gab
+        for (const k of [50, 59, 67, 93, 96, 102, 120, 131, 132, 150, 200]) {
+          const C = build(e.id, d.uvw, k / 100);
+          if (!C.reducedAxis) continue;
+          const [u, v, w] = C.reducedAxis.uvw;
+          assert.equal(ggt(ggt(u, v), w), 1, `${e.id} ${d.id} ${k / 100}: [${u}${v}${w}] nicht gekürzt`);
+          // parallel zur Achse: A·[uvw] ∥ Achsenrichtung des Kristalls (Gitter A, kartesisch vor der Ausrichtung)
+          const r = [0, 1, 2].map((i) => C.A[i][0] * u + C.A[i][1] * v + C.A[i][2] * w);
+          const achse = /** @type {NonNullable<typeof C.reduced>} */ (C.reduced).info.axes.find((a) => a.symbol === C.reducedAxis?.symbol);
+          const t = /** @type {Vec3} */ (/** @type {{ dir: Vec3 }} */ (achse).dir);
+          const c = [r[1] * t[2] - r[2] * t[1], r[2] * t[0] - r[0] * t[2], r[0] * t[1] - r[1] * t[0]];
+          assert.ok(Math.hypot(...c) < 1e-6 * Math.hypot(...r), `${e.id} ${d.id} ${k / 100}: [${u}${v}${w}] nicht ∥ Achse`);
+          n++;
+        }
+      }
+    }
+  }
+  assert.ok(n > 300, `${n} Fälle`);
+  // die verbleibende Zweifachachse steht senkrecht auf der Streckrichtung a bzw. liegt entlang [210] (vorher [110] oder [010])
+  assert.deepEqual(build('312:c19', [1, 0, 0], 2).reducedAxis?.uvw, [1, 2, 0]);
+  assert.deepEqual(build('312:c19', [2, 1, 0], 0.59).reducedAxis?.uvw, [2, 1, 0]);
+});
+
 test('Link-Adresse: str=Richtung,Faktor hin und zurück; ungültige Werte werden verworfen oder begrenzt', () => {
   const D = createState();
   const a = createState();

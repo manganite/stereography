@@ -6,6 +6,7 @@ import { FORM_TYPES, PRISMEN, EIG_SCHREIBWEISE } from '../js/formen.js';
 import { POINT_GROUPS, buildPointGroup } from '../js/pointgroups.js';
 import { buildCrystal, hklOrbit, LATTICE_DEFAULTS, SYSTEM_OF, habitOf } from '../js/polyhedra.js';
 import { KERN_FORMTYPEN } from '../js/kern.js';
+import { FORMEN_2006, FORMTYPEN_2006 } from './formen-2006.mjs';
 import { createState, formListed } from '../js/scene.js';
 
 /** @import { Vec3, Richtung } from '../lib/common/js/typen.js' */
@@ -47,7 +48,18 @@ test('Aufstellung B: dieselben Wyckoff-Lagen, Formtypen und Flächenzahlen wie A
   }
 });
 
-test('Flächenzahl jeder Form = Multiplizität nach ITA', () => {
+test('Formenkatalog aus symcrys (ITA 2016) = die frühere Übertragung der App (ITA 2006, Tab. 10.1.2.2 und 10.1.2.3)', () => {
+  assert.deepEqual(
+    CATALOG.map((e) => [e.pg, e.wy, e.fs, e.type, e.sym, e.mult]),
+    FORMEN_2006.flatMap(([pg, rows]) => rows.map((r) => [pg, ...r])),
+  );
+  assert.deepEqual(
+    Object.entries(KERN_FORMTYPEN).map(([t, f]) => [Number(t), f.eig, f.faces]),
+    Object.entries(FORMTYPEN_2006).map(([t, [eig, n]]) => [Number(t), eig, n]),
+  );
+});
+
+test('Flächenzahl jeder Form = Zahl der Flächen in der Bahn ihres Vertreters', () => {
   for (const e of CATALOG) {
     assert.equal(hklOrbit(e.pg, e.hkl).length, e.mult, e.id);
   }

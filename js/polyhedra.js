@@ -542,9 +542,7 @@ export function buildCrystal(params) {
     const maxO = Math.max(0, ...axs.map((a) => order[a.symbol]));
     const top = axs.filter((a) => order[a.symbol] === maxO);
     if (top.length === 1) {
-      const u = mulVec(Ai, top[0].dir);
-      const m = Math.max(...u.map(Math.abs));
-      reducedAxis = { symbol: top[0].symbol, uvw: /** @type {Richtung} */ (u.map((x) => Math.round(x / m))) };
+      reducedAxis = { symbol: top[0].symbol, uvw: ganzeRichtung(mulVec(Ai, top[0].dir)) };
     }
   }
 
@@ -631,6 +629,22 @@ export function auxFormName(groupId, hkls) {
   const cands = Object.entries(FORM_TYPES).filter(([t]) => KERN_FORMTYPEN[Number(t)].eig === eig && KERN_FORMTYPEN[Number(t)].faces === n && PRISM_TYPES.has(Number(t)) === open);
   if (cands.length === 1) return { type: Number(cands[0][0]), name: cands[0][1].name };
   return null;
+}
+
+/**
+ * Kleinste ganzzahlige Gitterrichtung parallel zu u (Gitterkoordinaten einer Symmetrieachse, also ein Vielfaches einer
+ * Gitterrichtung), Vorzeichen wie u. Früher wurde durch die grösste Komponente geteilt und gerundet; bei [120] hing
+ * round(0,5) dann vom Rundungsfehler ab ([110] oder [010] statt [120]).
+ * @param {Vec3} u @returns {Richtung}
+ */
+function ganzeRichtung(u) {
+  const m = Math.min(...u.map(Math.abs).filter((x) => x > 1e-9));
+  const v = u.map((x) => x / m);
+  for (let t = 1; t <= 12; t++) {
+    if (v.every((x) => Math.abs(x * t - Math.round(x * t)) < 1e-6)) return reduceInt(/** @type {Richtung} */ (v.map((x) => Math.round(x * t))));
+  }
+  const g = Math.max(...u.map(Math.abs));
+  return /** @type {Richtung} */ (u.map((x) => Math.round(x / g) + 0));
 }
 
 /** @param {number} a @param {number} b @returns {number} */

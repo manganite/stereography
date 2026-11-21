@@ -4,10 +4,11 @@
  */
 import { type Vec3 } from './linalg.js';
 import type { Operation } from './operations.js';
+/** Options of `siteSymmetry` and `wyckoffPositionOf`. */
 export interface SiteSymmetryOptions {
     /**
      * A direction counts as fixed by an operation if the operation moves its unit vector by less
-     * than this (Euclidean distance). Default `EPSILON` (10⁻⁶); a caller whose directions carry
+     * than this (Euclidean distance). Default 10⁻⁶; a caller whose directions carry
      * rounding errors (e.g. read from a rounded link) passes a larger value.
      */
     readonly tolerance?: number;

@@ -1,5 +1,5 @@
-// Punktgruppen, Lagesymmetrie und Wyckoff-Lagen aus dem Rechenkern symcrys (lib/kern/, crystallography-common#99,
-// symcrys#24). Hier steht nur, was die App
+// Punktgruppen, Lagesymmetrie, Wyckoff-Lagen, Kristallformen, Bahnen und die Bestimmung der Gruppe beliebiger
+// Operationen aus dem Rechenkern symcrys (lib/kern/, crystallography-common#99, symcrys#24). Hier steht nur, was die App
 // daraus macht: die Zuordnung ihrer Kennungen (Link `g=`) zu Gruppe und Aufstellung in symcrys, die Umrechnung in
 // den kartesischen Rahmen der App und die Namen der Symmetrieelemente für die Zeichnung.
 //
@@ -8,11 +8,12 @@
 // zwischen beiden folgt aus den beiden Gitterbasen (Thomas, 18.11.2026). Sonst sind die Rahmen gleich.
 
 import {
-  allowsProperty, allowsPropertyOf, crystalFamily, findPointGroup, holohedry, latticeBasis, operations, pointGroup, settings,
-  siteSymmetry, symbol, symmetryDirections, wyckoffPositionOf, wyckoffPositions,
+  CRYSTAL_FORM_TYPES, allowsProperty, allowsPropertyOf, crystalFamily, crystalForms, describeOperationsOf, findPointGroup,
+  holohedry, latticeBasis, latticeOperations, operations, orbit, orbitOf, pointGroup, pointGroupOf, settings, siteSymmetry,
+  symbol, symmetryDirections, wyckoffPositionOf, wyckoffPositions,
 } from '../lib/kern/index.js';
 
-/** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
+/** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
 /** @import { PointGroupKey } from '../lib/kern/index.js' */
 
 const S3 = Math.sqrt(3);
@@ -212,4 +213,83 @@ export function kernWyckoffLageVon(id, p, toleranz) {
   const { key, setting } = kernAufstellung(id);
   const w = wyckoffPositionOf(key, vektorInKern(rahmen(key), p), { setting, tolerance: toleranz });
   return { wy: w.letter, fs: w.siteSymmetry };
+}
+
+/**
+ * Grundformen einer Punktgruppe der App aus symcrys (ITA 2016, Tab. 3.2.3.2), in der Reihenfolge von ITA: je Wyckoff-Lage
+ * die Grundformen (Grenzformen nimmt der Katalog nicht auf). sym: Indexmuster in der Schreibweise der App (`hhl (h<l)`,
+ * `h0-hl`), type: Nummer der Form (ITA Tab. 3.2.1.3).
+ * @param {string} id
+ * @returns {{ wy: string, fs: string, type: number, sym: string, mult: number }[]}
+ */
+export function kernGrundformen(id) {
+  const { key, setting } = kernAufstellung(id);
+  return crystalForms(key, { setting }).filter((f) => f.basic).map((f) => ({
+    wy: f.letter, fs: f.siteSymmetry, type: f.formType, mult: f.multiplicity,
+    sym: f.millerIndices.replace(/,/g, '') + (f.condition ? ` (${f.condition.replace(/\|/g, '')})` : ''),
+  }));
+}
+
+/** Flächenzahl und Eigensymmetrie der 47 Formen (ITA Tab. 3.2.1.3) aus symcrys, nach Nummer. @type {Record<number, { faces: number, eig: string }>} */
+export const KERN_FORMTYPEN = Object.fromEntries(CRYSTAL_FORM_TYPES.map((t) => [t.number, { faces: t.faces, eig: t.eigensymmetry }]));
+
+/**
+ * Ganzzahlige Operationen einer Punktgruppe der App in der Gitterbasis (Konvention ITC, Reihenfolge wie `kernOperationen`).
+ * Rahmenunabhängig: die Gitterbasen von symcrys und der App bezeichnen dasselbe Gitter.
+ * @param {string} id
+ * @returns {Mat3[]}
+ */
+export function kernGitterOperationen(id) {
+  const { key, setting } = kernAufstellung(id);
+  return latticeOperations(key, { setting }).map((o) => kopie(o.matrix));
+}
+
+/**
+ * Bahn einer Fläche (hkl) unter einer Punktgruppe der App aus symcrys, exakt: je Fläche die Indizes der Operationen
+ * (wie `kernOperationen`), die die gegebene Fläche dorthin bringen.
+ * @param {string} id @param {Normale} hkl
+ * @returns {{ hkl: Normale, ops: number[] }[]}
+ */
+export function kernFlaechenbahn(id, hkl) {
+  const { key, setting } = kernAufstellung(id);
+  return orbit(key, { hkl }, { setting }).map((f) => ({ hkl: /** @type {Normale} */ ([...f.hkl]), ops: [...f.operations] }));
+}
+
+/**
+ * Bahn einer Richtung (Pol) unter beliebigen Operationen aus symcrys: zusammenfallende Bilder zusammengefasst (Abstand
+ * unter 10⁻⁶), je Pol der Einheitsvektor und die Indizes der Operationen dorthin. Rahmenunabhängig.
+ * @param {readonly Mat3[]} ops @param {Vec3} p
+ * @returns {{ p: Vec3, ops: number[] }[]}
+ */
+export function kernPolbahn(ops, p) {
+  return orbitOf(ops.map((m) => ({ matrix: m })), p).map((q) => ({ p: /** @type {Vec3} */ ([...q.direction]), ops: [...q.operations] }));
+}
+
+/**
+ * Punktgruppe beliebiger kartesischer Operationen (z. B. eines verzerrten Kristalls) aus symcrys: ihr Schlüssel oder null.
+ * Die Toleranz deckt die Rundung der Gitterparameter ab.
+ * @param {readonly Mat3[]} ops
+ * @returns {PointGroupKey | null}
+ */
+export function kernGruppeVon(ops) {
+  return pointGroupOf(ops.map((m) => ({ matrix: m })), { tolerance: 1e-6 })?.key ?? null;
+}
+
+/**
+ * Polar unter beliebigen Operationen einer Gruppe (z. B. eines verzerrten Kristalls): das Feld `polar` der Punktgruppe, die
+ * symcrys zu ihnen bestimmt (eine Richtung bleibt unter allen Operationen erhalten).
+ * @param {readonly Mat3[]} ops
+ */
+export function kernPolar(ops) {
+  const key = kernGruppeVon(ops);
+  return key ? pointGroup(key).polar : false;
+}
+
+/**
+ * Die Operationen einer beliebigen Liste geometrisch beschrieben (symcrys `describeOperationsOf`): Art, Zähligkeit,
+ * kartesische Achse (erste von null verschiedene Komponente positiv) und Drehsinn.
+ * @param {readonly Mat3[]} ops
+ */
+export function kernBeschreibung(ops) {
+  return describeOperationsOf(ops.map((m) => ({ matrix: m })));
 }

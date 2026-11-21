@@ -5,6 +5,7 @@
  * name up here (docs/conventions.md, "Named tensor properties").
  */
 import type { TensorSpec } from './tensorForm.js';
+/** A named property: the tensor that describes it, what it is and where it is defined. */
 export interface TensorProperty {
     /** The kind of tensor whose non-zero form means that the property is allowed. */
     readonly spec: TensorSpec;
@@ -14,16 +15,25 @@ export interface TensorProperty {
     readonly source: string;
 }
 /**
- * The named tensor properties. Names are adjectives, one lower-case word each (maintainer,
- * 2026-11-19, #41). `'gyrotropic'` is optical activity.
+ * The named tensor properties. For each name, the tensor that describes the property, what it is,
+ * and its print source. `'gyrotropic'` is optical activity.
+ *
+ * @remarks Names are adjectives, one lower-case word each (maintainer, 2026-11-19, #41).
  */
 export declare const TENSOR_PROPERTIES: Readonly<{
+    /** Spontaneous polarization: a time-even polar vector. */
     pyroelectric: TensorProperty;
+    /** Ferroaxial order: a time-even axial vector. */
     ferroaxial: TensorProperty;
+    /** The piezoelectric effect (and second-harmonic generation, which has the same tensor): polar, rank 3, symmetric in j, k. */
     piezoelectric: TensorProperty;
+    /** Optical activity: the symmetric axial tensor of rank 2. */
     gyrotropic: TensorProperty;
+    /** Spontaneous magnetization: a time-odd axial vector (magnetic API only). */
     ferromagnetic: TensorProperty;
+    /** The linear magnetoelectric effect: a time-odd axial tensor of rank 2 (magnetic API only). */
     magnetoelectric: TensorProperty;
+    /** The piezomagnetic effect: a time-odd axial tensor of rank 3, symmetric in j, k (magnetic API only). */
     piezomagnetic: TensorProperty;
 }>;
 /** Name of a tensor property in `TENSOR_PROPERTIES`. */

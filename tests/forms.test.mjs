@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import { CATALOG, formEig } from '../js/forms.js';
 import { FORM_TYPES, PRISMEN, EIG_SCHREIBWEISE } from '../js/formen.js';
 import { POINT_GROUPS, buildPointGroup } from '../js/pointgroups.js';
-import { buildCrystal, latticeOps, hklOrbit, LATTICE_DEFAULTS, SYSTEM_OF, habitOf } from '../js/polyhedra.js';
+import { buildCrystal, hklOrbit, LATTICE_DEFAULTS, SYSTEM_OF, habitOf } from '../js/polyhedra.js';
+import { KERN_FORMTYPEN } from '../js/kern.js';
 import { createState, formListed } from '../js/scene.js';
 
 /** @import { Vec3, Richtung } from '../lib/common/js/typen.js' */
@@ -48,7 +49,7 @@ test('Aufstellung B: dieselben Wyckoff-Lagen, Formtypen und Flächenzahlen wie A
 
 test('Flächenzahl jeder Form = Multiplizität nach ITA', () => {
   for (const e of CATALOG) {
-    assert.equal(hklOrbit(latticeOps(e.pg), e.hkl).length, e.mult, e.id);
+    assert.equal(hklOrbit(e.pg, e.hkl).length, e.mult, e.id);
   }
 });
 
@@ -161,8 +162,8 @@ test('Prismen: genau die Formtypen mit „Prisma“ im Namen und das Pinakoid', 
   assert.deepEqual([...PRISMEN].sort((a, b) => a - b), erwartet.sort((a, b) => a - b));
 });
 
-test('Schreibweise der Eigensymmetrie: Ziel kommt in FORM_TYPES vor, Quelle nicht', () => {
-  const eig = new Set(Object.values(FORM_TYPES).map((f) => f.eig));
+test('Schreibweise der Eigensymmetrie: Ziel kommt unter den Eigensymmetrien der 47 Formen (symcrys) vor, Quelle nicht', () => {
+  const eig = new Set(Object.values(KERN_FORMTYPEN).map((f) => f.eig));
   const hm = new Set(POINT_GROUPS.map((g) => g.hm));
   for (const [von, zu] of Object.entries(EIG_SCHREIBWEISE)) {
     assert.ok(eig.has(zu), zu); assert.ok(!eig.has(von), von);

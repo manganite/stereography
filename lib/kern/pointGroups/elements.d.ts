@@ -4,7 +4,7 @@
  * the full Hermann–Mauguin symbol. Structured data only; symbols such as `3⁺ x,x,x` or `2_z` are
  * left to the applications (docs/conventions.md, "Symmetry directions and elements").
  */
-import { type Vec3 } from '../linalg.js';
+import { type Mat3, type Vec3 } from '../linalg.js';
 import { type Uvw } from '../symmetryDirections.js';
 import { type MagneticPointGroupKey, type SettingOptions } from './pointGroups.js';
 /** What a point operation is; a rotoinversion n̄ is the inversion times the rotation n (n = 3, 4, 6). */
@@ -24,6 +24,7 @@ export interface Axis {
 }
 /** One point operation described geometrically. */
 export interface OperationDescription {
+    /** What the operation is, without time reversal. */
     readonly kind: OperationKind;
     /**
      * The n of the symbol n or n̄: 1 for the identity and the inversion, 2 for a mirror (m = 2̄),
@@ -37,6 +38,7 @@ export interface OperationDescription {
      * from the tip of `axis` looking towards the origin), `'-'` if by −360°/n.
      */
     readonly sense?: '+' | '-';
+    /** True if the operation is combined with time reversal (a primed operation). */
     readonly timeReversal: boolean;
 }
 /** The symmetry elements along one symmetry direction. */
@@ -61,8 +63,13 @@ export interface SymmetryDirection {
      * magnetic group with its primes (`4'/m`).
      */
     readonly symbol?: string;
+    /** The symmetry directions of this position (ITA Table 2.1.3.1), each with the elements along it. */
     readonly directions: readonly DirectionElements[];
 }
+/** The axis of a proper rotation of order n ≥ 2 (sign arbitrary for n = 2). */
+export declare function rotationAxis(r: Mat3, n: number): Vec3;
+/** (r − rᵀ)/2 as a vector: sin θ times the unit axis for a rotation by θ. */
+export declare const axialVector: (r: Mat3) => Vec3;
 /**
  * Each operation of the point group described geometrically, in the order of `operations` for
  * the same key and options. Axes are named by the symmetry direction they lie along: in the ITC
@@ -76,6 +83,6 @@ export declare function describeOperations(key: MagneticPointGroupKey, options?:
  * positions of the crystal family are listed, also those the symbol of the class leaves out (then
  * without `symbol`); the triclinic family has none. The directions keep the sign of Table 2.1.3.1
  * in both conventions; in the Birss convention an axis of `describeOperations` may be reversed, so
- * match it to a direction by |dot| = 1, not by identity.
+ * match it to a direction whose dot product with it is ±1, not by identity.
  */
 export declare function symmetryDirections(key: MagneticPointGroupKey, options?: SettingOptions): readonly SymmetryDirection[];

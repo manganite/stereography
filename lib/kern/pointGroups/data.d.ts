@@ -11,7 +11,8 @@ import { type Operation } from '../operations.js';
 import type { CrystalSystem } from '../lattice.js';
 /** Keys of the 32 crystal classes: the ITC short symbol of the class (docs/conventions.md, "Keys"). */
 export declare const POINT_GROUP_KEYS: readonly ["1", "-1", "2", "m", "2/m", "222", "mm2", "mmm", "4", "-4", "4/m", "422", "4mm", "-42m", "4/mmm", "3", "-3", "32", "3m", "-3m", "6", "-6", "6/m", "622", "6mm", "-6m2", "6/mmm", "23", "m-3", "432", "-43m", "m-3m"];
-export type PointGroupKey = (typeof POINT_GROUP_KEYS)[number];
+/** The key of one of the 32 crystal classes (`POINT_GROUP_KEYS`). */
+export type PointGroupKey = Extract<(typeof POINT_GROUP_KEYS)[number], string>;
 /** A symbol in one convention: the short symbol of the setting and the full symbol, positions separated by spaces. */
 interface SymbolForms {
     readonly short: string;

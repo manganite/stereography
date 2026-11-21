@@ -537,7 +537,7 @@ export function pgScene(state, col, env = {}) {
   const site = siteOf(state.pg.id, info, generalPole(state));
   const p0 = site.p;
   const orb = orbit(info.ops, p0);
-  const distinct = distinctPoles(orb);
+  const distinct = distinctPoles(info.ops, p0);
   // je Stelle zählt die erste Operation (Pol wird einmal gezeichnet); Bild und Spiegelbild an derselben Stelle: mixed
   for (const u of distinct) for (const k of u.ops) Object.assign(orb[k], { rep: k === u.op, mixed: u.mixed });
   // jedes Bild der Bahn gehört zu einer Stelle in distinct

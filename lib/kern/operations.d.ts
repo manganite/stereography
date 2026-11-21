@@ -8,7 +8,9 @@ import { type Mat3 } from './linalg.js';
  * combined with time reversal if `timeReversal` is true (a primed operation).
  */
 export interface Operation {
+    /** The orthogonal Cartesian 3×3 matrix, rows first. */
     readonly matrix: Mat3;
+    /** True if the operation is combined with time reversal (a primed operation). */
     readonly timeReversal: boolean;
 }
 /** No point group has more than 48 operations (96 with time reversal); a closure beyond this is a data error. */

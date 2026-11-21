@@ -1,16 +1,17 @@
 // Lage eines Pols in einer Punktgruppe: allgemein oder speziell, Lagesymmetrie, Multiplizität und Wyckoff-Lage
 // (ITA Vol. A, 2016, Abschn. 3.2.1.2.2 und Tab. 3.2.3.2). Gerechnet wird in symcrys (js/kern.js, symcrys#24 Punkt 1);
-// hier bleibt, was die App daraus macht: die Toleranz für ihre gerundeten Link-Adressen, das Einrasten beim Ziehen,
-// die Pole aus Miller-Indizes in ihrem Rahmen und das Zusammenfassen zusammenfallender Pole.
+// hier bleibt, was die App daraus macht: die Toleranz für ihre gerundeten Link-Adressen, das Einrasten beim Ziehen und
+// die Pole aus Miller-Indizes in ihrem Rahmen. Zusammenfallende Pole einer Bahn fasst symcrys zusammen (orbitOf,
+// symcrys#24 Punkt 3).
 //
 // Ein Pol liegt speziell, wenn ausser der Identität mindestens eine Operation der Punktgruppe ihn festhält. Diese
 // Operationen bilden seine Lagesymmetrie (bei Flächen: Flächensymmetrie); die Zahl der äquivalenten Pole ist Ordnung
 // der Gruppe / Ordnung der Lagesymmetrie. Die Wyckoff-Lage fasst alle Pole zusammen, deren Lagesymmetrien zueinander
 // konjugiert sind.
 
-import { mulVec, dot, normalize, scale, sub, inverse, transpose, fromColumns } from './linalg.js';
+import { mulVec, dot, normalize, scale, sub, inverse, transpose, fromColumns, det } from './linalg.js';
 import { latticeToCart } from './pointgroups.js';
-import { kernLagesymmetrie, kernWyckoffLagen, kernWyckoffLageVon } from './kern.js';
+import { kernLagesymmetrie, kernPolbahn, kernWyckoffLagen, kernWyckoffLageVon } from './kern.js';
 
 /** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
 /** @import { Analyse } from './pointgroups.js' */
@@ -108,17 +109,13 @@ export function siteOf(groupId, info, p) {
 }
 
 /**
- * Bahn ohne Doppelte: je Stelle ein Eintrag { p, det, op (erste Operation), ops (alle Operationen
- * dorthin), mixed (Bild und Spiegelbild fallen zusammen) }. orbit: Ausgabe von pointgroups.orbit.
- * @param {{ p: Vec3, det: number, op: number }[]} orbit
+ * Bahn ohne Doppelte (symcrys `orbitOf`, Toleranz 10⁻⁶): je Stelle ein Eintrag { p, det, op (erste Operation), ops (alle
+ * Operationen dorthin), mixed (Bild und Spiegelbild fallen zusammen) }. det und mixed sind Darstellung der App.
+ * @param {readonly Mat3[]} ops @param {Vec3} p0
  */
-export function distinctPoles(orbit) {
-  /** @type {{ p: Vec3, det: number, op: number, ops: number[], mixed: boolean }[]} */
-  const out = [];
-  for (const o of orbit) {
-    const e = out.find((u) => Math.hypot(u.p[0] - o.p[0], u.p[1] - o.p[1], u.p[2] - o.p[2]) < 1e-6);
-    if (e) { e.ops.push(o.op); if (Math.sign(e.det) !== Math.sign(o.det)) e.mixed = true; }
-    else out.push({ p: o.p, det: o.det, op: o.op, ops: [o.op], mixed: false });
-  }
-  return out;
+export function distinctPoles(ops, p0) {
+  return kernPolbahn(ops, p0).map((q) => {
+    const dets = q.ops.map((k) => det(ops[k]));
+    return { p: q.p, det: dets[0], op: q.ops[0], ops: q.ops, mixed: dets.some((d) => Math.sign(d) !== Math.sign(dets[0])) };
+  });
 }

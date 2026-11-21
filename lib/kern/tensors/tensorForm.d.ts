@@ -30,9 +30,13 @@ export type TimeParity = 'i' | 'c';
 export type IntrinsicSymmetry = 'none' | 'ij' | 'jk' | 'ij_kl' | 'voigt';
 /** The kind of tensor, as in birss-app. */
 export interface TensorSpec {
+    /** Number of indices, 0 to 4. */
     readonly rank: TensorRank;
+    /** `'polar'` or `'axial'`: whether an improper operation changes the sign (factor det R). */
     readonly parity: TensorParity;
+    /** `'i'` (time-even) or `'c'` (time-odd): whether time reversal changes the sign. */
     readonly timeParity: TimeParity;
+    /** The index symmetry of the tensor. */
     readonly intrinsic: IntrinsicSymmetry;
 }
 /**
@@ -41,6 +45,7 @@ export interface TensorSpec {
  * components has length 3^rank (flat index, see the module documentation).
  */
 export interface TensorForm {
+    /** The rank of the tensor. */
     readonly rank: TensorRank;
     /**
      * A basis of the allowed tensors in reduced row echelon form: one row per free parameter, with 1
@@ -74,7 +79,7 @@ export declare function tensorForm(key: MagneticPointGroupKey, spec: TensorSpec 
  * surface normal (`siteSymmetry`) or the operations of a distorted crystal. The tensor is given by
  * its specification or by the name of a property in `TENSOR_PROPERTIES`. The operations are
  * Cartesian and orthogonal, and each says whether it is combined with time reversal
- * (`timeReversal`, true or false); a list that is not closed is closed first.
+ * (`timeReversal`, `true` or `false`); a list that is not closed is closed first.
  */
 export declare function tensorFormOf(operations: readonly Operation[], spec: TensorSpec | TensorPropertyName): TensorForm;
 /**

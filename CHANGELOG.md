@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+## [1.22.0] - 2026-11-21
+
+Ganz auf den gemeinsamen Rechenkern symcrys v0.8.0 umgestellt: Formen, Bahnen, Restsymmetrie, Blickrichtungen, Zelle, Metrik und Indizes kommen aus symcrys. Sichtbar sind nur die Vertreter einiger Blickrichtungen in der 3D-Ansicht und Startpole der Experimente „Polzahl“ in den Aufstellungen B; die Hauptachse gestreckter Kristalle und die Angabe zu „piezoelektrisch“ sind korrigiert. Link-Adressen und Speicher bleiben gültig.
+
 ### Geändert
 
 - **Rechenkern** auf symcrys v0.8.0 (symcrys#24, Punkt 4): Gitter aus den Parametern und zurück, die Prüfung dreier Winkel, die reziproke Basis, Winkel zwischen Flächen, die Restsymmetrie unter der verzerrten Metrik (vorher `preservesMetric`), teilerfremde und vier Indizes, die Zonenachse zweier Flächen und die Indizes in hexagonalen Achsen einer gestreckten kubischen Form kommen aus symcrys. Die App behält ihren Rahmen (c ∥ z, b in der yz-Ebene) und dreht die Zelle von symcrys hinein (`js/kern.js`). Unverändert: Gitter (bis 10⁻¹²), Gültigkeit der Winkel, Restgruppen, Zonen, Stereogramme, 3D-Ansichten, Beispielkristalle, Skript-Abbildungen und Quiz; in 9 von 2351 verglichenen Ausgaben liegt eine Beschriftung um 0,01 px anders (Rundung an der Grenze), im Moodle-Export beginnen einige Polygone der räumlichen Bilder an einer anderen Ecke (gleiches Bild, nicht mehr bytegleich). Die frühere Rechnung dient in `tests/geometrie-referenz.mjs` als unabhängige Referenz. Ungültige Eingaben (Nullvektor oder Bruch als Richtung, flaches Gitter) ergeben jetzt einen Fehler statt eines stillen Ergebnisses; die App erzeugt sie nicht.
@@ -470,7 +474,8 @@ Erste Version mit Versionsnummer. Sie fasst den Stand nach den Pull Requests #1 
 - **Offline-Betrieb:** Service Worker hält alle Dateien vor; die App läuft nach dem ersten Aufruf auch ohne Netz, auch als Web-App auf dem Homescreen.
 - Versionsnummer im Fuss der App, automatische Tests (GitHub Actions) und Veröffentlichung über Release-Tags.
 
-[Unreleased]: https://github.com/manganite/stereography/compare/v1.21.0...HEAD
+[Unreleased]: https://github.com/manganite/stereography/compare/v1.22.0...HEAD
+[1.22.0]: https://github.com/manganite/stereography/compare/v1.21.0...v1.22.0
 [1.21.0]: https://github.com/manganite/stereography/compare/v1.20.0...v1.21.0
 [1.20.0]: https://github.com/manganite/stereography/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/manganite/stereography/compare/v1.18.0...v1.19.0

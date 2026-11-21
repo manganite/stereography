@@ -190,8 +190,8 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   den Streckungen), `SKRIPT_ANCHORS` in `skriptlinks.js`
   (Zuordnung zur Seite, von `tests/skript.test.mjs` geprüft), die Vektoren in `pointgroups.js` und `kern.js`,
   `DEFAULT_ENTRY` in `scene.js` (Startform je System, Voreinstellung der App), die Tabellen
-  in `quiz-gen.js` (Wortlisten und Auswahl des Generators, kein Fachinhalt), `VIEW_FAMILIES` in `scene.js`
-  (Ansichten der 3D-Konstruktion; doppelt mit `symmetryDirections()`, Vereinheitlichung #111). `PRISMEN` und
+  in `quiz-gen.js` (Wortlisten und Auswahl des Generators, kein Fachinhalt), `BLICK_BEZEICHNUNG` in
+  `punktgruppen.js` (Bezeichnung der Blickrichtungen je System; die Richtungen selbst kommen aus symcrys, #111). `PRISMEN` und
   die Schreibweise der Eigensymmetrie (`EIG_SCHREIBWEISE`, vorher zweimal als `EIG_ALIAS` und `EIG_SAME`)
   stehen in `formen.js`. Weitere Texte
   in `main.js` (Kenndaten, Hinweise) gehören zu #104. `hilfe-daten.js` ist Code, keine Datendatei (Wahl beim Umsetzen,
@@ -207,9 +207,12 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   `HEX_B`). Die Reihenfolge der Operationen ist die von ITA (Konvention ITC von symcrys; Wahl Thomas): Pole sind
   danach nummeriert, Listen wie die Flächen einer Zone folgen ihr, und in spezieller Lage nennt der Winkelkasten
   unter den gleichwertigen Operationen die zur ersten passende. Achsen und Spiegelnormalen behalten das
-  kanonische Vorzeichen der App (`canonicalDir`). Die Blickrichtungen bestimmt die App noch selbst
-  (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [11̄1] statt [11̄1̄] in symcrys,
-  und den Bezeichnungen der App); Umstellung auf `symmetryDirections` von symcrys offen (#111). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
+  kanonische Vorzeichen der App (`canonicalDir`). Die Blickrichtungen (Positionen des HM-Symbols) kommen aus
+  `symmetryDirections` von symcrys (`kernBlickrichtungen` in `js/kern.js`, #111, Thomas, 21.11.2026: Vertreter und Vorzeichen
+  von symcrys, z. B. kubisch [11̄1̄] statt [11̄1], trigonal/hexagonal ⟨210⟩ als [1̄10] statt [210]); die App behält die Bezeichnungen
+  (`BLICK_BEZEICHNUNG`, ⟨210⟩ statt ITA ⟨1̄10⟩), den Rahmen und die Regel der Ansicht (`viewDirections`, `blickklassen`).
+  `blick=1–3` und die Links von plane-groups bleiben gleich (Test in `tests/views.test.mjs`). Die frühere Tabelle der App liegt in
+  `tests/blickrichtungen-referenz.mjs`. `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
   unabhängige Referenz, ausgewertet mit der früheren Analyse der App (`analyseReferenz`); `tests/formen-2006.mjs` hält die
   frühere Übertragung der Formen (ITA 2006) als Referenz für den Katalog.
 - **Formen, Bahnen und verzerrte Kristalle aus symcrys** (symcrys 0.7.0, symcrys#24 Punkte 2 und 3; Entscheidungen

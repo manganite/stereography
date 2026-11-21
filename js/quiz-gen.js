@@ -2,7 +2,7 @@
 // Ein Generator: { id, kapitel, stufen, status, params(stufe) → Parameter, make(param, stufe) → Frage }.
 // Die Frage hat denselben Aufbau wie in quiz-bank.js (ohne id, stufe, kapitel, status; die setzt quiz-core.js).
 
-import { POINT_GROUPS, groupById, buildPointGroup, symmetryDirections, elementSummary } from './pointgroups.js';
+import { POINT_GROUPS, groupById, buildPointGroup, blickklassen, elementSummary } from './pointgroups.js';
 import { hmHTML, hmLabel, hklHTML } from '../lib/common/js/format.js';
 import { CATALOG, entryById } from './forms.js';
 import { SYSTEM_OF } from './polyhedra.js';
@@ -107,7 +107,7 @@ export const GERUEST = {
   make(id) {
     const g = groupById(id);
     const info = buildPointGroup(id);
-    const cls = symmetryDirections(info).filter((c) => c.hm);
+    const cls = blickklassen(info).filter((c) => c.hm);
     const abl = geruestAblenker(id);
     // gleichmässig über die Kandidaten verteilt, damit nicht immer dieselben Ablenker kommen
     const step = Math.max(1, Math.floor(abl.length / 3));
@@ -210,8 +210,8 @@ const FS_GRUPPEN = [...new Set(SPEZIELL.map((e) => e.pg))].filter((pg) => new Se
  */
 function elementeAmPol(/** @type {Formeintrag} */ e) {
   const info = buildPointGroup(e.pg);
-  const klassen = symmetryDirections(info);
-  const mirrorCls = /** @type {number[]} */ (info.mirrorCls); // gesetzt von symmetryDirections()
+  const klassen = blickklassen(info);
+  const mirrorCls = /** @type {number[]} */ (info.mirrorCls); // gesetzt von blickklassen()
   const p = poleOfHKL(SYSTEM_OF[e.pg], e.hkl);
   /** @param {Vec3} v @param {Vec3} w */
   const nd = (v, w) => Math.abs(v[0] * w[0] + v[1] * w[1] + v[2] * w[2]) / Math.hypot(...v) / Math.hypot(...w);
@@ -260,7 +260,7 @@ export const FLAECHENSYM = {
     /** @param {Formeintrag} x */
     const abstand = (x) => Math.abs(Math.log((n / x.mult) / k));
     const abl = andere.map((x, i) => /** @type {[Formeintrag, number]} */ ([x, i])).sort((a, b) => abstand(a[0]) - abstand(b[0]) || a[1] - b[1]).slice(0, 3).map(([x]) => x);
-    const labels = symmetryDirections(buildPointGroup(e.pg)).map((c) => c.label).join(', ');
+    const labels = blickklassen(buildPointGroup(e.pg)).map((c) => c.label).join(', ');
     const sys = SYSTEM_OF[e.pg];
     /** @param {Formeintrag} x */
     const hinweis = (x) => (enthalten(e, x)

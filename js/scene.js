@@ -2,7 +2,7 @@
 // Szenen für das Stereogramm (buildSVG). Ohne Zugriff auf Bedienelemente; die App setzt die Auswahl,
 // das Skript erzeugt aus einer Link-Adresse dieselbe Abbildung wie die App.
 
-import { POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart, HEX_A, HEX_B } from './pointgroups.js';
+import { POINT_GROUPS, buildPointGroup, orbit, blickklassen, latticeToCart, HEX_A, HEX_B } from './pointgroups.js';
 import {
   buildCrystal, zoneOf, zoneByUvw, zoneKey, zonesOf, dirToFour, orientationPresets, LATTICE_DEFAULTS, SYSTEM_OF,
   STRETCH_DIRS, stretchDir, constrainLattice, latticeFromParams, stretchLattice, paramsOfLattice, gitterGueltig,
@@ -14,6 +14,8 @@ import { hklParts, hklHTML } from '../lib/common/js/format.js';
 import { normalize, mulVec } from './linalg.js';
 import { exampleById } from './examples.js';
 import { siteOf, distinctPoles } from './sitesym.js';
+import { BLICK_BEZEICHNUNG } from './punktgruppen.js';
+import { kernBlickrichtungen } from './kern.js';
 
 /** @import { Vec3, Richtung, Grad } from '../lib/common/js/typen.js' */
 /** @import { Teil } from '../lib/common/js/format.js' */
@@ -544,14 +546,14 @@ export function pgScene(state, col, env = {}) {
   /** @param {number} k */
   const repOf = (k) => (orb[k] ? /** @type {typeof distinct[number]} */ (distinct.find((u) => u.ops.includes(k))).op : k);
   const axisAlongZ = info.axes.some((a) => Math.abs(a.dir[2]) > 1 - 1e-6);
-  const classes = symmetryDirections(info);
+  const classes = blickklassen(info);
   const polesOn = pgPolesOn(state);
   const sel = state.pg.tool && polesOn ? [...new Set(state.pgSel.filter((k) => k < orb.length).map(repOf))] : [];
   const pgAngle = sel.length === 2 ? angleOf(orb[sel[0]].p, orb[sel[1]].p) : null;
   // Farbe nach Blickrichtung (Position im vollen HM-Symbol) oder einheitlich schwarz wie in ITA
   /** @param {number | undefined} k */
   const dcol = (k) => (state.view.dirColors && k != null && k >= 0 ? col.dir[k] : null);
-  const mirrorCls = /** @type {number[]} */ (info.mirrorCls); // gesetzt von symmetryDirections()
+  const mirrorCls = /** @type {number[]} */ (info.mirrorCls); // gesetzt von blickklassen()
   const zMirror = info.mirrors.findIndex((n) => Math.abs(n[2]) > 1 - 1e-6);
   const scene = {
     col, fontFamily: FONT,
@@ -623,15 +625,15 @@ export function polyScene(state, C, col, env = {}) {
   C.angle = angle;
   const fw = state.poly.frame ? C.framework : null;
   // Symmetriegerüst nach Blickrichtung färben (nicht bei erniedrigter Symmetrie: andere Gruppe, andere Aufstellung)
-  /** @type {ReturnType<typeof symmetryDirections> | null} */
+  /** @type {ReturnType<typeof blickklassen> | null} */
   let fwClasses = null;
   /** @type {number[]} */
   let fwMirrorCls = [];
   if (fw && state.view.dirColors && !C.isReduced) {
-    /** @type {{ system: string, full: string, axes: Achse[], mirrors: Vec3[], mirrorCls?: number[] }} */
-    const fwInfo = { system: C.sys, full: groupOf(C.groupId).full, axes: fw.axes, mirrors: fw.mirrors };
-    fwClasses = symmetryDirections(fwInfo, (u) => mulVec(C.O, mulVec(C.A, u)));
-    fwMirrorCls = /** @type {number[]} */ (fwInfo.mirrorCls); // gesetzt von symmetryDirections()
+    /** @type {{ id: string, system: string, axes: Achse[], mirrors: Vec3[], mirrorCls?: number[] }} */
+    const fwInfo = { id: C.groupId, system: C.sys, axes: fw.axes, mirrors: fw.mirrors };
+    fwClasses = blickklassen(fwInfo, (u) => mulVec(C.O, mulVec(C.A, u)));
+    fwMirrorCls = /** @type {number[]} */ (fwInfo.mirrorCls); // gesetzt von blickklassen()
   }
   /** @param {number | undefined} k */
   const fcol = (k) => (fwClasses && k != null && k >= 0 ? col.dir[k] : null);
@@ -662,51 +664,37 @@ export function polyScene(state, C, col, env = {}) {
 
 // ------------------------------------------------------------------ Ansichten der 3D-Konstruktion
 /**
- * Ansichten entlang der Blickrichtungen des Kristallsystems (Positionen im vollen Hermann-Mauguin-Symbol),
- * je Richtungsfamilie die Gitterrichtungen in bevorzugter Reihenfolge. Triklin hat keine Blickrichtung:
- * dort die Kristallachsen a, b, c (pos −1).
- */
-/** @type {Record<string, { pos: number, fam?: string, uvw: Vec3[] }[]>} */
-export const VIEW_FAMILIES = {
-  triklin: [{ pos: -1, uvw: [[1, 0, 0]] }, { pos: -1, uvw: [[0, 1, 0]] }, { pos: -1, uvw: [[0, 0, 1]] }],
-  monoklin: [{ pos: 0, uvw: [[1, 0, 0]] }, { pos: 1, uvw: [[0, 1, 0]] }, { pos: 2, uvw: [[0, 0, 1]] }],
-  orthorhombisch: [{ pos: 0, uvw: [[1, 0, 0]] }, { pos: 1, uvw: [[0, 1, 0]] }, { pos: 2, uvw: [[0, 0, 1]] }],
-  tetragonal: [{ pos: 0, fam: '[001]', uvw: [[0, 0, 1]] }, { pos: 1, fam: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0]] }, { pos: 2, fam: '⟨110⟩', uvw: [[1, 1, 0], [1, -1, 0]] }],
-  trigonal: [{ pos: 0, fam: '[001]', uvw: [[0, 0, 1]] }, { pos: 1, fam: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0], [1, 1, 0]] }, { pos: 2, fam: '⟨210⟩', uvw: [[2, 1, 0], [1, 2, 0], [1, -1, 0]] }],
-  kubisch: [
-    { pos: 0, fam: '⟨100⟩', uvw: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] },
-    { pos: 1, fam: '⟨111⟩', uvw: [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1]] },
-    { pos: 2, fam: '⟨110⟩', uvw: [[1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]] },
-  ],
-};
-VIEW_FAMILIES.hexagonal = VIEW_FAMILIES.trigonal;
-
-/**
- * Drei Ansichten für die 3D-Konstruktion: je Familie die Richtung parallel zur Projektionsrichtung
- * (Blick wie im Stereogramm), sonst eine senkrecht dazu (seitlicher Blick, Äquatorebene von der Kante),
- * sonst die erste. Der Betrachter sitzt auf der oberen Seite (Weltrichtung mit z ≥ 0).
- * toWorld: Gitterrichtung → Weltrichtung. Rückgabe: [{ pos, fam, uvw, dir (Einheitsvektor), along }],
+ * Drei Ansichten für die 3D-Konstruktion: je Blickrichtung der Gruppe (Position im vollen Hermann-Mauguin-Symbol, aus
+ * symcrys über `kernBlickrichtungen`) die Richtung parallel zur Projektionsrichtung (Blick wie im Stereogramm), sonst eine
+ * senkrecht dazu (seitlicher Blick, Äquatorebene von der Kante), sonst die erste ihrer Klasse. Triklin hat keine
+ * Blickrichtung: dort die Kristallachsen a, b, c (pos −1). Der Betrachter sitzt auf der oberen Seite (Weltrichtung mit z ≥ 0).
+ * toWorld: Gitterrichtung → Weltrichtung. Rückgabe: [{ pos, fam, uvw, dir (Einheitsvektor), along }], fam: Bezeichnung der
+ * Klasse (nicht bei monoklin und orthorhombisch, wo jede Position nur eine Richtung hat und die Achse selbst heisst),
  * along: 'proj' (∥ Projektionsrichtung), 'side' (⊥) oder null.
- * @param {string} system @param {(u: Richtung) => Vec3} toWorld
+ * @param {string} id Kennung der Punktgruppe @param {(u: Richtung) => Vec3} toWorld
  */
-export function viewDirections(system, toWorld) {
-  const fams = VIEW_FAMILIES[system] || VIEW_FAMILIES.triklin;
-  return fams.map((f) => {
-    const cands = f.uvw.map((u) => ({ u, w: normalize(toWorld(/** @type {Richtung} */ (u))) }));
+export function viewDirections(id, toWorld) {
+  const blick = kernBlickrichtungen(id);
+  const system = groupOf(id).system;
+  const bez = BLICK_BEZEICHNUNG[system];
+  const klassen = blick.map((k, i) => ({ pos: i, fam: system === 'monoklin' || system === 'orthorhombisch' ? null : bez[i], uvw: k.gitter }));
+  const achsen = /** @type {Richtung[]} */ ([[1, 0, 0], [0, 1, 0], [0, 0, 1]]).map((u) => ({ pos: -1, fam: null, uvw: [u] }));
+  return (klassen.length ? klassen : achsen).map((f) => {
+    const cands = f.uvw.map((u) => ({ u, w: normalize(toWorld(u)) }));
     const pick = cands.find((c) => Math.abs(c.w[2]) > 1 - 1e-6) || cands.find((c) => Math.abs(c.w[2]) < 1e-6) || cands[0];
     const flip = pick.w[2] < -1e-9;
     const uvw = /** @type {Vec3} */ (flip ? pick.u.map((x) => (x === 0 ? 0 : -x)) : pick.u);
     const dir = /** @type {Vec3} */ (flip ? pick.w.map((x) => -x) : pick.w);
     const along = Math.abs(dir[2]) > 1 - 1e-6 ? 'proj' : Math.abs(dir[2]) < 1e-6 ? 'side' : null;
-    return { pos: f.pos, fam: f.fam || null, uvw, dir, along };
+    return { pos: f.pos, fam: f.fam, uvw, dir, along };
   });
 }
 
 /** Ansichten im Punktgruppenmodus (Welt = kartesisches Kristallsystem, c ∥ z). @param {Zustand} state */
-export const pgViewDirections = (state) => viewDirections(groupOf(state.pg.id).system, latticeToCart(groupOf(state.pg.id).system));
+export const pgViewDirections = (state) => viewDirections(state.pg.id, latticeToCart(groupOf(state.pg.id).system));
 
-/** Ansichten eines Kristalls (Welt = Bildschirmsystem der Lage: O·A). @param {Pick<Kristall, 'sys' | 'O' | 'A'>} C */
-export const polyViewDirections = (C) => viewDirections(C.sys, (u) => mulVec(C.O, mulVec(C.A, u)));
+/** Ansichten eines Kristalls (Welt = Bildschirmsystem der Lage: O·A). @param {Pick<Kristall, 'groupId' | 'sys' | 'O' | 'A'>} C */
+export const polyViewDirections = (C) => viewDirections(C.groupId, (u) => mulVec(C.O, mulVec(C.A, u)));
 
 // ------------------------------------------------------------------ Abbildungen aus Link-Adressen
 // Skript und Quiz beschreiben eine Abbildung durch die Link-Adresse der App (z. B. "#m=form&…");
@@ -731,7 +719,7 @@ export function stereoForHash(hash, col, dirs = null) {
     const { info, scene } = pgScene(st, col);
     if (dirs) {
       const d = dirs;
-      const mcls = /** @type {number[]} */ (info.mirrorCls); // gesetzt von symmetryDirections()
+      const mcls = /** @type {number[]} */ (info.mirrorCls); // gesetzt von blickklassen()
       /** @param {number | undefined} k */
       const keep = (k) => d.includes(/** @type {number} */ (k) + 1);
       scene.axes = scene.axes.filter((a) => keep(a.cls));

@@ -11,7 +11,7 @@ import { ANLEITUNGEN, BEREICHE, FRAGEN, ZWECK, KONZEPTE, ERGAENZUNGEN } from '..
 import { ERZEUGTE, POLZAHL, FLAECHENZAHL, POLZAHL_PARAMS, FLAECHENZAHL_PARAMS, polzahlDaten, ordnung, lage, FZ_KANDIDATEN, gezeigteForm, ortText } from '../js/experimente.js';
 import { variante } from '../lib/common/js/ablauf.js';
 import { createState, applyHashTo, hashOf, generalPole, polyCrystal, effectiveLat } from '../js/scene.js';
-import { buildPointGroup, orbit, POINT_GROUPS, symmetryDirections } from '../js/pointgroups.js';
+import { buildPointGroup, orbit, POINT_GROUPS, blickklassen } from '../js/pointgroups.js';
 import { siteOf, distinctPoles } from '../js/sitesym.js';
 import { entryById, CATALOG, formName } from '../js/forms.js';
 import { wyckoffPositions, poleOfHKL } from '../js/sitesym.js';
@@ -155,7 +155,7 @@ test('Lernexperimente (#115): Aussagen der neuen Experimente stimmen mit der App
   assert.ok(!ops('-3').some((m) => det(m) < 0 && Math.abs(spur(m) - 1) < 1e-9), '3̄ ohne Spiegelung');
   assert.equal(pole(adresse('dreiquer', 1)).length, 12);
   // 432: 2. Blickrichtung ⟨111⟩ mit vier 3-zähligen Achsen; 1. und 3. ausgeblendet
-  { const c = symmetryDirections(buildPointGroup('432'))[1];
+  { const c = blickklassen(buildPointGroup('432'))[1];
     assert.deepEqual([c.label, c.hm, c.axes.length], ['⟨111⟩', '3', 4]);
     assert.deepEqual(zustand(adresse('symbol-432', 0)).pg.hideDirs, [0, 2]); }
   // Händigkeit: 422 nur Drehungen, 4/mmm halb

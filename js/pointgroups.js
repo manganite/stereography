@@ -1,18 +1,18 @@
 // Die 32 kristallographischen Punktgruppen (inkl. der in ITA A separat
 // aufgeführten Aufstellungen). Alle Operationen sind als 3×3-Matrizen im
 // kartesischen Kristallsystem gegeben. Operationen, Eigenschaften und
-// Symmetrieelemente kommen aus dem Rechenkern symcrys (js/kern.js); hier steht,
-// was die App daraus macht, und die Analyse beliebiger Operationen (verzerrte
-// Kristalle, analyzeGroup), die symcrys noch nicht kann (symcrys#24).
+// Symmetrieelemente kommen aus dem Rechenkern symcrys (js/kern.js), auch für beliebige
+// Operationen verzerrter Kristalle (analyzeGroup, symcrys#24 Punkt 3); hier steht,
+// was die App daraus macht.
 //
 // Konvention (ITA A): Projektionsrichtung c (z, zum Betrachter),
 // a zeigt im Stereogramm nach unten, b nach rechts.
 // Kartesisch: x ∥ a (orthogonale Systeme), y ∥ b, z ∥ c.
 // Hexagonale Achsen: b ∥ y, a schliesst mit b 120° ein.
 
-import { I3, mulVec, det, trace, matEq, neg, normalize, add, scale, cross, EPS } from './linalg.js';
+import { mulVec, det, normalize, add, scale, cross, EPS } from './linalg.js';
 import { PUNKTGRUPPEN } from './punktgruppen.js';
-import { HEX_A, HEX_B, kernElemente, kernOperationen, kernPiezoelektrisch } from './kern.js';
+import { HEX_A, HEX_B, kernBeschreibung, kernElemente, kernOperationen, kernPiezoelektrisch, kernPolar } from './kern.js';
 
 /** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
 /** Eintrag der Gruppenliste: Zeile aus js/punktgruppen.js (Bedeutung der Felder dort). @typedef {import('./punktgruppen.js').Punktgruppenzeile} Punktgruppe */
@@ -56,35 +56,6 @@ export const POINT_GROUPS = PUNKTGRUPPEN;
 /** Gruppe zur id. Alle Aufrufer übergeben ids aus der Liste (eine unbekannte ergäbe undefined). @param {string} id */
 export const groupById = (id) => /** @type {Punktgruppe} */ (POINT_GROUPS.find((g) => g.id === id));
 
-/** Ordnung einer eigentlichen Drehung aus der Spur. @param {Mat3} R */
-function rotationOrder(R) {
-  const t = trace(R);
-  const c = (t - 1) / 2;
-  const ang = Math.acos(Math.max(-1, Math.min(1, c)));
-  if (ang < 1e-6) return 1;
-  return Math.round((2 * Math.PI) / ang);
-}
-
-/** Drehachse einer eigentlichen Drehung (beliebiges Vorzeichen). @param {Mat3} R @returns {Vec3} */
-function rotationAxis(R) {
-  const n = rotationOrder(R);
-  if (n === 2) {
-    // R + I hat Rang 1, Spalten ∥ Achse
-    const M = [0, 1, 2].map((i) => [0, 1, 2].map((j) => R[i][j] + (i === j ? 1 : 0)));
-    /** @type {Vec3} */
-    let best = [0, 0, 0];
-    let bn = 0;
-    for (let j = 0; j < 3; j++) {
-      /** @type {Vec3} */
-      const col = [M[0][j], M[1][j], M[2][j]];
-      const l = Math.hypot(...col);
-      if (l > bn) { bn = l; best = col; }
-    }
-    return normalize(best);
-  }
-  return normalize([R[2][1] - R[1][2], R[0][2] - R[2][0], R[1][0] - R[0][1]]);
-}
-
 /** Kanonisches Vorzeichen einer Richtung: z > 0, sonst y > 0, sonst x > 0. @param {Vec3} d */
 export function canonicalDir(d) {
   const t = 1e-7;
@@ -97,20 +68,17 @@ export function canonicalDir(d) {
 }
 
 /**
- * Analysiert eine Liste von Operationen und bestimmt die Symmetrieelemente.
+ * Analysiert eine Liste von Operationen (eine Gruppe) und bestimmt die Symmetrieelemente: Art, Zähligkeit und Achse jeder
+ * Operation aus symcrys (`describeOperationsOf`), daraus je Richtung das Achsensymbol der Zeichnung.
  * Rückgabe: { ops, order, centro, chiral, polar, piezo, axes:[{dir, symbol, centre}], mirrors:[normal] }
  * symbol ∈ '2','3','4','6','-3','-4','-6'
  * @param {Mat3[]} ops
  * @returns {Analyse}
  */
 export function analyzeGroup(ops) {
-  const centro = ops.some((m) => matEq(m, neg(I3())));
-  const chiral = ops.every((m) => det(m) > 0);
-  // polar, falls ein Vektor existiert, der unter allen Operationen invariant ist
-  /** @type {Mat3} */
-  const P = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-  for (const m of ops) for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) P[i][j] += m[i][j] / ops.length;
-  const polar = P.some((r) => r.some((x) => Math.abs(x) > 1e-6));
+  const beschrieben = kernBeschreibung(ops);
+  const centro = beschrieben.some((d) => d.kind === 'inversion');
+  const chiral = beschrieben.every((d) => d.kind === 'identity' || d.kind === 'rotation');
 
   /** @type {{ dir: Vec3, rot: Set<number>, rotinv: Set<number>, mirror: boolean }[]} */
   const axisMap = [];
@@ -121,18 +89,12 @@ export function analyzeGroup(ops) {
     if (!e) { e = { dir: c, rot: new Set([1]), rotinv: new Set(), mirror: false }; axisMap.push(e); }
     return e;
   };
-  for (const m of ops) {
-    const d = det(m);
-    if (d > 0) {
-      const n = rotationOrder(m);
-      if (n > 1) findAxis(rotationAxis(m)).rot.add(n);
-    } else {
-      const P2 = neg(m);
-      const n = rotationOrder(P2);
-      if (n === 1) continue; // Inversion
-      const e = findAxis(rotationAxis(P2));
-      if (n === 2) e.mirror = true; else e.rotinv.add(n);
-    }
+  for (const d of beschrieben) {
+    if (!d.axis) continue; // Identität, Inversion
+    const e = findAxis(/** @type {Vec3} */ ([...d.axis.cartesian]));
+    if (d.kind === 'rotation') e.rot.add(d.order);
+    else if (d.kind === 'mirror') e.mirror = true;
+    else e.rotinv.add(d.order);
   }
   /** @type {Achse[]} */
   const axes = [];
@@ -152,12 +114,15 @@ export function analyzeGroup(ops) {
       axes.push({ dir: e.dir, symbol, centre, mirrorPerp: e.mirror });
     }
   }
-  // piezo erst beim Lesen (einmal) berechnen: allowsPropertyOf schliesst die Gruppe zuerst ab und kostet bei m3̄m rund
-  // 4 ms (symcrys 0.6.0), analyzeGroup läuft aber bei jedem buildCrystal; die Kenndaten nehmen piezo aus buildPointGroup.
+  // polar und piezo erst beim Lesen (einmal) berechnen: beide bestimmen bzw. schliessen die Gruppe in symcrys (bei m3̄m
+  // rund 1,5 bzw. 4 ms), analyzeGroup läuft aber bei jedem buildCrystal; die Kenndaten nehmen sie aus buildPointGroup.
+  /** @type {boolean | undefined} */
+  let polar;
   /** @type {boolean | undefined} */
   let piezo;
   return {
-    ops, order: ops.length, centro, chiral, polar,
+    ops, order: ops.length, centro, chiral,
+    get polar() { return (polar ??= kernPolar(ops)); },
     get piezo() { return (piezo ??= kernPiezoelektrisch(ops)); },
     axes, mirrors,
   };

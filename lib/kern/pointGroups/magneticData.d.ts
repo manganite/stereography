@@ -21,9 +21,14 @@ export declare const GREY_POINT_GROUP_KEYS: readonly GreyPointGroupKey[];
  * Table 1.5.2.3, in the order of the table (docs/conventions.md, "Keys").
  */
 export declare const BLACK_WHITE_POINT_GROUP_KEYS: readonly ["-1'", "2'", "m'", "2'/m'", "2/m'", "2'/m", "2'2'2", "m'm'2", "2'm'm", "mm'm'", "m'm'm'", "mmm'", "4'", "-4'", "4'/m", "4/m'", "4'/m'", "4'22'", "42'2'", "4'mm'", "4m'm'", "-4'2m'", "-4'm2'", "-42'm'", "4'/mmm'", "4/mm'm'", "4/m'm'm'", "4/m'mm", "4'/m'm'm", "-3'", "32'", "3m'", "-3m'", "-3'm'", "-3'm", "6'", "-6'", "6'/m'", "6/m'", "6'/m", "6'22'", "62'2'", "6'mm'", "6m'm'", "-6'2m'", "-6'm2'", "-6m'2'", "6'/m'mm'", "6/mm'm'", "6/m'm'm'", "6/m'mm", "6'/mmm'", "m'-3'", "4'32'", "-4'3m'", "m-3m'", "m'-3'm'", "m'-3'm"];
-export type BlackWhitePointGroupKey = (typeof BLACK_WHITE_POINT_GROUP_KEYS)[number];
+/** The key of one of the 58 black-and-white magnetic point groups. */
+export type BlackWhitePointGroupKey = Extract<(typeof BLACK_WHITE_POINT_GROUP_KEYS)[number], string>;
 /** Keys of all 122 magnetic point groups: the 32 crystal classes, the 32 grey groups, the 58 black-and-white groups. */
 export type MagneticPointGroupKey = PointGroupKey | GreyPointGroupKey | BlackWhitePointGroupKey;
+/**
+ * Keys of the 122 magnetic point groups: the 32 crystal classes (white groups), the 32 grey groups
+ * and the 58 black-and-white groups, in this order (docs/conventions.md, "Keys").
+ */
 export declare const MAGNETIC_POINT_GROUP_KEYS: readonly MagneticPointGroupKey[];
 /** The frame of a setting of a black-and-white group. */
 export interface MagneticFrame {

@@ -79,7 +79,7 @@ test('Lernexperimente: Beobachtungen stimmen mit der App', () => {
   /** Zahl der gezeichneten Pole (Stellen) zur Adresse. @param {string} h */
   const pole = (h) => {
     const s = zustand(h); const info = buildPointGroup(s.pg.id);
-    return distinctPoles(orbit(info.ops, siteOf(s.pg.id, info, generalPole(s)).p)).length;
+    return distinctPoles(info.ops, siteOf(s.pg.id, info, generalPole(s)).p).length;
   };
   assert.equal(buildPointGroup('4mm').ops.length, 8, '4mm hat 8 Operationen');
   assert.equal(pole(adresse('lage', 0)), 8, 'allgemeine Lage');
@@ -93,7 +93,7 @@ test('Lernexperimente: Beobachtungen stimmen mit der App', () => {
     assert.equal(z.filter((x) => x > 0).length, 2); assert.equal(z.filter((x) => x < 0).length, 2); }
   // 4/m: 8 Pole, je einer oben über einem unten (Spiegelbild an der Äquatorebene)
   { const s = zustand(adresse('drehinversion', 1)); const info = buildPointGroup(s.pg.id);
-    const p = distinctPoles(orbit(info.ops, generalPole(s))).map((o) => o.p);
+    const p = distinctPoles(info.ops, generalPole(s)).map((o) => o.p);
     assert.equal(p.length, 8);
     assert.ok(p.every((a) => p.some((b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] + b[2]) < 1e-9)), 'Paare oben/unten'); }
   assert.equal(PUNKTGRUPPEN.find((g) => g.id === zustand(adresse('laue', 0)).pg.id)?.laue, '4/m');
@@ -101,7 +101,7 @@ test('Lernexperimente: Beobachtungen stimmen mit der App', () => {
   /** @param {string} id @param {number} i */
   const eintrag = (id, i) => { const s = zustand(adresse(id, i)); return /** @type {import('../js/forms.js').Formeintrag} */ (entryById(s.poly.entryBySys[s.poly.system])); };
   /** Normalen der Form (tetragonal und kubisch: Indizes und Richtungen haben dieselben Vorzeichen). @param {import('../js/forms.js').Formeintrag} e */
-  const flaechen = (e) => distinctPoles(orbit(buildPointGroup(e.pg).ops, /** @type {import('../lib/common/js/typen.js').Vec3} */ (e.hkl.map(Number)))).map((o) => o.p);
+  const flaechen = (e) => distinctPoles(buildPointGroup(e.pg).ops, /** @type {import('../lib/common/js/typen.js').Vec3} */ (e.hkl.map(Number))).map((o) => o.p);
   const [prisma, pyramide, dipyramide] = [0, 1, 2].map((i) => eintrag('prisma', i));
   assert.deepEqual([prisma.pg, prisma.hkl.join('')], ['4/mmm', '100']);
   assert.ok(flaechen(prisma).every((p) => Math.abs(p[2]) < 1e-9), 'Prisma: alle Pole auf dem Grundkreis');
@@ -122,7 +122,7 @@ test('Lernexperimente: Beobachtungen stimmen mit der App', () => {
 
 test('Lernexperimente (#115): Aussagen der neuen Experimente stimmen mit der App', () => {
   /** Pole (Stellen und Halbkugel) zum allgemeinen Pol der Adresse. @param {string} h */
-  const pole = (h) => { const s = zustand(h); return distinctPoles(orbit(buildPointGroup(s.pg.id).ops, generalPole(s))).map((o) => o.p); };
+  const pole = (h) => { const s = zustand(h); return distinctPoles(buildPointGroup(s.pg.id).ops, generalPole(s)).map((o) => o.p); };
   /** @param {import('../lib/common/js/typen.js').Vec3[]} p */
   const obenUnten = (p) => [p.filter((v) => v[2] > 1e-9).length, p.filter((v) => v[2] < -1e-9).length];
   const ops = (/** @type {string} */ id) => buildPointGroup(id).ops;
@@ -234,7 +234,7 @@ test('Erzeugte Experimente: Polzahl stimmt für jede Gruppe und Lage mit der App
     else if (achse) assert.match(ortText(d.fs, achse), new RegExp(`${achse}-zählige`), p);
     else assert.doesNotMatch(ortText(d.fs, achse), /Achse/, p);
     assert.equal(lage(d.fs).ordnung, site.stab.length, `${p}: Ordnung der Lagesymmetrie ${d.fs}`);
-    assert.equal(distinctPoles(orbit(info.ops, site.p)).length, d.mult, `${p}: Zahl der Pole`);
+    assert.equal(distinctPoles(info.ops, site.p).length, d.mult, `${p}: Zahl der Pole`);
     assert.equal(site.stab.length * d.mult, ordnung(d.id), `${p}: Pole mal Lagesymmetrie`);
     const sch = variante(POLZAHL, p).schritte[0];
     assert.equal(sch.vermutung?.[/** @type {number} */ (sch.richtig)], String(d.mult), p);
@@ -262,7 +262,7 @@ test('Erzeugte Experimente: Flächenzahl stimmt für jede Form mit dem Katalog u
     const s = zustand(/** @type {string} */ (sch.handlung?.hash));
     const e = /** @type {import('../js/forms.js').Formeintrag} */ (entryById(s.poly.entryBySys[s.poly.system]));
     assert.equal(e.id, id, 'die Adresse zeigt diese Form');
-    const n = distinctPoles(orbit(buildPointGroup(e.pg).ops, poleOfHKL(SYSTEM_OF[e.pg], e.hkl))).length;
+    const n = distinctPoles(buildPointGroup(e.pg).ops, poleOfHKL(SYSTEM_OF[e.pg], e.hkl)).length;
     assert.equal(n, e.mult, `${id}: Bahn der Normalen`);
     assert.equal(sch.vermutung?.[/** @type {number} */ (sch.richtig)], String(e.mult), id);
     assert.equal(lage(e.fs).ordnung * e.mult, ordnung(e.pg), `${id}: Flächensymmetrie mal Flächenzahl`);
@@ -286,7 +286,7 @@ test('Lernexperimente (#115, 15.11.2026): Ordnung von 432, c/a = 1, Pol von (001
     assert.equal(info.ops.length, 24);
     // je n-zählige Achse n − 1 Drehungen, dazu die Identität
     assert.equal(info.axes.reduce((sum, a) => sum + Number(a.symbol) - 1, 1), info.ops.length);
-    assert.equal(distinctPoles(orbit(info.ops, generalPole(s))).length, 24); }
+    assert.equal(distinctPoles(info.ops, generalPole(s)).length, 24); }
   // c/a = 1: die Pole der tetragonalen Dipyramide liegen wie beim Oktaeder; 4/mmm (16) und m3̄m (48) mit je 8 Flächen,
   // Flächensymmetrie also der Ordnung 2 bzw. 6; ..m und .3m wie im Katalog
   { const [t, k] = [0, 1].map((i) => zustand(adresse('metrik', i)));

@@ -9,7 +9,8 @@ import {
   STRETCH_DIRS, stretchDir, naechsterGueltiger, GITTER_BEREICH,
 } from './polyhedra.js';
 import { CATALOG, formName, formEig } from './forms.js';
-import { FORM_TYPES, EIG_SCHREIBWEISE } from './formen.js';
+import { EIG_SCHREIBWEISE } from './formen.js';
+import { KERN_FORMTYPEN } from './kern.js';
 import { buildSVG, unproject, project, symbolIcon, C } from './stereogram.js';
 import { hmHTML, hmText, hmParts, hmLabel, hklHTML, indices, esc } from '../lib/common/js/format.js';
 import { normalize } from './linalg.js';
@@ -796,7 +797,7 @@ let explainOpen = false;
 try { explainOpen = localStorage.getItem('stereo-explain') === 'offen'; } catch { /* Speicher nicht verfügbar */ }
 /** @param {string} html */
 const explain = (html) => (html ? `<details class="explain"${explainOpen ? ' open' : ''}><summary>Erläuterungen</summary>${html}</details>` : '');
-const FORM_TYPES_EIG = Object.fromEntries(Object.entries(FORM_TYPES).map(([k, v]) => [k, v.eig]));
+const FORM_TYPES_EIG = Object.fromEntries(Object.entries(KERN_FORMTYPEN).map(([k, v]) => [k, v.eig]));
 
 /** Name eines Achsensymbols, Mehrzahl mit n > 1. @param {string} symbol @param {number} n */
 function axisName(symbol, n) {

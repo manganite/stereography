@@ -178,7 +178,9 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   https://claude.ai/artifact/3zax7EQn7ngSiQtqABDevW; Ablauf in der `CLAUDE.md` von common, Abschnitt
   „Vorschau einer App“.
 - **Daten getrennt vom Code** (6.11.2026, #75, Leitfaden Abschn. 9): Datendateien sind `punktgruppen.js`
-  (Kenndaten der Punktgruppen, Systeme), `formen.js` (Formtypen, Flächenzahlen, Prismen, Schreibweise der Eigensymmetrie, Formen je Punktgruppe),
+  (Kenndaten der Punktgruppen, Systeme), `formen.js` (deutsche Namen der 47 Formen, Prismen, Schreibweise der Eigensymmetrie,
+  je Punktgruppe Kennungen, Vertreter und Namensvariante der Formen; Flächenzahlen, Eigensymmetrie und Lagen kommen aus
+  symcrys),
   `aufstellungen.js`, `examples.js`, `quiz-bank.js`, `hilfetexte.js`, `hilfe-anleitung.js` (Texte der Hilfeseite: Zweck,
   Bedienkonzepte, Bereiche, weitere Anleitungen, Fragen; crystallography-common#114). Die Punktgruppen selbst kommen aus symcrys
   (`lib/kern/`, „Familie“); der Aufbau des Katalogs mit Kennung und Stelle (`forms.js`) ist
@@ -208,8 +210,25 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   kanonische Vorzeichen der App (`canonicalDir`). Die Blickrichtungen bestimmt die App noch selbst
   (`directionPositions`, mit eigenen Vertretern und Vorzeichen, z. B. kubisch [11̄1] statt [11̄1̄] in symcrys,
   und den Bezeichnungen der App); Umstellung auf `symmetryDirections` von symcrys offen (#111). `tests/kern.test.mjs` prüft symcrys gegen die früheren Erzeugenden der App als
-  unabhängige Referenz. In der App bleibt, was symcrys noch nicht kann: die Analyse beliebiger Operationen
-  verzerrter Kristalle (`analyzeGroup`, Bestimmung der Gruppe in `polyhedra.js`) und Formen (symcrys#24, Punkt 2).
+  unabhängige Referenz, ausgewertet mit der früheren Analyse der App (`analyseReferenz`); `tests/formen-2006.mjs` hält die
+  frühere Übertragung der Formen (ITA 2006) als Referenz für den Katalog.
+- **Formen, Bahnen und verzerrte Kristalle aus symcrys** (symcrys 0.7.0, symcrys#24 Punkte 2 und 3; Entscheidungen
+  Thomas, 21.11.2026, in der `CLAUDE.md` von symcrys): Die Kristallographie des Formenkatalogs (Wyckoff-Lage,
+  Flächensymmetrie, Formtyp, Indexmuster, Flächenzahl, Eigensymmetrie; ITA 2016 Tab. 3.2.3.2 und 3.2.1.3) kommt aus
+  `crystalForms` und `CRYSTAL_FORM_TYPES` (`kernGrundformen`, `KERN_FORMTYPEN` in `js/kern.js`); `js/forms.js` legt sie mit
+  den Zeilen aus `js/formen.js` zusammen und bricht ab, wenn symcrys eine andere Kennung `f=` oder Reihenfolge gäbe.
+  Operationen in der Gitterbasis (`latticeOperations`, rahmenunabhängig), Bahnen von Flächen (`orbit`; unter der
+  Restsymmetrie eines verzerrten Kristalls die Flächen, zu denen eine ihrer Operationen führt, `hklOrbit`), zusammenfallende
+  Pole (`orbitOf`, `distinctPoles` in `js/sitesym.js`), die Bestimmung der Gruppe beliebiger Operationen (`pointGroupOf`;
+  `identifyGroup` nennt die erste Punktgruppe der App mit dem Schlüssel, also Aufstellung A) und die Elemente beliebiger
+  Operationen (`describeOperationsOf`) ebenso. In der App bleibt die Darstellung: in `analyzeGroup` das Achsensymbol
+  der Zeichnung je Richtung und das kanonische Vorzeichen (`canonicalDir`), `det` und „Bild und Spiegelbild fallen
+  zusammen“ (`mixed`) in `distinctPoles`, die kleinste ganzzahlige Richtung der Hauptachse (`ganzeRichtung`). Noch in der
+  App gerechnet: die Restsymmetrie unter der verzerrten Metrik (`preservesMetric`) mit der Geometrie der Kristalle
+  (Gitter, Polyeder, Zonen, Tracht; symcrys#24 Punkt 4, offen) und die Benennung einer beliebigen Flächenmenge, auch
+  einer Grenzform, über ihren Stabilisator in der Holoedrie, Flächenzahl, Eigensymmetrie und offen/geschlossen
+  (`auxFormName`; symcrys gibt die Formen je Punktgruppe, nicht den Typ einer gegebenen Flächenmenge).
+  `analyzeGroup` liest `polar` wie `piezo` erst beim Lesen (die Bestimmung der Gruppe kostet bei m3̄m rund 1,5 ms).
 - **Gittersymmetrie aus symcrys** (symcrys 0.6.0): die Gittersymmetrie eines Systems (Kandidaten der Restsymmetrie einer Form, `auxFormName`) kommt seit symcrys 0.6.0 aus `holohedry(crystalFamily(system))` über `kernGittersymmetrie` in `js/kern.js`, trigonal also `6/mmm`; nur die Kennung `2/mb` für das monokline Gitter setzt die App selbst.
 - **Piezoelektrisch aus dem Tensormodul von symcrys** (ab symcrys 0.4.0, crystallography-common#74 Punkt 7; seit 0.6.0
   als benannte Eigenschaft): für die Punktgruppen des Katalogs `allowsProperty(key, 'piezoelectric')` (`kernElemente`),
@@ -225,8 +244,8 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   Angabe `ALT_SETTINGS` ist entfallen. In `js/sitesym.js` bleibt, was die App daraus macht: die Toleranz 10⁻⁴ für
   „liegt auf dem Element“ (die Link-Adresse rundet auf 4 Stellen; symcrys rechnet sonst mit 10⁻⁶), das Einrasten
   beim Ziehen (`snapPole`, Bedienung), Pole aus Miller-Indizes im Rahmen der App (`poleOfHKL`, weil `latticeBasis`
-  von symcrys im Rahmen von symcrys steht) und das Zusammenfassen zusammenfallender Pole (`distinctPoles`, bis
-  symcrys#24 Punkt 3). Die Vertreter der Lagen in symcrys sind ITA-Flächen mit h = 3, k = 2, l = 1; den Startpol der
+  von symcrys im Rahmen von symcrys steht) und aus den zusammenfallenden Polen von symcrys `det` und `mixed`
+  (`distinctPoles`, seit symcrys 0.7.0). Die Vertreter der Lagen in symcrys sind ITA-Flächen mit h = 3, k = 2, l = 1; den Startpol der
   erzeugten Experimente „Polzahl“ nimmt die App deshalb aus ihrem Formkatalog (erste Form der Lage, Darstellung).
   Für die Aufstellungen B ist das der Pol ihres eigenen Katalogeintrags statt des gedrehten Pols von Aufstellung A;
   der Startpol liegt damit an einem anderen, gleichwertigen Ort derselben Lage (Thomas, 19.11.2026, unter
@@ -277,8 +296,9 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
 
 Alle in Thomas' Zotero; Quellen je Kapitel auch in `skript.html`.
 
-- **ITA Vol. A (2016, 6. Aufl.; Zotero 7NZ258UB, Kap. 2.1 und 3.2 als PDF):** 3.2.1.2.2, S. 722 (Wyckoff-Lage über
-  konjugierte Lagesymmetrien); Tab. 3.2.3.2, S. 745–769 (Wyckoff-Lagen der Punktgruppen; Grundlage von symcrys, dort
+- **ITA Vol. A (2016, 6. Aufl.; Zotero 7NZ258UB, Kap. 2.1 und 3.2 als PDF):** 3.2.1.2.2, S. 722–723 (Wyckoff-Lage über
+  konjugierte Lagesymmetrien; Kristallform, Grund- und Grenzformen); Tab. 3.2.1.3, S. 724–726 (die 47 Formen,
+  Eigensymmetrie); Tab. 3.2.3.2, S. 745–769 (Wyckoff-Lagen und Formen der Punktgruppen; Grundlage von symcrys, dort
   übertragen).
 - **ITA Vol. A (2006):** 1.4.5 (Symbole); 2.1 (Blickrichtungen); Tab. 2.2.4.1 und 2.2.12 (Reihenfolge im
   orientierten Symbol); 10.1, Tab. 10.1.2.2 (Formen, Wyckoff-Lagen, Lagesymmetrie, Multiplizität,

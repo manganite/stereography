@@ -1,8 +1,9 @@
 // Lage eines Pols: Lagesymmetrie, Multiplizität und Wyckoff-Lage (aus symcrys, nach ITA Vol. A, 2016, Tab. 3.2.3.2),
-// geprüft gegen den Formkatalog der App (ITA 2006, Tab. 10.1.2.2) und Angaben nach ITA; Einrasten.
+// geprüft gegen den Formenkatalog (Lagen aus symcrys, ITA 2016 Tab. 3.2.3.2; dieser gegen die frühere Übertragung ITA 2006
+// Tab. 10.1.2.2 in tests/forms.test.mjs) mit den Vertretern der App und Angaben nach ITA; Einrasten.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { POINT_GROUPS, buildPointGroup, orbit, groupById } from '../js/pointgroups.js';
+import { POINT_GROUPS, buildPointGroup, groupById } from '../js/pointgroups.js';
 import { CATALOG } from '../js/forms.js';
 import { wyckoffPositions, siteOf, snapPole, distinctPoles, poleOfHKL, stabilizer } from '../js/sitesym.js';
 import { normalize, cross, scale, add } from '../js/linalg.js';
@@ -54,14 +55,14 @@ test('Jeder Pol gehört zu genau einer Wyckoff-Lage, jede Lage wird erreicht', (
       assert.ok(s.wy, `${g.id}: Pol ${p.map((x) => x.toFixed(3))} ohne Wyckoff-Lage`);
       assert.equal(s.mult, /** @type {typeof rows[number]} */ (rows.find((r) => r.wy === s.wy)).mult, `${g.id} ${s.wy}`);
       // die Bahn hat so viele verschiedene Pole wie die Multiplizität
-      assert.equal(distinctPoles(orbit(info.ops, s.p)).length, s.mult, `${g.id} ${s.wy}: Polzahl`);
+      assert.equal(distinctPoles(info.ops, s.p).length, s.mult, `${g.id} ${s.wy}: Polzahl`);
       seen.add(s.wy);
     }
     assert.deepEqual([...seen].sort(), rows.map((r) => r.wy).sort(), `${g.id}: alle Lagen erreichbar`);
   }
 });
 
-test('Katalog: Pol jeder Form ergibt deren Wyckoff-Lage und Flächensymmetrie (ITA Tab. 10.1.2.2)', () => {
+test('Katalog: der Pol des Vertreters jeder Form ergibt deren Wyckoff-Lage und Flächensymmetrie', () => {
   let n = 0;
   for (const e of CATALOG) {
     const info = buildPointGroup(e.pg);

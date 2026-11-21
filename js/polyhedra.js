@@ -1,6 +1,7 @@
 // Kristallformen als Polyeder: Gitter, Bahnen von Flächen unter der Punktgruppe,
 // Schliessen offener Formen durch Ergänzungsformen derselben Punktgruppe,
-// Restsymmetrie bei freier Verzerrung.
+// Restsymmetrie bei freier Verzerrung. Operationen im Gitter, Bahnen und die Bestimmung der Restgruppe kommen aus
+// symcrys (js/kern.js); hier steht die Geometrie des Kristalls (symcrys#24 Punkt 4, offen).
 //
 // Konventionen: Gittermatrix A (Spalten a, b, c) im kartesischen System, c ∥ z, b in der yz-Ebene
 // (ITA: Blick entlang c, a nach unten, b nach rechts). Flächennormale G = B·h mit B = A⁻ᵀ.
@@ -10,10 +11,10 @@ import {
   fromColumns, inverse, transpose, mul, mulVec, dot, cross, normalize, scale, add, sub, norm,
   solve3, vecEq, fromRows, matEq,
 } from './linalg.js';
-import { buildPointGroup, analyzeGroup, POINT_GROUPS } from './pointgroups.js';
-import { kernGittersymmetrie } from './kern.js';
+import { analyzeGroup, POINT_GROUPS } from './pointgroups.js';
+import { KERN_FORMTYPEN, kernAufstellung, kernFlaechenbahn, kernGitterOperationen, kernGittersymmetrie, kernGruppeVon } from './kern.js';
 import { entryById } from './forms.js';
-import { FORM_TYPES, FACE_COUNT, PRISMEN, EIG_SCHREIBWEISE } from './formen.js';
+import { FORM_TYPES, PRISMEN, EIG_SCHREIBWEISE } from './formen.js';
 
 /** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
 /** @import { Analyse } from './pointgroups.js' */
@@ -208,33 +209,27 @@ function idealLattice(sys) {
   return latticeFromParams({ ...LATTICE_DEFAULTS[sys], ba: 1, ca: 1, ...(sys === 'monoklin' || sys === 'triklin' ? { al: 90, be: 90, ga: 90 } : {}) });
 }
 
-/** @param {Mat3} M @returns {Mat3} */
-const roundM = (M) => /** @type {Mat3} */ (M.map((r) => r.map((x) => Math.round(x))));
-
-/** Ganzzahlige Gitterdarstellungen W der Operationen einer Punktgruppe. @param {string} groupId */
-export function latticeOps(groupId) {
-  const sys = SYSTEM_OF[groupId];
-  const A0 = idealLattice(sys);
-  const A0i = inverse(A0);
-  return buildPointGroup(groupId).ops.map((R) => roundM(mul(mul(A0i, R), A0)));
-}
+/** Ganzzahlige Gitterdarstellungen W der Operationen einer Punktgruppe (symcrys, Reihenfolge wie buildPointGroup). @param {string} groupId */
+export const latticeOps = (groupId) => kernGitterOperationen(groupId);
 
 /** @param {Vec3} h */
 const hklKey = (h) => h.join(',');
-/** Indizes unter einer Gitteroperation W: h' = W⁻ᵀ h. @param {Mat3} W @param {Normale} h @returns {Normale} */
-const transformHKL = (W, h) => /** @type {Normale} */ (mulVec(transpose(inverse(W)), h).map((x) => Math.round(x) + 0));
 
-/** Bahn eines Index-Tripels unter den Gitteroperationen. @param {Mat3[]} Ws @param {Normale} h */
-export function hklOrbit(Ws, h) {
-  /** @type {Normale[]} */
-  const out = [];
-  const seen = new Set();
-  for (const W of Ws) {
-    const h2 = transformHKL(W, h);
-    const k = hklKey(h2);
-    if (!seen.has(k)) { seen.add(k); out.push(h2); }
-  }
-  return out;
+/**
+ * Bahn eines Index-Tripels unter einer Punktgruppe der App (symcrys, exakt) oder unter einer Auswahl ihrer Operationen
+ * (Indizes wie latticeOps, z. B. die Restsymmetrie eines verzerrten Kristalls): die Flächen, zu denen eine Operation der
+ * Auswahl führt, in der Reihenfolge, in der die Auswahl sie erreicht.
+ * @param {string} groupId @param {Normale} h @param {ReadonlySet<number> | null} [auswahl]
+ * @returns {Normale[]}
+ */
+export function hklOrbit(groupId, h, auswahl = null) {
+  const bahn = kernFlaechenbahn(groupId, h);
+  if (!auswahl) return bahn.map((f) => f.hkl);
+  return bahn
+    .map((f) => ({ hkl: f.hkl, k: Math.min(...f.ops.filter((i) => auswahl.has(i))) }))
+    .filter((f) => Number.isFinite(f.k))
+    .sort((a, b) => a.k - b.k)
+    .map((f) => f.hkl);
 }
 
 /** Erhält W die Metrik M = AᵀA? @param {Mat3} W @param {Mat3} M */
@@ -297,9 +292,9 @@ const AUX_CANDIDATES = (() => {
 /**
  * Ergänzt eine offene Form (oder Kombination) durch Formen derselben Punktgruppe, bis das Polyeder
  * geschlossen ist. basePlanes: Ebenen der vorhandenen Formen. Rückgabe: [{hkls}]
- * @param {(Halbraum & { hkl: Normale })[]} basePlanes @param {Mat3[]} Ws @param {Mat3} B @param {number} tAux
+ * @param {(Halbraum & { hkl: Normale })[]} basePlanes @param {string} groupId @param {Mat3} B @param {number} tAux
  */
-function closeForm(basePlanes, Ws, B, tAux) {
+function closeForm(basePlanes, groupId, B, tAux) {
   const used = new Set(basePlanes.map((p) => hklKey(p.hkl)));
   /** @type {{ hkls: Normale[] }[]} */
   const aux = [];
@@ -322,7 +317,7 @@ function closeForm(basePlanes, Ws, B, tAux) {
     let bs = 0.2;
     for (const c of AUX_CANDIDATES) {
       if (used.has(hklKey(c))) continue;
-      const orb = hklOrbit(Ws, c);
+      const orb = hklOrbit(groupId, c);
       if (orb.some((h) => used.has(hklKey(h)))) continue;
       const nz = c.filter((x) => x).length;
       const s = Math.max(...orb.map((h) => dot(normalize(mulVec(B, h)), u))) - 0.08 * (nz - 1) - 0.01 * orb.length;
@@ -335,30 +330,20 @@ function closeForm(basePlanes, Ws, B, tAux) {
   return aux;
 }
 
-/** Erkennt die Restsymmetrie einer Gruppe unter einer (verzerrten) Metrik. @param {Mat3[]} Ws @param {Mat3} M */
-function reducedOps(Ws, M) {
-  return Ws.filter((W) => preservesMetric(W, M));
-}
+/** Schlüssel von symcrys je Punktgruppe der App (Aufstellungen derselben Punktgruppe haben denselben). */
+const KERN_KEY = new Map(POINT_GROUPS.map((g) => [g.id, kernAufstellung(g.id).key]));
 
 /**
- * Bestimmt den Punktgruppentyp (HM-Symbol) zu kartesischen Operationen.
+ * Bestimmt den Punktgruppentyp (HM-Symbol) zu kartesischen Operationen: die Punktgruppe aus symcrys (`pointGroupOf`), als
+ * erste Punktgruppe der App mit diesem Schlüssel (Aufstellung A), dazu die Elemente der Operationen (analyzeGroup).
  * @param {Mat3[]} cartOps
  * @returns {{ hm: string, id: string | null, info: Analyse }}
  */
 export function identifyGroup(cartOps) {
   const info = analyzeGroup(cartOps);
-  /** @param {Analyse} inf */
-  const sig = (inf) => {
-    /** @type {Record<string, number>} */
-    const counts = {};
-    for (const a of inf.axes) counts[a.symbol] = (counts[a.symbol] || 0) + 1;
-    return JSON.stringify([inf.order, inf.centro, inf.mirrors.length, Object.keys(counts).sort().map((k) => [k, counts[k]])]);
-  };
-  const s = sig(info);
-  for (const g of POINT_GROUPS) {
-    if (sig(buildPointGroup(g.id)) === s) return { hm: g.hm, id: g.id, info };
-  }
-  return { hm: '?', id: null, info };
+  const key = kernGruppeVon(cartOps);
+  const g = key ? POINT_GROUPS.find((x) => KERN_KEY.get(x.id) === key) : undefined;
+  return g ? { hm: g.hm, id: g.id, info } : { hm: '?', id: null, info };
 }
 
 /** Orientierungsvorgaben (Projektionsrichtungen). name: Richtung ∥ Projektionsrichtung (Anzeige unter „Projektionsrichtung“);
@@ -471,7 +456,7 @@ export function buildCrystal(params) {
   const formList = [];
   const taken = new Set();
   for (const f of combo || [{ hkl: /** @type {Formeintrag} */ (entry).hkl, t: 1, r: undefined }]) {
-    const hkls = hklOrbit(Ws, f.hkl);
+    const hkls = hklOrbit(groupId, f.hkl);
     if (hkls.some((h) => taken.has(hklKey(h)))) continue;
     hkls.forEach((h) => taken.add(hklKey(h)));
     formList.push({ hkls, rep: f.hkl, tOf: (h) => (f.t != null ? f.t : /** @type {number} */ (f.r) * norm(mulVec(B, h))) });
@@ -479,10 +464,12 @@ export function buildCrystal(params) {
   const mainHKL = formList[0].hkls;
   const tAux = params.auxDist ?? 1;
   const formPlanes = formList.flatMap((F, fi) => F.hkls.map((h) => ({ hkl: h, n: mulVec(B, h), t: F.tOf(h), role: 'main', form: fi })));
-  const auxForms = closeForm(formPlanes, Ws, B, tAux);
+  const auxForms = closeForm(formPlanes, groupId, B, tAux);
 
   // Restsymmetrie bei freier Verzerrung
-  const Wred = reducedOps(Ws, M);
+  const redIdx = Ws.map((W, i) => i).filter((i) => preservesMetric(Ws[i], M));
+  const Wred = redIdx.map((i) => Ws[i]);
+  const redSet = new Set(redIdx);
   const isReduced = Wred.length < Ws.length;
   /** @param {Mat3} W */
   const cart = (W) => mul(mul(A, W), Ai);
@@ -494,7 +481,7 @@ export function buildCrystal(params) {
   for (const h of mainHKL) {
     const k = hklKey(h);
     if (seen.has(k)) continue;
-    const orb = hklOrbit(Wred, h);
+    const orb = hklOrbit(groupId, h, redSet);
     orb.forEach((x) => seen.add(hklKey(x)));
     orbitsMain.push(orb);
   }
@@ -555,9 +542,7 @@ export function buildCrystal(params) {
     const maxO = Math.max(0, ...axs.map((a) => order[a.symbol]));
     const top = axs.filter((a) => order[a.symbol] === maxO);
     if (top.length === 1) {
-      const u = mulVec(Ai, top[0].dir);
-      const m = Math.max(...u.map(Math.abs));
-      reducedAxis = { symbol: top[0].symbol, uvw: /** @type {Richtung} */ (u.map((x) => Math.round(x / m))) };
+      reducedAxis = { symbol: top[0].symbol, uvw: ganzeRichtung(mulVec(Ai, top[0].dir)) };
     }
   }
 
@@ -599,8 +584,8 @@ export function buildCrystal(params) {
 const PRISM_TYPES = new Set(PRISMEN);
 
 /**
- * Geometrische Benennung einer Form (auch Grenzformen) nach ITA Tab. 10.1.2.3:
- * über Flächenzahl, Eigensymmetrie (Stabilisator in der Holoedrie) und offen/geschlossen.
+ * Geometrische Benennung einer Form (auch Grenzformen) nach ITA Tab. 3.2.1.3 (2016; Flächenzahl und Eigensymmetrie aus
+ * symcrys): über Flächenzahl, Eigensymmetrie (Stabilisator in der Holoedrie) und offen/geschlossen.
  * Gibt { type, name } zurück oder null.
  * @param {string} groupId
  * @param {Normale[]} hkls
@@ -615,7 +600,8 @@ export function auxFormName(groupId, hkls) {
   if (n === 1) return { type: 1, name: FORM_TYPES[1].name };
   if (n === 2) {
     if (vecEq(normals[0], scale(normals[1], -1))) return { type: 2, name: FORM_TYPES[2].name };
-    const W = latticeOps(groupId).find((w) => hklKey(transformHKL(w, hkls[0])) === hklKey(hkls[1]));
+    const k = kernFlaechenbahn(groupId, hkls[0]).find((f) => hklKey(f.hkl) === hklKey(hkls[1]))?.ops[0];
+    const W = k === undefined ? undefined : latticeOps(groupId)[k];
     const d = W ? Math.round(W[0][0] * (W[1][1] * W[2][2] - W[1][2] * W[2][1]) - W[0][1] * (W[1][0] * W[2][2] - W[1][2] * W[2][0]) + W[0][2] * (W[1][0] * W[2][1] - W[1][1] * W[2][0])) : 1;
     return { type: 3, name: d < 0 ? /** @type {string} */ (FORM_TYPES[3].alt) : FORM_TYPES[3].name };
   }
@@ -629,12 +615,36 @@ export function auxFormName(groupId, hkls) {
   }
   if (sys === 'triklin' || sys === 'monoklin') return n === 4 && open ? { type: 6, name: FORM_TYPES[6].name } : null;
   const keys = new Set(hkls.map(hklKey));
-  const Hs = latticeOps(kernGittersymmetrie(groupId)).filter((W) => hkls.every((h) => keys.has(hklKey(transformHKL(W, h)))));
+  // Stabilisator der Flächen in der Holoedrie: die Operationen, die jede Fläche auf eine der Flächen bringen (Bahnen aus symcrys)
+  const holo = kernGittersymmetrie(groupId);
+  const Wh = latticeOps(holo);
+  let stab = new Set(Wh.map((W, i) => i));
+  for (const h of hkls) {
+    const hin = new Set(kernFlaechenbahn(holo, h).filter((f) => keys.has(hklKey(f.hkl))).flatMap((f) => f.ops));
+    stab = new Set([...stab].filter((i) => hin.has(i)));
+  }
+  const Hs = [...stab].sort((a, b) => a - b).map((i) => Wh[i]);
   const eigId = identifyGroup(Hs.map((W) => mul(mul(A0, W), inverse(A0)))).hm;
   const eig = EIG_SCHREIBWEISE[eigId] || eigId;
-  const cands = Object.entries(FORM_TYPES).filter(([t, f]) => f.eig === eig && FACE_COUNT[Number(t)] === n && PRISM_TYPES.has(Number(t)) === open);
+  const cands = Object.entries(FORM_TYPES).filter(([t]) => KERN_FORMTYPEN[Number(t)].eig === eig && KERN_FORMTYPEN[Number(t)].faces === n && PRISM_TYPES.has(Number(t)) === open);
   if (cands.length === 1) return { type: Number(cands[0][0]), name: cands[0][1].name };
   return null;
+}
+
+/**
+ * Kleinste ganzzahlige Gitterrichtung parallel zu u (Gitterkoordinaten einer Symmetrieachse, also ein Vielfaches einer
+ * Gitterrichtung), Vorzeichen wie u. Früher wurde durch die grösste Komponente geteilt und gerundet; bei [120] hing
+ * round(0,5) dann vom Rundungsfehler ab ([110] oder [010] statt [120]).
+ * @param {Vec3} u @returns {Richtung}
+ */
+function ganzeRichtung(u) {
+  const m = Math.min(...u.map(Math.abs).filter((x) => x > 1e-9));
+  const v = u.map((x) => x / m);
+  for (let t = 1; t <= 12; t++) {
+    if (v.every((x) => Math.abs(x * t - Math.round(x * t)) < 1e-6)) return reduceInt(/** @type {Richtung} */ (v.map((x) => Math.round(x * t))));
+  }
+  const g = Math.max(...u.map(Math.abs));
+  return /** @type {Richtung} */ (u.map((x) => Math.round(x / g) + 0));
 }
 
 /** @param {number} a @param {number} b @returns {number} */

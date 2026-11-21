@@ -21,6 +21,7 @@ import type { PointGroupKey as ClassKey, MagneticPointGroupKey, PointGroup as Po
 export type CrystalClassKey = ClassKey;
 /** The key of a magnetic point group: a crystal class (white group), a grey or a black-and-white group. */
 export type PointGroupKey = MagneticPointGroupKey;
+/** A magnetic point group with the properties that are fixed by its operations (docs/conventions.md, "Properties"). */
 export type PointGroup<K extends PointGroupKey = PointGroupKey> = PointGroupOf<K>;
 /** A point group in a given setting. */
 export type PointGroupInSetting = PointGroupInSettingOf<PointGroupKey>;
@@ -29,6 +30,8 @@ export { holohedry, isCentrosymmetricOf, isChiralOf } from './pointGroups/proper
 export { LATTICE_SYMMETRY_DIRECTIONS, type Uvw } from './symmetryDirections.js';
 export { describeOperations, symmetryDirections, type Axis, type DirectionElements, type OperationDescription, type OperationKind, type SymmetryDirection, } from './pointGroups/elements.js';
 export { siteSymmetry, type SiteSymmetry, type SiteSymmetryOptions } from './siteSymmetry.js';
+export { describeOperationsOf, pointGroupOf, type CartesianAxis, type CartesianOperationDescription, type IdentifiedPointGroup, type PointGroupOfOptions, } from './pointGroups/identify.js';
+export { latticeOperations, orbit, orbitOf, type DirectionOrbitEntry, type FaceOrbitEntry, type OrbitOptions, type OrbitPole, } from './pointGroups/orbits.js';
 export { rotateTensor, tensorForm, tensorFormOf, type IntrinsicSymmetry, type TensorForm, type TensorParity, type TensorRank, type TensorSpec, type TimeParity, } from './tensors/tensorForm.js';
 export { TENSOR_PROPERTIES, type TensorProperty, type TensorPropertyName } from './tensors/propertyTable.js';
 export { allowedProperties, allowedPropertiesOf, allowsProperty, allowsPropertyOf, } from './tensors/tensorProperties.js';

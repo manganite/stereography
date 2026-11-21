@@ -9,9 +9,9 @@
 // der Gruppe / Ordnung der Lagesymmetrie. Die Wyckoff-Lage fasst alle Pole zusammen, deren Lagesymmetrien zueinander
 // konjugiert sind.
 
-import { mulVec, dot, normalize, scale, sub, inverse, transpose, fromColumns, det } from './linalg.js';
+import { mulVec, dot, normalize, scale, sub, fromColumns, det } from './linalg.js';
 import { latticeToCart } from './pointgroups.js';
-import { kernLagesymmetrie, kernPolbahn, kernWyckoffLagen, kernWyckoffLageVon } from './kern.js';
+import { kernLagesymmetrie, kernPolbahn, kernReziprok, kernWyckoffLagen, kernWyckoffLageVon } from './kern.js';
 
 /** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
 /** @import { Analyse } from './pointgroups.js' */
@@ -37,7 +37,7 @@ export function poleOfHKL(system, hkl) {
   const toCart = latticeToCart(system);
   const [a, b, c] = /** @type {Richtung[]} */ ([[1, 0, 0], [0, 1, 0], [0, 0, 1]]);
   const A = fromColumns(toCart(a), toCart(b), toCart(c));
-  return normalize(mulVec(transpose(inverse(A)), hkl));
+  return normalize(mulVec(kernReziprok(A), hkl));
 }
 
 /** Indizes der Operationen, die p festhalten (symcrys). @param {Mat3[]} ops @param {Vec3} p @param {number} [tol] */

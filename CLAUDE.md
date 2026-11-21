@@ -227,11 +227,22 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   Operationen (`describeOperationsOf`) ebenso. In der App bleibt die Darstellung: in `analyzeGroup` das Achsensymbol
   der Zeichnung je Richtung und das kanonische Vorzeichen (`canonicalDir`), `det` und „Bild und Spiegelbild fallen
   zusammen“ (`mixed`) in `distinctPoles`, die kleinste ganzzahlige Richtung der Hauptachse (`ganzeRichtung`). Noch in der
-  App gerechnet: die Restsymmetrie unter der verzerrten Metrik (`preservesMetric`) mit der Geometrie der Kristalle
-  (Gitter, Polyeder, Zonen, Tracht; symcrys#24 Punkt 4, offen) und die Benennung einer beliebigen Flächenmenge, auch
-  einer Grenzform, über ihren Stabilisator in der Holoedrie, Flächenzahl, Eigensymmetrie und offen/geschlossen
-  (`auxFormName`; symcrys gibt die Formen je Punktgruppe, nicht den Typ einer gegebenen Flächenmenge).
+  App gerechnet: die Benennung einer beliebigen Flächenmenge, auch einer Grenzform, über ihren Stabilisator in der
+  Holoedrie, Flächenzahl, Eigensymmetrie und offen/geschlossen (`auxFormName`; symcrys gibt die Formen je Punktgruppe,
+  nicht den Typ einer gegebenen Flächenmenge) und die Polyeder, Zonenauswahl und Tracht (symcrys#64, 3D-App).
   `analyzeGroup` liest `polar` wie `piezo` erst beim Lesen (die Bestimmung der Gruppe kostet bei m3̄m rund 1,5 ms).
+- **Zelle, Metrik und Indizes aus symcrys** (symcrys 0.8.0, symcrys#24 Punkt 4; Thomas, 21.11.2026): Gitter aus den
+  Parametern und zurück (`latticeFromParameters`, `latticeParameters`), Gültigkeit dreier Winkel (`isValidCell` mit
+  `GITTER_MIN` = 0,1 als `minVolumeRatio`), reziproke Basis, Winkel zwischen Flächen, die Restsymmetrie unter der
+  verzerrten Metrik (`residualOperations`, ersetzt `preservesMetric`; Toleranz 10⁻⁶ relativ zum grössten Eintrag von G),
+  teilerfremde und vier Indizes, Zonenachse und die Umrechnung der Indizes bei einem Achsenwechsel (`changeOfAxes` in
+  `hexSettingOf`), alles über `js/kern.js`. symcrys legt eine Zelle nach dem Standard (a ∥ x, b in der xy-Ebene); die App
+  behält ihren Rahmen (c ∥ z, b in der yz-Ebene) und dreht in `kernInRahmenDerApp` (Regel Thomas: weicht eine App vom
+  ITC-Standard ab, rechnet die App um, nicht symcrys). `kernGitterparameter` rundet auf 12 Stellen, damit Rundungsrauschen
+  der Drehung einen Wert an der Grenze eines Reglers (c/a = 6) nicht über die Grenze schiebt. In der App bleiben das
+  Runden auf ganze Zahlen vor dem Kürzen (`reduceInt`), die Wahl der rhomboedrischen Achsen in `hexSettingOf`, das Suchen
+  des nächsten gültigen Winkels am Regler (`naechsterGueltiger`), die Streckung und die Winkel zwischen kartesischen Polen.
+  Die frühere Rechnung liegt in `tests/geometrie-referenz.mjs` und prüft in `tests/kern.test.mjs` die neue.
 - **Gittersymmetrie aus symcrys** (symcrys 0.6.0): die Gittersymmetrie eines Systems (Kandidaten der Restsymmetrie einer Form, `auxFormName`) kommt seit symcrys 0.6.0 aus `holohedry(crystalFamily(system))` über `kernGittersymmetrie` in `js/kern.js`, trigonal also `6/mmm`; nur die Kennung `2/mb` für das monokline Gitter setzt die App selbst.
 - **Piezoelektrisch aus dem Tensormodul von symcrys** (ab symcrys 0.4.0, crystallography-common#74 Punkt 7; seit 0.6.0
   als benannte Eigenschaft): für die Punktgruppen des Katalogs `allowsProperty(key, 'piezoelectric')` (`kernElemente`),

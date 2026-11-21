@@ -266,3 +266,76 @@ test('Gittersymmetrie je Eintrag (holohedry von symcrys) gleich der früheren Ta
   const referenz = { triklin: '-1', monoklin: '2/mb', orthorhombisch: 'mmm', tetragonal: '4/mmm', trigonal: '6/mmm', hexagonal: '6/mmm', kubisch: 'm-3m' };
   for (const id of Object.keys(SYSTEM_OF)) assert.equal(kernGittersymmetrie(id), referenz[SYSTEM_OF[id]], id);
 });
+
+// ---- Geometrie der Zelle aus symcrys 0.8.0 gegen die frühere Rechnung der App (tests/geometrie-referenz.mjs) ----
+
+test('Gitter, Gitterparameter und Gültigkeit aus symcrys gleich der früheren Rechnung (Rahmen der App)', async () => {
+  const P = await import('../js/polyhedra.js');
+  const R = await import('./geometrie-referenz.mjs');
+  const winkel = [50, 55, 60, 75, 90, 100, 110, 120, 130, 140, 150];
+  let gitter = 0;
+  for (const al of winkel) for (const be of winkel) for (const ga of winkel) for (const [ba, ca] of [[1, 1], [1.3, 0.8], [0.4, 6], [3, 0.125]]) {
+    const p = { ba, ca, al, be, ga };
+    assert.equal(P.gitterGueltig(p), R.gitterGueltigAlt(p, P.GITTER_MIN), JSON.stringify(p));
+    if (!P.gitterGueltig(p)) continue;
+    gitter++;
+    const A = P.latticeFromParams(p), B = R.latticeFromParamsAlt(p);
+    assert.ok(matEq(A, B, 1e-12), `Gitter ${JSON.stringify(p)}`);
+    const q = P.paramsOfLattice(A), r = R.paramsOfLatticeAlt(B);
+    for (const k of /** @type {const} */ (['ba', 'ca', 'al', 'be', 'ga'])) assert.ok(Math.abs(q[k] - r[k]) < 1e-9, `${k} ${JSON.stringify(p)}`);
+  }
+  assert.ok(gitter > 1000, `nur ${gitter} gültige Gitter`);
+});
+
+test('Restsymmetrie (residualOperations) gleich der früheren Prüfung WᵀMW = M für gestreckte und freie Gitter', async () => {
+  const P = await import('../js/polyhedra.js');
+  const R = await import('./geometrie-referenz.mjs');
+  const { kernRestoperationen } = await import('../js/kern.js');
+  let faelle = 0;
+  for (const [id, sys] of Object.entries(SYSTEM_OF)) {
+    const Ws = P.latticeOps(id);
+    const lat0 = P.LATTICE_DEFAULTS[sys];
+    const gitter = [P.latticeFromParams(lat0)];
+    for (const d of P.STRETCH_DIRS[sys]) for (const s of [0.5, 0.99, 1.01, 1.5]) gitter.push(P.stretchLattice(P.latticeFromParams(lat0), d.uvw, s));
+    for (const g of [{ ga: 95 }, { ba: 1.2 }, { al: 85, be: 100 }]) gitter.push(P.latticeFromParams({ ...lat0, ...g }));
+    for (const A of gitter) {
+      const alt = Ws.map((W, i) => i).filter((i) => R.preservesMetricAlt(Ws[i], A));
+      assert.deepEqual(kernRestoperationen(Ws, A), alt, id);
+      faelle++;
+    }
+  }
+  assert.ok(faelle > 300);
+});
+
+test('vier Indizes und teilerfremde Indizes aus symcrys gleich der früheren Rechnung', async () => {
+  const P = await import('../js/polyhedra.js');
+  const R = await import('./geometrie-referenz.mjs');
+  for (let u = -4; u <= 4; u++) for (let v = -4; v <= 4; v++) for (let w = -4; w <= 4; w++) {
+    const x = /** @type {import('../lib/common/js/typen.js').Richtung} */ ([u, v, w]);
+    assert.deepEqual(P.reduceInt(x), R.reduceIntAlt(x));
+    if (u || v || w) assert.deepEqual(P.dirToFour(x), R.dirToFourAlt(x));
+  }
+});
+
+test('hexagonale Achsen (changeOfAxes) und Zonenwinkel gleich der früheren Rechnung', async () => {
+  const P = await import('../js/polyhedra.js');
+  const R = await import('./geometrie-referenz.mjs');
+  /** @param {number[]} u @param {number[]} v */
+  const skalar = (u, v) => u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+  for (const s of [[1, 1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, -1], [-1, -1, 1], [-1, 1, -1], [1, -1, -1], [-1, -1, -1]]) {
+    const hs = /** @type {NonNullable<ReturnType<typeof P.hexSettingOf>>} */ (P.hexSettingOf(/** @type {import('../lib/common/js/typen.js').Richtung} */ (s)));
+    for (let h = -3; h <= 3; h++) for (let k = -3; k <= 3; k++) for (let l = -3; l <= 3; l++) {
+      if (!h && !k && !l) continue;
+      const hkl = /** @type {import('../lib/common/js/typen.js').Normale} */ ([h, k, l]);
+      assert.deepEqual(hs.toHex(hkl), R.reduceIntAlt([skalar(hkl, hs.a1), skalar(hkl, hs.a2), skalar(hkl, hs.c)]), `${s} ${hkl}`);
+    }
+  }
+  // Zonenwinkel: früher aus den kartesischen Flächennormalen
+  const C = P.buildCrystal({ entryId: 'm-3m:b35', lat: P.LATTICE_DEFAULTS.kubisch, broken: true, stretch: { uvw: /** @type {import("../lib/common/js/typen.js").Richtung} */ ([1, 1, 1]), s: 0.7 } });
+  for (let i = 0; i < C.faces.length; i++) for (let j = i + 1; j < C.faces.length; j++) {
+    const z = P.zoneOf(C, i, j);
+    if (!z) continue;
+    const alt = Math.acos(Math.max(-1, Math.min(1, skalar(C.faces[i].normal, C.faces[j].normal)))) * 180 / Math.PI;
+    assert.ok(Math.abs(/** @type {number} */ (z.angle) - alt) < 1e-9, `${i}, ${j}`);
+  }
+});

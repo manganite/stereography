@@ -19,6 +19,7 @@ import * as identify from './pointGroups/identify.js';
 import * as orbits from './pointGroups/orbits.js';
 import * as wyckoff from './pointGroups/wyckoff.js';
 import type { Hkl } from './pointGroups/wyckoff.js';
+import * as cell from './cell.js';
 import * as site from './siteSymmetry.js';
 import type { Uvw } from './symmetryDirections.js';
 import type { TensorPropertyName as MagneticTensorPropertyName } from './tensors/propertyTable.js';
@@ -218,6 +219,14 @@ export declare function wyckoffPositions(key: PointGroupKey, options?: SettingOp
  * `siteSymmetry`.
  */
 export declare function wyckoffPositionOf(key: PointGroupKey, direction: Vec3, options?: wyckoff.WyckoffOptions): wyckoff.WyckoffPosition;
+/**
+ * The operations of a list that keep the metric of a cell: W with WᵀGW = G, G the metric tensor
+ * of `basis`. The operations are integer matrices on lattice coordinates, as `latticeOperations`
+ * gives them; the list is taken as it is and the kept operations are the ones of the list, in its
+ * order. The deviation counts relative to the largest entry of G (`tolerance`, default
+ * `EPSILON`). An operation combined with time reversal belongs to the magnetic API.
+ */
+export declare function residualOperations<T extends OperationArgument>(operations: readonly T[], basis: Mat3, options?: cell.ResidualOperationsOptions): T[];
 /**
  * The operations of the crystal class in the conventional lattice basis (a, b, c; for the trigonal
  * classes the hexagonal axes), in the order of `operations` for the same setting and convention:

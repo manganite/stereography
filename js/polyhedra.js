@@ -1,18 +1,22 @@
 // Kristallformen als Polyeder: Gitter, Bahnen von Flächen unter der Punktgruppe,
 // Schliessen offener Formen durch Ergänzungsformen derselben Punktgruppe,
-// Restsymmetrie bei freier Verzerrung. Operationen im Gitter, Bahnen und die Bestimmung der Restgruppe kommen aus
-// symcrys (js/kern.js); hier steht die Geometrie des Kristalls (symcrys#24 Punkt 4, offen).
+// Restsymmetrie bei freier Verzerrung. Operationen im Gitter, Bahnen, die Bestimmung der Restgruppe, Zelle, Metrik,
+// Restsymmetrie und Indizes kommen aus symcrys (js/kern.js); hier stehen Polyeder, Formen, Zonen und Tracht.
 //
 // Konventionen: Gittermatrix A (Spalten a, b, c) im kartesischen System, c ∥ z, b in der yz-Ebene
 // (ITA: Blick entlang c, a nach unten, b nach rechts). Flächennormale G = B·h mit B = A⁻ᵀ.
 // Symmetrieoperation im Gitter: W (ganzzahlig), kartesisch R = A W A⁻¹; Indizes: h' = W⁻ᵀ h.
 
 import {
-  fromColumns, inverse, transpose, mul, mulVec, dot, cross, normalize, scale, add, sub, norm,
-  solve3, vecEq, fromRows, matEq,
+  inverse, transpose, mul, mulVec, dot, cross, normalize, scale, add, sub, norm,
+  solve3, vecEq, fromRows,
 } from './linalg.js';
 import { analyzeGroup, POINT_GROUPS } from './pointgroups.js';
-import { KERN_FORMTYPEN, kernAufstellung, kernFlaechenbahn, kernGitterOperationen, kernGittersymmetrie, kernGruppeVon } from './kern.js';
+import {
+  KERN_FORMTYPEN, kernAufstellung, kernFlaechenbahn, kernFlaechenwinkel, kernFlaecheInNeuerBasis, kernGitter, kernGitterOperationen,
+  kernGitterparameter, kernGittersymmetrie, kernGruppeVon, kernRestoperationen, kernReziprok, kernTeilerfremd, kernVierIndizes,
+  kernZelleGueltig, kernZonenachse,
+} from './kern.js';
 import { entryById } from './forms.js';
 import { FORM_TYPES, PRISMEN, EIG_SCHREIBWEISE } from './formen.js';
 
@@ -51,7 +55,6 @@ import { FORM_TYPES, PRISMEN, EIG_SCHREIBWEISE } from './formen.js';
  */
 /** Kristall, wie ihn buildCrystal liefert. @typedef {ReturnType<typeof buildCrystal>} Kristall */
 
-const deg = Math.PI / 180;
 /** Gitterrichtung [uvw] (das Array [u, v, w], gekennzeichnet für die Typprüfung). @param {number} u @param {number} v @param {number} w @returns {Richtung} */
 const richtung = (u, v, w) => /** @type {Richtung} */ ([u, v, w]);
 
@@ -127,13 +130,8 @@ export function stretchLattice(A, uvw, s) {
   return mul(S, A);
 }
 
-/** Gitterparameter (a = 1, b/a, c/a, α, β, γ) einer Gittermatrix. @param {Mat3} A @returns {Gitterparameter} */
-export function paramsOfLattice(A) {
-  const [a, b, c] = [0, 1, 2].map((j) => /** @type {Vec3} */ ([A[0][j], A[1][j], A[2][j]]));
-  /** @param {Vec3} u @param {Vec3} w */
-  const ang = (u, w) => Math.acos(Math.max(-1, Math.min(1, dot(u, w) / (norm(u) * norm(w))))) / deg;
-  return { ba: norm(b) / norm(a), ca: norm(c) / norm(a), al: ang(b, c), be: ang(a, c), ga: ang(a, b) };
-}
+/** Gitterparameter (a = 1, b/a, c/a, α, β, γ) einer Gittermatrix (symcrys). @param {Mat3} A @returns {Gitterparameter} */
+export const paramsOfLattice = (A) => kernGitterparameter(A);
 
 /**
  * Hexagonale Achsen einer trigonalen Restgruppe mit 3 ∥ [uvw] (u, v, w = ±1) im kubischen Gitter
@@ -151,8 +149,10 @@ export function hexSettingOf(uvw) {
   if (uvw[0] * uvw[1] * uvw[2] < 0) R = [R[0], R[2], R[1]];
   // Basisvektoren der hexagonalen Achsen als kubische Richtungen
   const [a1, a2, c] = /** @type {Richtung[]} */ ([sub(R[0], R[1]), sub(R[1], R[2]), add(add(R[0], R[1]), R[2])]);
-  /** (hkl) kubisch → (hkl) hexagonal: h_hex = h · a_i. @param {Normale} h @returns {Normale} */
-  const toHex = (h) => reduceInt(/** @type {Normale} */ ([dot(h, a1), dot(h, a2), dot(h, c)]));
+  // (hkl) kubisch → (hkl) hexagonal: (h k l)·P mit den Spalten a₁, a₂, c (symcrys, changeOfAxes)
+  const inHex = kernFlaecheInNeuerBasis(/** @type {Mat3} */ ([0, 1, 2].map((i) => [a1[i], a2[i], c[i]])));
+  /** @param {Normale} h @returns {Normale} */
+  const toHex = (h) => reduceInt(inHex(h));
   return { a1, a2, c, toHex };
 }
 
@@ -173,8 +173,7 @@ export const GITTER_MIN = 0.1;
 
 /** Ergeben die drei Winkel ein (nicht fast flaches) Gitter? @param {Pick<Gitterparameter, 'al' | 'be' | 'ga'>} p */
 export function gitterGueltig(p) {
-  const [ca, cb, cg] = [p.al, p.be, p.ga].map((w) => Math.cos(w * deg));
-  return 1 - ca * ca - cb * cb - cg * cg + 2 * ca * cb * cg >= GITTER_MIN * GITTER_MIN;
+  return kernZelleGueltig(p, GITTER_MIN);
 }
 
 /**
@@ -190,19 +189,12 @@ export function naechsterGueltiger(lat, k, wunsch, schritt = 1) {
   return p[k];
 }
 
-/** Gittermatrix aus a = 1, b/a, c/a, α, β, γ; die Winkel müssen ein Gitter ergeben (gitterGueltig). @param {Gitterparameter} p */
-export function latticeFromParams(p) {
-  const a = 1, b = p.ba, c = p.ca;
-  const al = p.al * deg, be = p.be * deg, ga = p.ga * deg;
-  /** @type {Vec3} */
-  const cv = [0, 0, c];
-  /** @type {Vec3} */
-  const bv = [0, b * Math.sin(al), b * Math.cos(al)];
-  const az = a * Math.cos(be);
-  const ay = (a * (Math.cos(ga) - Math.cos(al) * Math.cos(be))) / Math.sin(al);
-  const ax = Math.sqrt(Math.max(0, a * a - ay * ay - az * az)); // max nur gegen Rundungsfehler, siehe gitterGueltig
-  return fromColumns([ax, ay, az], bv, cv);
-}
+/**
+ * Gittermatrix aus a = 1, b/a, c/a, α, β, γ im Rahmen der App (c ∥ z, b in der yz-Ebene; symcrys, js/kern.js); die
+ * Winkel müssen ein Gitter ergeben (gitterGueltig).
+ * @param {Gitterparameter} p
+ */
+export const latticeFromParams = (p) => kernGitter(p);
 
 /** Idealgitter des Systems, in dem die kartesischen Operationen aus pointgroups.js gelten. @param {string} sys */
 function idealLattice(sys) {
@@ -231,9 +223,6 @@ export function hklOrbit(groupId, h, auswahl = null) {
     .sort((a, b) => a.k - b.k)
     .map((f) => f.hkl);
 }
-
-/** Erhält W die Metrik M = AᵀA? @param {Mat3} W @param {Mat3} M */
-const preservesMetric = (W, M) => matEq(mul(mul(transpose(W), M), W), M, 1e-6);
 
 /**
  * Halbraumschnitt → Ecken und Flächen. planes: [{n, t, ...}] (G·r ≤ t)
@@ -447,8 +436,7 @@ export function buildCrystal(params) {
   const A = st ? stretchLattice(latticeFromParams(lat0), st.uvw, st.s) : latticeFromParams(lat0);
   const lat = st ? paramsOfLattice(A) : lat0;
   const Ai = inverse(A);
-  const B = transpose(Ai);
-  const M = mul(transpose(A), A);
+  const B = kernReziprok(A);
 
   const Ws = latticeOps(groupId);
   // Formen: eine (Katalog) oder mehrere (Beispielkristall); doppelte Bahnen werden übersprungen
@@ -467,7 +455,7 @@ export function buildCrystal(params) {
   const auxForms = closeForm(formPlanes, groupId, B, tAux);
 
   // Restsymmetrie bei freier Verzerrung
-  const redIdx = Ws.map((W, i) => i).filter((i) => preservesMetric(Ws[i], M));
+  const redIdx = kernRestoperationen(Ws, A);
   const Wred = redIdx.map((i) => Ws[i]);
   const redSet = new Set(redIdx);
   const isReduced = Wred.length < Ws.length;
@@ -595,7 +583,7 @@ export function auxFormName(groupId, hkls) {
   const sys = SYSTEM_OF[groupId];
   const n = hkls.length;
   const A0 = idealLattice(sys);
-  const B0 = transpose(inverse(A0));
+  const B0 = kernReziprok(A0);
   const normals = hkls.map((h) => normalize(mulVec(B0, h)));
   if (n === 1) return { type: 1, name: FORM_TYPES[1].name };
   if (n === 2) {
@@ -647,22 +635,17 @@ function ganzeRichtung(u) {
   return /** @type {Richtung} */ (u.map((x) => Math.round(x / g) + 0));
 }
 
-/** @param {number} a @param {number} b @returns {number} */
-const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
 /**
- * Ganzzahliges Tripel durch ggT teilen. Die Art (Richtung, Normale, vier Indizes) bleibt erhalten.
+ * Ganzzahliges Tripel (gerundet) durch ggT teilen (symcrys); nur Nullen bleiben Nullen. Die Art (Richtung, Normale, vier Indizes) bleibt erhalten.
  * @template {number[]} T
  * @param {T} v
  * @returns {T}
  */
-export const reduceInt = (v) => {
-  const g = v.reduce((a, x) => gcd(a, Math.round(x)), 0) || 1;
-  return /** @type {T} */ (v.map((x) => Math.round(x) / g + 0));
-};
+export const reduceInt = (v) => kernTeilerfremd(/** @type {T} */ (v.map((x) => Math.round(x) + 0)));
 
 /** Richtung [uvw] (drei Achsen) → [UVTW] (Miller-Bravais). @param {Richtung} uvw */
-export function dirToFour([u, v, w]) {
-  return reduceInt([2 * u - v, 2 * v - u, -(u + v), 3 * w]);
+export function dirToFour(uvw) {
+  return kernVierIndizes(uvw);
 }
 
 /**
@@ -674,12 +657,11 @@ export function dirToFour([u, v, w]) {
  */
 export function zoneOf(C, i, j) {
   const h1 = C.faces[i].hkl, h2 = C.faces[j].hkl;
-  // Zonenachse [uvw] = h₁ × h₂ (Zonengleichung hu + kv + lw = 0)
-  const raw = /** @type {Richtung} */ (cross(h1, h2));
-  if (raw.every((x) => Math.abs(x) < 1e-9)) return null;
+  // Zonenachse [uvw] = h₁ × h₂ (Zonengleichung hu + kv + lw = 0; symcrys)
+  const raw = kernZonenachse(h1, h2);
+  if (!raw) return null;
   const z = zoneByUvw(C, raw);
-  const n1 = C.faces[i].normal, n2 = C.faces[j].normal;
-  z.angle = (Math.acos(Math.max(-1, Math.min(1, dot(n1, n2)))) * 180) / Math.PI;
+  z.angle = kernFlaechenwinkel(C.A, h1, h2);
   return z;
 }
 
@@ -697,7 +679,7 @@ export function zoneByUvw(C, raw) {
     uvw = /** @type {Richtung} */ (uvw.map((x) => -x + 0)); axis = scale(axis, -1);
   }
   const inZone = C.faces.map((f, k) => (dot(f.hkl, uvw) === 0 && !f.hidden ? k : -1)).filter((k) => k >= 0);
-  const B = transpose(inverse(C.A));
+  const B = kernReziprok(C.A);
   // Netzebene (uvw): dieselben Zahlen als Indizes einer Fläche
   const planeNormal = normalize(mulVec(C.O, mulVec(B, /** @type {Vec3} */ (uvw))));
   const normalDev = (Math.acos(Math.max(-1, Math.min(1, Math.abs(dot(planeNormal, axis))))) * 180) / Math.PI;

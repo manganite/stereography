@@ -5,15 +5,18 @@
 //
 // Rahmen: symcrys legt bei hexagonalen Achsen a ∥ x, die App b ∥ y (a zeigt im Stereogramm nach links unten). Die
 // App behält ihren Rahmen, damit Link-Adressen (Azimut `az`, von b gezählt) und Bilder gleich bleiben; die Drehung
-// zwischen beiden folgt aus den beiden Gitterbasen (Thomas, 18.11.2026). Sonst sind die Rahmen gleich.
+// zwischen beiden folgt aus den beiden Gitterbasen (Thomas, 18.11.2026). Für die Punktgruppen sind die Rahmen sonst gleich;
+// eine allgemeine Zelle legt symcrys anders als die App (unten, „Geometrie der Zelle und Indizes“).
 
 import {
-  CRYSTAL_FORM_TYPES, allowsProperty, allowsPropertyOf, crystalFamily, crystalForms, describeOperationsOf, findPointGroup,
-  holohedry, latticeBasis, latticeOperations, operations, orbit, orbitOf, pointGroup, pointGroupOf, settings, siteSymmetry,
-  symbol, symmetryDirections, wyckoffPositionOf, wyckoffPositions,
+  CRYSTAL_FORM_TYPES, allowsProperty, allowsPropertyOf, angleBetweenPlanes, changeOfAxes, crystalFamily, crystalForms,
+  describeOperationsOf, directionToFourIndices, findPointGroup, holohedry, isValidCell, latticeBasis, latticeFromParameters,
+  latticeOperations, latticeParameters, metricTensor, operations, orbit, orbitOf, pointGroup, pointGroupOf, reciprocalBasis, reduceIndices,
+  residualOperations, settings, siteSymmetry, symbol, symmetryDirections, wyckoffPositionOf, wyckoffPositions, zoneAxis,
 } from '../lib/kern/index.js';
 
 /** @import { Vec3, Mat3, Richtung, Normale } from '../lib/common/js/typen.js' */
+/** @import { Gitterparameter } from './polyhedra.js' */
 /** @import { PointGroupKey } from '../lib/kern/index.js' */
 
 const S3 = Math.sqrt(3);
@@ -315,4 +318,92 @@ export function kernPolar(ops) {
  */
 export function kernBeschreibung(ops) {
   return describeOperationsOf(ops.map((m) => ({ matrix: m })));
+}
+
+// ---- Geometrie der Zelle und Indizes (symcrys 0.8.0, symcrys#24 Punkt 4) ----
+//
+// Rahmen einer allgemeinen Zelle: symcrys legt a ∥ x und b in die xy-Ebene (Standard nach ITC), die App c ∥ z und b in
+// die yz-Ebene (bei hexagonalen Achsen also b ∥ y wie HEX_B). Die App behält ihren Rahmen (Link-Adressen, Bilder);
+// die Drehung folgt aus der Basis selbst: z ∥ c, y in der Ebene von b und c, x = y × z (Thomas, 21.11.2026: weicht eine
+// App vom ITC-Standard ab, rechnet die App um, nicht symcrys).
+
+/** @param {Vec3} v */
+const einheit = (v) => { const n = Math.hypot(v[0], v[1], v[2]); return /** @type {Vec3} */ (v.map((x) => x / n)); };
+
+/**
+ * Basis einer Zelle (Spalten a, b, c) aus symcrys im Rahmen der App: c ∥ z, b in der yz-Ebene mit y > 0, a mit x > 0.
+ * @param {Mat3} A
+ * @returns {Mat3}
+ */
+export function kernInRahmenDerApp(A) {
+  /** @type {Vec3[]} */
+  const [, b, c] = [0, 1, 2].map((j) => /** @type {Vec3} */ ([A[0][j], A[1][j], A[2][j]]));
+  const ez = einheit(c);
+  const bz = b[0] * ez[0] + b[1] * ez[1] + b[2] * ez[2];
+  const ey = einheit(/** @type {Vec3} */ ([b[0] - bz * ez[0], b[1] - bz * ez[1], b[2] - bz * ez[2]]));
+  /** @type {Vec3} */
+  const ex = [ey[1] * ez[2] - ey[2] * ez[1], ey[2] * ez[0] - ey[0] * ez[2], ey[0] * ez[1] - ey[1] * ez[0]];
+  return /** @type {Mat3} */ (mal([ex, ey, ez], kopie(A)).map((r) => r.map((x) => (Math.abs(x) < 1e-15 ? 0 : x))));
+}
+
+/**
+ * Gittermatrix (Spalten a, b, c, a = 1) im Rahmen der App aus den Parametern der App (b/a, c/a, α, β, γ in Grad).
+ * @param {Gitterparameter} p
+ * @returns {Mat3}
+ */
+export function kernGitter(p) {
+  return kernInRahmenDerApp(kopie(latticeFromParameters({ a: 1, b: p.ba, c: p.ca, alpha: p.al, beta: p.be, gamma: p.ga })));
+}
+
+/** Auf 12 Stellen nach dem Komma gerundet: entfernt Rundungsrauschen der Drehung (sonst läge c/a = 6 knapp über dem Regler). @param {number} x */
+const glatt = (x) => Math.round(x * 1e12) / 1e12 + 0;
+
+/** Parameter der App (b/a, c/a, α, β, γ) einer Gittermatrix, auf 12 Stellen gerundet. @param {Mat3} A @returns {Gitterparameter} */
+export function kernGitterparameter(A) {
+  const q = latticeParameters(A);
+  return { ba: glatt(q.b / q.a), ca: glatt(q.c / q.a), al: glatt(q.alpha), be: glatt(q.beta), ga: glatt(q.gamma) };
+}
+
+/**
+ * Ergeben die drei Winkel eine Zelle mit V/(abc) ≥ min?
+ * @param {Pick<Gitterparameter, 'al' | 'be' | 'ga'>} p @param {number} min
+ */
+export const kernZelleGueltig = (p, min) => isValidCell({ alpha: p.al, beta: p.be, gamma: p.ga }, { minVolumeRatio: min });
+
+/** Reziproke Basis B = A⁻ᵀ (Spalten a*, b*, c*). @param {Mat3} A @returns {Mat3} */
+export const kernReziprok = (A) => kopie(reciprocalBasis(A));
+
+/**
+ * Stellen der Operationen W (Gitterbasis), die die Metrik der Zelle A erhalten (WᵀGW = G). Die Toleranz ist wie bisher in
+ * der App absolut 10⁻⁶ (a = 1); symcrys rechnet sie relativ zum grössten Eintrag von G, deshalb wird sie umgerechnet,
+ * sonst wäre sie bei c/a = 6 bis zu 36-mal weiter.
+ * @param {Mat3[]} Ws @param {Mat3} A @returns {number[]}
+ */
+export function kernRestoperationen(Ws, A) {
+  const ops = Ws.map((matrix) => ({ matrix }));
+  const groesster = Math.max(...metricTensor(A).flat().map(Math.abs));
+  const kept = new Set(residualOperations(ops, A, { tolerance: 1e-6 / groesster }));
+  return ops.map((op, i) => (kept.has(op) ? i : -1)).filter((i) => i >= 0);
+}
+
+/** Winkel zwischen den Normalen zweier Flächen (hkl) in Grad. @param {Mat3} A @param {Normale} h1 @param {Normale} h2 */
+export const kernFlaechenwinkel = (A, h1, h2) => angleBetweenPlanes(A, h1, h2);
+
+/** Teilerfremde Indizes aus ganzen Zahlen (sonst Fehler), Vorzeichen bleibt; nur Nullen bleiben Nullen. @template {number[]} T @param {T} v @returns {T} */
+export const kernTeilerfremd = (v) => /** @type {T} */ (v.every((x) => x === 0) ? v.map(() => 0) : reduceIndices(v));
+
+/** Richtung [uvw] als [UVTW]. @param {Richtung} uvw */
+export const kernVierIndizes = (uvw) => /** @type {[number, number, number, number]} */ ([...directionToFourIndices(uvw)]);
+
+/** Zonenachse zweier Flächen (h₁ × h₂, teilerfremd) oder null bei parallelen Flächen. @param {Normale} h1 @param {Normale} h2 */
+export const kernZonenachse = (h1, h2) => /** @type {Richtung | null} */ (zoneAxis(h1, h2));
+
+/**
+ * Indizes einer Fläche in einer neuen Basis (a′, b′, c′) = (a, b, c)·P: (h′ k′ l′) = (h k l)·P.
+ * @param {Mat3} P Spalten: die neuen Basisvektoren in der alten Basis
+ */
+export function kernFlaecheInNeuerBasis(P) {
+  const { plane } = changeOfAxes(P);
+  /** @param {Normale} h @returns {Normale} */
+  return (h) => /** @type {Normale} */ ([0, 1, 2].map((i) => plane[i][0] * h[0] + plane[i][1] * h[1] + plane[i][2] * h[2] + 0));
 }

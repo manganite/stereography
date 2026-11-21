@@ -13,6 +13,8 @@ export { VERSION } from './version.js';
 export type { Mat3, Vec3 } from './linalg.js';
 export type { Operation } from './operations.js';
 export { crystalFamily, latticeBasis, type CrystalFamily, type CrystalSystem, type FixedAngleFamily, } from './lattice.js';
+export { angleBetweenDirections, angleBetweenPlanes, isValidCell, latticeFromParameters, latticeParameters, metricTensor, reciprocalBasis, type CellAngles, type CellOperation, type IsValidCellOptions, type LatticeParameters, type ResidualOperationsOptions, } from './cell.js';
+export { changeOfAxes, directionFromFourIndices, directionToFourIndices, planeFromFourIndices, planeToFourIndices, reduceIndices, zoneAxis, type AxisChange, type FourIndices, } from './indices.js';
 import type { PointGroupKey as ClassKey, MagneticPointGroupKey, PointGroup as PointGroupOf, PointGroupInSetting as PointGroupInSettingOf } from './pointGroups/pointGroups.js';
 /**
  * The key of a crystal class, one of the 32: the type of `crystalClass` and `laueClass` of a point
@@ -29,6 +31,7 @@ export { MAGNETIC_POINT_GROUP_KEYS as POINT_GROUP_KEYS, findMagneticPointGroup a
 export { holohedry, isCentrosymmetricOf, isChiralOf } from './pointGroups/properties.js';
 export { LATTICE_SYMMETRY_DIRECTIONS, type Uvw } from './symmetryDirections.js';
 export { describeOperations, symmetryDirections, type Axis, type DirectionElements, type OperationDescription, type OperationKind, type SymmetryDirection, } from './pointGroups/elements.js';
+export { residualMagneticOperations as residualOperations, type MagneticCellOperation } from './cell.js';
 export { siteSymmetry, type SiteSymmetry, type SiteSymmetryOptions } from './siteSymmetry.js';
 export { describeOperationsOf, pointGroupOf, type CartesianAxis, type CartesianOperationDescription, type IdentifiedPointGroup, type PointGroupOfOptions, } from './pointGroups/identify.js';
 export { latticeOperations, orbit, orbitOf, type DirectionOrbitEntry, type FaceOrbitEntry, type OrbitOptions, type OrbitPole, } from './pointGroups/orbits.js';

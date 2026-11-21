@@ -110,7 +110,7 @@ function analyseReferenz(ops) {
     const symbol = maxRot === 6 || maxRot === 4 ? String(maxRot) : e.rotinv.has(4) ? '-4' : e.rotinv.has(6) ? '-6' : e.rotinv.has(3) ? '-3' : maxRot > 1 ? String(maxRot) : null;
     if (symbol) axes.push({ dir: e.dir, symbol, centre: centro && !symbol.startsWith('-'), mirrorPerp: e.mirror });
   }
-  // mirrorCls setzt symmetryDirections() beim Auswerten der Blickrichtungen
+  // mirrorCls setzt symmetryDirectionsReferenz() beim Auswerten der Blickrichtungen
   return { ops, order: ops.length, centro, chiral, polar, axes, mirrors, mirrorCls: /** @type {number[] | undefined} */ (undefined) };
 }
 

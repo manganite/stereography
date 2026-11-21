@@ -683,7 +683,7 @@ export function viewDirections(id, toWorld) {
     const cands = f.uvw.map((u) => ({ u, w: normalize(toWorld(u)) }));
     const pick = cands.find((c) => Math.abs(c.w[2]) > 1 - 1e-6) || cands.find((c) => Math.abs(c.w[2]) < 1e-6) || cands[0];
     const flip = pick.w[2] < -1e-9;
-    const uvw = /** @type {Vec3} */ (flip ? pick.u.map((x) => (x === 0 ? 0 : -x)) : pick.u);
+    const uvw = /** @type {Vec3} */ (flip ? pick.u.map((x) => (x === 0 ? 0 : -x)) : [...pick.u]);
     const dir = /** @type {Vec3} */ (flip ? pick.w.map((x) => -x) : pick.w);
     const along = Math.abs(dir[2]) > 1 - 1e-6 ? 'proj' : Math.abs(dir[2]) < 1e-6 ? 'side' : null;
     return { pos: f.pos, fam: f.fam, uvw, dir, along };

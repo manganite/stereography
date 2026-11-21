@@ -8,7 +8,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [1.22.0] - 2026-11-21
 
-Ganz auf den gemeinsamen Rechenkern symcrys v0.8.0 umgestellt: Formen, Bahnen, Restsymmetrie, Blickrichtungen, Zelle, Metrik und Indizes kommen aus symcrys. Sichtbar sind nur die Vertreter einiger Blickrichtungen in der 3D-Ansicht und Startpole der Experimente „Polzahl“ in den Aufstellungen B; die Hauptachse gestreckter Kristalle und die Angabe zu „piezoelektrisch“ sind korrigiert. Link-Adressen und Speicher bleiben gültig.
+Die Rechnungen kommen aus dem gemeinsamen Rechenkern symcrys v0.8.0: Lagesymmetrie und Wyckoff-Lagen, „piezoelektrisch“, Gittersymmetrie, Formen, Bahnen, Restgruppe, Blickrichtungen, Zelle, Metrik und Indizes. In der App bleiben Darstellung, Polyeder, Zonenauswahl, Tracht und die Benennung von Ergänzungsformen. Sichtbar sind nur die Vertreter einiger Blickrichtungen in der 3D-Ansicht (auch bei `blick=2` und `blick=3`) und Startpole der Experimente „Polzahl“ in den Aufstellungen B; die Hauptachse gestreckter Kristalle und die Angabe zu „piezoelektrisch“ sind korrigiert. Link-Adressen und Speicher bleiben gültig.
 
 ### Geändert
 

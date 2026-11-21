@@ -7,8 +7,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  HEX_A, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, canonicalDir, latticeToCart, symmetryDirections,
+  HEX_A, HEX_B, POINT_GROUPS, analyzeGroup, buildPointGroup, canonicalDir, latticeToCart,
 } from '../js/pointgroups.js';
+import { symmetryDirectionsReferenz } from './blickrichtungen-referenz.mjs';
 import { drehungHexagonal, kernAufstellung, kernElemente, kernGittersymmetrie, kernOperationen } from '../js/kern.js';
 import { SYSTEM_OF } from '../js/polyhedra.js';
 import { I3, add, det, inversion, matEq, mirror, mul, neg, normalize, rot, rotInv, rotation, scale, trace, transpose } from '../js/linalg.js';
@@ -109,7 +110,7 @@ function analyseReferenz(ops) {
     const symbol = maxRot === 6 || maxRot === 4 ? String(maxRot) : e.rotinv.has(4) ? '-4' : e.rotinv.has(6) ? '-6' : e.rotinv.has(3) ? '-3' : maxRot > 1 ? String(maxRot) : null;
     if (symbol) axes.push({ dir: e.dir, symbol, centre: centro && !symbol.startsWith('-'), mirrorPerp: e.mirror });
   }
-  // mirrorCls setzt symmetryDirections() beim Auswerten der Blickrichtungen
+  // mirrorCls setzt symmetryDirectionsReferenz() beim Auswerten der Blickrichtungen
   return { ops, order: ops.length, centro, chiral, polar, axes, mirrors, mirrorCls: /** @type {number[] | undefined} */ (undefined) };
 }
 
@@ -214,8 +215,8 @@ for (const g of POINT_GROUPS) {
     }));
 
     // Blickrichtungen: je Position dieselben Richtungen, dasselbe Symbol, dieselben Elemente
-    const klassen = symmetryDirections(alt);
-    // symmetryDirections() des bisherigen Codes setzt dabei alt.mirrorCls
+    const klassen = symmetryDirectionsReferenz(alt);
+    // die Referenz setzt dabei alt.mirrorCls
     /** @param {{ m: Vec3, k: number }} x @param {typeof x} y */
     const gleicherSpiegel = (x, y) => parallel(x.m, y.m) && x.k === y.k;
     const paare = (/** @type {Vec3[]} */ ms, /** @type {number[]} */ ks) => ms.map((m, i) => ({ m, k: ks[i] }));

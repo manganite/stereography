@@ -11,19 +11,19 @@
 // Hexagonale Achsen: b ∥ y, a schliesst mit b 120° ein.
 
 import { mulVec, det, normalize, add, scale, cross, EPS } from './linalg.js';
-import { PUNKTGRUPPEN } from './punktgruppen.js';
-import { HEX_A, HEX_B, kernBeschreibung, kernElemente, kernOperationen, kernPiezoelektrisch, kernPolar } from './kern.js';
+import { BLICK_BEZEICHNUNG, PUNKTGRUPPEN } from './punktgruppen.js';
+import { HEX_A, HEX_B, kernBeschreibung, kernBlickrichtungen, kernElemente, kernOperationen, kernPiezoelektrisch, kernPolar } from './kern.js';
 
 /** @import { Vec3, Mat3, Richtung } from '../lib/common/js/typen.js' */
 /** Eintrag der Gruppenliste: Zeile aus js/punktgruppen.js (Bedeutung der Felder dort). @typedef {import('./punktgruppen.js').Punktgruppenzeile} Punktgruppe */
 /**
  * Drehachse oder Drehinversionsachse (kartesische Richtung, kanonisches Vorzeichen). cls: Position im
- * HM-Symbol, gesetzt von symmetryDirections() (−1: keine).
+ * HM-Symbol, gesetzt von blickklassen() (−1: keine).
  * @typedef {{ dir: Vec3, symbol: string, centre: boolean, mirrorPerp: boolean, cls?: number }} Achse
  */
 /**
  * Ergebnis von analyzeGroup(). mirrors: Normalen der Spiegelebenen (kartesisch); mirrorCls: Position im
- * HM-Symbol je Spiegel, gesetzt von symmetryDirections().
+ * HM-Symbol je Spiegel, gesetzt von blickklassen().
  * @typedef {object} Analyse
  * @property {Mat3[]} ops
  * @property {number} order
@@ -151,36 +151,6 @@ export function orbit(ops, p0) {
 }
 
 /**
- * Blickrichtungen (Symmetrierichtungen) nach ITA A, Tab. 2.1.3.1: Die Positionen im vollen
- * Hermann-Mauguin-Symbol stehen für Klassen äquivalenter Richtungen. Innerhalb einer Klasse sind
- * die Symmetrieelemente durch die Gruppe selbst ineinander überführbar (die charakteristische
- * Achse des Kristallsystems vertauscht die Richtungen), in verschiedenen Klassen nicht.
- * Rückgabe: [{ pos, label (HTML), dirs, hm, axes:[...], mirrors:[normale] }]; Triklin: [].
- * Jede Achse erhält zusätzlich axis.cls = pos, info.mirrorCls[i] = pos des i-ten Spiegels.
- */
-/**
- * Positionen des HM-Symbols als Gitterrichtungen [uvw] je Kristallsystem.
- * @param {string} system
- * @returns {{ label: string, uvw: Richtung[] }[]}
- */
-function directionPositions(system) {
-  const R = /** @param {Vec3[]} l */ (l) => /** @type {Richtung[]} */ (l);
-  switch (system) {
-    case 'monoklin': case 'orthorhombisch':
-      return [{ label: '[100]', uvw: R([[1, 0, 0]]) }, { label: '[010]', uvw: R([[0, 1, 0]]) }, { label: '[001]', uvw: R([[0, 0, 1]]) }];
-    case 'tetragonal':
-      return [{ label: '[001]', uvw: R([[0, 0, 1]]) }, { label: '⟨100⟩', uvw: R([[1, 0, 0], [0, 1, 0]]) }, { label: '⟨110⟩', uvw: R([[1, 1, 0], [1, -1, 0]]) }];
-    case 'trigonal': case 'hexagonal':
-      return [{ label: '[001]', uvw: R([[0, 0, 1]]) }, { label: '⟨100⟩', uvw: R([[1, 0, 0], [0, 1, 0], [-1, -1, 0]]) },
-        { label: '⟨210⟩', uvw: R([[1, -1, 0], [1, 2, 0], [-2, -1, 0]]) }];
-    case 'kubisch':
-      return [{ label: '⟨100⟩', uvw: R([[1, 0, 0], [0, 1, 0], [0, 0, 1]]) },
-        { label: '⟨111⟩', uvw: R([[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1]]) },
-        { label: '⟨110⟩', uvw: R([[1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1], [0, 1, 1], [0, 1, -1]]) }];
-    default: return [];
-  }
-}
-/**
  * Gitterrichtung → kartesisch im Koordinatensystem dieser Datei (a ∥ x bzw. HEX_A, b ∥ y, c ∥ z).
  * @param {string} system
  * @returns {(u: Richtung) => Vec3}
@@ -191,17 +161,23 @@ export function latticeToCart(system) {
   return (u) => add(add(scale(a, u[0]), scale(b, u[1])), scale(Z, u[2]));
 }
 /**
- * info: { system, full, axes, mirrors }; toCart: Gitterrichtung [uvw] → kartesische Richtung im
- * Koordinatensystem von axes/mirrors (Standard: Koordinatensystem der Punktgruppen dieser Datei).
- * @param {Pick<Punktgruppeninfo, 'system' | 'full' | 'axes' | 'mirrors' | 'mirrorCls'>} info
+ * Klassen von Blickrichtungen einer Gruppe: Die Positionen im vollen Hermann-Mauguin-Symbol stehen für Klassen
+ * äquivalenter Richtungen (ITA A, Tab. 2.1.3.1); Richtungen, Vertreter und Vorzeichen kommen aus symcrys
+ * (`symmetryDirections`, js/kern.js), die Bezeichnung (⟨210⟩ statt ⟨1̄10⟩) aus `BLICK_BEZEICHNUNG`. Hier steht nur die
+ * Zuordnung der Achsen und Spiegelnormalen eines Rahmens zu den Klassen: `axis.cls` = Position, `info.mirrorCls[i]` =
+ * Position des i-ten Spiegels (−1: keine). Triklin: [].
+ * info: { id, system, axes, mirrors }; toCart: Gitterrichtung [uvw] → kartesische Richtung im Rahmen von
+ * axes/mirrors (Standard: Rahmen der App für Gruppen dieser Datei, bei gedrehtem Rahmen z. B. der Kristalllage).
+ * @param {Pick<Punktgruppeninfo, 'id' | 'system' | 'axes' | 'mirrors' | 'mirrorCls'>} info
  * @param {(u: Richtung) => Vec3} [toCart]
  * @returns {Blickrichtungsklasse[]}
  */
-export function symmetryDirections(info, toCart = latticeToCart(info.system)) {
-  const pos = directionPositions(info.system);
-  const parts = info.full.split(' ');
+export function blickklassen(info, toCart = latticeToCart(info.system)) {
+  const bez = BLICK_BEZEICHNUNG[info.system];
   /** @type {Blickrichtungsklasse[]} */
-  const classes = pos.map((p, i) => ({ pos: i, label: p.label, dirs: p.uvw.map((u) => normalize(toCart(u))), hm: parts[i] || null, axes: [], mirrors: [] }));
+  const classes = kernBlickrichtungen(info.id).map((k, i) => ({
+    pos: i, label: bez[i], dirs: k.gitter.map((u) => normalize(toCart(u))), hm: k.hm, axes: [], mirrors: [],
+  }));
   /** @param {Vec3} v */
   const find = (v) => classes.findIndex((c) => c.dirs.some((d) => Math.abs(Math.abs(d[0] * v[0] + d[1] * v[1] + d[2] * v[2]) - 1) < 1e-6));
   for (const a of info.axes) {

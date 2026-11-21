@@ -15,7 +15,7 @@ import {
 import { KAPITEL } from '../js/quiz-kapitel.js';
 import { createState, applyHashTo, stereoForHash, stateForHash, currentEntryId } from '../js/scene.js';
 import { buildSVG } from '../js/stereogram.js';
-import { groupById, POINT_GROUPS, buildPointGroup, orbit, symmetryDirections, latticeToCart } from '../js/pointgroups.js';
+import { groupById, POINT_GROUPS, buildPointGroup, orbit, blickklassen, latticeToCart } from '../js/pointgroups.js';
 import { CATALOG, formEig } from '../js/forms.js';
 import { poleOfHKL, stabilizer } from '../js/sitesym.js';
 import { hmHTML } from '../lib/common/js/format.js';
@@ -330,13 +330,13 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
     } else if (p.art === 'gleichesBild') {
       assert.equal(svg(p.hashes[0]), svg(p.hashes[1]), q.id);
     } else if (p.art === 'blickrichtungen') {
-      const labels = symmetryDirections(buildPointGroup(p.gruppe)).filter((c) => c.hm && c.hm !== '1').map((c) => c.label);
+      const labels = blickklassen(buildPointGroup(p.gruppe)).filter((c) => c.hm && c.hm !== '1').map((c) => c.label);
       const r0 = text(q.antworten[q.richtig[0]]);
       let pos = -1;
       for (const l of labels) { const k = r0.indexOf(l, pos + 1); assert.ok(k > pos, `${q.id}: ${l} fehlt oder steht falsch in „${r0}“`); pos = k; }
       q.antworten.forEach((a, i) => { if (!q.richtig.includes(i)) assert.notEqual(text(a), labels.join(', '), q.id); });
     } else if (p.art === 'position') {
-      const c = symmetryDirections(buildPointGroup(p.gruppe))[p.nr - 1];
+      const c = blickklassen(buildPointGroup(p.gruppe))[p.nr - 1];
       assert.deepEqual([c.label, c.hm], [p.richtung, p.symbol], q.id);
     } else if (p.art === 'symbol') {
       const g = groupById(p.gruppe);
@@ -358,7 +358,7 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       assert.ok(parallelF(poleOfHKL('hexagonal', p.hkl), hex(p.richtung)), q.id);
       assert.ok(Math.abs(poleOfHKL('hexagonal', p.hkl)[2]) < 1e-9, `${q.id}: Pol nicht auf dem Grundkreis`);
     } else if (p.art === 'hexFamilie') {
-      const c = symmetryDirections(buildPointGroup(p.gruppe))[p.position - 1];
+      const c = blickklassen(buildPointGroup(p.gruppe))[p.position - 1];
       assert.ok(c.dirs.some((d) => parallelF(d, hex(p.richtung))), `${q.id}: ${p.richtung} nicht in ${c.label}`);
     } else if (p.art === 'zoneUndFlaeche') {
       const c = cross(.../** @type {[Vec3, Vec3]} */ (p.flaechen));
@@ -493,7 +493,7 @@ test('Fragen: nachgerechnete Antworten (Zonenachsen, Zonengleichung, Lage eines 
       }).filter((i) => i >= 0);
       assert.deepEqual(q.richtig, soll, q.id);
     } else if (p.art === 'hexFamilieMehr') {
-      const c = symmetryDirections(buildPointGroup(p.gruppe))[p.position - 1];
+      const c = blickklassen(buildPointGroup(p.gruppe))[p.position - 1];
       q.antworten.forEach((a, i) => assert.equal(c.dirs.some((d) => parallelF(d, hex(idx(a)))), q.richtig.includes(i), `${q.id}: ${text(a)}`));
     } else if (p.art === 'wachstum') {
       // Würfel {100} im Abstand d₁, Oktaeder {111} im Abstand d₂: Oktaederflächen gibt es, solange d₂/d₁ < √3,

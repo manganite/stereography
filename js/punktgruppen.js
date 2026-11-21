@@ -66,3 +66,19 @@ export const PUNKTGRUPPEN = [
 export const SYSTEMS = ['triklin', 'monoklin', 'orthorhombisch', 'tetragonal', 'trigonal', 'hexagonal', 'kubisch'];
 /** Namen der Kristallsysteme für die Anzeige (Auswahl, Kenndaten), in der Reihenfolge von SYSTEMS. @type {Record<string, string>} */
 export const SYSTEM_NAMEN = { triklin: 'Triklin', monoklin: 'Monoklin', orthorhombisch: 'Orthorhombisch', tetragonal: 'Tetragonal', trigonal: 'Trigonal', hexagonal: 'Hexagonal', kubisch: 'Kubisch' };
+
+/**
+ * Bezeichnung der Blickrichtungen je Position im vollen Hermann-Mauguin-Symbol, je Kristallsystem (Darstellung der App;
+ * die Richtungen selbst, ihre Vertreter und Vorzeichen kommen aus symcrys). Die dritte hexagonale Blickrichtung heisst
+ * ⟨210⟩ statt ⟨1̄10⟩ wie in ITA Tab. 2.1.3.1 (anschaulicher; das Skript nennt die ITA-Schreibweise). Triklin hat keine.
+ * @type {Record<string, string[]>}
+ */
+export const BLICK_BEZEICHNUNG = {
+  triklin: [],
+  monoklin: ['[100]', '[010]', '[001]'],
+  orthorhombisch: ['[100]', '[010]', '[001]'],
+  tetragonal: ['[001]', '⟨100⟩', '⟨110⟩'],
+  trigonal: ['[001]', '⟨100⟩', '⟨210⟩'],
+  hexagonal: ['[001]', '⟨100⟩', '⟨210⟩'],
+  kubisch: ['⟨100⟩', '⟨111⟩', '⟨110⟩'],
+};

@@ -1,7 +1,7 @@
 // Punktgruppen: Ordnungen und Zuordnung der Symmetrieelemente zu den Blickrichtungen.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { POINT_GROUPS, buildPointGroup, symmetryDirections } from '../js/pointgroups.js';
+import { POINT_GROUPS, buildPointGroup, blickklassen } from '../js/pointgroups.js';
 
 // Gruppenordnung je Punktgruppe (Hermann-Mauguin-Kurzsymbol), ITA Vol. A Tab. 10.1.2.2
 /** @type {Record<string, number>} */
@@ -28,7 +28,7 @@ test('Symmetrieelemente passen zu den Positionen des vollen Symbols', () => {
   for (const g of POINT_GROUPS) {
     if (g.system === 'triklin') continue;
     const info = buildPointGroup(g.id);
-    const classes = symmetryDirections(info);
+    const classes = blickklassen(info);
     for (const c of classes) {
       const p = c.hm;
       if (!p || p === '1') {

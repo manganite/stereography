@@ -153,6 +153,29 @@ export function kernElemente(id) {
   };
 }
 
+/** Blickrichtungen je Gruppe der App, einmal gelesen (Daten ohne Rahmen). @type {Map<string, { gitter: Richtung[], hm: string | null }[]>} */
+const BLICKRICHTUNGEN = new Map();
+
+/**
+ * Blickrichtungen einer Punktgruppe der App aus symcrys (`symmetryDirections`, ITA Tab. 2.1.3.1): je Position des vollen
+ * Symbols die Richtungen als Gitterrichtungen [uvw] mit Vertreter, Vorzeichen und Reihenfolge von symcrys, und das Symbol
+ * der Position (null, wenn es keines gibt). Der Rahmen steckt nicht darin: Gitterrichtungen gelten in jeder Gitterbasis.
+ * Triklin: keine.
+ * @param {string} id
+ * @returns {{ gitter: Richtung[], hm: string | null }[]}
+ */
+export function kernBlickrichtungen(id) {
+  let b = BLICKRICHTUNGEN.get(id);
+  if (!b) {
+    const { key, setting } = kernAufstellung(id);
+    b = symmetryDirections(key, { setting }).map((p) => ({
+      gitter: p.directions.map((d) => /** @type {Richtung} */ (/** @type {unknown} */ ([...d.lattice]))), hm: p.symbol ?? null,
+    }));
+    BLICKRICHTUNGEN.set(id, b);
+  }
+  return b;
+}
+
 /** @param {Mat3 | null} r @param {readonly number[]} v @returns {Vec3} */
 const vektorInKern = (r, v) => /** @type {Vec3} */ (r ? [0, 1, 2].map((j) => r[0][j] * v[0] + r[1][j] * v[1] + r[2][j] * v[2]) : [...v]);
 

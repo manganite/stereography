@@ -5,12 +5,13 @@
 //
 // Rahmen: symcrys legt bei hexagonalen Achsen a ∥ x, die App b ∥ y (a zeigt im Stereogramm nach links unten). Die
 // App behält ihren Rahmen, damit Link-Adressen (Azimut `az`, von b gezählt) und Bilder gleich bleiben; die Drehung
-// zwischen beiden folgt aus den beiden Gitterbasen (Thomas, 18.11.2026). Sonst sind die Rahmen gleich.
+// zwischen beiden folgt aus den beiden Gitterbasen (Thomas, 18.11.2026). Für die Punktgruppen sind die Rahmen sonst gleich;
+// eine allgemeine Zelle legt symcrys anders als die App (unten, „Geometrie der Zelle und Indizes“).
 
 import {
   CRYSTAL_FORM_TYPES, allowsProperty, allowsPropertyOf, angleBetweenPlanes, changeOfAxes, crystalFamily, crystalForms,
   describeOperationsOf, directionToFourIndices, findPointGroup, holohedry, isValidCell, latticeBasis, latticeFromParameters,
-  latticeOperations, latticeParameters, operations, orbit, orbitOf, pointGroup, pointGroupOf, reciprocalBasis, reduceIndices,
+  latticeOperations, latticeParameters, metricTensor, operations, orbit, orbitOf, pointGroup, pointGroupOf, reciprocalBasis, reduceIndices,
   residualOperations, settings, siteSymmetry, symbol, symmetryDirections, wyckoffPositionOf, wyckoffPositions, zoneAxis,
 } from '../lib/kern/index.js';
 
@@ -373,20 +374,22 @@ export const kernZelleGueltig = (p, min) => isValidCell({ alpha: p.al, beta: p.b
 export const kernReziprok = (A) => kopie(reciprocalBasis(A));
 
 /**
- * Stellen der Operationen W (Gitterbasis), die die Metrik der Zelle A erhalten (WᵀGW = G, Toleranz relativ zum
- * grössten Eintrag von G, 10⁻⁶).
+ * Stellen der Operationen W (Gitterbasis), die die Metrik der Zelle A erhalten (WᵀGW = G). Die Toleranz ist wie bisher in
+ * der App absolut 10⁻⁶ (a = 1); symcrys rechnet sie relativ zum grössten Eintrag von G, deshalb wird sie umgerechnet,
+ * sonst wäre sie bei c/a = 6 bis zu 36-mal weiter.
  * @param {Mat3[]} Ws @param {Mat3} A @returns {number[]}
  */
 export function kernRestoperationen(Ws, A) {
   const ops = Ws.map((matrix) => ({ matrix }));
-  const kept = new Set(residualOperations(ops, A));
+  const groesster = Math.max(...metricTensor(A).flat().map(Math.abs));
+  const kept = new Set(residualOperations(ops, A, { tolerance: 1e-6 / groesster }));
   return ops.map((op, i) => (kept.has(op) ? i : -1)).filter((i) => i >= 0);
 }
 
 /** Winkel zwischen den Normalen zweier Flächen (hkl) in Grad. @param {Mat3} A @param {Normale} h1 @param {Normale} h2 */
 export const kernFlaechenwinkel = (A, h1, h2) => angleBetweenPlanes(A, h1, h2);
 
-/** Teilerfremde Indizes, Vorzeichen bleibt; nur Nullen bleiben Nullen. @template {number[]} T @param {T} v @returns {T} */
+/** Teilerfremde Indizes aus ganzen Zahlen (sonst Fehler), Vorzeichen bleibt; nur Nullen bleiben Nullen. @template {number[]} T @param {T} v @returns {T} */
 export const kernTeilerfremd = (v) => /** @type {T} */ (v.every((x) => x === 0) ? v.map(() => 0) : reduceIndices(v));
 
 /** Richtung [uvw] als [UVTW]. @param {Richtung} uvw */

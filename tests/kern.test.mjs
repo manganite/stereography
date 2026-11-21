@@ -316,3 +316,26 @@ test('vier Indizes und teilerfremde Indizes aus symcrys gleich der früheren Rec
     if (u || v || w) assert.deepEqual(P.dirToFour(x), R.dirToFourAlt(x));
   }
 });
+
+test('hexagonale Achsen (changeOfAxes) und Zonenwinkel gleich der früheren Rechnung', async () => {
+  const P = await import('../js/polyhedra.js');
+  const R = await import('./geometrie-referenz.mjs');
+  /** @param {number[]} u @param {number[]} v */
+  const skalar = (u, v) => u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+  for (const s of [[1, 1, 1], [-1, 1, 1], [1, -1, 1], [1, 1, -1], [-1, -1, 1], [-1, 1, -1], [1, -1, -1], [-1, -1, -1]]) {
+    const hs = /** @type {NonNullable<ReturnType<typeof P.hexSettingOf>>} */ (P.hexSettingOf(/** @type {import('../lib/common/js/typen.js').Richtung} */ (s)));
+    for (let h = -3; h <= 3; h++) for (let k = -3; k <= 3; k++) for (let l = -3; l <= 3; l++) {
+      if (!h && !k && !l) continue;
+      const hkl = /** @type {import('../lib/common/js/typen.js').Normale} */ ([h, k, l]);
+      assert.deepEqual(hs.toHex(hkl), R.reduceIntAlt([skalar(hkl, hs.a1), skalar(hkl, hs.a2), skalar(hkl, hs.c)]), `${s} ${hkl}`);
+    }
+  }
+  // Zonenwinkel: früher aus den kartesischen Flächennormalen
+  const C = P.buildCrystal({ entryId: 'm-3m:b35', lat: P.LATTICE_DEFAULTS.kubisch, broken: true, stretch: { uvw: /** @type {import("../lib/common/js/typen.js").Richtung} */ ([1, 1, 1]), s: 0.7 } });
+  for (let i = 0; i < C.faces.length; i++) for (let j = i + 1; j < C.faces.length; j++) {
+    const z = P.zoneOf(C, i, j);
+    if (!z) continue;
+    const alt = Math.acos(Math.max(-1, Math.min(1, skalar(C.faces[i].normal, C.faces[j].normal)))) * 180 / Math.PI;
+    assert.ok(Math.abs(/** @type {number} */ (z.angle) - alt) < 1e-9, `${i}, ${j}`);
+  }
+});

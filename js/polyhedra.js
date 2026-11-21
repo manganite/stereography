@@ -224,8 +224,6 @@ export function hklOrbit(groupId, h, auswahl = null) {
     .map((f) => f.hkl);
 }
 
-/** Erhält W die Metrik M = AᵀA? @param {Mat3} W @param {Mat3} M */
-
 /**
  * Halbraumschnitt → Ecken und Flächen. planes: [{n, t, ...}] (G·r ≤ t)
  * @template {Halbraum} H

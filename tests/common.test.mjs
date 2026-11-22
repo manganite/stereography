@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { pruefen } from '../tools/common/check.mjs';
+import { pruefeKopf } from '../tools/common/kopf-pruefen.mjs';
 import { SPEICHER } from '../js/quiz-kapitel.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -60,4 +61,11 @@ test('Tooltips: jedes Bedienelement mit id hat einen, kurz (pruefeTooltips, Leit
   const ohne = ['skript-link', 'quiz-link', 'help-open', 'intro-close', 'export-stereo', 'export-3d'];
   // Längere Tooltips nur als ausdrückliche Ausnahme, wo sonst eine Angabe zur Funktion fehlte (Leitfaden Abschn. 5.3)
   assert.deepEqual(pruefeTooltips(read('index.html'), TIPS, { ohne, laenger: ['break-mode'] }), []);
+});
+
+test('Kopf jeder Seite: Titel, Beschreibung, kanonische Adresse, Open Graph, JSON-LD (Leitfaden Abschn. 9, Auffindbarkeit)', () => {
+  const live = 'https://manganite.github.io/stereography/';
+  for (const [seite, adresse] of [['index.html', live], ['skript.html', `${live}skript.html`], ['quiz.html', `${live}quiz.html`], ['hilfe.html', `${live}hilfe.html`]]) {
+    assert.deepEqual(pruefeKopf(read(seite), { adresse }), [], seite);
+  }
 });

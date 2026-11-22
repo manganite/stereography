@@ -25,6 +25,10 @@ und Speicher noch nicht stabil, Leitfaden Abschn. 8; Thomas, 11.11.2026, crystal
   in Stil, Niveau und Tiefe dem Skript an. Grundstoff steht im Quiz auf Stufe 2, nicht 3.
 
 ### Begriffe
+- **Titel der Seiten** (Thomas, 22.11.2026, crystallography-common#164, Leitfaden Abschn. 9): „Stereographische Projektion –
+  Punktgruppen und Kristallformen interaktiv“, Skript, Quiz und Hilfe mit „– Punktgruppen und Kristallformen“, damit die
+  Begriffe, nach denen gesucht wird, im Titel stehen. Der Name der App (Kopfzeile, Manifest, Moodle, Skript-PDF) bleibt
+  „Stereographische Projektion“.
 - **Projektionsrichtung** für die Lage des Kristalls; **Blickrichtung** nur für die Symmetrierichtungen
   des HM-Symbols („Lage“ bleibt frei für allgemeine und spezielle Lagen).
 - **Umkugel.**

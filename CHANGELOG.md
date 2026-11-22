@@ -6,6 +6,11 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **Auffindbarkeit** (crystallography-common#164; Leitfaden Abschn. 9): Titel mit den Begriffen, nach denen gesucht wird: „Stereographische Projektion – Punktgruppen und Kristallformen interaktiv“, Skript, Quiz und Hilfe mit „– Punktgruppen und Kristallformen“ (Wortlaut Thomas, 22.11.2026); Beschreibungen von Skript und Quiz gekürzt (höchstens 160 Zeichen); im Kopf jeder Seite kanonische Adresse, Open Graph für die Vorschau geteilter Links (Bild `icons/vorschau.png`, das Vorschaubild des Repositorys, in der Offline-Liste) und strukturierte Daten (JSON-LD, schema.org `LearningResource`), geprüft in `tests/common.test.mjs`. Link-Adressen und Speicher bleiben gültig.
+- **Gemeinsame Grundlage** auf crystallography-common v0.25.0: Prüfung des Kopfs (`tools/common/kopf-pruefen.mjs`); `sync.mjs --kern` nimmt auch einen Checkout von symcrys ab v0.5.0.
+
 ## [1.22.0] - 2026-11-21
 
 Die Rechnungen kommen aus dem gemeinsamen Rechenkern symcrys v0.8.0: Lagesymmetrie und Wyckoff-Lagen, „piezoelektrisch“, Gittersymmetrie, Formen, Bahnen, Restgruppe, Blickrichtungen, Zelle, Metrik und Indizes. In der App bleiben Darstellung, Polyeder, Zonenauswahl, Tracht und die Benennung von Ergänzungsformen. Sichtbar sind nur die Vertreter einiger Blickrichtungen in der 3D-Ansicht (auch bei `blick=2` und `blick=3`) und Startpole der Experimente „Polzahl“ in den Aufstellungen B; die Hauptachse gestreckter Kristalle und die Angabe zu „piezoelektrisch“ sind korrigiert. Link-Adressen und Speicher bleiben gültig.

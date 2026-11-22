@@ -6,6 +6,10 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), die V
 
 ## [Unreleased]
 
+### Geändert
+
+- **README:** „Versionen und Releases“ verweist für die Stelle der Version auf den Leitfaden der Familie, Abschn. 9 (crystallography-common#167).
+
 ## [1.22.1] - 2026-11-22
 
 Besser auffindbar: Titel mit den Begriffen, nach denen gesucht wird, dazu kanonische Adresse, Vorschau geteilter Links (Open Graph) und strukturierte Daten im Kopf jeder Seite (gemeinsame Grundlage crystallography-common v0.25.0). Bedienung, Inhalte, Link-Adressen und Speicher bleiben gleich.

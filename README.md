@@ -258,7 +258,7 @@ Geprüft wird alles in `js/`, `tools/` und `tests/`, strikt und ohne Ausnahmen; 
 
 Die App folgt [Semantic Versioning](https://semver.org/lang/de/); Änderungen stehen im [CHANGELOG](CHANGELOG.md). Jede Änderung geht über einen Branch und einen Pull Request nach `main` (`main` ist geschützt; die CI muss grün sein). Die Live-Seite ändert sich nur mit einem Release:
 
-1. Release-PR: Version in `js/version.js`, `sw.js` und `CITATION.cff` (mit `date-released`) erhöhen (neue Funktion: zweite Stelle, Korrektur: dritte Stelle); in `CHANGELOG.md` die Einträge unter `## [Unreleased]` unter eine neue Überschrift `## [x.y.z] - JJJJ-MM-TT` verschieben und die Links am Ende ergänzen.
+1. Release-PR: Version in `js/version.js`, `sw.js` und `CITATION.cff` (mit `date-released`) erhöhen (welche Stelle steigt: Leitfaden der Familie, Abschnitt 9); in `CHANGELOG.md` die Einträge unter `## [Unreleased]` unter eine neue Überschrift `## [x.y.z] - JJJJ-MM-TT` verschieben und die Links am Ende ergänzen.
 2. Nach dem Merge den Tag auf den neuesten Stand von `main` setzen:
    ```bash
    git fetch && git log --oneline -1 origin/main     # ist das der Release-PR?

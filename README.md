@@ -206,7 +206,7 @@ Darstellung (beide Modi):
 | `tests/` | Automatische Tests (Node, ohne Abhängigkeiten) |
 | `tsconfig.json` | Typprüfung mit TypeScript (JSDoc-Typen, kein Build-Schritt), strikt für `js/`, `tools/` und `tests/` |
 | `js/linalg.js` | Vektoren und Matrizen |
-| `manifest.webmanifest`, `icons/` | Favicon und Homescreen-Icons (iPad/iPhone: Teilen → Zum Home-Bildschirm; Android: Menü → Zum Startbildschirm hinzufügen) |
+| `manifest.webmanifest`, `icons/` | Favicon und Homescreen-Icons (iPad/iPhone: Teilen → Zum Home-Bildschirm; Android: Menü → Zum Startbildschirm hinzufügen), Vorschaubild geteilter Links (`vorschau.png`, Open Graph) |
 | `lib/common/`, `tools/common/` | Gemeinsame Grundlage der App-Familie aus [crystallography-common](https://github.com/manganite/crystallography-common), als Kopie mit fester Version (`lib/common/MANIFEST.json`): Stile (`base.css`, `app.css`, `skript.css`, `quiz.css`), Schriften, Hilfen, Quiz, Skript-Bausteine, Formatierung, Werkzeuge. Nicht von Hand ändern; siehe unten. |
 | `lib/kern/` | Rechenkern [symcrys](https://github.com/manganite/symcrys) als Kopie mit fester Version (`lib/kern/MANIFEST.json`): Punktgruppen, Aufstellungen, Symbole, Symmetrieelemente, Lagesymmetrie, Wyckoff-Lagen, Kristallformen, Bahnen und die Bestimmung der Gruppe. Nicht von Hand ändern; `js/kern.js` rechnet in den Rahmen der App um. |
 | `lib/common/fonts/` | Schriften IBM Plex Sans, IBM Plex Mono und Source Serif 4 (WOFF2, nur benötigte Schnitte, aus den npm-Paketen `@fontsource/*`), SIL Open Font License 1.1, siehe `lib/common/fonts/LICENSE-*.txt`. Selbst gehostet, damit die App ohne Verbindung zu Google auskommt. |
